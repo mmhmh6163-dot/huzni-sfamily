@@ -4,22 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - huzni's Family</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    
-    <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    
     <style>
         body {
             background: #f7fafc;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
         }
-        
         .sidebar {
             background: white;
             box-shadow: 2px 0 10px rgba(0,0,0,0.05);
@@ -31,12 +25,10 @@
             padding: 20px;
             overflow-y: auto;
         }
-        
         .main-content {
             margin-left: 250px;
             padding: 20px;
         }
-        
         .post-card {
             background: white;
             border-radius: 12px;
@@ -45,11 +37,9 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             transition: all 0.3s ease;
         }
-        
         .post-card:hover {
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
-        
         .wallet-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -57,7 +47,6 @@
             padding: 20px;
             margin-bottom: 20px;
         }
-        
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -67,12 +56,10 @@
             transition: all 0.3s ease;
             cursor: pointer;
         }
-        
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
-        
         .nav-item {
             padding: 12px 16px;
             border-radius: 8px;
@@ -81,16 +68,11 @@
             color: #4a5568;
             margin-bottom: 4px;
         }
-        
         .nav-item:hover, .nav-item.active {
             background: #ebf4ff;
             color: #667eea;
         }
-        
-        .nav-item i {
-            width: 24px;
-        }
-        
+        .nav-item i { width: 24px; }
         .avatar-circle {
             width: 40px;
             height: 40px;
@@ -102,15 +84,12 @@
             color: white;
             font-weight: bold;
         }
-        
         .action-btn {
             transition: all 0.3s ease;
             cursor: pointer;
         }
-        
-        .action-btn:hover {
-            transform: scale(1.1);
-        }
+        .action-btn:hover { transform: scale(1.1); }
+        .fixed-bottom { position: absolute; bottom: 20px; left: 20px; right: 20px; }
     </style>
 </head>
 <body>
@@ -120,21 +99,11 @@
             <i class="fas fa-rocket text-2xl text-purple-600 mr-2"></i>
             <span class="text-xl font-bold text-gray-800">huzni's Family</span>
         </div>
-        
-        <div class="nav-item active">
-            <i class="fas fa-home"></i> Feed
-        </div>
-        <div class="nav-item">
-            <i class="fas fa-user"></i> Profile
-        </div>
-        <div class="nav-item">
-            <i class="fas fa-wallet"></i> Wallet
-        </div>
-        <div class="nav-item">
-            <i class="fas fa-cog"></i> Settings
-        </div>
-        
-        <div class="absolute bottom-4 left-4 right-4">
+        <div class="nav-item active"><i class="fas fa-home"></i> Feed</div>
+        <div class="nav-item"><i class="fas fa-user"></i> Profile</div>
+        <div class="nav-item"><i class="fas fa-wallet"></i> Wallet</div>
+        <div class="nav-item"><i class="fas fa-cog"></i> Settings</div>
+        <div class="fixed-bottom">
             <div class="nav-item text-red-600" onclick="logout()">
                 <i class="fas fa-sign-out-alt"></i> Logout
             </div>
@@ -190,7 +159,7 @@
     </div>
 
     <script>
-        // Firebase Configuration
+        // Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyA5r_Jbs5k_gl-tpVUvUCH8vm0ukKCE16Y",
             authDomain: "huzni-sfamily.firebaseapp.com",
@@ -199,12 +168,10 @@
             messagingSenderId: "406424233617",
             appId: "1:406424233617:web:6e70949923234bafc08130"
         };
-        
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         
-        // Supabase Configuration
+        // Supabase
         const supabaseUrl = 'https://fdsndhxwkpfdadoxelxu.supabase.co';
         const supabaseKey = 'sb_publishable_fh1KPh54hrOus4wkOyl0Rw_KpQozMrx';
         const supabase = supabase.createClient(supabaseUrl, supabaseKey);
@@ -231,9 +198,7 @@
                     .from('posts')
                     .select('*')
                     .order('created_at', { ascending: false });
-                
                 if (error) throw error;
-                
                 const feed = document.getElementById('posts-feed');
                 if (data.length === 0) {
                     feed.innerHTML = `
@@ -245,7 +210,6 @@
                     `;
                     return;
                 }
-                
                 feed.innerHTML = data.map(post => `
                     <div class="post-card">
                         <div class="flex items-center mb-4">
@@ -272,7 +236,6 @@
                         </div>
                     </div>
                 `).join('');
-                
             } catch (error) {
                 console.error('Error loading posts:', error);
             }
@@ -281,11 +244,7 @@
         // Create Post
         async function createPost() {
             const content = document.getElementById('post-content').value.trim();
-            if (!content) {
-                alert('Please enter some content');
-                return;
-            }
-            
+            if (!content) { alert('Please enter some content'); return; }
             try {
                 const { data, error } = await supabase
                     .from('posts')
@@ -294,12 +253,9 @@
                         user_id: currentUser.uid,
                         user_name: currentUser.displayName || currentUser.email
                     }]);
-                
                 if (error) throw error;
-                
                 document.getElementById('post-content').value = '';
                 await loadPosts();
-                
             } catch (error) {
                 console.error('Error creating post:', error);
                 alert('Failed to create post');
@@ -309,22 +265,17 @@
         // Like Post
         async function likePost(postId) {
             try {
-                // Get current likes
                 const { data: post } = await supabase
                     .from('posts')
                     .select('likes_count')
                     .eq('id', postId)
                     .single();
-                
                 const newCount = (post.likes_count || 0) + 1;
-                
                 await supabase
                     .from('posts')
                     .update({ likes_count: newCount })
                     .eq('id', postId);
-                
                 await loadPosts();
-                
             } catch (error) {
                 console.error('Error liking post:', error);
             }
@@ -338,21 +289,17 @@
                     .select('balance')
                     .eq('user_id', currentUser.uid)
                     .single();
-                
                 if (error && error.code !== 'PGRST116') throw error;
-                
                 const balance = data ? data.balance : 0;
                 document.getElementById('wallet-balance').textContent = `$${balance.toFixed(2)}`;
-                
             } catch (error) {
                 console.error('Error loading wallet:', error);
             }
         }
         
-        // Add Funds (PayPal)
+        // Add Funds
         function addFunds() {
             alert('🔜 PayPal payment integration coming soon!');
-            // In production, this would redirect to PayPal
         }
         
         // Logout
@@ -365,11 +312,9 @@
             }
         }
         
-        // Enter key for post
+        // Ctrl+Enter to post
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && e.ctrlKey) {
-                createPost();
-            }
+            if (e.key === 'Enter' && e.ctrlKey) createPost();
         });
     </script>
 </body>
