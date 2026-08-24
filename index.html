@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - huzni's Family</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    
+    <style>
+        body {
+            background: #f7fafc;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        .sidebar {
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        
+        .post-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .post-card:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .wallet-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .nav-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: #4a5568;
+            margin-bottom: 4px;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: #ebf4ff;
+            color: #667eea;
+        }
+        
+        .nav-item i {
+            width: 24px;
+        }
+        
+        .avatar-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .action-btn {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="flex items-center mb-8">
+            <i class="fas fa-rocket text-2xl text-purple-600 mr-2"></i>
+            <span class="text-xl font-bold text-gray-800">huzni's Family</span>
+        </div>
+        
+        <div class="nav-item active">
+            <i class="fas fa-home"></i> Feed
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-user"></i> Profile
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-wallet"></i> Wallet
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-cog"></i> Settings
+        </div>
+        
+        <div class="absolute bottom-4 left-4 right-4">
+            <div class="nav-item text-red-600" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Feed</h1>
+                <p class="text-gray-600">See what's happening</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div id="user-display" class="flex items-center space-x-3">
+                    <div class="avatar-circle" id="avatar-letter">U</div>
+                    <span class="font-semibold" id="user-name">User</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Wallet -->
+        <div class="wallet-card">
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="text-sm opacity-75">💰 Wallet Balance</p>
+                    <p class="text-3xl font-bold" id="wallet-balance">$0.00</p>
+                </div>
+                <button onclick="addFunds()" class="bg-white text-purple-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition">
+                    <i class="fas fa-plus mr-2"></i> Add Funds
+                </button>
+            </div>
+        </div>
+        
+        <!-- Create Post -->
+        <div class="post-card">
+            <textarea id="post-content" rows="3" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="What's on your mind?"></textarea>
+            <div class="flex justify-end mt-3">
+                <button onclick="createPost()" class="btn-primary">
+                    <i class="fas fa-paper-plane mr-2"></i> Post
+                </button>
+            </div>
+        </div>
+        
+        <!-- Posts Feed -->
+        <div id="posts-feed">
+            <div class="text-center text-gray-500 py-8">
+                <i class="fas fa-spinner fa-spin text-2xl"></i>
+                <p>Loading posts...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA5r_Jbs5k_gl-tpVUvUCH8vm0ukKCE16Y",
+            authDomain: "huzni-sfamily.firebaseapp.com",
+            projectId: "huzni-sfamily",
+            storageBucket: "huzni-sfamily.firebasestorage.app",
+            messagingSenderId: "406424233617",
+            appId: "1:406424233617:web:6e70949923234bafc08130"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        
+        // Supabase Configuration
+        const supabaseUrl = 'https://fdsndhxwkpfdadoxelxu.supabase.co';
+        const supabaseKey = 'sb_publishable_fh1KPh54hrOus4wkOyl0Rw_KpQozMrx';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        
+        let currentUser = null;
+        
+        // Auth State
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('user-name').textContent = user.displayName || user.email;
+                document.getElementById('avatar-letter').textContent = (user.displayName || 'U')[0].toUpperCase();
+                await loadPosts();
+                await loadWallet();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+        
+        // Load Posts
+        async function loadPosts() {
+            try {
+                const { data, error } = await supabase
+                    .from('posts')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                const feed = document.getElementById('posts-feed');
+                if (data.length === 0) {
+                    feed.innerHTML = `
+                        <div class="post-card text-center py-8">
+                            <i class="fas fa-inbox text-4xl text-gray-300 mb-4"></i>
+                            <h3 class="text-xl font-semibold text-gray-600">No posts yet</h3>
+                            <p class="text-gray-500">Be the first to post something!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                feed.innerHTML = data.map(post => `
+                    <div class="post-card">
+                        <div class="flex items-center mb-4">
+                            <div class="avatar-circle">${post.user_name ? post.user_name[0].toUpperCase() : 'U'}</div>
+                            <div class="ml-3">
+                                <p class="font-semibold">${post.user_name || 'Anonymous'}</p>
+                                <p class="text-sm text-gray-500">${new Date(post.created_at).toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-800 mb-4">${post.content}</p>
+                        <div class="flex items-center space-x-6">
+                            <button onclick="likePost('${post.id}')" class="action-btn flex items-center space-x-2 text-gray-500 hover:text-red-500">
+                                <i class="fas fa-heart"></i>
+                                <span>${post.likes_count || 0}</span>
+                            </button>
+                            <button class="action-btn flex items-center space-x-2 text-gray-500 hover:text-blue-500">
+                                <i class="fas fa-comment"></i>
+                                <span>${post.comments_count || 0}</span>
+                            </button>
+                            <button class="action-btn flex items-center space-x-2 text-gray-500 hover:text-green-500">
+                                <i class="fas fa-share"></i>
+                                <span>${post.shares_count || 0}</span>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Error loading posts:', error);
+            }
+        }
+        
+        // Create Post
+        async function createPost() {
+            const content = document.getElementById('post-content').value.trim();
+            if (!content) {
+                alert('Please enter some content');
+                return;
+            }
+            
+            try {
+                const { data, error } = await supabase
+                    .from('posts')
+                    .insert([{
+                        content: content,
+                        user_id: currentUser.uid,
+                        user_name: currentUser.displayName || currentUser.email
+                    }]);
+                
+                if (error) throw error;
+                
+                document.getElementById('post-content').value = '';
+                await loadPosts();
+                
+            } catch (error) {
+                console.error('Error creating post:', error);
+                alert('Failed to create post');
+            }
+        }
+        
+        // Like Post
+        async function likePost(postId) {
+            try {
+                // Get current likes
+                const { data: post } = await supabase
+                    .from('posts')
+                    .select('likes_count')
+                    .eq('id', postId)
+                    .single();
+                
+                const newCount = (post.likes_count || 0) + 1;
+                
+                await supabase
+                    .from('posts')
+                    .update({ likes_count: newCount })
+                    .eq('id', postId);
+                
+                await loadPosts();
+                
+            } catch (error) {
+                console.error('Error liking post:', error);
+            }
+        }
+        
+        // Load Wallet
+        async function loadWallet() {
+            try {
+                const { data, error } = await supabase
+                    .from('wallets')
+                    .select('balance')
+                    .eq('user_id', currentUser.uid)
+                    .single();
+                
+                if (error && error.code !== 'PGRST116') throw error;
+                
+                const balance = data ? data.balance : 0;
+                document.getElementById('wallet-balance').textContent = `$${balance.toFixed(2)}`;
+                
+            } catch (error) {
+                console.error('Error loading wallet:', error);
+            }
+        }
+        
+        // Add Funds (PayPal)
+        function addFunds() {
+            alert('🔜 PayPal payment integration coming soon!');
+            // In production, this would redirect to PayPal
+        }
+        
+        // Logout
+        async function logout() {
+            try {
+                await auth.signOut();
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Error logging out:', error);
+            }
+        }
+        
+        // Enter key for post
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                createPost();
+            }
+        });
+    </script>
+</body>
+</html>
