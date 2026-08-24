@@ -1,0 +1,5 @@
+# public/_config.yml
+include:
+  - .nojekyll
+  - _next
+  - static
