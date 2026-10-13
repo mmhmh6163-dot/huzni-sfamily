@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account — Arizona AI</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="loadingOverlay" class="loading-overlay">
+  <div class="loader"></div>
+  <p style="margin-top:20px;">Loading…</p>
+</div>
+
+<div id="app-header"></div>
+
+<main>
+  <div class="form-card">
+    <h2>Create Account</h2>
+    <p class="form-sub">Start earning today — it's free</p>
+
+    <div class="form-alert error"   id="regError"></div>
+    <div class="form-alert success" id="regSuccess"></div>
+
+    <form id="registerForm" onsubmit="return doRegister(event)">
+      <div class="form-field">
+        <label>Username</label>
+        <input type="text" id="regUsername" placeholder="yourname" required
+               minlength="3" maxlength="30" autocomplete="username">
+      </div>
+
+      <div class="form-field">
+        <label>Email</label>
+        <input type="email" id="regEmail" placeholder="you@example.com"
+               required autocomplete="email">
+      </div>
+
+      <div class="form-field">
+        <label>Password</label>
+        <input type="password" id="regPassword" placeholder="At least 6 characters"
+               required minlength="6" autocomplete="new-password">
+      </div>
+
+      <div class="form-field">
+        <label>Confirm Password</label>
+        <input type="password" id="regConfirm" placeholder="Repeat password"
+               required minlength="6" autocomplete="new-password">
+      </div>
+
+      <button type="submit" class="btn-primary-full" id="regBtn">
+        <i class="fas fa-user-plus"></i> Create Free Account
+      </button>
+    </form>
+
+    <p class="form-switch">
+      Already have an account? <a href="login.html">Sign in</a>
+    </p>
+
+    <div class="card" style="margin-top:24px; padding:16px;">
+      <p style="font-size:13px; color:var(--az-text-secondary); line-height:1.7;">
+        <i class="fas fa-envelope" style="color:var(--az-accent);"></i>
+        After signing up, we'll send a confirmation link to your email.
+        <strong>You must click it before you can log in.</strong>
+      </p>
+    </div>
+  </div>
+</main>
+
+<div id="app-footer"></div>
+
+<script src="auth.js"></script>
+<script>
+  // Redirect if already signed in
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      if (currentUser) window.location.href = 'index.html';
+    }, 300);
+  });
+
+  async function doRegister(e) {
+    e.preventDefault();
+    hideAlerts();
+
+    const username = document.getElementById('regUsername').value.trim();
+    const email    = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const confirm  = document.getElementById('regConfirm').value;
+
+    // Client-side validation
+    if (username.length < 3)         return showAlert('error', 'Username must be at least 3 characters.');
+    if (username.length > 30)        return showAlert('error', 'Username must be under 30 characters.');
+    if (!/^[a-zA-Z0-9_]+$/.test(username))
+                                     return showAlert('error', 'Username can only contain letters, numbers and _');
+    if (password.length < 6)         return showAlert('error', 'Password must be at least 6 characters.');
+    if (password !== confirm)        return showAlert('error', 'Passwords do not match.');
+
+    const btn = document.getElementById('regBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Creating account…';
+
+    try {
+      // Check username is not taken
+      const { data: existing } = await supabaseClient
+        .from('profiles')
+        .select('id')
+        .eq('username', username)
+        .maybeSingle();
+
+      if (existing) {
+        throw new Error('That username is already taken.');
+      }
+
+      // Sign up
+      const { data, error } = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            username: username,
+            name:     username
+          },
+          emailRedirectTo: window.location.origin + '/huzni-sfamily/login.html'
+        }
+      });
+
+      if (error) throw error;
+
+      // Note: profile + wallet are auto-created by the DB trigger
+      // when the user confirms their email.
+
+      showAlert('success',
+        '🎉 Account created! We sent a confirmation link to <strong>' + escapeHtml(email) +
+        '</strong>. Click it, then <a href="login.html" style="color:#7ee8d0;font-weight:700;">sign in</a>.'
+      );
+
+      document.getElementById('registerForm').reset();
+      btn.innerHTML = '<i class="fas fa-check"></i> Check your email';
+
+    } catch (err) {
+      showAlert('error', err.message || 'Registration failed. Try again.');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Free Account';
+      return false;
+    }
+
+    return false;
+  }
+
+  function showAlert(type, html) {
+    hideAlerts();
+    const el = document.getElementById(type === 'error' ? 'regError' : 'regSuccess');
+    el.innerHTML = html;
+    el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  function hideAlerts() {
+    document.getElementById('regError').style.display   = 'none';
+    document.getElementById('regSuccess').style.display = 'none';
+  }
+</script>
+</body>
+</html>
