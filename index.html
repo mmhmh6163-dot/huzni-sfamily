@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Huzni's Family — Earn From Your Content</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #1f2937;
+    background: #f9fafb;
+  }
+
+  /* ---------- NAVBAR ---------- */
+  .navbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #e5e7eb;
+    padding: 16px 0;
+  }
+  .nav-container {
+    max-width: 1100px; margin: 0 auto; padding: 0 20px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .logo {
+    font-size: 20px; font-weight: 700; color: #764ba2;
+    display: flex; align-items: center; gap: 8px; cursor: pointer;
+  }
+  .nav-links { display: flex; align-items: center; gap: 20px; }
+  .nav-links a {
+    color: #374151; text-decoration: none; font-weight: 500; cursor: pointer;
+  }
+  .nav-links a:hover { color: #764ba2; }
+
+  /* ---------- BUTTONS ---------- */
+  .btn-solid {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white !important; padding: 10px 20px; border-radius: 10px;
+    font-weight: 600; text-decoration: none; display: inline-block;
+    transition: all 0.3s ease; border: none; cursor: pointer;
+    font-size: 15px;
+  }
+  .btn-solid:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(102,126,234,0.4);
+  }
+  .btn-outline {
+    padding: 10px 20px; border-radius: 10px;
+    border: 2px solid #e5e7eb; font-weight: 600; background: transparent;
+    cursor: pointer; color: #374151; font-size: 15px;
+  }
+  .btn-ghost { color: #764ba2 !important; font-weight: 600; cursor: pointer; background: none; border: none; font-size: 15px; }
+  .btn-large { padding: 14px 28px; font-size: 17px; }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    text-align: center; padding: 100px 20px 80px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+  .hero h1 { font-size: 56px; font-weight: 800; margin-bottom: 16px; line-height: 1.1; }
+  .hero h1 span { color: #fbbf24; }
+  .hero p { font-size: 19px; opacity: 0.95; margin-bottom: 32px; }
+  .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .hero .btn-solid { background: white; color: #764ba2 !important; }
+  .hero .btn-ghost { color: white !important; }
+  .hero-note { margin-top: 20px; font-size: 14px; opacity: 0.85; }
+
+  /* ---------- FEATURES ---------- */
+  .features { max-width: 1100px; margin: 0 auto; padding: 80px 20px; text-align: center; }
+  .features h2 { font-size: 36px; margin-bottom: 40px; }
+  .feature-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+  }
+  .feature-card {
+    background: white; padding: 30px 24px; border-radius: 16px;
+    text-align: left; box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    transition: transform 0.3s ease;
+  }
+  .feature-card:hover { transform: translateY(-4px); }
+  .feature-card i { font-size: 32px; color: #764ba2; margin-bottom: 16px; }
+  .feature-card h3 { font-size: 19px; margin-bottom: 8px; }
+  .feature-card p { color: #6b7280; font-size: 15px; }
+
+  /* ---------- CTA + FOOTER ---------- */
+  .cta {
+    text-align: center; padding: 80px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+  .cta h2 { font-size: 32px; margin-bottom: 24px; }
+  .cta .btn-solid { background: white; color: #764ba2 !important; }
+  .footer {
+    text-align: center; padding: 30px 20px;
+    background: #111827; color: #9ca3af; font-size: 14px;
+  }
+  .footer a { color: #a78bfa; text-decoration: none; cursor: pointer; }
+
+  /* ---------- AUTH PAGES ---------- */
+  .auth-wrap {
+    min-height: calc(100vh - 70px);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px 20px;
+  }
+  .auth-card {
+    background: rgba(255,255,255,0.98); border-radius: 20px;
+    padding: 40px; width: 100%; max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .auth-card .logo-icon { font-size: 48px; color: #764ba2; }
+  .auth-card h2 { font-size: 26px; text-align: center; color: #1f2937; margin: 8px 0 4px; }
+  .auth-card .subtitle { text-align: center; color: #6b7280; margin-bottom: 24px; font-size: 15px; }
+  .input-group { margin-bottom: 18px; }
+  .input-group input {
+    width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0;
+    border-radius: 10px; font-size: 16px; transition: all 0.3s ease;
+  }
+  .input-group input:focus {
+    border-color: #667eea; outline: none;
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white; padding: 12px; border-radius: 10px; font-weight: 600;
+    width: 100%; border: none; font-size: 16px; cursor: pointer;
+    transition: all 0.3s ease; display: flex; align-items: center;
+    justify-content: center; gap: 8px;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(102,126,234,0.4);
+  }
+  .error-message, .success-message {
+    padding: 12px; border-radius: 10px; margin-bottom: 18px;
+    display: none; font-size: 14px;
+  }
+  .error-message { background: #fee2e2; border: 1px solid #fecaca; color: #dc2626; }
+  .success-message { background: #dcfce7; border: 1px solid #bbf7d0; color: #16a34a; }
+  .benefits {
+    margin-top: 24px; padding: 16px; background: #f9fafb; border-radius: 12px;
+  }
+  .benefits p.title { font-weight: 600; color: #374151; margin-bottom: 8px; }
+  .benefit-text { font-size: 13px; color: #6b7280; margin: 4px 0; }
+  .benefit-text i { color: #16a34a; margin-right: 6px; }
+  .auth-footer { text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px; }
+  .auth-footer a { color: #764ba2; font-weight: 600; cursor: pointer; text-decoration: none; }
+  .auth-footer a:hover { text-decoration: underline; }
+
+  /* ---------- DASHBOARD ---------- */
+  .dash-wrap { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+  .dash-card {
+    background: white; padding: 24px; border-radius: 16px;
+    margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  }
+  .dash-card h2 { font-size: 20px; margin-bottom: 12px; }
+  .balance { font-size: 40px; font-weight: 800; color: #16a34a; }
+  .balance-label { color: #6b7280; font-size: 14px; }
+
+  /* ---------- UTILITY ---------- */
+  .hidden { display: none !important; }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 36px; }
+    .hero { padding: 60px 20px; }
+    .nav-links a:not(.btn-solid):not(.btn-outline) { display: none; }
+    .auth-card { padding: 28px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ NAVBAR ============ -->
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <div class="logo" onclick="navigate('home')">
+      <i class="fas fa-rocket"></i> Huzni's Family
+    </div>
+    <div class="nav-links">
+      <a onclick="navigate('home')">Home</a>
+      <a onclick="navigate('home'); setTimeout(()=>document.getElementById('features').scrollIntoView({behavior:'smooth'}),100)">Features</a>
+      <button class="btn-outline" id="nav-signin" onclick="navigate('login')">Sign In</button>
+      <button class="btn-solid" id="nav-register" onclick="navigate('register')">Get Started</button>
+      <button class="btn-solid hidden" id="nav-logout" onclick="logout()">Logout</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ PAGE: HOME ============ -->
+<div id="page-home">
+  <section class="hero">
+    <h1>Turn Your Posts Into <span>Income</span></h1>
+    <p>Share videos, shorts, and notes. Get paid. Powered by AI recommendations.</p>
+    <div class="hero-buttons">
+      <button class="btn-solid btn-large" onclick="navigate('register')">
+        <i class="fas fa-user-plus"></i> Create Free Account
+      </button>
+      <button class="btn-ghost btn-large" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Learn More</button>
+    </div>
+    <p class="hero-note">✅ Free forever · No credit card required</p>
+  </section>
+
+  <section id="features" class="features">
+    <h2>Why Huzni's Family?</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <i class="fas fa-dollar-sign"></i>
+        <h3>Earn Money</h3>
+        <p>Get paid for every post that gets engagement.</p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-video"></i>
+        <h3>Share Anything</h3>
+        <p>Videos, shorts, notes — all in one place.</p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-robot"></i>
+        <h3>AI Recommendations</h3>
+        <p>Smart feed that finds your audience.</p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-shield-halved"></i>
+        <h3>Safe & Private</h3>
+        <p>Your data stays yours. Always.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>Ready to start earning?</h2>
+    <button class="btn-solid btn-large" onclick="navigate('register')">Join Now — It's Free</button>
+  </section>
+</div>
+
+<!-- ============ PAGE: REGISTER ============ -->
+<div id="page-register" class="auth-wrap hidden">
+  <div class="auth-card">
+    <div style="text-align:center">
+      <i class="fas fa-rocket logo-icon"></i>
+      <h2>Create Account</h2>
+      <p class="subtitle">Start earning today!</p>
+    </div>
+
+    <div id="reg-error" class="error-message">
+      <i class="fas fa-exclamation-circle mr-2"></i><span id="reg-error-text"></span>
+    </div>
+    <div id="reg-success" class="success-message">
+      <i class="fas fa-check-circle mr-2"></i><span id="reg-success-text"></span>
+    </div>
+
+    <form onsubmit="return handleRegister(event)">
+      <div class="input-group"><input type="text" id="reg-username" placeholder="Username" required></div>
+      <div class="input-group"><input type="email" id="reg-email" placeholder="Email address" required></div>
+      <div class="input-group"><input type="password" id="reg-password" placeholder="Password (min 6 chars)" required minlength="6"></div>
+      <div class="input-group"><input type="password" id="reg-confirm" placeholder="Confirm Password" required></div>
+      <button type="submit" class="btn-primary"><i class="fas fa-user-plus"></i> Create Free Account</button>
+    </form>
+
+    <div class="benefits">
+      <p class="title"><i class="fas fa-gift" style="color:#16a34a"></i> What you get:</p>
+      <p class="benefit-text"><i class="fas fa-check-circle"></i> Free account forever</p>
+      <p class="benefit-text"><i class="fas fa-dollar-sign"></i> Earn money from your posts</p>
+      <p class="benefit-text"><i class="fas fa-video"></i> Share videos, shorts, and notes</p>
+      <p class="benefit-text"><i class="fas fa-robot"></i> AI-powered recommendations</p>
+    </div>
+
+    <p class="auth-footer">Already have an account? <a onclick="navigate('login')">Sign In</a></p>
+  </div>
+</div>
+
+<!-- ============ PAGE: LOGIN ============ -->
+<div id="page-login" class="auth-wrap hidden">
+  <div class="auth-card">
+    <div style="text-align:center">
+      <i class="fas fa-rocket logo-icon"></i>
+      <h2>Welcome Back</h2>
+      <p class="subtitle">Sign in to your account</p>
+    </div>
+
+    <div id="login-error" class="error-message">
+      <i class="fas fa-exclamation-circle mr-2"></i><span id="login-error-text"></span>
+    </div>
+    <div id="login-success" class="success-message">
+      <i class="fas fa-check-circle mr-2"></i><span id="login-success-text"></span>
+    </div>
+
+    <form onsubmit="return handleLogin(event)">
+      <div class="input-group"><input type="text" id="login-username" placeholder="Username" required></div>
+      <div class="input-group"><input type="password" id="login-password" placeholder="Password" required minlength="6"></div>
+      <button type="submit" class="btn-primary"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+    </form>
+
+    <p class="auth-footer">Don't have an account? <a onclick="navigate('register')">Create one</a></p>
+  </div>
+</div>
+
+<!-- ============ PAGE: DASHBOARD ============ -->
+<div id="page-dashboard" class="hidden">
+  <div class="dash-wrap">
+    <div class="dash-card">
+      <h2>👋 Welcome, <span id="welcome-name">friend</span>!</h2>
+      <p style="color:#6b7280;margin-top:6px;">Signed in as <span id="user-email"></span></p>
+    </div>
+
+    <div class="dash-card">
+      <p class="balance-label">Your Balance</p>
+      <p class="balance">$0.00</p>
+      <p style="color:#6b7280;font-size:14px;margin-top:6px;">Start posting to earn money.</p>
+    </div>
+
+    <div class="dash-card">
+      <h2>Quick Actions</h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;">
+        <button class="btn-solid" onclick="alert('Coming soon: New Post')"><i class="fas fa-plus"></i> New Post</button>
+        <button class="btn-solid" style="background:#16a34a" onclick="alert('Coming soon: Withdraw')"><i class="fas fa-wallet"></i> Withdraw</button>
+        <button class="btn-solid" style="background:#f59e0b" onclick="alert('Coming soon: Settings')"><i class="fas fa-cog"></i> Settings</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer" id="footer">
+  <p>© 2026 Huzni's Family · <a onclick="navigate('login')">Sign In</a> · <a onclick="navigate('register')">Register</a></p>
+</footer>
+
+<script>
+/* ============================================================
+   SIMPLE SPA ROUTER + AUTH (localStorage-based demo)
+   ============================================================ */
+
+const Auth = {
+  login(username, email) {
+    localStorage.setItem('hf_user', JSON.stringify({ username, email, joined: Date.now() }));
+  },
+  getUser() {
+    const raw = localStorage.getItem('hf_user');
+    return raw ? JSON.parse(raw) : null;
+  },
+  logout() {
+    localStorage.removeItem('hf_user');
+    navigate('home');
+  }
+};
+
+/* ---------- ROUTER ---------- */
+function navigate(page) {
+  // Hide all pages
+  document.querySelectorAll('[id^="page-"]').forEach(el => el.classList.add('hidden'));
+
+  // Show requested
+  const target = document.getElementById('page-' + page);
+  if (target) target.classList.remove('hidden');
+
+  // Navbar + footer visibility
+  const navbar = document.getElementById('navbar');
+  const footer = document.getElementById('footer');
+  const user = Auth.getUser();
+
+  // Always show navbar except on dashboard? Let's always show it, but toggle buttons.
+  navbar.classList.remove('hidden');
+  footer.classList.remove('hidden');
+
+  // Toggle auth buttons
+  const signin = document.getElementById('nav-signin');
+  const register = document.getElementById('nav-register');
+  const logoutBtn = document.getElementById('nav-logout');
+
+  if (user) {
+    signin.classList.add('hidden');
+    register.classList.add('hidden');
+    logoutBtn.classList.remove('hidden');
+  } else {
+    signin.classList.remove('hidden');
+    register.classList.remove('hidden');
+    logoutBtn.classList.add('hidden');
+  }
+
+  // If dashboard page, populate
+  if (page === 'dashboard') {
+    if (!user) return navigate('login');
+    document.getElementById('welcome-name').textContent = user.username;
+    document.getElementById('user-email').textContent = user.email;
+  }
+
+  // Scroll to top on nav
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Update URL hash (optional, for back button)
+  history.replaceState(null, '', '#' + page);
+}
+
+/* ---------- REGISTER ---------- */
+function handleRegister(e) {
+  e.preventDefault();
+  const username = document.getElementById('reg-username').value.trim();
+  const email    = document.getElementById('reg-email').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const confirm  = document.getElementById('reg-confirm').value;
+
+  if (!username)              return showMsg('reg', 'error', 'Username is required');
+  if (password.length < 6)    return showMsg('reg', 'error', 'Password must be at least 6 characters');
+  if (password !== confirm)   return showMsg('reg', 'error', 'Passwords do not match');
+
+  Auth.login(username, email);
+  showMsg('reg', 'success', '🎉 Account created! Redirecting…');
+  setTimeout(() => navigate('dashboard'), 1200);
+  return false;
+}
+
+/* ---------- LOGIN ---------- */
+function handleLogin(e) {
+  e.preventDefault();
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+
+  if (!username)             return showMsg('login', 'error', 'Username is required');
+  if (password.length < 6)   return showMsg('login', 'error', 'Password must be at least 6 characters');
+
+  Auth.login(username, username + '@demo.com');
+  showMsg('login', 'success', '✅ Logged in! Redirecting…');
+  setTimeout(() => navigate('dashboard'), 1000);
+  return false;
+}
+
+/* ---------- MESSAGE HELPER ---------- */
+function showMsg(prefix, type, msg) {
+  const errEl = document.getElementById(prefix + '-error');
+  const errTxt = document.getElementById(prefix + '-error-text');
+  const okEl = document.getElementById(prefix + '-success');
+  const okTxt = document.getElementById(prefix + '-success-text');
+
+  if (type === 'error') {
+    errTxt.textContent = msg;
+    errEl.style.display = 'block';
+    okEl.style.display = 'none';
+    setTimeout(() => errEl.style.display = 'none', 5000);
+  } else {
+    okTxt.textContent = msg;
+    okEl.style.display = 'block';
+    errEl.style.display = 'none';
+  }
+}
+
+/* ---------- LOGOUT ---------- */
+function logout() {
+  if (confirm('Log out of your account?')) Auth.logout();
+}
+
+/* ---------- INIT ON LOAD ---------- */
+(function init() {
+  const user = Auth.getUser();
+  // If URL has #register or #login, open it
+  const hash = window.location.hash.replace('#', '');
+  const validPages = ['home', 'register', 'login', 'dashboard'];
+
+  if (validPages.includes(hash)) {
+    navigate(hash);
+  } else if (user) {
+    navigate('dashboard');
+  } else {
+    navigate('home');
+  }
+})();
+
+// Handle back/forward
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash.replace('#', '') || 'home';
+  if (['home', 'register', 'login', 'dashboard'].includes(hash)) navigate(hash);
+});
+</script>
+
+</body>
+</html>
