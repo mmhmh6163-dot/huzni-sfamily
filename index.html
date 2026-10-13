@@ -1,35 +1,1545 @@
--- Profiles table
-create table if not exists public.profiles (
-  id uuid primary key references auth.users(id) on delete cascade,
-  username text unique,
-  email text,
-  balance numeric default 0,
-  created_at timestamptz default now()
-);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Arizona AI Company - AI Social Media Platform | Earn While You Share</title>
 
--- Posts table
-create table if not exists public.posts (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid references auth.users(id) on delete cascade not null,
-  content text,
-  media_urls text[] default '{}',
-  likes_count int default 0,
-  comments_count int default 0,
-  shares_count int default 0,
-  created_at timestamptz default now()
-);
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
--- Enable RLS
-alter table public.profiles enable row level security;
-alter table public.posts enable row level security;
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
--- Profiles policies
-create policy "profiles readable by all" on public.profiles for select using (true);
-create policy "user inserts own profile" on public.profiles for insert with check (auth.uid() = id);
-create policy "user updates own profile" on public.profiles for update using (auth.uid() = id);
+    <style>
+        :root {
+            --az-primary: #FF6B35;
+            --az-secondary: #004E89;
+            --az-accent: #FFB20F;
+            --az-dark: #1a1a1a;
+            --az-dark-light: #2d2d2d;
+            --az-light: #f8f9fa;
+            --az-text: #ffffff;
+            --az-text-secondary: rgba(255,255,255,0.7);
+            --az-gradient: linear-gradient(135deg, #FF6B35 0%, #FFB20F 100%);
+            --az-success: #00b894;
+            --az-danger: #ff7675;
+            --az-warning: #FFB20F;
+        }
 
--- Posts policies
-create policy "posts readable by all" on public.posts for select using (true);
-create policy "user inserts own post" on public.posts for insert with check (auth.uid() = user_id);
-create policy "user updates own post" on public.posts for update using (auth.uid() = user_id);
-create policy "user deletes own post" on public.posts for delete using (auth.uid() = user_id);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+            color: var(--az-text);
+            min-height: 100vh;
+            font-size: 16px;
+            overflow-x: hidden;
+            padding-top: 70px;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--az-dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+        .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(255,107,53,0.3);
+            border-top-color: var(--az-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 10000;
+        }
+        .toast {
+            background: var(--az-dark-light);
+            border-left: 6px solid var(--az-success);
+            padding: 14px 20px;
+            margin: 10px 0;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: slideIn 0.3s;
+            max-width: 350px;
+        }
+        .toast.error { border-left-color: var(--az-danger); }
+        .toast.warning { border-left-color: var(--az-warning); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } }
+
+        /* Header & Navigation */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,107,53,0.3);
+            height: 70px;
+        }
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--az-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo i {
+            font-size: 32px;
+            color: var(--az-accent);
+        }
+        .logo span {
+            background: var(--az-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Language Toggle */
+        .language-toggle {
+            position: relative;
+            display: inline-block;
+        }
+        .language-btn {
+            background: transparent;
+            border: 1px solid var(--az-accent);
+            color: var(--az-accent);
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+        .language-btn:hover {
+            background: var(--az-accent);
+            color: var(--az-dark);
+        }
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--az-dark-light);
+            border: 1px solid rgba(255,178,15,0.3);
+            border-radius: 10px;
+            padding: 10px;
+            min-width: 150px;
+            display: none;
+            z-index: 1001;
+            margin-top: 5px;
+        }
+        .language-dropdown.active { display: block; }
+        .language-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+            color: var(--az-text);
+        }
+        .language-option:hover { background: rgba(255,107,53,0.2); }
+        .language-option.active {
+            background: var(--az-primary);
+            color: white;
+        }
+        .language-flag { font-size: 20px; }
+
+        /* Desktop Navigation */
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            list-style: none;
+        }
+        .nav-menu a {
+            color: var(--az-text);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 20px;
+            transition: all 0.3s;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+        .nav-menu a:hover {
+            background: var(--az-primary);
+            color: white;
+        }
+        .nav-menu a.active {
+            background: var(--az-gradient);
+            color: white;
+        }
+
+        /* Auth Buttons */
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .btn-login {
+            background: transparent;
+            border: 2px solid var(--az-primary);
+            color: var(--az-primary);
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .btn-login:hover {
+            background: var(--az-primary);
+            color: white;
+        }
+        .btn-signup {
+            background: var(--az-gradient);
+            border: none;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .btn-signup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,107,53,0.4);
+        }
+
+        /* User Profile Menu */
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--az-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+        }
+        .user-info { display: flex; flex-direction: column; }
+        .user-name { font-size: 14px; font-weight: 600; }
+        .user-balance { font-size: 12px; color: var(--az-accent); }
+        .btn-logout {
+            background: transparent;
+            border: 1px solid var(--az-danger);
+            color: var(--az-danger);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .btn-logout:hover {
+            background: var(--az-danger);
+            color: white;
+        }
+
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            font-size: 28px;
+            background: none;
+            border: none;
+            color: var(--az-text);
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            background: rgba(26, 26, 26, 0.98);
+            backdrop-filter: blur(10px);
+            z-index: 999;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,107,53,0.3);
+            max-height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+        .mobile-nav.active { display: block; }
+        .mobile-nav a {
+            display: block;
+            color: var(--az-text);
+            text-decoration: none;
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+        .mobile-nav a:hover {
+            background: var(--az-primary);
+            padding-left: 25px;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, rgba(255,107,53,0.1) 0%, rgba(255,178,15,0.1) 100%);
+            border-radius: 0 0 50px 50px;
+            margin-bottom: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,107,53,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        @keyframes rotate { 100% { transform: rotate(360deg); } }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            background: var(--az-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .hero p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--az-text-secondary);
+            margin-bottom: 30px;
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn-hero {
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            border: none;
+        }
+        .btn-hero-primary {
+            background: var(--az-gradient);
+            color: white;
+            box-shadow: 0 10px 30px rgba(255,107,53,0.4);
+        }
+        .btn-hero-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255,107,53,0.6);
+        }
+        .btn-hero-secondary {
+            background: transparent;
+            color: var(--az-accent);
+            border: 2px solid var(--az-accent);
+        }
+        .btn-hero-secondary:hover {
+            background: var(--az-accent);
+            color: white;
+        }
+
+        /* Features Section */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            padding: 50px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .feature-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,107,53,0.2);
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255,107,53,0.1);
+            border-color: var(--az-primary);
+        }
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: var(--az-accent);
+        }
+        .feature-card h3 { font-size: 20px; margin-bottom: 15px; }
+        .feature-card p {
+            color: var(--az-text-secondary);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        /* Posts Feed - Instagram Style */
+        .posts-feed {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .post-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            border: 1px solid rgba(255,107,53,0.2);
+        }
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--az-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+        .post-user-info { flex: 1; }
+        .post-username { font-weight: 600; font-size: 16px; }
+        .post-time { font-size: 12px; color: var(--az-text-secondary); }
+        .post-content { padding: 20px; }
+        .post-text { margin-bottom: 20px; line-height: 1.6; }
+        .post-media {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .post-actions {
+            display: flex;
+            gap: 20px;
+            padding: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            flex-wrap: wrap;
+        }
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--az-text-secondary);
+            font-size: 14px;
+        }
+        .post-action:hover { color: var(--az-primary); }
+        .post-action.active { color: var(--az-accent); }
+
+        /* Floating Action Buttons - Instagram Style */
+        .floating-actions {
+            position: fixed;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            z-index: 100;
+            pointer-events: none;
+        }
+        .floating-btn {
+            pointer-events: auto;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--az-gradient);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(255,107,53,0.5);
+            transition: all 0.3s;
+            text-decoration: none;
+            position: fixed;
+        }
+        .floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 30px rgba(255,107,53,0.7);
+        }
+        .floating-btn.chat {
+            left: 30px;
+            bottom: 30px;
+            background: var(--az-secondary);
+        }
+        .floating-btn.friends {
+            right: 30px;
+            bottom: 30px;
+            background: var(--az-success);
+        }
+        .floating-btn.create {
+            background: var(--az-accent);
+            width: 70px;
+            height: 70px;
+            font-size: 30px;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+        }
+        .floating-btn.create:hover {
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(26, 26, 26, 0.9);
+            padding: 40px 20px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255,107,53,0.3);
+        }
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+        .footer-section h4 {
+            color: var(--az-primary);
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        .footer-section a {
+            display: block;
+            color: var(--az-text-secondary);
+            text-decoration: none;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .footer-section a:hover {
+            color: var(--az-primary);
+            padding-left: 5px;
+        }
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: var(--az-text-secondary);
+            font-size: 14px;
+        }
+
+        /* Modal - Create Post */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-backdrop.active { display: flex; }
+        .modal-box {
+            background: var(--az-dark-light);
+            border: 1px solid rgba(255,107,53,0.3);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+        }
+        .modal-box h3 { margin-bottom: 20px; color: var(--az-accent); }
+        .modal-box textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: var(--az-dark);
+            color: var(--az-text);
+            font-size: 15px;
+            font-family: inherit;
+            resize: vertical;
+        }
+        .modal-box textarea:focus {
+            outline: none;
+            border-color: var(--az-primary);
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: flex-end;
+        }
+        .modal-btn {
+            padding: 10px 22px;
+            border-radius: 20px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .modal-btn.cancel {
+            background: transparent;
+            color: var(--az-text-secondary);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .modal-btn.confirm {
+            background: var(--az-gradient);
+            color: white;
+        }
+
+        /* Auth Pages (inline overlay) */
+        .auth-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(6px);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .auth-overlay.active { display: flex; }
+        .auth-box {
+            background: var(--az-dark-light);
+            border: 1px solid rgba(255,107,53,0.3);
+            border-radius: 20px;
+            padding: 30px 25px;
+            width: 100%;
+            max-width: 420px;
+            margin: auto;
+        }
+        .auth-box h2 {
+            font-size: 24px;
+            margin-bottom: 6px;
+            text-align: center;
+            background: var(--az-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .auth-box .subtitle {
+            text-align: center;
+            color: var(--az-text-secondary);
+            font-size: 14px;
+            margin-bottom: 22px;
+        }
+        .auth-box .field { margin-bottom: 14px; }
+        .auth-box label {
+            display: block;
+            font-size: 12px;
+            color: var(--az-text-secondary);
+            margin-bottom: 6px;
+        }
+        .auth-box input {
+            width: 100%;
+            padding: 13px 14px;
+            border-radius: 10px;
+            background: var(--az-dark);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: var(--az-text);
+            font-size: 15px;
+        }
+        .auth-box input:focus {
+            outline: none;
+            border-color: var(--az-primary);
+        }
+        .auth-box .btn-full {
+            width: 100%;
+            padding: 13px;
+            border-radius: 10px;
+            background: var(--az-gradient);
+            color: white;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 15px;
+            margin-top: 6px;
+        }
+        .auth-box .btn-full:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .auth-alert {
+            padding: 11px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 14px;
+            display: none;
+        }
+        .auth-alert.error {
+            background: rgba(255,118,117,0.15);
+            color: #ffb1b0;
+            border: 1px solid rgba(255,118,117,0.3);
+        }
+        .auth-alert.success {
+            background: rgba(0,184,148,0.15);
+            color: #7ee8d0;
+            border: 1px solid rgba(0,184,148,0.3);
+        }
+        .auth-switch {
+            text-align: center;
+            font-size: 13px;
+            color: var(--az-text-secondary);
+            margin-top: 18px;
+        }
+        .auth-switch a {
+            color: var(--az-primary);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .auth-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 70px;
+                padding-bottom: 80px;
+            }
+            .nav-menu { display: none; }
+            .hamburger { display: block; }
+            .language-toggle { display: none; }
+            .auth-buttons { display: none; }
+            .user-menu { display: none !important; }
+            .hero { padding: 40px 15px; }
+            .hero h1 { font-size: 30px; }
+            .hero p { font-size: 14px; }
+            .features {
+                grid-template-columns: 1fr;
+                padding: 30px 15px;
+                gap: 15px;
+            }
+            .feature-card { padding: 20px; }
+            .feature-icon { font-size: 36px; margin-bottom: 12px; }
+            .floating-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            .floating-btn.create {
+                width: 60px;
+                height: 60px;
+                font-size: 25px;
+            }
+            .floating-btn.chat {
+                left: 15px;
+                bottom: 20px;
+            }
+            .floating-btn.friends {
+                right: 15px;
+                bottom: 20px;
+            }
+            .floating-btn.create { bottom: 20px; }
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .posts-feed { padding: 10px; }
+            .post-card { margin-bottom: 20px; }
+        }
+
+        @media (max-width: 480px) {
+            .logo { font-size: 18px; }
+            .logo i { font-size: 22px; }
+            .hero h1 { font-size: 26px; }
+            .hero-buttons { flex-direction: column; align-items: stretch; }
+            .btn-hero {
+                width: 100%;
+                text-align: center;
+                padding: 14px 20px;
+                font-size: 16px;
+            }
+            .floating-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+            .floating-btn.create {
+                width: 55px;
+                height: 55px;
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loader"></div>
+        <p style="margin-top: 20px;">Loading Arizona AI Company...</p>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-mountain-sun"></i>
+                <span>Arizona AI</span>
+            </a>
+
+            <!-- Desktop Navigation -->
+            <nav class="nav-menu" id="desktopNav">
+                <a href="index.html" class="active"><i class="fas fa-home"></i> Home</a>
+                <a href="HuzniAI.html"><i class="fas fa-robot"></i> AI</a>
+                <a href="Post.html"><i class="fas fa-newspaper"></i> Posts</a>
+                <a href="chats.html"><i class="fas fa-comments"></i> Chat</a>
+                <a href="Friends.html"><i class="fas fa-users"></i> Friends</a>
+                <a href="ads.html"><i class="fas fa-ad"></i> Ads</a>
+                <a href="crypto.forex.html"><i class="fas fa-chart-line"></i> Exchange</a>
+                <a href="privacy.html"><i class="fas fa-shield-alt"></i> Privacy</a>
+                <a href="aboutus.html"><i class="fas fa-info-circle"></i> About</a>
+                <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+            </nav>
+
+            <!-- Language Toggle -->
+            <div class="language-toggle">
+                <button class="language-btn" onclick="toggleLanguageDropdown()">
+                    <span id="currentLanguageFlag">🇬🇧</span>
+                    <span id="currentLanguageText">English</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="language-dropdown" id="languageDropdown">
+                    <div class="language-option active" onclick="changeLanguage('en', '🇬🇧', 'English', event)">
+                        <span class="language-flag">🇬🇧</span> English
+                    </div>
+                    <div class="language-option" onclick="changeLanguage('ar', '🇸🇦', 'العربية', event)">
+                        <span class="language-flag">🇸🇦</span> العربية
+                    </div>
+                    <div class="language-option" onclick="changeLanguage('ku', '🏴', 'کوردی', event)">
+                        <span class="language-flag">🏴</span> کوردی
+                    </div>
+                    <div class="language-option" onclick="changeLanguage('fa', '🇮🇷', 'فارسی', event)">
+                        <span class="language-flag">🇮🇷</span> فارسی
+                    </div>
+                </div>
+            </div>
+
+            <!-- Auth Buttons (Before Login) -->
+            <div class="auth-buttons" id="authButtons">
+                <button class="btn-login" onclick="openAuth('login')">Login</button>
+                <button class="btn-signup" onclick="openAuth('register')">Sign Up</button>
+            </div>
+
+            <!-- User Menu (After Login) -->
+            <div class="user-menu" id="userMenu" style="display: none;">
+                <a href="profile.html" class="user-profile">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <div class="user-info">
+                        <span class="user-name" id="userName">User</span>
+                        <span class="user-balance" id="userBalance">$0.00</span>
+                    </div>
+                </a>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+
+            <!-- Hamburger -->
+            <button class="hamburger" onclick="toggleMobileNav()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <nav class="mobile-nav" id="mobileNav">
+            <a href="index.html"><i class="fas fa-home"></i> Home</a>
+            <a href="HuzniAI.html"><i class="fas fa-robot"></i> AI</a>
+            <a href="Post.html"><i class="fas fa-newspaper"></i> Posts</a>
+            <a href="chats.html"><i class="fas fa-comments"></i> Chat</a>
+            <a href="Friends.html"><i class="fas fa-users"></i> Friends</a>
+            <a href="ads.html"><i class="fas fa-ad"></i> Ads</a>
+            <a href="crypto.forex.html"><i class="fas fa-chart-line"></i> Exchange</a>
+            <a href="privacy.html"><i class="fas fa-shield-alt"></i> Privacy</a>
+            <a href="aboutus.html"><i class="fas fa-info-circle"></i> About</a>
+            <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+            <div style="margin-top: 20px; padding: 15px;">
+                <button class="btn-login" style="display: block; width: 100%; text-align: center; margin-bottom: 10px; padding: 12px;" onclick="closeMobileNav(); openAuth('login')">Login</button>
+                <button class="btn-signup" style="display: block; width: 100%; text-align: center; padding: 12px;" onclick="closeMobileNav(); openAuth('register')">Sign Up</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section (Before Login) -->
+    <section class="hero" id="heroSection">
+        <div class="hero-content">
+            <h1>🏜️ Arizona AI Company</h1>
+            <p>
+                Welcome to Arizona AI Company platform that we connect AI with your other requirement include the apis, short videos, chats, ads not only this but still we have a surprise for you that non of the other platform has been activate this function which we pay you for your participation and using our platform without any much efforts, we pays your for using our platform and sharing your videos, shorts or long and notes, paying for you post. Because your time is valuable and we wished to bring a differenticality to the ground, mixing AI with social media and creating new jobs for a hundred of peoples those who seeks for job. Arizona AI Company platform is for you. Now create an account free and use it for free then post it for free later earn your income. Stop wasting your time on the other platform, start with us and we are here for you.
+            </p>
+            <div class="hero-buttons">
+                <button class="btn-hero btn-hero-primary" onclick="openAuth('register')">
+                    <i class="fas fa-user-plus"></i> Signup Now
+                </button>
+                <button class="btn-hero btn-hero-secondary" onclick="openAuth('login')">
+                    <i class="fas fa-sign-in-alt"></i> Login Now
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="featuresSection">
+        <div class="feature-card">
+            <div class="feature-icon">🤖</div>
+            <h3>AI Integration</h3>
+            <p>Advanced AI powered features to enhance your content and experience</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">💰</div>
+            <h3>Earn Money</h3>
+            <p>Get paid for your posts, videos, and participation on the platform</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3>Short Videos</h3>
+            <p>Share your moments with short and long video content</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">💬</div>
+            <h3>Real-time Chat</h3>
+            <p>Connect with friends and community instantly</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Exchange Market</h3>
+            <p>Access crypto and forex markets directly from the platform</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>Targeted Ads</h3>
+            <p>Reach your audience with our advanced advertising system</p>
+        </div>
+    </section>
+
+    <!-- Posts Feed (After Login) - Instagram Style -->
+    <section class="posts-feed" id="postsFeed" style="display: none;">
+        <h2 style="text-align: center; margin-bottom: 30px;">📱 Community Posts</h2>
+        <div id="postsContainer"></div>
+    </section>
+
+    <!-- Floating Actions (After Login) - Instagram Style -->
+    <div class="floating-actions" id="floatingActions" style="display: none;">
+        <a href="chats.html" class="floating-btn chat" title="Chat">
+            <i class="fas fa-comments"></i>
+        </a>
+        <button class="floating-btn create" title="Create Post" onclick="openCreateModal()">
+            <i class="fas fa-plus"></i>
+        </button>
+        <a href="Friends.html" class="floating-btn friends" title="Friends">
+            <i class="fas fa-users"></i>
+        </a>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Arizona AI Company</h4>
+                <p style="color: var(--az-text-secondary); font-size: 14px;">AI-powered social media platform that pays you for your content.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="index.html">Home</a>
+                <a href="HuzniAI.html">AI Assistant</a>
+                <a href="Post.html">Posts</a>
+                <a href="chats.html">Chat</a>
+                <a href="Friends.html">Friends</a>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <a href="policy.html">Privacy Policy</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="aboutus.html">About Us</a>
+                <a href="contact.html">Contact</a>
+                <a href="partner.html">Partner</a>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <a href="wallets.html">Payments</a>
+                <a href="offers.html">Offers</a>
+                <a href="contact.html">Contact Support</a>
+                <a href="partner.html">Become a Partner</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>All Rights Reserved @ 2026 Powered By Huzni's Family and TDA developers</p>
+        </div>
+    </footer>
+
+    <!-- Create Post Modal -->
+    <div class="modal-backdrop" id="createModal">
+        <div class="modal-box">
+            <h3>Create Post</h3>
+            <textarea id="createContent" placeholder="What's on your mind?"></textarea>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="closeCreateModal()">Cancel</button>
+                <button class="modal-btn confirm" onclick="submitPost()">
+                    <i class="fas fa-paper-plane"></i> Post
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Overlay (Login / Register) -->
+    <div class="auth-overlay" id="authOverlay">
+        <button class="auth-close" onclick="closeAuth()">&times;</button>
+
+        <!-- Login form -->
+        <div class="auth-box" id="loginBox">
+            <h2>Welcome Back</h2>
+            <p class="subtitle">Sign in to Arizona AI</p>
+            <div class="auth-alert error" id="loginError"></div>
+            <div class="auth-alert success" id="loginSuccess"></div>
+            <form onsubmit="return doLogin(event)">
+                <div class="field">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required autocomplete="email">
+                </div>
+                <div class="field">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" required minlength="6" autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-full" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
+            <p class="auth-switch">New here? <a onclick="switchAuth('register')">Create an account</a></p>
+        </div>
+
+        <!-- Register form -->
+        <div class="auth-box" id="registerBox" style="display: none;">
+            <h2>Create Account</h2>
+            <p class="subtitle">Start earning today — it's free</p>
+            <div class="auth-alert error" id="regError"></div>
+            <div class="auth-alert success" id="regSuccess"></div>
+            <form onsubmit="return doRegister(event)">
+                <div class="field">
+                    <label>Username</label>
+                    <input type="text" id="regUsername" required minlength="3" autocomplete="username">
+                </div>
+                <div class="field">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" required autocomplete="email">
+                </div>
+                <div class="field">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" required minlength="6" autocomplete="new-password">
+                </div>
+                <div class="field">
+                    <label>Confirm Password</label>
+                    <input type="password" id="regConfirm" required minlength="6">
+                </div>
+                <button type="submit" class="btn-full" id="registerBtn">
+                    <i class="fas fa-user-plus"></i> Create Free Account
+                </button>
+            </form>
+            <p class="auth-switch">Already have an account? <a onclick="switchAuth('login')">Sign in</a></p>
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================================
+           SUPABASE CONFIG — Huzni project
+           Only project URL + publishable key belong in the browser.
+           Never put the service_role / secret key here.
+           ========================================================== */
+        const SUPABASE_URL = 'https://ziwqlcheflkjnswnqxcr.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_fenXy1YUuiY7B3HOObcHfQ_YIXDC5Ja';
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let currentUser = null;
+
+        /* ==========================================================
+           LANGUAGE TRANSLATIONS
+           ========================================================== */
+        const translations = {
+            en: {
+                home: 'Home', ai: 'AI', posts: 'Posts', chat: 'Chat', friends: 'Friends',
+                ads: 'Ads', exchange: 'Exchange', privacy: 'Privacy', about: 'About', contact: 'Contact',
+                login: 'Login', signup: 'Sign Up', logout: 'Logout',
+                welcome: 'Welcome to Arizona AI Company',
+                communityPosts: 'Community Posts',
+                noPosts: 'No posts yet. Be the first to post!',
+                allRightsReserved: "All Rights Reserved @ 2026 Powered By Huzni's Family and TDA developers"
+            },
+            ar: {
+                home: 'الرئيسية', ai: 'الذكاء الاصطناعي', posts: 'المنشورات', chat: 'الدردشة',
+                friends: 'الأصدقاء', ads: 'الإعلانات', exchange: 'التبادل', privacy: 'الخصوصية',
+                about: 'حول', contact: 'اتصل بنا', login: 'تسجيل الدخول', signup: 'إنشاء حساب',
+                logout: 'تسجيل الخروج',
+                welcome: 'مرحباً بكم في شركة أريزونا للذكاء الاصطناعي',
+                communityPosts: 'منشورات المجتمع',
+                noPosts: 'لا توجد منشورات بعد. كن أول من ينشر!',
+                allRightsReserved: 'جميع الحقوق محفوظة @ 2026 بدعم من عائلة هوزني ومطوري TDA'
+            },
+            ku: {
+                home: 'سەرەکی', ai: 'زیریاکی', posts: 'بابەتەکان', chat: 'گفتوگۆ',
+                friends: 'هاوڕێکان', ads: 'ریکلام', exchange: 'ئاڵوگۆڕ', privacy: 'تایبەتمەندی',
+                about: 'دەربارە', contact: 'پەیوەندی', login: 'چوونە ژوورەوە',
+                signup: 'خۆت تۆمار بکە', logout: 'چوونە دەرەوە',
+                welcome: 'بەخێربێن بۆ کۆمپانیای زیرەکی دەستکردی ئاریزۆنا',
+                communityPosts: 'بابەتەکانی کۆمەڵگا',
+                noPosts: 'هێشتا هیچ بابەتێک نییە. یەکەم کەس بە کە بابەت بڵاو بکەیتەوە!',
+                allRightsReserved: 'هەموو مافەکان پارێزراون @ 2026 بە پشتگیری خێزانی حوزنی و پەرەپێدەرانی TDA'
+            },
+            fa: {
+                home: 'خانه', ai: 'هوش مصنوعی', posts: 'پست‌ها', chat: 'گفتگو', friends: 'دوستان',
+                ads: 'تبلیغات', exchange: 'تبادل', privacy: 'حریم خصوصی', about: 'درباره',
+                contact: 'تماس', login: 'ورود', signup: 'ثبت نام', logout: 'خروج',
+                welcome: 'به شرکت هوش مصنوعی آریزونا خوش آمدید',
+                communityPosts: 'پست‌های جامعه',
+                noPosts: 'هنوز پستی وجود ندارد. اولین نفر باشید که پست می‌گذارد!',
+                allRightsReserved: 'تمامی حقوق محفوظ است @ 2026 با پشتیبانی خانواده هوزنی و توسعه دهندگان TDA'
+            }
+        };
+
+        /* ==========================================================
+           INIT
+           ========================================================== */
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLanguage = localStorage.getItem('arizona_language') || 'en';
+            applyLanguage(savedLanguage);
+
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }, 800);
+
+            // Supabase auth listener
+            supabaseClient.auth.onAuthStateChange((_event, session) => {
+                currentUser = session?.user || null;
+                if (currentUser) {
+                    showLoggedInUI();
+                    loadPosts();
+                } else {
+                    showLoggedOutUI();
+                }
+            });
+        });
+
+        /* ==========================================================
+           UI STATE — logged in / out
+           ========================================================== */
+        function showLoggedInUI() {
+            document.getElementById('authButtons').style.display = 'none';
+            document.getElementById('userMenu').style.display = 'flex';
+            document.getElementById('heroSection').style.display = 'none';
+            document.getElementById('featuresSection').style.display = 'none';
+            document.getElementById('postsFeed').style.display = 'block';
+            document.getElementById('floatingActions').style.display = 'flex';
+
+            const meta = currentUser.user_metadata || {};
+            const username = meta.username || currentUser.email?.split('@')[0] || 'User';
+            const balance = 0;
+            document.getElementById('userName').textContent = username;
+            document.getElementById('userBalance').textContent = `$${balance.toFixed(2)}`;
+            document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
+        }
+
+        function showLoggedOutUI() {
+            document.getElementById('authButtons').style.display = 'flex';
+            document.getElementById('userMenu').style.display = 'none';
+            document.getElementById('heroSection').style.display = 'block';
+            document.getElementById('featuresSection').style.display = 'grid';
+            document.getElementById('postsFeed').style.display = 'none';
+            document.getElementById('floatingActions').style.display = 'none';
+        }
+
+        /* ==========================================================
+           POSTS
+           ========================================================== */
+        async function loadPosts() {
+            const container = document.getElementById('postsContainer');
+            container.innerHTML = `<p style="text-align:center;color:#999;padding:20px;">
+                <i class="fas fa-circle-notch fa-spin"></i> Loading posts…
+            </p>`;
+
+            try {
+                const { data: posts, error } = await supabaseClient
+                    .from('posts')
+                    .select('*, profiles(username)')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+
+                if (error) throw error;
+
+                if (!posts || posts.length === 0) {
+                    const lang = localStorage.getItem('arizona_language') || 'en';
+                    container.innerHTML = `<p style="text-align:center;color:#999;padding:30px;">
+                        ${translations[lang].noPosts}
+                    </p>`;
+                    return;
+                }
+
+                container.innerHTML = '';
+                posts.forEach(post => container.appendChild(createPostCard(post)));
+            } catch (err) {
+                console.error('Load posts error:', err);
+                container.innerHTML = `<p style="text-align:center;color:#ff7675;padding:30px;">
+                    Couldn't load posts.<br><small style="opacity:0.6">${escapeHtml(err.message)}</small>
+                </p>`;
+            }
+        }
+
+        function createPostCard(post) {
+            const card = document.createElement('div');
+            card.className = 'post-card';
+            const username = post.profiles?.username || post.username || 'User';
+            const initial = username.charAt(0).toUpperCase();
+            const media = Array.isArray(post.media_urls) ? post.media_urls : [];
+            const mediaHtml = media.map(url =>
+                /\.(mp4|webm|ogg)$/i.test(url)
+                    ? `<video src="${escapeHtml(url)}" class="post-media" controls></video>`
+                    : `<img src="${escapeHtml(url)}" class="post-media" alt="Post media">`
+            ).join('');
+
+            card.innerHTML = `
+                <div class="post-header">
+                    <div class="post-avatar">${initial}</div>
+                    <div class="post-user-info">
+                        <div class="post-username">${escapeHtml(username)}</div>
+                        <div class="post-time">${new Date(post.created_at).toLocaleString()}</div>
+                    </div>
+                </div>
+                <div class="post-content">
+                    ${post.content ? `<div class="post-text">${escapeHtml(post.content)}</div>` : ''}
+                    ${mediaHtml}
+                </div>
+                <div class="post-actions">
+                    <span class="post-action" onclick="likePost('${post.id}', this)">
+                        <i class="far fa-heart"></i> ${post.likes_count || 0}
+                    </span>
+                    <span class="post-action">
+                        <i class="far fa-comment"></i> ${post.comments_count || 0}
+                    </span>
+                    <span class="post-action">
+                        <i class="fas fa-share"></i> ${post.shares_count || 0}
+                    </span>
+                </div>
+            `;
+            return card;
+        }
+
+        async function likePost(postId, el) {
+            if (!currentUser) return showToast('Sign in to like posts', 'error');
+            const icon = el.querySelector('i');
+            const wasLiked = el.classList.toggle('active');
+            icon.className = wasLiked ? 'fas fa-heart' : 'far fa-heart';
+
+            try {
+                // Simple increment via RPC or manual read+write
+                const { data, error } = await supabaseClient
+                    .from('posts')
+                    .select('likes_count')
+                    .eq('id', postId)
+                    .single();
+                if (error) throw error;
+
+                const newCount = (data.likes_count || 0) + (wasLiked ? 1 : -1);
+                await supabaseClient.from('posts').update({ likes_count: newCount }).eq('id', postId);
+                el.innerHTML = `<i class="${wasLiked ? 'fas' : 'far'} fa-heart"></i> ${newCount}`;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        /* ==========================================================
+           CREATE POST
+           ========================================================== */
+        function openCreateModal() {
+            if (!currentUser) return openAuth('login');
+            document.getElementById('createModal').classList.add('active');
+        }
+        function closeCreateModal() {
+            document.getElementById('createModal').classList.remove('active');
+            document.getElementById('createContent').value = '';
+        }
+        async function submitPost() {
+            const content = document.getElementById('createContent').value.trim();
+            if (!content) return showToast('Write something first', 'error');
+
+            try {
+                const { error } = await supabaseClient.from('posts').insert({
+                    user_id: currentUser.id,
+                    content,
+                    likes_count: 0,
+                    comments_count: 0,
+                    shares_count: 0
+                });
+                if (error) throw error;
+
+                closeCreateModal();
+                showToast('Posted! 🎉', 'success');
+                loadPosts();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        /* ==========================================================
+           AUTH — LOGIN / REGISTER (inline overlay)
+           ========================================================== */
+        function openAuth(which) {
+            document.getElementById('authOverlay').classList.add('active');
+            switchAuth(which);
+            closeMobileNav();
+        }
+        function closeAuth() {
+            document.getElementById('authOverlay').classList.remove('active');
+            hideAuthAlert('login'); hideAuthAlert('reg');
+        }
+        function switchAuth(which) {
+            const isLogin = which === 'login';
+            document.getElementById('loginBox').style.display = isLogin ? 'block' : 'none';
+            document.getElementById('registerBox').style.display = isLogin ? 'none' : 'block';
+            hideAuthAlert('login'); hideAuthAlert('reg');
+        }
+
+        async function doLogin(e) {
+            e.preventDefault();
+            hideAuthAlert('login');
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            const btn = document.getElementById('loginBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Signing in…';
+
+            try {
+                const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                showAuthAlert('login', 'success', '✅ Signed in!');
+                setTimeout(() => closeAuth(), 700);
+            } catch (err) {
+                showAuthAlert('login', 'error', err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+            }
+            return false;
+        }
+
+        async function doRegister(e) {
+            e.preventDefault();
+            hideAuthAlert('reg');
+            const username = document.getElementById('regUsername').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirm = document.getElementById('regConfirm').value;
+
+            if (password !== confirm) {
+                return showAuthAlert('reg', 'error', 'Passwords do not match');
+            }
+
+            const btn = document.getElementById('registerBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Creating…';
+
+            try {
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email,
+                    password,
+                    options: { data: { username } }
+                });
+                if (error) throw error;
+
+                // Optionally insert into profiles table
+                if (data.user) {
+                    await supabaseClient.from('profiles').upsert({
+                        id: data.user.id,
+                        username,
+                        email,
+                        balance: 0
+                    });
+                }
+
+                showAuthAlert('reg', 'success', '🎉 Account created! Check your email to confirm.');
+                setTimeout(() => closeAuth(), 2000);
+            } catch (err) {
+                showAuthAlert('reg', 'error', err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Free Account';
+            }
+            return false;
+        }
+
+        async function logout() {
+            try {
+                await supabaseClient.auth.signOut();
+                showToast('Logged out', 'success');
+                showLoggedOutUI();
+            } catch (err) {
+                showToast('Logout failed: ' + err.message, 'error');
+            }
+        }
+
+        /* ==========================================================
+           NAV HELPERS
+           ========================================================== */
+        function toggleMobileNav() {
+            document.getElementById('mobileNav').classList.toggle('active');
+        }
+        function closeMobileNav() {
+            document.getElementById('mobileNav').classList.remove('active');
+        }
+        function toggleLanguageDropdown() {
+            document.getElementById('languageDropdown').classList.toggle('active');
+        }
+
+        function changeLanguage(lang, flag, name, event) {
+            localStorage.setItem('arizona_language', lang);
+            document.getElementById('currentLanguageFlag').textContent = flag;
+            document.getElementById('currentLanguageText').textContent = name;
+            document.getElementById('languageDropdown').classList.remove('active');
+
+            document.querySelectorAll('.language-option').forEach(opt => opt.classList.remove('active'));
+            if (event && event.target) {
+                const opt = event.target.closest('.language-option');
+                if (opt) opt.classList.add('active');
+            }
+            applyLanguage(lang);
+        }
+
+        function applyLanguage(lang) {
+            const t = translations[lang] || translations.en;
+
+            // Update hero heading
+            const heroH1 = document.querySelector('.hero h1');
+            if (heroH1) heroH1.textContent = `🏜️ ${t.welcome}`;
+
+            // Buttons
+            const heroBtns = document.querySelectorAll('.hero-buttons .btn-hero');
+            if (heroBtns.length >= 2) {
+                heroBtns[0].innerHTML = `<i class="fas fa-user-plus"></i> ${t.signup}`;
+                heroBtns[1].innerHTML = `<i class="fas fa-sign-in-alt"></i> ${t.login}`;
+            }
+
+            // Footer
+            const footer = document.querySelector('.footer-bottom p');
+            if (footer) footer.textContent = t.allRightsReserved;
+        }
+
+        /* ==========================================================
+           ALERTS + TOASTS
+           ========================================================== */
+        function showAuthAlert(prefix, type, msg) {
+            hideAuthAlert(prefix);
+            const el = document.getElementById(prefix + (type === 'error' ? 'Error' : 'Success'));
+            if (!el) return;
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+        function hideAuthAlert(prefix) {
+            ['Error', 'Success'].forEach(s => {
+                const el = document.getElementById(prefix + s);
+                if (el) el.style.display = 'none';
+            });
+        }
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, c => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+        }
+    </script>
+</body>
+</html>
