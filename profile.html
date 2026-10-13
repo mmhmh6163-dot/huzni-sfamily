@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Profile — Arizona AI</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+
+<style>
+/* ==================== PROFILE PAGE ==================== */
+body {
+  background: #0a0a0a;
+  padding-top: 60px;
+  padding-bottom: 70px;
+}
+
+/* ---- TOP BAR ---- */
+.ig-topbar {
+  position: fixed; top: 0; left: 0; right: 0; height: 60px;
+  background: rgba(10,10,10,0.97);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,107,53,0.25);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px; z-index: 1000;
+  max-width: 640px; margin: 0 auto;
+}
+.ig-topbar .brand {
+  font-size: 20px; font-weight: 800;
+  display: flex; align-items: center; gap: 8px;
+  text-decoration: none; color: inherit;
+}
+.ig-topbar .brand i { color: var(--az-accent); font-size: 22px; }
+.ig-topbar .brand span {
+  background: var(--az-gradient);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.ig-topbar .actions { display: flex; align-items: center; gap: 4px; }
+.ig-icon-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: transparent; border: none; color: var(--az-text);
+  font-size: 19px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  text-decoration: none;
+}
+
+/* ---- PROFILE HEADER ---- */
+.profile-header {
+  max-width: 640px; margin: 0 auto;
+  padding: 24px 20px 20px;
+}
+.profile-top {
+  display: flex; align-items: center; gap: 24px;
+  margin-bottom: 20px;
+}
+.profile-avatar-wrap { position: relative; }
+.profile-avatar {
+  width: 88px; height: 88px; border-radius: 50%;
+  background: var(--az-gradient);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 34px; font-weight: 800; color: #fff;
+  border: 3px solid #0a0a0a;
+  box-shadow: 0 0 0 3px var(--az-primary);
+  overflow: hidden;
+}
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.profile-avatar-wrap .verified-badge {
+  position: absolute; bottom: 4px; right: 4px;
+  background: #3b82f6; color: #fff;
+  width: 24px; height: 24px; border-radius: 50%;
+  display: none; align-items: center; justify-content: center;
+  font-size: 12px; border: 2px solid #0a0a0a;
+}
+.profile-avatar-wrap .verified-badge.show { display: flex; }
+
+.profile-stats {
+  flex: 1; display: flex; justify-content: space-around;
+  text-align: center;
+}
+.profile-stats .stat { cursor: pointer; }
+.profile-stats .stat .num {
+  font-size: 18px; font-weight: 800; color: var(--az-text);
+}
+.profile-stats .stat .lbl {
+  font-size: 12px; color: var(--az-text-secondary); margin-top: 2px;
+}
+
+.profile-name { padding: 0 20px 16px; max-width: 640px; margin: 0 auto; }
+.profile-name h1 {
+  font-size: 17px; font-weight: 700; color: var(--az-text);
+  display: flex; align-items: center; gap: 6px;
+}
+.profile-name h1 .verified { color: #3b82f6; font-size: 14px; }
+.profile-name .bio {
+  margin-top: 6px; font-size: 14px; line-height: 1.5;
+  color: var(--az-text); white-space: pre-wrap;
+}
+.profile-name .meta {
+  margin-top: 8px; font-size: 13px; color: var(--az-text-secondary);
+  display: flex; flex-wrap: wrap; gap: 12px;
+}
+.profile-name .meta span { display: flex; align-items: center; gap: 5px; }
+.profile-name .meta i { font-size: 12px; }
+.profile-name .meta a { color: var(--az-accent); text-decoration: none; }
+
+/* ---- WALLET CARD ---- */
+.wallet-card {
+  max-width: 640px; margin: 0 auto 20px;
+  background: linear-gradient(135deg, rgba(255,107,53,0.15), rgba(255,178,15,0.08));
+  border: 1px solid rgba(255,107,53,0.35);
+  border-radius: 16px; padding: 18px;
+  margin-left: 20px; margin-right: 20px;
+}
+.wallet-card .label {
+  font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--az-text-secondary); margin-bottom: 6px;
+}
+.wallet-card .balance {
+  font-size: 34px; font-weight: 800; color: var(--az-accent);
+  line-height: 1;
+}
+.wallet-card .row {
+  display: flex; gap: 20px; margin-top: 14px;
+  padding-top: 14px; border-top: 1px solid rgba(255,107,53,0.25);
+}
+.wallet-card .row .col { flex: 1; }
+.wallet-card .row .col .n {
+  font-size: 15px; font-weight: 700; color: var(--az-text);
+}
+.wallet-card .row .col .l {
+  font-size: 11px; color: var(--az-text-secondary);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.wallet-card .actions {
+  display: flex; gap: 10px; margin-top: 16px;
+}
+.wallet-card .actions a {
+  flex: 1; text-align: center;
+  padding: 11px; border-radius: 10px;
+  text-decoration: none; font-weight: 600; font-size: 13px;
+  border: 1px solid rgba(255,178,15,0.4);
+  color: var(--az-accent);
+}
+.wallet-card .actions a.primary {
+  background: var(--az-gradient); color: #fff; border: none;
+}
+
+/* ---- ACTION BUTTONS ---- */
+.profile-actions {
+  max-width: 640px; margin: 0 auto 20px;
+  padding: 0 20px;
+  display: flex; gap: 10px;
+}
+.profile-actions button, .profile-actions a {
+  flex: 1; padding: 10px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  color: var(--az-text); font-size: 13px; font-weight: 600;
+  cursor: pointer; text-decoration: none;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.profile-actions button:hover, .profile-actions a:hover {
+  background: rgba(255,107,53,0.15);
+  border-color: var(--az-primary);
+}
+
+/* ---- TABS ---- */
+.profile-tabs {
+  max-width: 640px; margin: 0 auto;
+  display: flex; border-top: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.profile-tabs .tab {
+  flex: 1; padding: 14px 0;
+  background: none; border: none; cursor: pointer;
+  color: var(--az-text-secondary);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s;
+}
+.profile-tabs .tab.active {
+  color: var(--az-text);
+  border-bottom-color: var(--az-text);
+}
+
+/* ---- POSTS GRID ---- */
+.profile-grid {
+  max-width: 640px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  padding: 2px 0;
+}
+.grid-item {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background: #111;
+  overflow: hidden;
+  cursor: pointer;
+}
+.grid-item img,
+.grid-item video {
+  width: 100%; height: 100%; object-fit: cover;
+  display: block;
+}
+.grid-item .no-media {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+  color: rgba(255,255,255,0.35); font-size: 13px;
+  text-align: center; padding: 12px;
+  line-height: 1.4; word-break: break-word;
+}
+.grid-item .overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: none; align-items: center; justify-content: center;
+  gap: 14px; color: #fff; font-weight: 700; font-size: 13px;
+}
+.grid-item:hover .overlay { display: flex; }
+.grid-item .overlay span { display: flex; align-items: center; gap: 5px; }
+
+/* ---- EMPTY ---- */
+.profile-empty {
+  max-width: 640px; margin: 0 auto;
+  padding: 60px 20px; text-align: center;
+  color: var(--az-text-secondary);
+}
+.profile-empty i {
+  font-size: 48px; color: var(--az-primary);
+  opacity: 0.4; margin-bottom: 16px; display: block;
+}
+.profile-empty h3 { color: var(--az-text); font-size: 16px; margin-bottom: 6px; }
+
+/* ---- EDIT MODAL ---- */
+.modal-backdrop {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.85); z-index: 2000;
+  align-items: flex-end; justify-content: center;
+}
+.modal-backdrop.active { display: flex; }
+.modal-content {
+  background: #151515; width: 100%; max-width: 640px;
+  border-top-left-radius: 20px; border-top-right-radius: 20px;
+  padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  max-height: 90vh; overflow-y: auto;
+}
+.modal-content h3 {
+  text-align: center; color: var(--az-accent); margin-bottom: 18px;
+}
+.modal-content .field { margin-bottom: 14px; }
+.modal-content label {
+  display: block; font-size: 12px; color: var(--az-text-secondary);
+  margin-bottom: 6px;
+}
+.modal-content input, .modal-content textarea {
+  width: 100%; padding: 12px 14px;
+  background: #0a0a0a; border: 1px solid #333;
+  border-radius: 10px; color: #fff; font-size: 14px;
+  font-family: inherit;
+}
+.modal-content textarea { min-height: 90px; resize: vertical; }
+.modal-content input:focus, .modal-content textarea:focus {
+  outline: none; border-color: var(--az-primary);
+}
+.modal-actions {
+  display: flex; gap: 10px; margin-top: 16px;
+}
+.modal-actions button {
+  flex: 1; padding: 13px; border-radius: 12px;
+  font-weight: 700; cursor: pointer; font-size: 14px;
+}
+.modal-actions .cancel {
+  background: transparent; border: 1px solid #333; color: #fff;
+}
+.modal-actions .primary {
+  background: var(--az-gradient); border: none; color: #fff;
+}
+.modal-actions button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ---- BOTTOM NAV ---- */
+.ig-bottom-nav {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 640px;
+  background: rgba(10,10,10,0.98);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255,107,53,0.25);
+  display: flex; justify-content: space-around; align-items: center;
+  padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+  z-index: 1000;
+}
+.ig-bottom-nav .bnav-item {
+  background: none; border: none; color: var(--az-text-secondary);
+  display: flex; flex-direction: column; align-items: center;
+  gap: 3px; cursor: pointer; padding: 4px 12px;
+  font-size: 10px; text-decoration: none;
+}
+.ig-bottom-nav .bnav-item i { font-size: 22px; }
+.ig-bottom-nav .bnav-item.active { color: var(--az-text); }
+.ig-bottom-nav .bnav-item.create {
+  color: #fff; background: var(--az-gradient);
+  width: 44px; height: 44px; border-radius: 12px;
+  padding: 0; justify-content: center;
+}
+.ig-bottom-nav .bnav-item.create i { font-size: 20px; }
+.ig-bottom-nav .bnav-avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--az-gradient);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: #fff; font-size: 11px;
+  border: 2px solid var(--az-text);
+}
+
+/* ---- AUTH REQUIRED (logged out) ---- */
+.auth-wall {
+  max-width: 440px; margin: 60px auto;
+  padding: 32px 24px; text-align: center;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,107,53,0.25);
+  border-radius: 20px;
+}
+.auth-wall i { font-size: 48px; color: var(--az-primary); margin-bottom: 14px; }
+.auth-wall h2 { margin-bottom: 8px; color: var(--az-text); }
+.auth-wall p { color: var(--az-text-secondary); font-size: 14px; margin-bottom: 20px; }
+.auth-wall a {
+  display: block; padding: 13px; border-radius: 12px;
+  text-decoration: none; font-weight: 700; margin-bottom: 10px;
+}
+.auth-wall a.primary {
+  background: var(--az-gradient); color: #fff;
+}
+.auth-wall a.outline {
+  border: 1px solid var(--az-primary); color: var(--az-primary);
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
+
+<!-- ============ TOP BAR ============ -->
+<header class="ig-topbar" id="igTopbar" style="display:none;">
+  <a href="index.html" class="ig-icon-btn"><i class="fas fa-arrow-left"></i></a>
+  <span style="font-size:16px; font-weight:700; color:var(--az-text);" id="topbarTitle">Profile</span>
+  <a href="logout.html" class="ig-icon-btn" title="Logout">
+    <i class="fas fa-sign-out-alt"></i>
+  </a>
+</header>
+
+<!-- ============ NOT LOGGED IN ============ -->
+<div id="authWall" style="display:none;">
+  <div class="auth-wall">
+    <i class="fas fa-lock"></i>
+    <h2>Sign in to view your profile</h2>
+    <p>Please log in to see your posts, balance, and account settings.</p>
+    <a href="login.html" class="primary">Sign In</a>
+    <a href="register.html" class="outline">Create Account</a>
+  </div>
+</div>
+
+<!-- ============ PROFILE CONTENT ============ -->
+<div id="profileContent" style="display:none;">
+
+  <!-- Header -->
+  <div class="profile-header">
+    <div class="profile-top">
+      <div class="profile-avatar-wrap">
+        <div class="profile-avatar" id="avatar">U</div>
+        <div class="verified-badge" id="verifiedBadge">
+          <i class="fas fa-check"></i>
+        </div>
+      </div>
+      <div class="profile-stats">
+        <div class="stat">
+          <div class="num" id="statPosts">0</div>
+          <div class="lbl">Posts</div>
+        </div>
+        <div class="stat">
+          <div class="num" id="statFollowers">0</div>
+          <div class="lbl">Followers</div>
+        </div>
+        <div class="stat">
+          <div class="num" id="statFollowing">0</div>
+          <div class="lbl">Following</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Name + Bio -->
+  <div class="profile-name">
+    <h1>
+      <span id="displayName">User</span>
+      <i class="fas fa-circle-check verified" id="nameVerified" style="display:none;"></i>
+    </h1>
+    <div class="bio" id="bio">Arizona AI member 🏜️</div>
+    <div class="meta">
+      <span><i class="fas fa-at"></i> <span id="usernameMeta">user</span></span>
+      <span><i class="fas fa-map-marker-alt"></i> <span id="locationMeta">Not set</span></span>
+      <span><i class="fas fa-calendar"></i> Joined <span id="joinedMeta">—</span></span>
+    </div>
+  </div>
+
+  <!-- Wallet card -->
+  <div class="wallet-card">
+    <div class="label"><i class="fas fa-wallet"></i> Your Balance</div>
+    <div class="balance" id="walletBalance">$0.00</div>
+    <div class="row">
+      <div class="col">
+        <div class="n" id="walletEarned">$0.00</div>
+        <div class="l">Total Earned</div>
+      </div>
+      <div class="col">
+        <div class="n" id="walletSpent">$0.00</div>
+        <div class="l">Total Spent</div>
+      </div>
+    </div>
+    <div class="actions">
+      <a href="wallets.html" class="primary"><i class="fas fa-wallet"></i> Wallet</a>
+      <a href="offers.html"><i class="fas fa-gift"></i> Offers</a>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="profile-actions">
+    <button onclick="openEdit()"><i class="fas fa-pen"></i> Edit Profile</button>
+    <a href="Post.html"><i class="fas fa-plus-circle"></i> New Post</a>
+  </div>
+
+  <!-- Tabs -->
+  <div class="profile-tabs">
+    <button class="tab active" onclick="switchTab('posts', this)">
+      <i class="fas fa-th"></i>
+    </button>
+    <button class="tab" onclick="switchTab('reels', this)">
+      <i class="fas fa-video"></i>
+    </button>
+    <button class="tab" onclick="switchTab('tagged', this)">
+      <i class="fas fa-user-tag"></i>
+    </button>
+  </div>
+
+  <!-- Grid -->
+  <div class="profile-grid" id="postsGrid"></div>
+  <div class="profile-empty" id="emptyPosts" style="display:none;">
+    <i class="far fa-newspaper"></i>
+    <h3>No posts yet</h3>
+    <p>When you post, they'll appear here.</p>
+  </div>
+
+</div>
+
+<!-- ============ BOTTOM NAV ============ -->
+<nav class="ig-bottom-nav" id="bottomNav" style="display:none;">
+  <a href="index.html" class="bnav-item">
+    <i class="fas fa-home"></i><span>Home</span>
+  </a>
+  <a href="Friends.html" class="bnav-item">
+    <i class="fas fa-search"></i><span>Search</span>
+  </a>
+  <a href="Post.html" class="bnav-item create">
+    <i class="fas fa-plus"></i>
+  </a>
+  <a href="notifications.html" class="bnav-item">
+    <i class="far fa-heart"></i><span>Activity</span>
+  </a>
+  <a href="profile.html" class="bnav-item active">
+    <div class="bnav-avatar" id="bnavAvatar">U</div>
+    <span>Profile</span>
+  </a>
+</nav>
+
+<!-- ============ EDIT MODAL ============ -->
+<div class="modal-backdrop" id="editModal">
+  <div class="modal-content">
+    <div style="width:40px; height:4px; background:#333; border-radius:2px; margin:0 auto 16px;"></div>
+    <h3>Edit Profile</h3>
+
+    <div class="field">
+      <label>Display Name</label>
+      <input type="text" id="editDisplayName" maxlength="50" placeholder="Your name">
+    </div>
+
+    <div class="field">
+      <label>Username</label>
+      <input type="text" id="editUsername" maxlength="30" placeholder="username">
+    </div>
+
+    <div class="field">
+      <label>Bio</label>
+      <textarea id="editBio" maxlength="200" placeholder="Tell people about you"></textarea>
+    </div>
+
+    <div class="field">
+      <label>Website</label>
+      <input type="text" id="editWebsite" maxlength="100" placeholder="https://example.com">
+    </div>
+
+    <div class="field">
+      <label>Location</label>
+      <input type="text" id="editLocation" maxlength="50" placeholder="City, Country">
+    </div>
+
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeEdit()">Cancel</button>
+      <button class="primary" id="saveBtn" onclick="saveProfile()">
+        <i class="fas fa-check"></i> Save
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SCRIPTS ============ -->
+<script src="auth.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const check = setInterval(() => {
+    if (typeof authReady !== 'undefined' && authReady) {
+      clearInterval(check);
+      initProfile();
+    }
+  }, 100);
+});
+
+let userPosts = [];
+
+async function initProfile() {
+  if (!currentUser) {
+    document.getElementById('authWall').style.display     = 'block';
+    document.getElementById('profileContent').style.display = 'none';
+    document.getElementById('bottomNav').style.display     = 'none';
+    document.getElementById('igTopbar').style.display      = 'none';
+    return;
+  }
+
+  document.getElementById('authWall').style.display        = 'none';
+  document.getElementById('profileContent').style.display  = 'block';
+  document.getElementById('bottomNav').style.display       = 'flex';
+  document.getElementById('igTopbar').style.display        = 'flex';
+
+  fillProfile();
+  await loadUserPosts();
+}
+
+function fillProfile() {
+  const p = currentProfile || {};
+  const w = currentWallet  || {};
+
+  const name     = p.username || currentUser.email?.split('@')[0] || 'User';
+  const display  = p.display_name || name;
+  const initial  = name.charAt(0).toUpperCase();
+  const joined   = p.created_at ? new Date(p.created_at).toLocaleDateString('en-US', { month:'short', year:'numeric' }) : '—';
+
+  document.getElementById('avatar').textContent         = initial;
+  document.getElementById('bnavAvatar').textContent     = initial;
+  document.getElementById('displayName').textContent    = display;
+  document.getElementById('usernameMeta').textContent   = name;
+  document.getElementById('bio').textContent            = p.bio || 'Arizona AI member 🏜️';
+  document.getElementById('locationMeta').textContent   = p.location || 'Not set';
+  document.getElementById('joinedMeta').textContent     = joined;
+
+  document.getElementById('statPosts').textContent      = p.posts_count     ?? 0;
+  document.getElementById('statFollowers').textContent  = p.followers_count ?? 0;
+  document.getElementById('statFollowing').textContent  = p.following_count ?? 0;
+
+  document.getElementById('walletBalance').textContent = '$' + Number(w.balance ?? 0).toFixed(2);
+  document.getElementById('walletEarned').textContent  = '$' + Number(w.total_earned ?? 0).toFixed(2);
+  document.getElementById('walletSpent').textContent   = '$' + Number(w.total_spent ?? 0).toFixed(2);
+
+  if (p.is_verified) {
+    document.getElementById('verifiedBadge').classList.add('show');
+    document.getElementById('nameVerified').style.display = 'inline';
+  }
+}
+
+async function loadUserPosts() {
+  const grid  = document.getElementById('postsGrid');
+  const empty = document.getElementById('emptyPosts');
+
+  grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#666;"><i class="fas fa-circle-notch fa-spin"></i></div>';
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('posts')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    userPosts = data || [];
+
+    if (userPosts.length === 0) {
+      grid.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+
+    empty.style.display = 'none';
+    grid.innerHTML = userPosts.map(post => renderGridItem(post)).join('');
+
+  } catch (err) {
+    console.error(err);
+    grid.innerHTML = `<div style="grid-column:1/-1; padding:24px; text-align:center; color:#ff7675;">Error loading posts</div>`;
+  }
+}
+
+function renderGridItem(post) {
+  const mediaUrls = Array.isArray(post.media_urls) ? post.media_urls : [];
+  const first     = mediaUrls[0];
+
+  let mediaHtml;
+  if (first) {
+    if (/\.(mp4|webm|ogg|mov)$/i.test(first)) {
+      mediaHtml = `<video src="${escapeHtml(first)}" muted></video>`;
+    } else {
+      mediaHtml = `<img src="${escapeHtml(first)}" alt="" loading="lazy">`;
+    }
+  } else {
+    // Text-only post → show excerpt
+    const excerpt = (post.content || '').slice(0, 80) || 'Post';
+    mediaHtml = `<div class="no-media">${escapeHtml(excerpt)}</div>`;
+  }
+
+  return `
+    <div class="grid-item" onclick="openPostView('${post.id}')">
+      ${mediaHtml}
+      <div class="overlay">
+        <span><i class="fas fa-heart"></i> ${post.likes_count || 0}</span>
+        <span><i class="fas fa-comment"></i> ${post.comments_count || 0}</span>
+      </div>
+    </div>
+  `;
+}
+
+function openPostView(postId) {
+  // For now, just go back to index with a future post-view feature
+  window.location.href = 'index.html';
+}
+
+function switchTab(name, el) {
+  document.querySelectorAll('.profile-tabs .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+
+  const grid  = document.getElementById('postsGrid');
+  const empty = document.getElementById('emptyPosts');
+
+  if (name === 'posts') {
+    grid.style.display = 'grid';
+    if (userPosts.length === 0) empty.style.display = 'block';
+  } else if (name === 'reels') {
+    grid.innerHTML = '';
+    grid.style.display = 'none';
+    empty.style.display = 'block';
+    empty.innerHTML = '<i class="fas fa-video"></i><h3>No reels yet</h3><p>Reels coming soon</p>';
+  } else {
+    grid.innerHTML = '';
+    grid.style.display = 'none';
+    empty.style.display = 'block';
+    empty.innerHTML = '<i class="fas fa-user-tag"></i><h3>No tags yet</h3><p>Posts you are tagged in will appear here</p>';
+  }
+}
+
+/* ==================== EDIT MODAL ==================== */
+function openEdit() {
+  const p = currentProfile || {};
+  document.getElementById('editDisplayName').value = p.display_name || p.username || '';
+  document.getElementById('editUsername').value    = p.username     || '';
+  document.getElementById('editBio').value         = p.bio          || '';
+  document.getElementById('editWebsite').value     = p.website      || '';
+  document.getElementById('editLocation').value    = p.location     || '';
+  document.getElementById('editModal').classList.add('active');
+}
+function closeEdit() {
+  document.getElementById('editModal').classList.remove('active');
+}
+
+async function saveProfile() {
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Saving…';
+
+  const display_name = document.getElementById('editDisplayName').value.trim();
+  const username     = document.getElementById('editUsername').value.trim();
+  const bio          = document.getElementById('editBio').value.trim();
+  const website      = document.getElementById('editWebsite').value.trim();
+  const location     = document.getElementById('editLocation').value.trim();
+
+  if (username.length < 3) {
+    showToast('Username must be at least 3 characters', 'error');
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-check"></i> Save';
+    return;
+  }
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+    showToast('Username can only contain letters, numbers, and _', 'error');
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-check"></i> Save';
+    return;
+  }
+
+  try {
+    // Check if username is taken by another user
+    const { data: existing } = await supabaseClient
+      .from('profiles')
+      .select('id')
+      .eq('username', username)
+      .neq('id', currentUser.id)
+      .maybeSingle();
+
+    if (existing) {
+      showToast('That username is already taken', 'error');
+      btn.disabled = false; btn.innerHTML = '<i class="fas fa-check"></i> Save';
+      return;
+    }
+
+    const { error } = await supabaseClient
+      .from('profiles')
+      .update({ display_name, username, bio, website, location })
+      .eq('id', currentUser.id);
+
+    if (error) throw error;
+
+    // Refresh profile data
+    currentProfile = {
+      ...(currentProfile || {}),
+      display_name, username, bio, website, location
+    };
+
+    fillProfile();
+    closeEdit();
+    showToast('Profile updated ✅', 'success');
+
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-check"></i> Save';
+  }
+}
+</script>
+</body>
+</html>
