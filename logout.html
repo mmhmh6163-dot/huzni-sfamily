@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signing Out — Arizona AI</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app-header"></div>
+
+<main>
+  <div class="form-card" style="text-align:center;">
+    <div id="logoutIcon" style="font-size:56px; color:var(--az-primary); margin-bottom:20px;">
+      <i class="fas fa-circle-notch fa-spin"></i>
+    </div>
+
+    <h2 id="logoutTitle">Signing You Out…</h2>
+    <p class="form-sub" id="logoutMessage">Please wait a moment.</p>
+
+    <div id="logoutActions" style="display:none; margin-top:20px;">
+      <a href="login.html" class="btn-primary-full" style="text-decoration:none;">
+        <i class="fas fa-sign-in-alt"></i> Sign In Again
+      </a>
+      <a href="index.html"
+         style="display:block; text-align:center; margin-top:14px; color:var(--az-text-secondary); text-decoration:none; font-size:14px;">
+        <i class="fas fa-home"></i> Back to Home
+      </a>
+    </div>
+  </div>
+</main>
+
+<div id="app-footer"></div>
+
+<script src="auth.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      // Small delay so the header renders first
+      await new Promise(r => setTimeout(r, 300));
+
+      // Sign out
+      await supabaseClient.auth.signOut();
+
+      // Clear cached language
+      localStorage.removeItem('az_lang');
+
+      // Update UI
+      document.getElementById('logoutIcon').innerHTML =
+        '<i class="fas fa-check-circle" style="color:var(--az-success);"></i>';
+      document.getElementById('logoutTitle').textContent = 'Signed Out';
+      document.getElementById('logoutMessage').textContent =
+        'You have been successfully logged out. Thanks for using Arizona AI!';
+
+      // Show buttons
+      document.getElementById('logoutActions').style.display = 'block';
+
+      // Auto-redirect to index after 4 seconds
+      setTimeout(() => { window.location.href = 'index.html'; }, 4000);
+
+    } catch (err) {
+      document.getElementById('logoutIcon').innerHTML =
+        '<i class="fas fa-exclamation-triangle" style="color:var(--az-danger);"></i>';
+      document.getElementById('logoutTitle').textContent = 'Logout Failed';
+      document.getElementById('logoutMessage').textContent = err.message || 'Something went wrong.';
+      document.getElementById('logoutActions').style.display = 'block';
+    }
+  });
+</script>
+</body>
+</html>
