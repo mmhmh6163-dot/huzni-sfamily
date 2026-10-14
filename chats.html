@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Messages — Arizona AI</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+
+<style>
+body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; overflow:hidden; }
+
+/* ==================== TOP BAR ==================== */
+.topbar {
+  position:fixed; top:0; left:0; right:0; height:60px;
+  background:rgba(10,10,10,.97); backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,107,53,.25);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 16px; z-index:1000; max-width:640px; margin:0 auto;
+}
+.topbar .back, .topbar .icon-btn {
+  color:var(--az-text); font-size:19px;
+  width:40px; height:40px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%; text-decoration:none; cursor:pointer;
+}
+.topbar .back:hover, .topbar .icon-btn:hover { background:rgba(255,255,255,.06); }
+.topbar .title { font-size:16px; font-weight:700; color:var(--az-text); }
+
+/* ==================== SEARCH BAR ==================== */
+.search-bar {
+  max-width:640px; margin:16px auto 8px;
+  padding:0 16px;
+}
+.search-bar .wrap {
+  display:flex; align-items:center; gap:10px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:12px; padding:12px 14px;
+}
+.search-bar i { color:var(--az-text-secondary); }
+.search-bar input {
+  flex:1; background:transparent; border:none;
+  color:var(--az-text); font-size:15px;
+  font-family:inherit;
+}
+.search-bar input:focus { outline:none; }
+.search-bar input::placeholder { color:var(--az-text-secondary); }
+
+/* ==================== TABS ==================== */
+.msg-tabs {
+  max-width:640px; margin:0 auto;
+  padding:8px 16px;
+  display:flex; gap:8px;
+}
+.msg-tabs .tab {
+  flex:1; padding:10px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;
+  color:var(--az-text-secondary);
+  font-size:13px; font-weight:600;
+  cursor:pointer; position:relative;
+}
+.msg-tabs .tab.active {
+  background:rgba(255,107,53,.15);
+  border-color:var(--az-primary);
+  color:var(--az-accent);
+}
+.msg-tabs .tab .badge {
+  position:absolute; top:-4px; right:-4px;
+  background:var(--az-primary); color:#fff;
+  font-size:9px; font-weight:800;
+  padding:2px 6px; border-radius:10px;
+  min-width:16px; display:none;
+}
+.msg-tabs .tab .badge.show { display:inline-block; }
+
+/* ==================== LIST AREA ==================== */
+.msg-list-wrap {
+  max-width:640px; margin:0 auto;
+  padding:0 16px;
+  height: calc(100vh - 200px);
+  overflow-y: auto;
+  padding-bottom:100px;
+}
+.msg-list-wrap::-webkit-scrollbar { width:4px; }
+.msg-list-wrap::-webkit-scrollbar-thumb { background:#333; border-radius:2px; }
+
+.chat-row {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 8px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  cursor:pointer;
+  border-radius:10px;
+  transition:background .2s;
+}
+.chat-row:hover { background:rgba(255,107,53,.06); }
+.chat-row .av {
+  width:52px; height:52px; border-radius:50%;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:#fff; font-size:20px;
+  flex-shrink:0; overflow:hidden;
+  position:relative;
+}
+.chat-row .av img { width:100%; height:100%; object-fit:cover; }
+.chat-row .av .online-dot {
+  position:absolute; bottom:2px; right:2px;
+  width:12px; height:12px; border-radius:50%;
+  background:#00b894; border:2px solid #0a0a0a;
+  display:none;
+}
+.chat-row .av .online-dot.show { display:block; }
+.chat-row .info { flex:1; min-width:0; }
+.chat-row .info .name {
+  font-size:14px; font-weight:700; color:var(--az-text);
+  display:flex; align-items:center; gap:5px;
+}
+.chat-row .info .name .v { color:#3b82f6; font-size:11px; }
+.chat-row .info .preview {
+  font-size:13px; color:var(--az-text-secondary);
+  margin-top:2px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.chat-row .info .preview.unread {
+  color:var(--az-text); font-weight:600;
+}
+.chat-row .meta {
+  text-align:right; font-size:11px;
+  color:var(--az-text-secondary);
+  flex-shrink:0;
+}
+.chat-row .meta .unread-dot {
+  display:inline-block;
+  background:var(--az-primary); color:#fff;
+  border-radius:10px; padding:2px 7px;
+  font-weight:700; font-size:10px;
+  margin-top:6px;
+}
+
+/* ==================== EMPTY ==================== */
+.empty {
+  text-align:center; padding:60px 20px;
+  color:var(--az-text-secondary);
+}
+.empty i { font-size:52px; color:var(--az-primary); opacity:.4; margin-bottom:14px; display:block; }
+.empty h3 { color:var(--az-text); font-size:16px; margin-bottom:6px; }
+.empty p { font-size:13px; margin-bottom:16px; }
+.empty a {
+  display:inline-block; padding:11px 24px; border-radius:20px;
+  background:var(--az-gradient); color:#fff;
+  text-decoration:none; font-weight:700; font-size:13px;
+}
+
+/* ==================== CHAT VIEW ==================== */
+.chat-view {
+  position:fixed; inset:0;
+  background:#0a0a0a;
+  z-index:1500;
+  display:none; flex-direction:column;
+  max-width:640px; margin:0 auto;
+}
+.chat-view.active { display:flex; }
+.chat-view-header {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  background:rgba(10,10,10,.98);
+  height:60px;
+}
+.chat-view-header .back {
+  color:var(--az-text); font-size:20px;
+  width:40px; height:40px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%; cursor:pointer; background:none; border:none;
+}
+.chat-view-header .av {
+  width:40px; height:40px; border-radius:50%;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:#fff; font-size:16px;
+  overflow:hidden;
+}
+.chat-view-header .av img { width:100%; height:100%; object-fit:cover; }
+.chat-view-header .info { flex:1; }
+.chat-view-header .info .name {
+  font-size:14px; font-weight:700; color:var(--az-text);
+}
+.chat-view-header .info .status {
+  font-size:11px; color:var(--az-text-secondary);
+}
+
+.chat-messages {
+  flex:1; overflow-y:auto;
+  padding:16px;
+  display:flex; flex-direction:column; gap:8px;
+}
+.chat-messages::-webkit-scrollbar { width:4px; }
+.chat-messages::-webkit-scrollbar-thumb { background:#333; border-radius:2px; }
+
+.bubble {
+  max-width:75%;
+  padding:10px 14px;
+  border-radius:18px;
+  font-size:14px; line-height:1.45;
+  word-wrap:break-word;
+  animation:bubbleIn .2s ease;
+}
+@keyframes bubbleIn { from { opacity:0; transform:translateY(6px); } }
+.bubble.me {
+  background:var(--az-gradient);
+  color:#fff;
+  align-self:flex-end;
+  border-bottom-right-radius:4px;
+}
+.bubble.them {
+  background:rgba(255,255,255,.08);
+  color:var(--az-text);
+  align-self:flex-start;
+  border-bottom-left-radius:4px;
+}
+.bubble .time {
+  display:block;
+  font-size:10px;
+  opacity:.7;
+  margin-top:4px;
+}
+
+.chat-input-wrap {
+  display:flex; gap:10px;
+  padding:12px 16px;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom));
+  border-top:1px solid rgba(255,255,255,.08);
+  background:rgba(10,10,10,.98);
+}
+.chat-input-wrap input {
+  flex:1;
+  padding:12px 16px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:24px;
+  color:var(--az-text); font-size:14px;
+  font-family:inherit;
+}
+.chat-input-wrap input:focus { outline:none; border-color:var(--az-primary); }
+.chat-input-wrap button {
+  width:44px; height:44px; border-radius:50%;
+  background:var(--az-gradient); color:#fff;
+  border:none; font-size:16px;
+  cursor:pointer; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+}
+.chat-input-wrap button:disabled { opacity:.5; cursor:not-allowed; }
+</style>
+</head>
+<body>
+
+<div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
+
+<!-- ==================== TOP BAR ==================== -->
+<header class="topbar" id="mainTopbar">
+  <a href="index.html" class="back"><i class="fas fa-arrow-left"></i></a>
+  <span class="title">Messages</span>
+  <a href="Friends.html" class="icon-btn"><i class="fas fa-user-plus"></i></a>
+</header>
+
+<!-- ==================== SEARCH ==================== -->
+<div class="search-bar">
+  <div class="wrap">
+    <i class="fas fa-search"></i>
+    <input type="text" id="searchInput" placeholder="Search messages…" oninput="filterChats()">
+  </div>
+</div>
+
+<!-- ==================== TABS ==================== -->
+<div class="msg-tabs">
+  <button class="tab active" data-tab="chats" onclick="switchTab('chats', this)">
+    <i class="fas fa-comments"></i> Chats
+  </button>
+  <button class="tab" data-tab="requests" onclick="switchTab('requests', this)">
+    <i class="fas fa-user-clock"></i> Requests
+    <span class="badge" id="reqBadge">0</span>
+  </button>
+</div>
+
+<!-- ==================== LIST ==================== -->
+<div class="msg-list-wrap" id="listWrap">
+  <div class="empty"><i class="fas fa-circle-notch fa-spin"></i>Loading…</div>
+</div>
+
+<!-- ==================== CHAT VIEW ==================== -->
+<div class="chat-view" id="chatView">
+  <div class="chat-view-header">
+    <button class="back" onclick="closeChat()"><i class="fas fa-arrow-left"></i></button>
+    <div class="av" id="cvAvatar">U</div>
+    <div class="info">
+      <div class="name" id="cvName">User</div>
+      <div class="status" id="cvStatus">Tap to view profile</div>
+    </div>
+    <a href="#" class="back" onclick="event.preventDefault();viewProfile()" title="View Profile">
+      <i class="fas fa-info-circle"></i>
+    </a>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-input-wrap">
+    <input type="text" id="chatInput" placeholder="Message…" maxlength="2000"
+           onkeydown="if(event.key==='Enter') sendMessage()">
+    <button id="sendBtn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script>
+let currentTab = 'chats';
+let conversations = [];
+let requests = [];
+let activePartner = null;
+let searchQuery = '';
+let realtimeChannel = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const check = setInterval(() => {
+    if (typeof authReady !== 'undefined' && authReady) {
+      clearInterval(check);
+      init();
+    }
+  }, 100);
+});
+
+async function init() {
+  if (!currentUser) {
+    document.getElementById('listWrap').innerHTML = `
+      <div class="empty">
+        <i class="fas fa-comments"></i>
+        <h3>Sign in to see messages</h3>
+        <p>Chat with friends on Arizona AI.</p>
+        <a href="login.html">Sign In</a>
+      </div>`;
+    return;
+  }
+  await loadChats();
+  await loadRequests();
+  updateReqBadge();
+  setupRealtime();
+}
+
+/* ==================== TABS ==================== */
+function switchTab(tab, el) {
+  currentTab = tab;
+  document.querySelectorAll('.msg-tabs .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderList();
+}
+function updateReqBadge() {
+  const pending = requests.filter(r => r.status === 'pending').length;
+  const badge = document.getElementById('reqBadge');
+  badge.textContent = pending;
+  badge.classList.toggle('show', pending > 0);
+}
+
+/* ==================== LOAD CHATS ==================== */
+async function loadChats() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('messages')
+      .select(`
+        id, content, created_at, is_read, sender_id, receiver_id,
+        sender:profiles!messages_sender_id_fkey(id, username, display_name, avatar_url, is_verified),
+        receiver:profiles!messages_receiver_id_fkey(id, username, display_name, avatar_url, is_verified)
+      `)
+      .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+      .order('created_at', { ascending: false })
+      .limit(200);
+
+    if (error) throw error;
+
+    // Group by partner — keep latest message + unread count
+    const map = new Map();
+    (data || []).forEach(m => {
+      const partnerId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
+      const partner   = m.sender_id === currentUser.id ? m.receiver : m.sender;
+      if (!partner) return;
+
+      if (!map.has(partnerId)) {
+        map.set(partnerId, { partner, lastMessage: m, unread: 0 });
+      }
+      const entry = map.get(partnerId);
+      if (!m.is_read && m.receiver_id === currentUser.id) entry.unread++;
+      if (new Date(m.created_at) > new Date(entry.lastMessage.created_at)) {
+        entry.lastMessage = m;
+      }
+    });
+
+    conversations = Array.from(map.values());
+    conversations.sort((a, b) =>
+      new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at)
+    );
+  } catch (err) {
+    console.error(err);
+    conversations = [];
+  }
+}
+
+/* ==================== LOAD REQUESTS ==================== */
+async function loadRequests() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('follow_requests')
+      .select(`
+        id, status, created_at, requester_id, target_id,
+        requester:profiles!follow_requests_requester_id_fkey(id, username, display_name, avatar_url, is_verified, is_private)
+      `)
+      .eq('target_id', currentUser.id)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    requests = data || [];
+  } catch (err) {
+    console.error(err);
+    requests = [];
+  }
+}
+
+/* ==================== RENDER ==================== */
+function renderList() {
+  const wrap = document.getElementById('listWrap');
+  if (currentTab === 'chats') renderChats(wrap);
+  else renderRequests(wrap);
+}
+
+function renderChats(wrap) {
+  if (conversations.length === 0) {
+    wrap.innerHTML = `
+      <div class="empty">
+        <i class="fas fa-comments"></i>
+        <h3>No messages yet</h3>
+        <p>Find friends to start chatting.</p>
+        <a href="Friends.html">Find Friends</a>
+      </div>`;
+    return;
+  }
+
+  const filtered = conversations.filter(c => {
+    if (!searchQuery) return true;
+    const name = (c.partner.display_name || c.partner.username || '').toLowerCase();
+    return name.includes(searchQuery.toLowerCase());
+  });
+
+  if (filtered.length === 0) {
+    wrap.innerHTML = `<div class="empty"><i class="fas fa-search"></i><h3>No matches</h3></div>`;
+    return;
+  }
+
+  wrap.innerHTML = filtered.map(c => {
+    const p = c.partner;
+    const name = p.display_name || p.username || 'user';
+    const initial = name.charAt(0).toUpperCase();
+    const verified = p.is_verified ? '<i class="fas fa-circle-check v"></i>' : '';
+    const avatar = p.avatar_url ? `<img src="${escapeHtml(p.avatar_url)}" alt="">` : initial;
+    const preview = (c.lastMessage.sender_id === currentUser.id ? 'You: ' : '') + (c.lastMessage.content || '📎');
+    const time = formatTimeAgo(c.lastMessage.created_at);
+    const unread = c.unread > 0 ? `<div class="unread-dot">${c.unread}</div>` : '';
+
+    return `
+      <div class="chat-row" onclick="openChat('${p.id}')">
+        <div class="av">${avatar}</div>
+        <div class="info">
+          <div class="name">${escapeHtml(name)} ${verified}</div>
+          <div class="preview ${c.unread > 0 ? 'unread' : ''}">${escapeHtml(preview).slice(0, 60)}</div>
+        </div>
+        <div class="meta">
+          <div>${time}</div>
+          ${unread}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderRequests(wrap) {
+  if (requests.length === 0) {
+    wrap.innerHTML = `
+      <div class="empty">
+        <i class="fas fa-user-check"></i>
+        <h3>No requests</h3>
+        <p>Follow requests will appear here.</p>
+      </div>`;
+    return;
+  }
+
+  wrap.innerHTML = requests.map(r => {
+    const p = r.requester;
+    const name = p.display_name || p.username || 'user';
+    const initial = name.charAt(0).toUpperCase();
+    const avatar = p.avatar_url ? `<img src="${escapeHtml(p.avatar_url)}" alt="">` : initial;
+
+    if (r.status === 'pending') {
+      return `
+        <div class="chat-row" style="cursor:default;">
+          <div class="av">${avatar}</div>
+          <div class="info">
+            <div class="name">${escapeHtml(name)}</div>
+            <div class="preview">wants to follow you</div>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button onclick="respondRequest('${r.id}', 'accepted', this)"
+              style="padding:8px 14px; border-radius:20px; background:var(--az-gradient); border:none; color:#fff; font-weight:700; font-size:12px; cursor:pointer;">
+              Accept
+            </button>
+            <button onclick="respondRequest('${r.id}', 'rejected', this)"
+              style="padding:8px 14px; border-radius:20px; background:transparent; border:1px solid rgba(255,255,255,.2); color:#fff; font-weight:700; font-size:12px; cursor:pointer;">
+              Decline
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="chat-row" style="cursor:default;">
+        <div class="av">${avatar}</div>
+        <div class="info">
+          <div class="name">${escapeHtml(name)}</div>
+          <div class="preview">${r.status === 'accepted' ? '✅ Accepted' : '❌ Declined'}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function filterChats() {
+  searchQuery = document.getElementById('searchInput').value.trim();
+  renderList();
+}
+
+/* ==================== RESPOND TO REQUEST ==================== */
+async function respondRequest(reqId, status, btn) {
+  btn.disabled = true;
+  try {
+    const { data: req, error: fetchErr } = await supabaseClient
+      .from('follow_requests').select('*').eq('id', reqId).single();
+    if (fetchErr) throw fetchErr;
+
+    const { error: updErr } = await supabaseClient
+      .from('follow_requests').update({ status }).eq('id', reqId);
+    if (updErr) throw updErr;
+
+    if (status === 'accepted') {
+      // Add follow
+      const { error: followErr } = await supabaseClient
+        .from('follows')
+        .insert({ follower_id: req.requester_id, following_id: req.target_id });
+      if (followErr && followErr.code !== '23505') throw followErr;
+      showToast('Request accepted ✅', 'success');
+    } else {
+      showToast('Request declined', 'success');
+    }
+
+    await loadRequests();
+    updateReqBadge();
+    renderList();
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+/* ==================== OPEN CHAT ==================== */
+async function openChat(partnerId) {
+  // Find partner info
+  const conv = conversations.find(c => c.partner.id === partnerId);
+  if (!conv) return;
+
+  activePartner = conv.partner;
+  const p = activePartner;
+  const name = p.display_name || p.username || 'user';
+  const initial = name.charAt(0).toUpperCase();
+  const avatar = p.avatar_url ? `<img src="${escapeHtml(p.avatar_url)}" alt="">` : initial;
+
+  document.getElementById('cvAvatar').innerHTML = avatar;
+  document.getElementById('cvName').textContent = name;
+  document.getElementById('cvStatus').textContent = '@' + (p.username || 'user');
+
+  document.getElementById('chatView').classList.add('active');
+
+  await loadMessages();
+  await markMessagesRead();
+}
+
+function closeChat() {
+  document.getElementById('chatView').classList.remove('active');
+  activePartner = null;
+  loadChats().then(renderList);
+}
+
+function viewProfile() {
+  if (activePartner) window.location.href = 'profile.html?user=' + activePartner.id;
+}
+
+/* ==================== LOAD MESSAGES ==================== */
+async function loadMessages() {
+  const box = document.getElementById('chatMessages');
+  if (!activePartner) return;
+  box.innerHTML = '<div style="text-align:center;color:#666;padding:20px;"><i class="fas fa-circle-notch fa-spin"></i></div>';
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('messages')
+      .select('*')
+      .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${activePartner.id}),and(sender_id.eq.${activePartner.id},receiver_id.eq.${currentUser.id})`)
+      .order('created_at', { ascending: true })
+      .limit(200);
+
+    if (error) throw error;
+    box.innerHTML = (data || []).map(m => renderBubble(m)).join('');
+    box.scrollTop = box.scrollHeight;
+  } catch (err) {
+    box.innerHTML = `<div style="text-align:center;color:#ff7675;padding:20px;">${escapeHtml(err.message)}</div>`;
+  }
+}
+
+function renderBubble(m) {
+  const mine = m.sender_id === currentUser.id;
+  const time = new Date(m.created_at).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+  return `
+    <div class="bubble ${mine ? 'me' : 'them'}">
+      ${escapeHtml(m.content || '')}
+      <span class="time">${time}</span>
+    </div>
+  `;
+}
+
+/* ==================== SEND MESSAGE ==================== */
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const content = input.value.trim();
+  if (!content) return;
+  if (!activePartner) return;
+
+  input.value = '';
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+
+  try {
+    const { error } = await supabaseClient.from('messages').insert({
+      sender_id:   currentUser.id,
+      receiver_id: activePartner.id,
+      content:     content
+    });
+    if (error) throw error;
+    await loadMessages();
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    input.focus();
+  }
+}
+
+/* ==================== MARK READ ==================== */
+async function markMessagesRead() {
+  if (!activePartner) return;
+  await supabaseClient
+    .from('messages')
+    .update({ is_read: true })
+    .eq('sender_id', activePartner.id)
+    .eq('receiver_id', currentUser.id)
+    .eq('is_read', false);
+}
+
+/* ==================== REALTIME ==================== */
+function setupRealtime() {
+  if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
+
+  realtimeChannel = supabaseClient
+    .channel('messages-realtime')
+    .on('postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'messages' },
+      payload => {
+        const m = payload.new;
+        // If this message involves us and we're viewing this chat, append
+        if (activePartner &&
+            ((m.sender_id === activePartner.id && m.receiver_id === currentUser.id) ||
+             (m.sender_id === currentUser.id && m.receiver_id === activePartner.id))) {
+          document.getElementById('chatMessages').insertAdjacentHTML('beforeend', renderBubble(m));
+          document.getElementById('chatMessages').scrollTop = 999999;
+          markMessagesRead();
+        }
+        // Refresh the list
+        loadChats().then(renderList);
+      }
+    )
+    .subscribe();
+}
+
+/* ==================== HELPERS ==================== */
+function formatTimeAgo(dateStr) {
+  const seconds = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+  if (seconds < 60) return 'now';
+  const mins = Math.floor(seconds / 60);
+  if (mins < 60) return `${mins}m`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d`;
+  return new Date(dateStr).toLocaleDateString();
+}
+</script>
+</body>
+</html>
