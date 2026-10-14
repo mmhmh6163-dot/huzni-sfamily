@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Friends — Arizona AI</title>
 
+<link rel="icon" type="image/jpeg" href="arizonan%20png%20icon.jpeg">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="style.css">
@@ -25,7 +26,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   display:flex; align-items:center; justify-content:center;
   border-radius:50%; text-decoration:none;
 }
-.topbar .title { font-size:16px; font-weight:700; }
+.topbar .title { font-size:16px; font-weight:700; color:var(--az-text); }
 
 .search-bar {
   max-width:640px; margin:16px auto 8px;
@@ -46,7 +47,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 .search-bar input:focus { outline:none; }
 .search-bar input::placeholder { color:var(--az-text-secondary); }
 
-/* Tabs */
 .tabs {
   max-width:640px; margin:16px auto 0;
   padding:0 16px;
@@ -67,48 +67,57 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   color:var(--az-accent);
 }
 
-/* User list */
 .user-list {
   max-width:640px; margin:16px auto;
   padding:0 16px;
 }
 .user-row {
   display:flex; align-items:center; gap:12px;
-  padding:12px 0;
+  padding:12px 8px;
   border-bottom:1px solid rgba(255,255,255,.05);
 }
 .user-row .av {
-  width:48px; height:48px; border-radius:50%;
+  width:52px; height:52px; border-radius:50%;
   background:var(--az-gradient);
   display:flex; align-items:center; justify-content:center;
-  font-weight:700; color:#fff; font-size:18px;
-  flex-shrink:0; text-decoration:none;
-  overflow:hidden;
+  font-weight:700; color:#fff; font-size:20px;
+  flex-shrink:0; overflow:hidden;
+  text-decoration:none;
 }
 .user-row .av img { width:100%; height:100%; object-fit:cover; }
 .user-row .info { flex:1; min-width:0; }
 .user-row .info .name {
   font-size:14px; font-weight:700; color:var(--az-text);
-  display:flex; align-items:center; gap:5px;
-  text-decoration:none;
+  display:flex; align-items:center; gap:5px; text-decoration:none;
 }
 .user-row .info .name .v { color:#3b82f6; font-size:12px; }
 .user-row .info .sub {
   font-size:12px; color:var(--az-text-secondary); margin-top:2px;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
-.follow-btn {
-  padding:8px 18px; border-radius:20px;
+.action-btn {
+  padding:8px 16px; border-radius:20px;
   background:var(--az-gradient); color:#fff;
-  border:none; font-weight:700; font-size:13px;
+  border:none; font-weight:700; font-size:12px;
   cursor:pointer; white-space:nowrap;
+  display:flex; align-items:center; gap:6px;
 }
-.follow-btn.following {
+.action-btn.following {
   background:transparent;
   border:1px solid rgba(255,255,255,.2);
   color:var(--az-text);
 }
-.follow-btn:disabled { opacity:.6; cursor:not-allowed; }
+.action-btn.requested {
+  background:rgba(94,184,255,.15);
+  border:1px solid rgba(94,184,255,.5);
+  color:#5eb8ff;
+}
+.action-btn.chat {
+  background:transparent;
+  border:1px solid var(--az-primary);
+  color:var(--az-primary);
+}
+.action-btn:disabled { opacity:.6; cursor:not-allowed; }
 
 .empty {
   text-align:center; padding:60px 20px;
@@ -141,6 +150,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 <div class="tabs">
   <button class="tab active" onclick="switchTab('all', this)">All Users</button>
   <button class="tab" onclick="switchTab('following', this)">Following</button>
+  <button class="tab" onclick="switchTab('followers', this)">Followers</button>
 </div>
 
 <div class="user-list" id="userList">
@@ -152,15 +162,33 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 let currentTab = 'all';
 let searchQuery = '';
 let searchTimer = null;
+let followingIds = new Set();
+let followerIds  = new Set();
+let requestedIds = new Set();
 
 document.addEventListener('DOMContentLoaded', () => {
   const check = setInterval(() => {
     if (typeof authReady !== 'undefined' && authReady) {
       clearInterval(check);
-      loadUsers();
+      init();
     }
   }, 100);
 });
+
+async function init() {
+  if (currentUser) {
+    // load follows + requests in parallel
+    const [f, r, fr] = await Promise.all([
+      supabaseClient.from('follows').select('following_id').eq('follower_id', currentUser.id),
+      supabaseClient.from('follows').select('follower_id').eq('following_id', currentUser.id),
+      supabaseClient.from('follow_requests').select('target_id').eq('requester_id', currentUser.id).eq('status', 'pending')
+    ]);
+    followingIds = new Set((f.data || []).map(x => x.following_id));
+    followerIds  = new Set((r.data || []).map(x => x.follower_id));
+    requestedIds = new Set((fr.data || []).map(x => x.target_id));
+  }
+  loadUsers();
+}
 
 function debouncedSearch() {
   clearTimeout(searchTimer);
@@ -184,121 +212,128 @@ async function loadUsers() {
   try {
     let query = supabaseClient
       .from('profiles')
-      .select('id, username, display_name, avatar_url, is_verified, followers_count, bio')
-      .limit(50);
+      .select('id, username, display_name, avatar_url, is_verified, followers_count, bio, is_private')
+      .order('followers_count', { ascending: false })
+      .limit(100);
 
-    if (searchQuery) {
-      query = query.ilike('username', `%${searchQuery}%`);
-    }
-
-    if (currentUser) {
-      query = query.neq('id', currentUser.id);
-    }
+    if (searchQuery) query = query.ilike('username', `%${searchQuery}%`);
+    if (currentUser)  query = query.neq('id', currentUser.id);
 
     const { data, error } = await query;
     if (error) throw error;
 
-    if (!data || data.length === 0) {
-      list.innerHTML = `
-        <div class="empty">
-          <i class="fas fa-user-friends"></i>
-          <h3>${searchQuery ? 'No users found' : 'No users yet'}</h3>
-          <p>${searchQuery ? 'Try a different search' : 'Be the first to invite friends!'}</p>
-        </div>`;
-      return;
-    }
-
-    // Load who we follow
-    let followingIds = new Set();
-    if (currentUser) {
-      const { data: follows } = await supabaseClient
-        .from('follows')
-        .select('following_id')
-        .eq('follower_id', currentUser.id);
-      followingIds = new Set((follows || []).map(f => f.following_id));
-    }
-
-    // Filter for "following" tab
-    const filtered = currentTab === 'following'
-      ? data.filter(u => followingIds.has(u.id))
-      : data;
+    let filtered = data || [];
+    if (currentTab === 'following') filtered = filtered.filter(u => followingIds.has(u.id));
+    if (currentTab === 'followers') filtered = filtered.filter(u => followerIds.has(u.id));
 
     if (filtered.length === 0) {
       list.innerHTML = `
         <div class="empty">
           <i class="fas fa-user-friends"></i>
-          <h3>${currentTab === 'following' ? 'Not following anyone yet' : 'No users found'}</h3>
-          <p>${currentTab === 'following' ? 'Search for people to follow!' : ''}</p>
+          <h3>${searchQuery ? 'No users found' : 'Nothing here yet'}</h3>
+          <p>${searchQuery ? 'Try a different search' : 'Search for people to follow!'}</p>
         </div>`;
       return;
     }
 
-    list.innerHTML = filtered.map(u => renderUser(u, followingIds.has(u.id))).join('');
-
+    list.innerHTML = filtered.map(u => renderUser(u)).join('');
   } catch (err) {
     console.error(err);
     list.innerHTML = `<div class="empty"><i class="fas fa-exclamation-triangle"></i><h3>Couldn't load</h3><p>${escapeHtml(err.message)}</p></div>`;
   }
 }
 
-function renderUser(u, isFollowing) {
-  const name    = u.display_name || u.username || 'user';
-  const uname   = u.username || 'user';
+function renderUser(u) {
+  const name = u.display_name || u.username || 'user';
   const initial = name.charAt(0).toUpperCase();
   const verified = u.is_verified ? '<i class="fas fa-circle-check v"></i>' : '';
-  const bio     = u.bio || `@${uname}`;
-  const avatar  = u.avatar_url
-    ? `<img src="${escapeHtml(u.avatar_url)}" alt="">`
-    : initial;
+  const bio = u.bio || `@${u.username || 'user'}`;
+  const avatar = u.avatar_url ? `<img src="${escapeHtml(u.avatar_url)}" alt="">` : initial;
+
+  const isFollowing = followingIds.has(u.id);
+  const isRequested = requestedIds.has(u.id);
+  const isSelf      = currentUser && currentUser.id === u.id;
+
+  let actionHtml = '';
+  if (isSelf) {
+    actionHtml = `<a href="profile.html" class="action-btn chat"><i class="fas fa-user"></i> You</a>`;
+  } else if (!currentUser) {
+    actionHtml = `<button class="action-btn" onclick="window.location.href='login.html'">Follow</button>`;
+  } else if (isFollowing) {
+    actionHtml = `
+      <div style="display:flex; gap:6px;">
+        <button class="action-btn following" onclick="toggleFollow('${u.id}', this)">
+          <i class="fas fa-check"></i> Following
+        </button>
+        <button class="action-btn chat" onclick="startChat('${u.id}')" title="Message">
+          <i class="far fa-comment"></i>
+        </button>
+      </div>`;
+  } else if (isRequested) {
+    actionHtml = `<button class="action-btn requested" disabled><i class="fas fa-clock"></i> Requested</button>`;
+  } else {
+    actionHtml = `<button class="action-btn" onclick="toggleFollow('${u.id}', this)">Follow</button>`;
+  }
 
   return `
-    <div class="user-row" data-id="${u.id}">
+    <div class="user-row">
       <a href="profile.html?user=${u.id}" class="av">${avatar}</a>
       <div class="info">
         <a href="profile.html?user=${u.id}" class="name">${escapeHtml(name)} ${verified}</a>
-        <div class="sub">${escapeHtml(bio)}</div>
+        <div class="sub">${escapeHtml(bio).slice(0, 60)}</div>
       </div>
-      <button class="follow-btn ${isFollowing ? 'following' : ''}"
-              onclick="toggleFollow('${u.id}', this)">
-        ${isFollowing ? 'Following' : 'Follow'}
-      </button>
+      ${actionHtml}
     </div>
   `;
 }
 
 async function toggleFollow(targetId, btn) {
-  if (!currentUser) {
-    showToast('Sign in to follow users', 'error');
-    return;
-  }
+  if (!currentUser) { showToast('Sign in to follow users', 'error'); return; }
   btn.disabled = true;
-  const isFollowing = btn.classList.contains('following');
+  const isFollowing = followingIds.has(targetId);
 
   try {
     if (isFollowing) {
-      const { error } = await supabaseClient
-        .from('follows')
-        .delete()
-        .eq('follower_id', currentUser.id)
-        .eq('following_id', targetId);
-      if (error) throw error;
+      await supabaseClient.from('follows').delete()
+        .eq('follower_id', currentUser.id).eq('following_id', targetId);
+      followingIds.delete(targetId);
       btn.classList.remove('following');
-      btn.textContent = 'Follow';
-      showToast('Unfollowed', 'success');
+      btn.innerHTML = 'Follow';
+      showToast('Unfollowed');
     } else {
-      const { error } = await supabaseClient
-        .from('follows')
-        .insert({ follower_id: currentUser.id, following_id: targetId });
-      if (error) throw error;
-      btn.classList.add('following');
-      btn.textContent = 'Following';
-      showToast('Following ✅', 'success');
+      // Check if target is private
+      const { data: target } = await supabaseClient
+        .from('profiles').select('is_private').eq('id', targetId).maybeSingle();
+
+      if (target?.is_private) {
+        const { error } = await supabaseClient.from('follow_requests')
+          .insert({ requester_id: currentUser.id, target_id: targetId });
+        if (error && error.code !== '23505') throw error;
+        requestedIds.add(targetId);
+        btn.classList.add('requested');
+        btn.innerHTML = '<i class="fas fa-clock"></i> Requested';
+        btn.disabled = true;
+        showToast('Follow request sent 📨', 'success');
+        return;
+      } else {
+        const { error } = await supabaseClient.from('follows')
+          .insert({ follower_id: currentUser.id, following_id: targetId });
+        if (error) throw error;
+        followingIds.add(targetId);
+        btn.classList.add('following');
+        btn.innerHTML = '<i class="fas fa-check"></i> Following';
+        showToast('Following ✅', 'success');
+      }
     }
   } catch (err) {
     showToast(err.message, 'error');
   } finally {
     btn.disabled = false;
   }
+}
+
+function startChat(userId) {
+  window.location.href = 'chats.html?user=' + userId;
 }
 </script>
 </body>
