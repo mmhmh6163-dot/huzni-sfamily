@@ -102,7 +102,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   white-space:nowrap;
 }
 
-/* ==================== DEEP LINK BANNER ==================== */
+/* ==================== DEEP LINK ==================== */
 .deep-link-banner {
   max-width:640px; margin:12px auto 0;
   padding:12px 16px;
@@ -203,10 +203,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 }
 .ig-post-head .meta .name .verified { color:#3b82f6; font-size:12px; }
 .ig-post-head .meta .sub { font-size:11px; color:var(--az-text-secondary); }
-.ig-post-head .more {
-  color:var(--az-text-secondary); background:none; border:none;
-  font-size:18px; cursor:pointer; padding:6px;
-}
 
 .ig-post-media {
   width:100%; background:#000;
@@ -260,6 +256,12 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   padding:2px 16px 4px;
   font-size:13px; font-weight:700; color:var(--az-text);
 }
+.ig-stats-row {
+  padding:0 16px 6px;
+  display:flex; gap:14px;
+  font-size:12px; color:var(--az-text-secondary);
+}
+.ig-stats-row span { display:flex; align-items:center; gap:4px; }
 .ig-time {
   padding:4px 16px 12px;
   font-size:10px; color:var(--az-text-secondary);
@@ -885,7 +887,6 @@ async function init() {
   renderUserSection();
   renderBottomAvatar();
 
-  // Handle deep link
   const params = new URLSearchParams(window.location.search);
   deepLinkPostId = params.get('post');
 
@@ -893,7 +894,6 @@ async function init() {
   await loadFeed();
   loadStories();
 
-  // If deep link, scroll to post after feed loads
   if (deepLinkPostId) {
     setTimeout(() => {
       const postEl = document.querySelector(`article[data-id="${deepLinkPostId}"]`);
@@ -995,53 +995,85 @@ async function loadFeed() {
   feed.innerHTML = '<div class="ig-empty"><i class="fas fa-circle-notch fa-spin"></i></div>';
 
   try {
-    // If deep link, fetch that specific post first
-    let data = [];
-    let error = null;
+    let posts = [];
 
     if (deepLinkPostId) {
-      const res = await supabaseClient
+      // Fetch the deep-linked post first
+      const { data: targetPost } = await supabaseClient
         .from('posts')
         .select(`*, profiles:user_id (username, display_name, avatar_url, is_verified)`)
         .eq('id', deepLinkPostId)
         .maybeSingle();
 
-      if (res.data) {
-        data = [res.data];
-        // Also fetch rest of feed below
-        const restRes = await supabaseClient
-          .from('posts')
-          .select(`*, profiles:user_id (username, display_name, avatar_url, is_verified)`)
-          .eq('visibility', 'public')
-          .neq('id', deepLinkPostId)
-          .order('is_boosted', { ascending: false, nullsFirst: false })
-          .order('created_at', { ascending: false })
-          .limit(30);
-        if (restRes.data) data = data.concat(restRes.data);
-      }
-      error = res.error;
-    } else {
-      const res = await supabaseClient
+      if (targetPost) posts.push(targetPost);
+
+      // Fetch the rest of the feed
+      const { data: restPosts, error: restErr } = await supabaseClient
         .from('posts')
         .select(`*, profiles:user_id (username, display_name, avatar_url, is_verified)`)
         .eq('visibility', 'public')
+        .neq('id', deepLinkPostId)
         .order('is_boosted', { ascending: false, nullsFirst: false })
         .order('created_at', { ascending: false })
-        .limit(50);
-      data = res.data || [];
-      error = res.error;
+        .limit(40);
+
+      if (restErr) throw restErr;
+      if (restPosts) posts = posts.concat(restPosts);
+
+    } else {
+      // Standard feed — try the RPC first
+      const { data: rpcData, error: rpcErr } = await supabaseClient.rpc('get_feed_posts', {
+        p_limit: 50,
+        p_offset: 0
+      });
+
+      if (!rpcErr && rpcData) {
+        // Reshape RPC rows into the post + profiles structure
+        posts = rpcData.map(row => ({
+          id: row.id,
+          user_id: row.user_id,
+          content: row.content,
+          media_urls: row.media_urls,
+          media_types: row.media_types,
+          post_type: row.post_type,
+          visibility: row.visibility,
+          likes_count: row.likes_count,
+          comments_count: row.comments_count,
+          shares_count: row.shares_count,
+          views_count: row.views_count,
+          is_boosted: row.is_boosted,
+          boost_expires_at: row.boost_expires_at,
+          created_at: row.created_at,
+          profiles: {
+            username: row.username,
+            display_name: row.display_name,
+            avatar_url: row.avatar_url,
+            is_verified: row.is_verified
+          }
+        }));
+      } else {
+        // Fallback: simple query
+        const { data: fallbackData, error: fbErr } = await supabaseClient
+          .from('posts')
+          .select(`*, profiles:user_id (username, display_name, avatar_url, is_verified)`)
+          .eq('visibility', 'public')
+          .order('is_boosted', { ascending: false, nullsFirst: false })
+          .order('created_at', { ascending: false })
+          .limit(50);
+
+        if (fbErr) throw fbErr;
+        posts = fallbackData || [];
+      }
     }
 
-    if (error) throw error;
-
-    if (!data || data.length === 0) {
+    if (!posts || posts.length === 0) {
       feed.innerHTML = `<div class="ig-empty"><i class="far fa-newspaper"></i><h3>${t('no-posts-title')}</h3><p>${t('no-posts-sub')}</p></div>`;
       return;
     }
 
-    feed.innerHTML = data.map(post => renderPost(post)).join('');
+    feed.innerHTML = posts.map(post => renderPost(post)).join('');
   } catch (err) {
-    console.error(err);
+    console.error('[Feed]', err);
     feed.innerHTML = `<div class="ig-empty"><i class="fas fa-exclamation-triangle"></i><h3>Couldn't load</h3><p style="opacity:.6;font-size:12px;">${escapeHtml(err.message)}</p></div>`;
   }
 }
@@ -1072,7 +1104,7 @@ function renderPost(post) {
     : '';
 
   const isOwnPost = currentUser && post.user_id === currentUser.id;
-  const isBoosted = post.is_boosted && post.boost_expires_at && new Date(post.boost_expires_at) > new Date();
+  const isBoosted = post.is_boosted && (!post.boost_expires_at || new Date(post.boost_expires_at) > new Date());
 
   return `
     <article class="ig-post ${isBoosted ? 'boosted' : ''}" data-id="${post.id}">
@@ -1099,6 +1131,7 @@ function renderPost(post) {
         </button>
         <button class="ig-action" onclick="openComments('${post.id}')"><i class="far fa-comment"></i></button>
         <button class="ig-action" onclick="sharePost('${post.id}')"><i class="far fa-paper-plane"></i></button>
+        <button class="ig-action" onclick="copyPostUrl('${post.id}')" title="Copy link"><i class="far fa-copy"></i></button>
         ${isOwnPost ? `
           <button class="ig-action boost-btn" onclick="openBoost('${post.id}')" title="Boost"><i class="fas fa-rocket"></i></button>
         ` : ''}
@@ -1107,10 +1140,15 @@ function renderPost(post) {
 
       <div class="ig-likes" id="likes-${post.id}">${post.likes_count || 0} likes</div>
       ${caption}
+      <div class="ig-stats-row">
+        <span id="comments-count-${post.id}"><i class="far fa-comment"></i> ${post.comments_count || 0}</span>
+        <span id="shares-count-${post.id}"><i class="far fa-paper-plane"></i> ${post.shares_count || 0}</span>
+        <span id="views-count-${post.id}"><i class="far fa-eye"></i> ${post.views_count || 0}</span>
+      </div>
       <div class="ig-comments-preview" onclick="openComments('${post.id}')">
         ${t('view-comments').replace('{n}', post.comments_count || 0)}
       </div>
-      <div class="ig-time">${timeAgo} · ${post.views_count || 0} views</div>
+      <div class="ig-time">${timeAgo}</div>
     </article>
   `;
 }
@@ -1132,22 +1170,65 @@ async function toggleLike(postId, btn) {
       btn.classList.add('liked');
       icon.className = 'fas fa-heart';
     }
-    const { data } = await supabaseClient.from('posts').select('likes_count').eq('id', postId).single();
-    const el = document.getElementById('likes-' + postId);
-    if (el && data) el.textContent = `${data.likes_count || 0} likes`;
+    await refreshPostCounters(postId);
   } catch (err) { showToast(err.message, 'error'); }
 }
 
 /* ==================== SHARE ==================== */
 async function sharePost(postId) {
   const url = window.location.origin + '/huzni-sfamily/index.html?post=' + postId;
+
   if (currentUser) {
-    try { await supabaseClient.from('shares').insert({ user_id: currentUser.id, post_id: postId }); } catch(e){}
+    try {
+      const { data: existing } = await supabaseClient
+        .from('shares').select('id').eq('user_id', currentUser.id).eq('post_id', postId).maybeSingle();
+      if (!existing) {
+        await supabaseClient.from('shares').insert({ user_id: currentUser.id, post_id: postId });
+        await refreshPostCounters(postId);
+      }
+    } catch (e) {}
   }
+
   if (navigator.share) {
     try { await navigator.share({ title:'Arizona AI', text:'Check out this post!', url }); return; } catch(e){}
   }
-  try { await navigator.clipboard.writeText(url); showToast('Link copied! 📋','success'); } catch { showToast('Link: '+url); }
+  try { await navigator.clipboard.writeText(url); showToast('Link copied! 📋','success'); }
+  catch { showToast('Link: ' + url); }
+}
+
+/* ==================== COPY URL ==================== */
+async function copyPostUrl(postId) {
+  const url = window.location.origin + '/huzni-sfamily/index.html?post=' + postId;
+  try {
+    await navigator.clipboard.writeText(url);
+    showToast('Post link copied! 📋', 'success');
+  } catch {
+    showToast('Link: ' + url);
+  }
+}
+
+/* ==================== REFRESH COUNTERS ==================== */
+async function refreshPostCounters(postId) {
+  await new Promise(r => setTimeout(r, 200));
+  try {
+    const { data } = await supabaseClient
+      .from('posts')
+      .select('likes_count, comments_count, shares_count, views_count')
+      .eq('id', postId).single();
+    if (!data) return;
+
+    const likesEl    = document.getElementById('likes-' + postId);
+    const commentsEl = document.getElementById('comments-count-' + postId);
+    const sharesEl   = document.getElementById('shares-count-' + postId);
+    const viewsEl    = document.getElementById('views-count-' + postId);
+    const previewEl  = document.querySelector(`article[data-id="${postId}"] .ig-comments-preview`);
+
+    if (likesEl)    likesEl.textContent = `${data.likes_count || 0} likes`;
+    if (commentsEl) commentsEl.innerHTML = `<i class="far fa-comment"></i> ${data.comments_count || 0}`;
+    if (sharesEl)   sharesEl.innerHTML   = `<i class="far fa-paper-plane"></i> ${data.shares_count || 0}`;
+    if (viewsEl)    viewsEl.innerHTML    = `<i class="far fa-eye"></i> ${data.views_count || 0}`;
+    if (previewEl)  previewEl.textContent = t('view-comments').replace('{n}', data.comments_count || 0);
+  } catch (e) {}
 }
 
 /* ==================== STORIES ==================== */
@@ -1313,11 +1394,7 @@ async function submitComment() {
     await supabaseClient.from('comments').insert({ user_id: currentUser.id, post_id: currentPostId, content: text });
     input.value = '';
     await loadComments(currentPostId);
-    const { data } = await supabaseClient.from('posts').select('comments_count').eq('id', currentPostId).single();
-    if (data) {
-      const el = document.querySelector(`article[data-id="${currentPostId}"] .ig-comments-preview`);
-      if (el) el.textContent = t('view-comments').replace('{n}', data.comments_count || 0);
-    }
+    await refreshPostCounters(currentPostId);
   } catch (err) { showToast(err.message, 'error'); }
   finally { btn.disabled = false; }
 }
@@ -1371,11 +1448,14 @@ async function confirmBoost() {
       '14d': 14 * 24 * 3600 * 1000
     }[selectedBoost.duration];
     const expiresAt = new Date(Date.now() + durationMs).toISOString();
+
     await supabaseClient.from('posts').update({ is_boosted: true, boost_expires_at: expiresAt }).eq('id', boostingPostId);
-    // Deduct wallet
+
     const newBal = balance - selectedBoost.price;
     const newSpent = Number(currentWallet?.total_spent || 0) + selectedBoost.price;
+
     await supabaseClient.from('wallets').update({ balance: newBal, total_spent: newSpent }).eq('user_id', currentUser.id);
+
     await supabaseClient.from('wallet_transactions').insert({
       user_id: currentUser.id,
       amount: -selectedBoost.price,
@@ -1383,6 +1463,7 @@ async function confirmBoost() {
       source: 'boost',
       note: `Boosted post for ${selectedBoost.duration}`
     });
+
     await loadUserData();
     renderUserSection();
     closeBoost();
