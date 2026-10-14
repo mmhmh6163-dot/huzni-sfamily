@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Arizona AI — Earn While You Share</title>
 
+<!-- ==================== FAVICON ==================== -->
+<link rel="icon" type="image/jpeg" href="arizonan%20png%20icon.jpeg">
+<link rel="apple-touch-icon" href="arizonan%20png%20icon.jpeg">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="style.css">
@@ -25,7 +29,11 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   display:flex; align-items:center; gap:8px;
   text-decoration:none; color:inherit;
 }
-.ig-topbar .brand i { color:var(--az-accent); font-size:22px; }
+.ig-topbar .brand .brand-logo {
+  width:32px; height:32px; border-radius:8px;
+  object-fit:cover;
+  border:1.5px solid rgba(255,178,15,.5);
+}
 .ig-topbar .brand span {
   background:var(--az-gradient);
   -webkit-background-clip:text; background-clip:text; color:transparent;
@@ -44,6 +52,11 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   width:8px; height:8px; border-radius:50%;
   background:var(--az-primary); border:2px solid #0a0a0a;
 }
+/* AI button special blue */
+.ig-icon-btn.ai-btn {
+  color:#5eb8ff;
+}
+.ig-icon-btn.ai-btn:hover { background:rgba(94,184,255,.12); }
 
 /* ==================== USER STRIP ==================== */
 .ig-user-strip {
@@ -133,6 +146,21 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   border-bottom:1px solid rgba(255,255,255,.06);
   margin-bottom:8px;
 }
+.ig-post.boosted {
+  border:1px solid rgba(94,184,255,.4);
+  box-shadow: 0 0 20px rgba(94,184,255,.15);
+}
+.ig-post.boosted::before {
+  content: "⚡ Boosted";
+  display: block;
+  background: linear-gradient(135deg, #5eb8ff, #7c3aed);
+  color:#fff;
+  font-size:11px; font-weight:700;
+  padding:5px 16px;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+
 .ig-post-head {
   display:flex; align-items:center; gap:12px;
   padding:12px 16px;
@@ -189,6 +217,8 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 .ig-action:hover { transform:scale(1.1); }
 .ig-action.liked { color:var(--az-primary); }
 .ig-action.save { margin-left:auto; }
+.ig-action.boost-btn { color:#5eb8ff; font-size:18px; }
+.ig-action.boost-btn:hover { text-shadow:0 0 10px rgba(94,184,255,.6); }
 
 .ig-likes {
   padding:2px 16px 4px;
@@ -248,10 +278,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   overflow:hidden;
 }
 .ig-bottom-nav .bnav-avatar img { width:100%; height:100%; object-fit:cover; }
-.ig-bottom-nav .bnav-avatar.no-auth {
-  background:transparent; border:2px solid var(--az-text-secondary);
-  color:var(--az-text-secondary);
-}
 
 /* ==================== FULLSCREEN VIEWER ==================== */
 .fs-viewer {
@@ -279,7 +305,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   background:rgba(255,255,255,.12); color:#fff;
   border:none; font-size:22px; cursor:pointer;
   display:flex; align-items:center; justify-content:center;
-  backdrop-filter:blur(8px);
 }
 .fs-viewer .nav-btn.prev { left:16px; }
 .fs-viewer .nav-btn.next { right:16px; }
@@ -288,7 +313,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   color:#fff; font-size:13px; font-weight:600;
   background:rgba(255,255,255,.12);
   padding:6px 14px; border-radius:20px;
-  backdrop-filter:blur(8px);
 }
 
 /* ==================== COMMENTS MODAL ==================== */
@@ -358,7 +382,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 }
 .comments-send:disabled { opacity:.5; cursor:not-allowed; }
 
-/* ==================== LANGUAGE SELECTOR ==================== */
+/* ==================== LANGUAGE MENU ==================== */
 .lang-menu {
   position:fixed; top:60px; right:16px;
   background:#1a1a1a; border:1px solid rgba(255,178,15,.3);
@@ -377,10 +401,108 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 .lang-menu button:hover { background:rgba(255,107,53,.2); }
 .lang-menu button.active { background:var(--az-primary); color:#fff; }
 
+/* ==================== BOOST MODAL ==================== */
+.boost-modal {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.88); z-index:2500;
+  align-items:flex-end; justify-content:center;
+}
+.boost-modal.active { display:flex; }
+.boost-panel {
+  background:#151515;
+  width:100%; max-width:640px;
+  border-top-left-radius:24px; border-top-right-radius:24px;
+  padding:20px;
+  padding-bottom:calc(20px + env(safe-area-inset-bottom));
+  max-height:90vh; overflow-y:auto;
+  animation: slideUp .25s ease;
+}
+@keyframes slideUp { from { transform:translateY(100%); } }
+.boost-panel .handle {
+  width:40px; height:4px; background:#333; border-radius:2px;
+  margin:0 auto 16px;
+}
+.boost-panel h3 {
+  text-align:center; font-size:18px;
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  margin-bottom:6px;
+}
+.boost-panel .sub {
+  text-align:center; color:var(--az-text-secondary);
+  font-size:13px; margin-bottom:20px;
+}
+.boost-options {
+  display:flex; flex-direction:column; gap:10px;
+  margin-bottom:18px;
+}
+.boost-option {
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:14px; padding:14px 16px;
+  cursor:pointer; transition:all .2s;
+  display:flex; align-items:center; gap:14px;
+}
+.boost-option:hover {
+  background:rgba(94,184,255,.1);
+  border-color:rgba(94,184,255,.5);
+}
+.boost-option.selected {
+  background:rgba(94,184,255,.15);
+  border-color:#5eb8ff;
+  box-shadow:0 0 20px rgba(94,184,255,.2);
+}
+.boost-option .icon {
+  width:44px; height:44px; border-radius:12px;
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:20px; flex-shrink:0;
+}
+.boost-option .details { flex:1; }
+.boost-option .details .title {
+  font-weight:700; font-size:15px; color:var(--az-text);
+}
+.boost-option .details .desc {
+  font-size:12px; color:var(--az-text-secondary); margin-top:2px;
+}
+.boost-option .price {
+  font-weight:800; color:#5eb8ff; font-size:16px;
+  white-space:nowrap;
+}
+.boost-summary {
+  background:rgba(94,184,255,.08);
+  border:1px solid rgba(94,184,255,.25);
+  border-radius:12px;
+  padding:14px 16px; margin-bottom:16px;
+}
+.boost-summary .row {
+  display:flex; justify-content:space-between;
+  font-size:14px; margin-bottom:6px;
+}
+.boost-summary .row:last-child {
+  margin-bottom:0; padding-top:6px;
+  border-top:1px solid rgba(94,184,255,.2);
+  font-weight:700;
+}
+.boost-summary .row .val { color:#5eb8ff; }
+.boost-actions { display:flex; gap:10px; }
+.boost-actions button {
+  flex:1; padding:14px; border-radius:12px;
+  font-weight:700; cursor:pointer; font-size:15px;
+  border:none;
+}
+.boost-actions .cancel {
+  background:transparent; border:1px solid #333; color:#fff;
+}
+.boost-actions .confirm {
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
+  color:#fff;
+}
+.boost-actions button:disabled { opacity:.6; cursor:not-allowed; }
+
 /* RTL */
 html[dir="rtl"] .ig-user-strip .info { text-align: right; }
 html[dir="rtl"] .ig-post-head .meta { text-align: right; }
-html[dir="rtl"] .ig-comments-preview { text-align: right; }
 </style>
 </head>
 <body>
@@ -390,7 +512,7 @@ html[dir="rtl"] .ig-comments-preview { text-align: right; }
 <!-- ==================== TOP BAR ==================== -->
 <header class="ig-topbar">
   <a href="index.html" class="brand">
-    <i class="fas fa-mountain-sun"></i>
+    <img src="arizonan%20png%20icon.jpeg" alt="Arizonan" class="brand-logo">
     <span>Arizona AI</span>
   </a>
   <div class="actions" id="topActions"></div>
@@ -398,12 +520,8 @@ html[dir="rtl"] .ig-comments-preview { text-align: right; }
 
 <!-- ==================== LANGUAGE MENU ==================== -->
 <div class="lang-menu" id="langMenu">
-  <button onclick="setLang('en', this)" class="active">
-    <span style="font-size:18px;">🇬🇧</span> English
-  </button>
-  <button onclick="setLang('ar', this)">
-    <span style="font-size:18px;">🇸🇦</span> العربية
-  </button>
+  <button onclick="setLang('en', this)" class="active"><span style="font-size:18px;">🇬🇧</span> English</button>
+  <button onclick="setLang('ar', this)"><span style="font-size:18px;">🇸🇦</span> العربية</button>
 </div>
 
 <!-- ==================== USER STRIP ==================== -->
@@ -435,7 +553,6 @@ html[dir="rtl"] .ig-comments-preview { text-align: right; }
     <div class="ig-story-ring"><div class="inner"><i class="fas fa-plus"></i></div></div>
     <div class="label" data-i18n="your-story">Your story</div>
   </div>
-  <!-- Real stories load here -->
 </div>
 
 <!-- ==================== FEED ==================== -->
@@ -450,7 +567,7 @@ html[dir="rtl"] .ig-comments-preview { text-align: right; }
   <a href="Post.html" class="bnav-item create"><i class="fas fa-plus"></i></a>
   <a href="chats.html" class="bnav-item"><i class="far fa-heart"></i><span data-i18n="activity">Activity</span></a>
   <a href="profile.html" class="bnav-item" id="profileNav">
-    <div class="bnav-avatar no-auth" id="bnavAvatar"><i class="far fa-user"></i></div>
+    <div class="bnav-avatar" id="bnavAvatar"><i class="far fa-user"></i></div>
     <span data-i18n="profile">Profile</span>
   </a>
 </nav>
@@ -481,6 +598,72 @@ html[dir="rtl"] .ig-comments-preview { text-align: right; }
   </div>
 </div>
 
+<!-- ==================== BOOST MODAL ==================== -->
+<div class="boost-modal" id="boostModal">
+  <div class="boost-panel">
+    <div class="handle"></div>
+    <h3>🚀 Boost This Post</h3>
+    <p class="sub">Get more reach & engagement with paid promotion</p>
+
+    <div class="boost-options" id="boostOptions">
+      <div class="boost-option" data-boost="24h" data-price="0.99" onclick="selectBoost(this)">
+        <div class="icon"><i class="fas fa-bolt"></i></div>
+        <div class="details">
+          <div class="title">Quick Boost — 24 hours</div>
+          <div class="desc">~500 views · Perfect for testing</div>
+        </div>
+        <div class="price">$0.99</div>
+      </div>
+      <div class="boost-option selected" data-boost="3d" data-price="2.49" onclick="selectBoost(this)">
+        <div class="icon"><i class="fas fa-fire"></i></div>
+        <div class="details">
+          <div class="title">Standard — 3 days ⭐</div>
+          <div class="desc">~3,000 views · Most popular</div>
+        </div>
+        <div class="price">$2.49</div>
+      </div>
+      <div class="boost-option" data-boost="7d" data-price="4.99" onclick="selectBoost(this)">
+        <div class="icon"><i class="fas fa-rocket"></i></div>
+        <div class="details">
+          <div class="title">Premium — 7 days</div>
+          <div class="desc">~10,000 views · Best value</div>
+        </div>
+        <div class="price">$4.99</div>
+      </div>
+      <div class="boost-option" data-boost="14d" data-price="8.99" onclick="selectBoost(this)">
+        <div class="icon"><i class="fas fa-crown"></i></div>
+        <div class="details">
+          <div class="title">Mega — 14 days</div>
+          <div class="desc">~25,000 views · Maximum reach</div>
+        </div>
+        <div class="price">$8.99</div>
+      </div>
+    </div>
+
+    <div class="boost-summary" id="boostSummary" style="display:none;">
+      <div class="row">
+        <span>Wallet balance</span>
+        <span class="val" id="bsBalance">$0.00</span>
+      </div>
+      <div class="row">
+        <span>Cost</span>
+        <span class="val" id="bsCost">$0.00</span>
+      </div>
+      <div class="row">
+        <span>After boost</span>
+        <span class="val" id="bsAfter">$0.00</span>
+      </div>
+    </div>
+
+    <div class="boost-actions">
+      <button class="cancel" onclick="closeBoost()">Cancel</button>
+      <button class="confirm" id="boostConfirmBtn" onclick="confirmBoost()">
+        <i class="fas fa-rocket"></i> Boost Now
+      </button>
+    </div>
+  </div>
+</div>
+
 <script src="auth.js"></script>
 <script>
 let currentPostId = null;
@@ -489,55 +672,51 @@ let currentMediaIndex = 0;
 let likedPosts = new Set();
 let storiesByUser = [];
 let currentLang = localStorage.getItem('az_lang') || 'en';
+let selectedBoost = { duration:'3d', price:2.49 };
+let boostingPostId = null;
 
 /* ==================== TRANSLATIONS ==================== */
 const TRANSLATIONS = {
   en: {
-    'home': 'Home', 'search': 'Search', 'activity': 'Activity', 'profile': 'Profile',
-    'logout': 'Logout', 'sign-up': 'Sign Up',
-    'earn-more': 'Earn more by posting',
-    'welcome': '🏜️ Welcome to Arizona AI',
-    'signup-cta': 'Sign up free — earn money for your posts!',
-    'your-story': 'Your story',
-    'comments': 'Comments', 'post': 'Post',
-    'view-comments': 'View all {n} comments',
-    'no-posts-title': 'No posts yet',
-    'no-posts-sub': 'Be the first to post!'
+    'home':'Home','search':'Search','activity':'Activity','profile':'Profile',
+    'logout':'Logout','sign-up':'Sign Up',
+    'earn-more':'Earn more by posting',
+    'welcome':'🏜️ Welcome to Arizona AI',
+    'signup-cta':'Sign up free — earn money for your posts!',
+    'your-story':'Your story',
+    'comments':'Comments','post':'Post',
+    'view-comments':'View all {n} comments',
+    'no-posts-title':'No posts yet',
+    'no-posts-sub':'Be the first to post!'
   },
   ar: {
-    'home': 'الرئيسية', 'search': 'بحث', 'activity': 'النشاط', 'profile': 'الملف',
-    'logout': 'خروج', 'sign-up': 'إنشاء حساب',
-    'earn-more': 'اكسب أكثر بالمشاركة',
-    'welcome': '🏜️ مرحباً بك في أريزونا AI',
-    'signup-cta': 'سجّل مجاناً — اكسب المال من منشوراتك!',
-    'your-story': 'قصتك',
-    'comments': 'التعليقات', 'post': 'نشر',
-    'view-comments': 'عرض كل {n} تعليق',
-    'no-posts-title': 'لا توجد منشورات بعد',
-    'no-posts-sub': 'كن أول من ينشر!'
+    'home':'الرئيسية','search':'بحث','activity':'النشاط','profile':'الملف',
+    'logout':'خروج','sign-up':'إنشاء حساب',
+    'earn-more':'اكسب أكثر بالمشاركة',
+    'welcome':'🏜️ مرحباً بك في أريزونا AI',
+    'signup-cta':'سجّل مجاناً — اكسب المال!',
+    'your-story':'قصتك',
+    'comments':'التعليقات','post':'نشر',
+    'view-comments':'عرض كل {n} تعليق',
+    'no-posts-title':'لا توجد منشورات',
+    'no-posts-sub':'كن أول من ينشر!'
   }
 };
 
-function t(key) {
-  return (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || key;
-}
+function t(key) { return (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || key; }
 
 function setLang(lang, el) {
   currentLang = lang;
   localStorage.setItem('az_lang', lang);
   document.documentElement.lang = lang;
   document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-
   document.querySelectorAll('.lang-menu button').forEach(b => b.classList.remove('active'));
   if (el) el.classList.add('active');
-
   document.querySelectorAll('[data-i18n]').forEach(node => {
     const key = node.getAttribute('data-i18n');
     const val = t(key);
     if (val) node.textContent = val;
   });
-
-  // Re-render feed for translated labels
   if (document.querySelectorAll('.ig-post').length) loadFeed();
   document.getElementById('langMenu').classList.remove('active');
 }
@@ -567,15 +746,15 @@ function renderTopActions() {
   const el = document.getElementById('topActions');
   if (currentUser) {
     el.innerHTML = `
+      <a href="AI.Arizonan.html" class="ig-icon-btn ai-btn" title="AI Assistant"><i class="fas fa-robot"></i></a>
       <a href="Friends.html" class="ig-icon-btn"><i class="far fa-heart"></i></a>
       <a href="chats.html" class="ig-icon-btn"><i class="far fa-paper-plane"></i><span class="dot"></span></a>
-      <a href="notifications.html" class="ig-icon-btn"><i class="far fa-bell"></i></a>
-      <button class="ig-icon-btn" onclick="toggleLangMenu()" title="Language">
-        <i class="fas fa-globe"></i>
-      </button>
+      <a href="ads.html" class="ig-icon-btn" title="My Ads"><i class="fas fa-bullhorn"></i></a>
+      <button class="ig-icon-btn" onclick="toggleLangMenu()"><i class="fas fa-globe"></i></button>
     `;
   } else {
     el.innerHTML = `
+      <a href="AI.Arizonan.html" class="ig-icon-btn ai-btn" title="AI"><i class="fas fa-robot"></i></a>
       <a href="login.html" class="ig-icon-btn" style="width:auto;padding:0 12px;font-size:13px;font-weight:600;">Login</a>
       <a href="register.html" class="ig-icon-btn" style="width:auto;padding:0 12px;font-size:13px;font-weight:600;background:var(--az-gradient);color:#fff;">Sign Up</a>
       <button class="ig-icon-btn" onclick="toggleLangMenu()"><i class="fas fa-globe"></i></button>
@@ -586,7 +765,6 @@ function renderTopActions() {
 function toggleLangMenu() {
   document.getElementById('langMenu').classList.toggle('active');
 }
-
 document.addEventListener('click', e => {
   if (!e.target.closest('.lang-menu') && !e.target.closest('[onclick="toggleLangMenu()"]')) {
     document.getElementById('langMenu').classList.remove('active');
@@ -600,20 +778,14 @@ function renderUserSection() {
   if (currentUser) {
     strip.style.display = 'flex';
     cta.style.display = 'none';
-
     const name = currentProfile?.username || currentUser.email?.split('@')[0] || 'User';
     const bal  = Number(currentWallet?.balance ?? 0).toFixed(2);
     const av   = currentProfile?.avatar_url;
-
     document.getElementById('uName').textContent = name;
     document.getElementById('uBalance').textContent = '$' + bal;
-
     const uAvatarEl = document.getElementById('uAvatar');
-    if (av) {
-      uAvatarEl.innerHTML = `<img src="${escapeHtml(av)}" alt="">`;
-    } else {
-      uAvatarEl.textContent = name.charAt(0).toUpperCase();
-    }
+    if (av) uAvatarEl.innerHTML = `<img src="${escapeHtml(av)}" alt="">`;
+    else uAvatarEl.textContent = name.charAt(0).toUpperCase();
   } else {
     strip.style.display = 'none';
     cta.style.display = 'flex';
@@ -625,11 +797,9 @@ function renderBottomAvatar() {
   if (currentUser) {
     const name = currentProfile?.username || currentUser.email?.split('@')[0] || 'U';
     const img  = currentProfile?.avatar_url;
-    av.classList.remove('no-auth');
     if (img) av.innerHTML = `<img src="${escapeHtml(img)}" alt="">`;
     else av.textContent = name.charAt(0).toUpperCase();
   } else {
-    av.classList.add('no-auth');
     av.innerHTML = '<i class="far fa-user"></i>';
   }
 }
@@ -642,8 +812,7 @@ function goToPost() {
 async function loadLikedPosts() {
   if (!currentUser) return;
   try {
-    const { data } = await supabaseClient
-      .from('likes').select('post_id').eq('user_id', currentUser.id);
+    const { data } = await supabaseClient.from('likes').select('post_id').eq('user_id', currentUser.id);
     likedPosts = new Set((data || []).map(r => r.post_id));
   } catch (e) {}
 }
@@ -654,10 +823,13 @@ async function loadFeed() {
   feed.innerHTML = '<div class="ig-empty"><i class="fas fa-circle-notch fa-spin"></i></div>';
 
   try {
+    // Fetch public posts + boosted posts first
     const { data, error } = await supabaseClient
       .from('posts')
       .select(`*, profiles:user_id (username, display_name, avatar_url, is_verified)`)
       .eq('visibility', 'public')
+      .order('is_boosted', { ascending: false, nullsFirst: false })
+      .order('boost_expires_at', { ascending: false, nullsFirst: false })
       .order('created_at', { ascending: false })
       .limit(50);
 
@@ -671,7 +843,7 @@ async function loadFeed() {
     feed.innerHTML = data.map(post => renderPost(post)).join('');
   } catch (err) {
     console.error(err);
-    feed.innerHTML = `<div class="ig-empty"><i class="fas fa-exclamation-triangle"></i><h3>Couldn't load feed</h3><p style="opacity:.6;font-size:12px;">${escapeHtml(err.message)}</p></div>`;
+    feed.innerHTML = `<div class="ig-empty"><i class="fas fa-exclamation-triangle"></i><h3>Couldn't load</h3><p style="opacity:.6;font-size:12px;">${escapeHtml(err.message)}</p></div>`;
   }
 }
 
@@ -700,8 +872,11 @@ function renderPost(post) {
     ? `<div class="ig-post-caption"><span class="cap-user">${escapeHtml(uname)}</span>${escapeHtml(post.content)}</div>`
     : '';
 
+  const isOwnPost = currentUser && post.user_id === currentUser.id;
+  const isBoosted = post.is_boosted && post.boost_expires_at && new Date(post.boost_expires_at) > new Date();
+
   return `
-    <article class="ig-post" data-id="${post.id}">
+    <article class="ig-post ${isBoosted ? 'boosted' : ''}" data-id="${post.id}">
       <div class="ig-post-head">
         <a href="profile.html?user=${post.user_id}" class="p-avatar">${avatarHtml}</a>
         <div class="meta">
@@ -718,6 +893,11 @@ function renderPost(post) {
         </button>
         <button class="ig-action" onclick="openComments('${post.id}')"><i class="far fa-comment"></i></button>
         <button class="ig-action" onclick="sharePost('${post.id}')"><i class="far fa-paper-plane"></i></button>
+        ${isOwnPost ? `
+          <button class="ig-action boost-btn" onclick="openBoost('${post.id}')" title="Boost Post">
+            <i class="fas fa-rocket"></i>
+          </button>
+        ` : ''}
         <button class="ig-action save" onclick="showToast('Saved')"><i class="far fa-bookmark"></i></button>
       </div>
 
@@ -735,11 +915,9 @@ async function toggleLike(postId, btn) {
   if (!currentUser) { showToast('Sign in to like', 'error'); return; }
   const icon = btn.querySelector('i');
   const isLiked = likedPosts.has(postId);
-
   try {
     if (isLiked) {
-      await supabaseClient.from('likes').delete()
-        .eq('user_id', currentUser.id).eq('post_id', postId);
+      await supabaseClient.from('likes').delete().eq('user_id', currentUser.id).eq('post_id', postId);
       likedPosts.delete(postId);
       btn.classList.remove('liked');
       icon.className = 'far fa-heart';
@@ -767,19 +945,110 @@ async function sharePost(postId) {
   try { await navigator.clipboard.writeText(url); showToast('Link copied! 📋','success'); } catch { showToast('Link: '+url); }
 }
 
+/* ==================== BOOST ==================== */
+function openBoost(postId) {
+  if (!currentUser) { showToast('Sign in first', 'error'); return; }
+  boostingPostId = postId;
+  selectedBoost = { duration:'3d', price:2.49 };
+  document.querySelectorAll('.boost-option').forEach(o => o.classList.remove('selected'));
+  document.querySelector('.boost-option[data-boost="3d"]').classList.add('selected');
+  updateBoostSummary();
+  document.getElementById('boostModal').classList.add('active');
+}
+function closeBoost() {
+  document.getElementById('boostModal').classList.remove('active');
+  boostingPostId = null;
+}
+function selectBoost(el) {
+  document.querySelectorAll('.boost-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedBoost = {
+    duration: el.dataset.boost,
+    price: parseFloat(el.dataset.price)
+  };
+  updateBoostSummary();
+}
+function updateBoostSummary() {
+  const summary = document.getElementById('boostSummary');
+  const balance = Number(currentWallet?.balance ?? 0);
+  summary.style.display = 'block';
+  document.getElementById('bsBalance').textContent = '$' + balance.toFixed(2);
+  document.getElementById('bsCost').textContent    = '$' + selectedBoost.price.toFixed(2);
+  const after = balance - selectedBoost.price;
+  const afterEl = document.getElementById('bsAfter');
+  afterEl.textContent = '$' + after.toFixed(2);
+  afterEl.style.color = after < 0 ? '#ff7675' : '#5eb8ff';
+}
+async function confirmBoost() {
+  if (!currentUser || !boostingPostId) return;
+  const balance = Number(currentWallet?.balance ?? 0);
+  if (balance < selectedBoost.price) {
+    showToast('Insufficient balance. Add funds to your wallet.', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('boostConfirmBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Boosting…';
+
+  try {
+    const durationMs = {
+      '24h': 24 * 3600 * 1000,
+      '3d':  3 * 24 * 3600 * 1000,
+      '7d':  7 * 24 * 3600 * 1000,
+      '14d': 14 * 24 * 3600 * 1000
+    }[selectedBoost.duration];
+
+    const expiresAt = new Date(Date.now() + durationMs).toISOString();
+
+    // Update post
+    const { error: postErr } = await supabaseClient
+      .from('posts')
+      .update({ is_boosted: true, boost_expires_at: expiresAt })
+      .eq('id', boostingPostId);
+    if (postErr) throw postErr;
+
+    // Deduct wallet
+    const { error: wErr } = await supabaseClient.rpc('update_balance', {
+      p_user_id: currentUser.id,
+      p_amount: -selectedBoost.price,
+      p_type: 'spend',
+      p_source: 'boost',
+      p_note: `Boosted post for ${selectedBoost.duration}`
+    });
+    if (wErr) {
+      // Fallback if RPC isn't set up
+      await supabaseClient.from('wallets').update({
+        balance: balance - selectedBoost.price,
+        total_spent: (currentWallet?.total_spent || 0) + selectedBoost.price
+      }).eq('user_id', currentUser.id);
+    }
+
+    // Refresh local wallet
+    await loadUserData();
+    renderUserSection();
+
+    closeBoost();
+    showToast('🚀 Post boosted successfully!', 'success');
+    loadFeed();
+
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-rocket"></i> Boost Now';
+  }
+}
+
 /* ==================== STORIES ==================== */
 async function loadStories() {
   try {
     const { data, error } = await supabaseClient
       .from('stories')
-      .select(`
-        id, media_url, media_type, caption, created_at, expires_at,
-        profiles:user_id (id, username, display_name, avatar_url, is_verified)
-      `)
+      .select(`id, media_url, media_type, caption, created_at, expires_at, profiles:user_id (id, username, display_name, avatar_url, is_verified)`)
       .gt('expires_at', new Date().toISOString())
       .order('created_at', { ascending: false });
     if (error) throw error;
-
     const map = new Map();
     (data || []).forEach(s => {
       const p = s.profiles;
@@ -796,35 +1065,28 @@ async function loadStories() {
       seenIds = new Set((views || []).map(v => v.story_id));
     }
     renderStories(seenIds);
-  } catch (err) { console.error('Stories:', err); }
+  } catch (err) { console.error(err); }
 }
 
 function renderStories(seenIds) {
   const row = document.getElementById('storiesRow');
   if (!row) return;
-
   const addTile = row.querySelector('.ig-story.add');
   row.innerHTML = '';
   if (addTile) row.appendChild(addTile);
-
   storiesByUser.forEach(group => {
     const p = group.user;
     const name = p.display_name || p.username || 'user';
     const hasUnseen = group.stories.some(s => !seenIds.has(s.id));
     const ringClass = hasUnseen ? 'unseen' : 'seen';
-
     const firstStory = group.stories[0];
     const thumb = firstStory.media_type === 'video'
       ? `<div class="inner"><i class="fas fa-play" style="font-size:16px;"></i></div>`
       : `<div class="inner"><img src="${escapeHtml(firstStory.media_url)}" alt=""></div>`;
-
     const storyEl = document.createElement('div');
     storyEl.className = 'ig-story';
     storyEl.onclick = () => openStoryViewer(p.id);
-    storyEl.innerHTML = `
-      <div class="ig-story-ring ${ringClass}">${thumb}</div>
-      <div class="label">${escapeHtml(name)}</div>
-    `;
+    storyEl.innerHTML = `<div class="ig-story-ring ${ringClass}">${thumb}</div><div class="label">${escapeHtml(name)}</div>`;
     row.appendChild(storyEl);
   });
 }
@@ -850,7 +1112,7 @@ async function markStoriesViewed(stories) {
   renderStories(seenIds);
 }
 
-/* ==================== FULLSCREEN VIEWER ==================== */
+/* ==================== FULLSCREEN ==================== */
 function openFs(postId, idx) {
   const postEl = document.querySelector(`article[data-id="${postId}"]`);
   if (!postEl) return;
@@ -860,7 +1122,6 @@ function openFs(postId, idx) {
   renderFs();
   document.getElementById('fsViewer').classList.add('active');
 }
-
 function renderFs() {
   const content = document.getElementById('fsContent');
   const counter = document.getElementById('fsCounter');
@@ -874,7 +1135,6 @@ function renderFs() {
   document.getElementById('fsPrev').style.display = showNav ? 'flex' : 'none';
   document.getElementById('fsNext').style.display = showNav ? 'flex' : 'none';
 }
-
 function fsNav(dir) {
   currentMediaIndex = (currentMediaIndex + dir + currentMediaList.length) % currentMediaList.length;
   renderFs();
@@ -906,8 +1166,7 @@ async function loadComments(postId) {
   list.innerHTML = '<div class="comments-empty"><i class="fas fa-circle-notch fa-spin"></i></div>';
   try {
     const { data, error } = await supabaseClient
-      .from('comments')
-      .select(`*, profiles:user_id (username, display_name, avatar_url)`)
+      .from('comments').select(`*, profiles:user_id (username, display_name, avatar_url)`)
       .eq('post_id', postId).order('created_at', { ascending: true });
     if (error) throw error;
     if (!data || data.length === 0) {
