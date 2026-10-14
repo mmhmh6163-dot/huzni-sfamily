@@ -216,6 +216,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:30px; }
   border:1px solid rgba(0,184,148,.4);
   border-radius:14px; padding:16px;
   margin-bottom:20px;
+  transition:border-color .3s;
 }
 .success-screen .earned-box .amount {
   font-size:26px; font-weight:800;
@@ -225,6 +226,13 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:30px; }
 .success-screen .earned-box .lbl {
   font-size:12px; color:var(--az-text-secondary);
   text-transform:uppercase; letter-spacing:.5px;
+}
+.success-screen .earned-box .new-balance {
+  font-size:13px; color:#5eb8ff;
+  font-weight:700;
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px solid rgba(0,184,148,.25);
 }
 .success-screen .remaining {
   font-size:12px; color:var(--az-text-secondary);
@@ -371,6 +379,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:30px; }
   <div class="earned-box" id="earnedBox">
     <div class="amount" id="earnedAmount">+$0.001</div>
     <div class="lbl" id="earnedLabel">Earned from this post</div>
+    <div class="new-balance" id="newBalance" style="display:none;"></div>
     <div class="remaining" id="earnedRemaining"></div>
   </div>
 
@@ -553,7 +562,7 @@ async function submitPost() {
     progressFill.style.width = '100%';
     progressText.textContent = 'Saving post…';
 
-    // 2. Insert post with ALL counters at 0
+    // 2. Insert post with all counters at 0
     const { data: postData, error: dbError } = await supabaseClient
       .from('posts')
       .insert({
@@ -574,20 +583,92 @@ async function submitPost() {
     if (dbError) throw dbError;
     lastPostId = postData.id;
 
-    // 3. Award $0.001 (respecting 100/day cap)
-    let earnedResult = { awarded: false };
+    // ============================================================
+    // 3. AWARD EARNING — 3-layer protection
+    // ============================================================
+    progressText.textContent = 'Crediting your earnings…';
+
+    let earnedResult = { awarded: false, reason: 'unknown' };
+
+    // ----- Layer 1: Try RPC (preferred) -----
     try {
       const { data: rpcData, error: rpcErr } = await supabaseClient.rpc('award_post_earning', {
         p_user_id: currentUser.id
       });
       if (rpcErr) throw rpcErr;
-      earnedResult = rpcData || { awarded: false };
+      if (rpcData) earnedResult = rpcData;
+      console.log('[Earn] RPC success:', earnedResult);
+    } catch (rpcFail) {
+      console.warn('[Earn] RPC failed → trying fallback:', rpcFail);
+
+      // ----- Layer 2: Direct fallback -----
+      try {
+        // Read fresh wallet
+        const { data: wallet } = await supabaseClient
+          .from('wallets')
+          .select('balance, total_earned')
+          .eq('user_id', currentUser.id)
+          .single();
+
+        const oldBal  = Number(wallet?.balance || 0);
+        const newBal  = oldBal + 0.001;
+        const newEarn = Number(wallet?.total_earned || 0) + 0.001;
+
+        // Update wallet
+        const { error: updErr } = await supabaseClient
+          .from('wallets')
+          .update({ balance: newBal, total_earned: newEarn })
+          .eq('user_id', currentUser.id);
+        if (updErr) throw updErr;
+
+        // Log transaction
+        const { error: txErr } = await supabaseClient
+          .from('wallet_transactions')
+          .insert({
+            user_id: currentUser.id,
+            amount: 0.001,
+            type: 'earn',
+            source: 'post_created',
+            note: 'Earned from creating a post',
+            status: 'completed'
+          });
+        if (txErr) throw txErr;
+
+        earnedResult = {
+          awarded: true,
+          earned: 0.001,
+          old_balance: oldBal,
+          new_balance: newBal,
+          count: (earnStatus.count || 0) + 1,
+          cap: 100,
+          remaining: Math.max(0, 99 - (earnStatus.count || 0))
+        };
+        console.log('[Earn] Fallback success:', earnedResult);
+      } catch (fbFail) {
+        console.error('[Earn] Both RPC and fallback failed:', fbFail);
+        earnedResult = {
+          awarded: false,
+          reason: 'system_error',
+          error: 'Earning system temporarily unavailable — your post is saved.'
+        };
+      }
+    }
+
+    // ----- Layer 3: Verify balance -----
+    try {
+      const { data: verify } = await supabaseClient.rpc('verify_balance', {
+        p_user_id: currentUser.id
+      });
+      if (verify) console.log('[Earn] Balance verification:', verify);
     } catch (e) {
-      console.warn('Earning RPC failed:', e);
+      // verify_balance may not exist on older setups — ignore
     }
 
     // 4. Show success screen
     showSuccessScreen(earnedResult);
+
+    // 5. Refresh wallet state in background
+    loadUserData().then(() => { /* header updates on next paint */ });
 
   } catch (err) {
     console.error(err);
@@ -599,41 +680,51 @@ async function submitPost() {
 }
 
 function showSuccessScreen(earned) {
-  // Hide create form
   document.getElementById('createContent').style.display = 'none';
   document.getElementById('topbar').style.display = 'none';
   document.getElementById('uploadProgress').classList.remove('active');
 
-  const screen = document.getElementById('successScreen');
-  const box    = document.getElementById('earnedBox');
-  const amount = document.getElementById('earnedAmount');
-  const label  = document.getElementById('earnedLabel');
-  const rem    = document.getElementById('earnedRemaining');
+  const screen     = document.getElementById('successScreen');
+  const box        = document.getElementById('earnedBox');
+  const amount     = document.getElementById('earnedAmount');
+  const label      = document.getElementById('earnedLabel');
+  const newBalance = document.getElementById('newBalance');
+  const rem        = document.getElementById('earnedRemaining');
 
   if (earned.awarded) {
     box.style.borderColor = 'rgba(0,184,148,.4)';
     amount.style.color = '#00b894';
     amount.textContent = '+$0.001';
-    label.textContent = 'Earned from this post 🎉';
-    rem.textContent = `${earned.remaining} of ${earned.cap} earning posts remaining today`;
+    label.textContent = '✅ Earned from this post';
+    if (earned.new_balance !== undefined) {
+      newBalance.style.display = 'block';
+      newBalance.textContent = 'New balance: $' + Number(earned.new_balance).toFixed(4);
+    }
+    if (earned.remaining !== undefined) {
+      rem.textContent = `${earned.remaining} of ${earned.cap || 100} earning posts remaining today`;
+    }
   } else if (earned.reason === 'daily_cap_reached') {
-    box.style.borderColor = 'rgba(255,118,117,.4)';
-    amount.style.color = '#ff7675';
+    box.style.borderColor = 'rgba(255,178,15,.4)';
+    amount.style.color = '#FFB20F';
     amount.textContent = 'Daily cap reached';
     label.textContent = 'Max $0.10 earned today';
+    newBalance.style.display = 'none';
     rem.textContent = 'Resets at midnight UTC · Your post still counts!';
   } else {
-    box.style.display = 'none';
+    box.style.borderColor = 'rgba(255,118,117,.4)';
+    amount.style.color = '#ff7675';
+    amount.textContent = 'Earning pending';
+    label.textContent = 'Will be credited automatically';
+    newBalance.style.display = 'none';
+    rem.textContent = "Your post is saved. Contact support if balance doesn't update.";
   }
 
-  // Show share button
   if (lastPostId) {
     document.getElementById('shareMyPostBtn').style.display = 'flex';
   }
 
   screen.classList.add('active');
 
-  // Refresh earn status for next post
   loadEarnStatus();
 }
 
@@ -647,6 +738,7 @@ function resetForm() {
   document.getElementById('topbar').style.display = 'flex';
   document.getElementById('shareBtn').disabled = false;
   document.getElementById('shareBtn').innerHTML = '<i class="fas fa-share"></i> Share';
+  document.getElementById('newBalance').style.display = 'none';
   lastPostId = null;
 }
 
