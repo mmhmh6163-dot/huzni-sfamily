@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Terms of Service — Arizona AI</title>
+
+<link rel="icon" type="image/jpeg" href="arizonan%20png%20icon.jpeg">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+
+<style>
+body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
+
+.topbar {
+  position:fixed; top:0; left:0; right:0; height:60px;
+  background:rgba(10,10,10,.97); backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,107,53,.25);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 16px; z-index:1000; max-width:640px; margin:0 auto;
+}
+.topbar .back, .topbar .icon-btn {
+  color:var(--az-text); font-size:19px;
+  width:40px; height:40px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%; text-decoration:none; cursor:pointer;
+  background:none; border:none;
+}
+.topbar .title { font-size:16px; font-weight:700; color:var(--az-text); }
+
+.policy-hero {
+  max-width:640px; margin:0 auto;
+  padding:32px 20px 24px;
+  text-align:center;
+}
+.policy-hero .icon {
+  width:76px; height:76px; border-radius:24px;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  font-size:32px; color:#fff; margin:0 auto 16px;
+  box-shadow:0 0 40px rgba(255,107,53,.5);
+}
+.policy-hero h1 {
+  font-size:26px; font-weight:800;
+  background:var(--az-gradient);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  margin-bottom:8px;
+}
+.policy-hero .updated {
+  color:var(--az-text-secondary);
+  font-size:13px;
+}
+.policy-hero .intro {
+  color:var(--az-text-secondary);
+  font-size:14px; line-height:1.65;
+  margin-top:16px;
+}
+
+.policy-content {
+  max-width:640px; margin:0 auto;
+  padding:0 20px 40px;
+}
+.section {
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  padding:22px 20px;
+  margin-bottom:14px;
+}
+.section h2 {
+  font-size:16px; font-weight:800;
+  color:var(--az-text);
+  margin-bottom:12px;
+  display:flex; align-items:center; gap:10px;
+}
+.section h2 .num {
+  background:var(--az-gradient);
+  width:26px; height:26px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; color:#fff;
+  flex-shrink:0;
+}
+.section p {
+  color:var(--az-text-secondary);
+  font-size:14px; line-height:1.7;
+  margin-bottom:10px;
+}
+.section p:last-child { margin-bottom:0; }
+.section ul {
+  list-style:none; padding:0; margin:8px 0;
+}
+.section li {
+  color:var(--az-text-secondary);
+  font-size:14px; line-height:1.7;
+  padding-left:22px;
+  position:relative;
+  margin-bottom:6px;
+}
+.section li::before {
+  content:'▸';
+  color:var(--az-accent);
+  position:absolute; left:6px;
+  font-weight:800;
+}
+.section strong {
+  color:var(--az-text);
+  font-weight:700;
+}
+.section a {
+  color:var(--az-primary);
+  text-decoration:none;
+  font-weight:600;
+}
+.section a:hover { text-decoration:underline; }
+
+/* WARNING BOX */
+.warning-box {
+  background:linear-gradient(135deg, rgba(255,118,117,.12), rgba(255,118,117,.05));
+  border:1px solid rgba(255,118,117,.35);
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:14px;
+  display:flex; gap:14px;
+}
+.warning-box i {
+  font-size:24px; color:#ff7675;
+  flex-shrink:0;
+}
+.warning-box .text {
+  font-size:14px; line-height:1.6;
+  color:var(--az-text);
+}
+.warning-box .text strong {
+  color:#ff7675; display:block;
+  margin-bottom:4px;
+}
+
+/* ACCEPT BOX */
+.accept-box {
+  background:linear-gradient(135deg, rgba(0,184,148,.12), rgba(255,178,15,.08));
+  border:1px solid rgba(0,184,148,.35);
+  border-radius:16px;
+  padding:22px 20px;
+  margin:20px auto;
+  max-width:640px;
+  text-align:center;
+}
+.accept-box i {
+  font-size:32px; color:#00b894;
+  margin-bottom:12px; display:block;
+}
+.accept-box h3 {
+  color:var(--az-text);
+  font-size:17px;
+  margin-bottom:8px;
+}
+.accept-box p {
+  color:var(--az-text-secondary);
+  font-size:14px;
+  margin-bottom:18px;
+  line-height:1.6;
+}
+.accept-box a {
+  display:inline-flex;
+  align-items:center; gap:8px;
+  padding:12px 24px;
+  background:var(--az-gradient);
+  color:#fff;
+  border-radius:22px;
+  text-decoration:none;
+  font-weight:700;
+  font-size:14px;
+}
+</style>
+</head>
+<body>
+
+<div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
+
+<header class="topbar">
+  <a href="index.html" class="back"><i class="fas fa-arrow-left"></i></a>
+  <span class="title">Terms of Service</span>
+  <a href="privacy.html" class="icon-btn" title="Privacy"><i class="fas fa-shield-halved"></i></a>
+</header>
+
+<!-- HERO -->
+<div class="policy-hero">
+  <div class="icon"><i class="fas fa-file-contract"></i></div>
+  <h1>Terms of Service</h1>
+  <div class="updated">Last updated: October 14, 2026</div>
+  <p class="intro">
+    Welcome to <strong>Arizona AI</strong>. By using our platform, you agree to these terms. Please read them carefully — they explain your rights and responsibilities as a user.
+  </p>
+</div>
+
+<!-- WARNING -->
+<div class="policy-content">
+  <div class="warning-box">
+    <i class="fas fa-exclamation-triangle"></i>
+    <div class="text">
+      <strong>Important</strong>
+      By creating an account, posting content, or using any part of Arizona AI, you accept these terms in full. If you do not agree, please do not use the platform.
+    </div>
+  </div>
+</div>
+
+<!-- SECTIONS -->
+<div class="policy-content">
+
+  <div class="section">
+    <h2><span class="num">1</span> Acceptance of Terms</h2>
+    <p>By accessing or using Arizona AI (the "Service"), you agree to be bound by these Terms of Service ("Terms"). These Terms apply to all visitors, users, and others who access the Service.</p>
+    <p>We may modify these Terms at any time. Continued use after changes means you accept the new Terms.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">2</span> Eligibility</h2>
+    <p>To use Arizona AI, you must:</p>
+    <ul>
+      <li>Be at least <strong>13 years old</strong></li>
+      <li>Have the legal capacity to enter into a binding contract</li>
+      <li>Not be barred from using the Service under any applicable law</li>
+      <li>Provide accurate and complete registration information</li>
+    </ul>
+    <p>Users aged 13–18 must have parental or guardian consent.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">3</span> Your Account</h2>
+    <p>You are responsible for:</p>
+    <ul>
+      <li>Keeping your password secure and confidential</li>
+      <li>All activity that happens under your account</li>
+      <li>Notifying us immediately of any unauthorized access</li>
+      <li>Not sharing your account with others</li>
+    </ul>
+    <p><strong>One person, one account.</strong> Creating multiple accounts to game the earning system is prohibited.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">4</span> Content You Post</h2>
+    <p>You retain ownership of the content you create. By posting, you grant Arizona AI a worldwide, non-exclusive, royalty-free license to:</p>
+    <ul>
+      <li>Display your content to other users</li>
+      <li>Distribute it through the platform's features</li>
+      <li>Store and back it up securely</li>
+    </ul>
+    <p>You can delete your content at any time, which removes it from public view.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">5</span> Prohibited Content</h2>
+    <p>You may <strong>not</strong> post, share, or promote:</p>
+    <ul>
+      <li>Nudity, pornography, or sexually explicit material</li>
+      <li>Violence, gore, or content that promotes harm</li>
+      <li>Hate speech, harassment, or discrimination</li>
+      <li>Illegal drugs, weapons, or criminal activity</li>
+      <li>Spam, scams, phishing, or misleading content</li>
+      <li>Content that infringes others' copyrights or trademarks</li>
+      <li>Content that violates anyone's privacy</li>
+      <li>Malware, viruses, or harmful code</li>
+      <li>Content related to minors in any harmful context</li>
+    </ul>
+    <p>We reserve the right to remove any content that violates these rules.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">6</span> Earning System</h2>
+    <p>Arizona AI rewards users for creating content. The rules:</p>
+    <ul>
+      <li>You earn <strong>$0.001 per post</strong> (with a daily cap of 100 posts)</li>
+      <li>Signup bonus: <strong>$0.50</strong> added to your wallet</li>
+      <li>Earnings depend on platform availability and may change</li>
+      <li>We reserve the right to adjust earning rates with notice</li>
+      <li>Fraudulent activity results in forfeiture of earnings</li>
+    </ul>
+    <p>All balances are shown in USD. Withdrawal features will be added in a future update.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">7</span> Prohibited Activities</h2>
+    <p>You agree <strong>not</strong> to:</p>
+    <ul>
+      <li>Use bots, scripts, or automation to post or engage</li>
+      <li>Manipulate likes, comments, or followers artificially</li>
+      <li>Attempt to hack, disrupt, or overload the Service</li>
+      <li>Reverse engineer any part of the platform</li>
+      <li>Scrape user data without permission</li>
+      <li>Impersonate other users or Arizona AI staff</li>
+      <li>Circumvent security or paywall features</li>
+      <li>Use the platform for any illegal purpose</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">8</span> Intellectual Property</h2>
+    <p>The Arizona AI name, logo, and all related branding are owned by <strong>Huzni's Family</strong> and <strong>Galab Al-Barak Co.</strong> You may not use them without written permission.</p>
+    <p>The platform's code, design, and features are protected by copyright and international law.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">9</span> Account Suspension</h2>
+    <p>We may suspend or terminate your account at any time if you:</p>
+    <ul>
+      <li>Violate these Terms</li>
+      <li>Post prohibited content</li>
+      <li>Engage in fraudulent activity</li>
+      <li>Harm other users or the platform</li>
+      <li>Violate applicable laws</li>
+    </ul>
+    <p>Serious violations may result in permanent ban without warning.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">10</span> Disclaimer</h2>
+    <p>Arizona AI is provided <strong>"as is"</strong> and <strong>"as available"</strong> without warranties of any kind, express or implied.</p>
+    <p>We do not guarantee:</p>
+    <ul>
+      <li>Uninterrupted or error-free service</li>
+      <li>Specific earnings or income</li>
+      <li>That content will reach any particular audience</li>
+      <li>Data preservation beyond our backup retention periods</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">11</span> Limitation of Liability</h2>
+    <p>To the maximum extent permitted by law, Arizona AI and its founders shall not be liable for:</p>
+    <ul>
+      <li>Indirect, incidental, or consequential damages</li>
+      <li>Loss of profits, data, or business opportunities</li>
+      <li>Damages arising from your use or inability to use the Service</li>
+      <li>Actions of third parties on the platform</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">12</span> Termination</h2>
+    <p>You may delete your account at any time via your profile settings. Upon deletion:</p>
+    <ul>
+      <li>Your profile, posts, and content are removed from public view</li>
+      <li>Your data is permanently deleted within 30 days</li>
+      <li>Any unclaimed earnings are forfeited</li>
+    </ul>
+    <p>We may also terminate accounts for Terms violations.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">13</span> Governing Law</h2>
+    <p>These Terms are governed by applicable law in Arizona AI's jurisdiction. Any disputes will first be attempted to resolve through good-faith negotiation.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">14</span> Changes to Terms</h2>
+    <p>We may update these Terms from time to time. We'll notify you via:</p>
+    <ul>
+      <li>An in-app notification</li>
+      <li>An email if changes are significant</li>
+      <li>An updated "Last updated" date on this page</li>
+    </ul>
+    <p>Continued use of the platform after changes means you accept them.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">15</span> Contact</h2>
+    <p>For questions about these Terms, contact us at:</p>
+    <ul>
+      <li><a href="contact.html">Contact Support</a></li>
+      <li>Or visit our <a href="aboutus.html">About Us</a> page</li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- ACCEPT BOX -->
+<div class="accept-box">
+  <i class="fas fa-handshake"></i>
+  <h3>By using Arizona AI, you accept these Terms</h3>
+  <p>Thanks for being part of our community. Let's build something great together.</p>
+  <a href="register.html">
+    <i class="fas fa-user-plus"></i> Join Now
+  </a>
+</div>
+
+<div id="app-footer"></div>
+
+<script src="auth.js"></script>
+</body>
+</html>
