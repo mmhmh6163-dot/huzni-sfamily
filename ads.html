@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Ads & Boosts — Arizona AI</title>
+
+<link rel="icon" type="image/jpeg" href="arizonan%20png%20icon.jpeg">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+
+<style>
+body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
+
+.topbar {
+  position:fixed; top:0; left:0; right:0; height:60px;
+  background:rgba(10,10,10,.97); backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,107,53,.25);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 16px; z-index:1000; max-width:640px; margin:0 auto;
+}
+.topbar .back, .topbar .icon-btn {
+  color:var(--az-text); font-size:19px;
+  width:40px; height:40px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%; text-decoration:none; cursor:pointer;
+  background:none; border:none;
+}
+.topbar .title { font-size:16px; font-weight:700; color:var(--az-text); }
+
+/* HERO */
+.hero {
+  max-width:640px; margin:0 auto;
+  padding:32px 20px 20px;
+  text-align:center;
+}
+.hero .icon {
+  width:76px; height:76px; border-radius:24px;
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
+  display:flex; align-items:center; justify-content:center;
+  font-size:32px; color:#fff; margin:0 auto 16px;
+  box-shadow:0 0 50px rgba(94,184,255,.5);
+  animation: pulse 3s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow:0 0 50px rgba(94,184,255,.5); }
+  50% { box-shadow:0 0 70px rgba(124,58,237,.7); }
+}
+.hero h1 {
+  font-size:26px; font-weight:800;
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  margin-bottom:8px;
+}
+.hero p {
+  color:var(--az-text-secondary);
+  font-size:14px; line-height:1.6;
+}
+
+/* STATS ROW */
+.stats-row {
+  max-width:640px; margin:0 auto 20px;
+  padding:0 20px;
+  display:grid; grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+}
+.stat-box {
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;
+  padding:14px 8px;
+  text-align:center;
+}
+.stat-box .num {
+  font-size:18px; font-weight:800;
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  line-height:1;
+  margin-bottom:4px;
+}
+.stat-box .lbl {
+  font-size:10px; color:var(--az-text-secondary);
+  text-transform:uppercase; letter-spacing:.5px;
+}
+
+/* TABS */
+.tabs {
+  max-width:640px; margin:0 auto 16px;
+  padding:0 20px;
+  display:flex; gap:8px;
+}
+.tabs .tab {
+  flex:1; padding:10px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;
+  color:var(--az-text-secondary);
+  font-size:12px; font-weight:600;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  transition:all .15s;
+}
+.tabs .tab.active {
+  background:rgba(94,184,255,.15);
+  border-color:#5eb8ff;
+  color:#5eb8ff;
+}
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+
+/* SECTION TITLE */
+.section-title {
+  max-width:640px; margin:16px auto 10px;
+  padding:0 20px;
+  font-size:12px; font-weight:800;
+  color:var(--az-text-secondary);
+  text-transform:uppercase; letter-spacing:1.2px;
+  display:flex; align-items:center; gap:8px;
+}
+.section-title::after {
+  content:''; flex:1; height:1px;
+  background:linear-gradient(to right, rgba(94,184,255,.3), transparent);
+}
+
+/* AD CARDS */
+.ads-list {
+  max-width:640px; margin:0 auto;
+  padding:0 20px;
+}
+.ad-card {
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:12px;
+  transition:all .2s;
+}
+.ad-card:hover {
+  background:rgba(94,184,255,.06);
+  border-color:rgba(94,184,255,.4);
+}
+.ad-card .ad-head {
+  display:flex; align-items:center; gap:12px;
+  margin-bottom:12px;
+}
+.ad-card .ad-icon {
+  width:44px; height:44px; border-radius:12px;
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; color:#fff;
+  flex-shrink:0;
+}
+.ad-card .ad-info { flex:1; min-width:0; }
+.ad-card .ad-info h3 {
+  font-size:14px; font-weight:700;
+  color:var(--az-text);
+  margin-bottom:3px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.ad-card .ad-info .type {
+  font-size:11px;
+  color:var(--az-text-secondary);
+  display:flex; align-items:center; gap:6px;
+}
+.status-badge {
+  padding:3px 9px;
+  border-radius:12px;
+  font-size:10px; font-weight:800;
+  text-transform:uppercase; letter-spacing:.5px;
+  white-space:nowrap;
+}
+.status-badge.active    { background:rgba(0,184,148,.2);   color:#00b894; }
+.status-badge.pending   { background:rgba(255,178,15,.2);  color:#FFB20F; }
+.status-badge.paused    { background:rgba(150,150,150,.2); color:#999;    }
+.status-badge.completed { background:rgba(94,184,255,.2);  color:#5eb8ff; }
+.status-badge.draft     { background:rgba(150,150,150,.15);color:#888;    }
+.status-badge.cancelled { background:rgba(255,118,117,.15);color:#ff7675; }
+
+.ad-stats {
+  display:grid; grid-template-columns:1fr 1fr 1fr;
+  gap:8px; margin-bottom:10px;
+}
+.ad-stat {
+  background:rgba(255,255,255,.03);
+  border-radius:10px;
+  padding:10px 6px;
+  text-align:center;
+}
+.ad-stat .n {
+  font-size:14px; font-weight:800;
+  color:var(--az-text);
+  line-height:1;
+  margin-bottom:3px;
+}
+.ad-stat .l {
+  font-size:9px;
+  color:var(--az-text-secondary);
+  text-transform:uppercase; letter-spacing:.5px;
+}
+
+.ad-progress {
+  height:6px;
+  background:rgba(255,255,255,.08);
+  border-radius:3px;
+  overflow:hidden;
+  margin-bottom:10px;
+}
+.ad-progress-fill {
+  height:100%;
+  background:linear-gradient(90deg,#5eb8ff,#7c3aed);
+  width:0%;
+  transition:width .3s;
+}
+
+.ad-actions {
+  display:flex; gap:8px;
+}
+.ad-actions button, .ad-actions a {
+  flex:1;
+  padding:9px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.15);
+  background:transparent;
+  color:var(--az-text);
+  font-size:12px; font-weight:600;
+  cursor:pointer;
+  text-decoration:none;
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  transition:all .15s;
+}
+.ad-actions button:hover, .ad-actions a:hover {
+  background:rgba(94,184,255,.15);
+  border-color:#5eb8ff;
+}
+.ad-actions button.danger {
+  color:var(--az-danger);
+  border-color:rgba(255,118,117,.4);
+}
+.ad-actions button.danger:hover {
+  background:rgba(255,118,117,.15);
+  border-color:var(--az-danger);
+}
+
+/* EMPTY */
+.empty {
+  text-align:center;
+  padding:60px 24px;
+  color:var(--az-text-secondary);
+}
+.empty i {
+  font-size:52px;
+  color:#5eb8ff;
+  opacity:.4; margin-bottom:14px; display:block;
+}
+.empty h3 {
+  color:var(--az-text); font-size:16px;
+  margin-bottom:6px;
+}
+
+/* FORM */
+.form-wrap {
+  max-width:640px; margin:0 auto;
+  padding:0 20px;
+}
+.form-card {
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;
+  padding:24px 20px;
+}
+.form-card h3 {
+  text-align:center;
+  color:var(--az-text);
+  font-size:18px;
+  margin-bottom:6px;
+}
+.form-card .sub {
+  text-align:center;
+  color:var(--az-text-secondary);
+  font-size:13px;
+  margin-bottom:22px;
+  line-height:1.5;
+}
+.form-field { margin-bottom:14px; }
+.form-field label {
+  display:block;
+  font-size:12px;
+  color:var(--az-text-secondary);
+  margin-bottom:6px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+.form-field input,
+.form-field textarea,
+.form-field select {
+  width:100%;
+  padding:12px 14px;
+  background:#0a0a0a;
+  border:1px solid #333;
+  border-radius:10px;
+  color:#fff;
+  font-size:14px;
+  font-family:inherit;
+}
+.form-field textarea { min-height:80px; resize:vertical; }
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus {
+  outline:none;
+  border-color:#5eb8ff;
+}
+
+/* POST PICKER */
+.post-picker {
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:6px;
+  margin-bottom:8px;
+}
+.pick-post {
+  aspect-ratio:1/1;
+  border-radius:10px;
+  overflow:hidden;
+  cursor:pointer;
+  border:2px solid transparent;
+  background:#111;
+  position:relative;
+}
+.pick-post.selected { border-color:#5eb8ff; }
+.pick-post img, .pick-post video {
+  width:100%; height:100%; object-fit:cover; display:block;
+}
+.pick-post .no-media {
+  width:100%; height:100%;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg,#1a1a1a,#2d2d2d);
+  color:rgba(255,255,255,.35); font-size:10px;
+  text-align:center; padding:6px; word-break:break-word;
+}
+.pick-post .check {
+  position:absolute; top:4px; right:4px;
+  background:#5eb8ff; color:#fff;
+  width:20px; height:20px; border-radius:50%;
+  display:none; align-items:center; justify-content:center;
+  font-size:10px;
+}
+.pick-post.selected .check { display:flex; }
+
+/* TYPE PICKER */
+.type-row {
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:8px;
+}
+.type-btn {
+  padding:12px 10px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;
+  color:var(--az-text-secondary);
+  font-size:12px; font-weight:600;
+  cursor:pointer;
+  display:flex; flex-direction:column;
+  align-items:center; gap:4px;
+}
+.type-btn i { font-size:18px; }
+.type-btn.active {
+  background:rgba(94,184,255,.15);
+  border-color:#5eb8ff;
+  color:#5eb8ff;
+}
+
+/* BUDGET PRESETS */
+.budget-presets {
+  display:grid; grid-template-columns:repeat(4, 1fr);
+  gap:6px;
+  margin-bottom:8px;
+}
+.budget-preset {
+  padding:10px 4px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;
+  color:var(--az-text);
+  font-size:12px; font-weight:700;
+  cursor:pointer;
+  text-align:center;
+}
+.budget-preset.active {
+  background:rgba(94,184,255,.15);
+  border-color:#5eb8ff;
+  color:#5eb8ff;
+}
+
+.btn-submit {
+  width:100%;
+  padding:14px;
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  font-weight:700;
+  font-size:15px;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  margin-top:6px;
+  transition:transform .15s;
+}
+.btn-submit:active { transform:scale(.98); }
+.btn-submit:disabled { opacity:.6; cursor:not-allowed; }
+
+.form-alert {
+  padding:11px 14px;
+  border-radius:10px;
+  font-size:13px;
+  margin-bottom:14px;
+  display:none;
+}
+.form-alert.error {
+  background:rgba(255,118,117,.12);
+  color:#fca5a5;
+  border:1px solid rgba(255,118,117,.3);
+}
+.form-alert.success {
+  background:rgba(0,184,148,.12);
+  color:#86efac;
+  border:1px solid rgba(0,184,148,.3);
+}
+
+/* AUTH WALL */
+.auth-wall {
+  max-width:440px;
+  margin:40px auto;
+  padding:32px 24px;
+  text-align:center;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(94,184,255,.25);
+  border-radius:20px;
+}
+.auth-wall i {
+  font-size:48px;
+  color:#5eb8ff;
+  margin-bottom:14px;
+}
+.auth-wall h2 {
+  color:var(--az-text);
+  margin-bottom:8px;
+  font-size:18px;
+}
+.auth-wall p {
+  color:var(--az-text-secondary);
+  font-size:14px;
+  margin-bottom:20px;
+}
+.auth-wall a {
+  display:block;
+  padding:13px;
+  border-radius:12px;
+  text-decoration:none;
+  font-weight:700;
+  margin-bottom:10px;
+}
+.auth-wall a.primary {
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
+  color:#fff;
+}
+.auth-wall a.outline {
+  border:1px solid #5eb8ff;
+  color:#5eb8ff;
+}
+</style>
+</head>
+<body>
+
+<div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
+
+<header class="topbar">
+  <a href="index.html" class="back"><i class="fas fa-arrow-left"></i></a>
+  <span class="title">Ads & Boosts</span>
+  <a href="wallets.html" class="icon-btn" title="Wallet"><i class="fas fa-wallet"></i></a>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="icon"><i class="fas fa-bullhorn"></i></div>
+  <h1>Ads & Boosts</h1>
+  <p>Promote your posts and reach more people. Powered by AI targeting.</p>
+</div>
+
+<!-- STATS ROW -->
+<div class="stats-row" id="statsRow" style="display:none;">
+  <div class="stat-box">
+    <div class="num" id="statActive">0</div>
+    <div class="lbl">Active</div>
+  </div>
+  <div class="stat-box">
+    <div class="num" id="statImpressions">0</div>
+    <div class="lbl">Impressions</div>
+  </div>
+  <div class="stat-box">
+    <div class="num" id="statSpent">$0</div>
+    <div class="lbl">Spent</div>
+  </div>
+</div>
+
+<!-- AUTH WALL -->
+<div id="authWall" style="display:none;">
+  <div class="auth-wall">
+    <i class="fas fa-bullhorn"></i>
+    <h2>Sign in to manage ads</h2>
+    <p>Create and manage ad campaigns to grow your audience.</p>
+    <a href="register.html" class="primary">Create Free Account</a>
+    <a href="login.html" class="outline">Sign In</a>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs" id="tabs" style="display:none;">
+  <button class="tab active" onclick="switchTab('campaigns', this)">
+    <i class="fas fa-list"></i> My Ads
+  </button>
+  <button class="tab" onclick="switchTab('create', this)">
+    <i class="fas fa-plus"></i> Create Ad
+  </button>
+</div>
+
+<!-- TAB: CAMPAIGNS -->
+<div class="tab-content active" id="tabCampaigns">
+  <div class="section-title">
+    <i class="fas fa-rocket" style="color:#5eb8ff;"></i>
+    Your Campaigns
+  </div>
+  <div class="ads-list" id="adsList">
+    <div class="empty"><i class="fas fa-circle-notch fa-spin"></i></div>
+  </div>
+</div>
+
+<!-- TAB: CREATE -->
+<div class="tab-content" id="tabCreate">
+  <div class="section-title">
+    <i class="fas fa-plus-circle" style="color:#5eb8ff;"></i>
+    New Campaign
+  </div>
+  <div class="form-wrap">
+    <div class="form-card">
+      <h3>Create Ad</h3>
+      <p class="sub">Pick a post, set a budget, and we'll handle the rest.</p>
+
+      <div class="form-alert error"   id="formError"></div>
+      <div class="form-alert success" id="formSuccess"></div>
+
+      <form onsubmit="return submitAd(event)">
+
+        <div class="form-field">
+          <label>Choose a Post to Promote</label>
+          <div class="post-picker" id="postPicker">
+            <div style="grid-column:1/-1;text-align:center;padding:20px;color:#666;">
+              <i class="fas fa-circle-notch fa-spin"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>Ad Type</label>
+          <div class="type-row">
+            <button type="button" class="type-btn active" data-type="post_boost" onclick="selectAdType('post_boost', this)">
+              <i class="fas fa-rocket"></i> Post Boost
+            </button>
+            <button type="button" class="type-btn" data-type="story_ad" onclick="selectAdType('story_ad', this)">
+              <i class="fas fa-circle-plus"></i> Story Ad
+            </button>
+            <button type="button" class="type-btn" data-type="profile_promo" onclick="selectAdType('profile_promo', this)">
+              <i class="fas fa-user"></i> Profile Promo
+            </button>
+            <button type="button" class="type-btn" data-type="brand_ad" onclick="selectAdType('brand_ad', this)">
+              <i class="fas fa-building"></i> Brand Ad
+            </button>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>Campaign Title</label>
+          <input type="text" id="adTitle" placeholder="e.g. Summer Sale Promotion" required maxlength="100">
+        </div>
+
+        <div class="form-field">
+          <label>Description (optional)</label>
+          <textarea id="adDescription" placeholder="What's the goal of this campaign?" maxlength="300"></textarea>
+        </div>
+
+        <div class="form-field">
+          <label>Duration (days)</label>
+          <div class="budget-presets" id="durationPresets">
+            <div class="budget-preset" data-days="1"  onclick="selectDuration(1, this)">1 day</div>
+            <div class="budget-preset active" data-days="3" onclick="selectDuration(3, this)">3 days</div>
+            <div class="budget-preset" data-days="7"  onclick="selectDuration(7, this)">7 days</div>
+            <div class="budget-preset" data-days="14" onclick="selectDuration(14, this)">14 days</div>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>Budget (USD)</label>
+          <div class="budget-presets" id="budgetPresets">
+            <div class="budget-preset" data-budget="0.99"  onclick="selectBudget(0.99, this)">$0.99</div>
+            <div class="budget-preset active" data-budget="2.49" onclick="selectBudget(2.49, this)">$2.49</div>
+            <div class="budget-preset" data-budget="4.99"  onclick="selectBudget(4.99, this)">$4.99</div>
+            <div class="budget-preset" data-budget="8.99"  onclick="selectBudget(8.99, this)">$8.99</div>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>Target Audience</label>
+          <select id="adAudience">
+            <option value="everyone">🌍 Everyone</option>
+            <option value="followers">👥 My Followers</option>
+            <option value="similar">🎯 Similar to my audience</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <i class="fas fa-rocket"></i> Launch Campaign
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="app-footer"></div>
+
+<script src="auth.js"></script>
+<script>
+let allAds = [];
+let userPosts = [];
+let selectedPostId = null;
+let selectedAdType = 'post_boost';
+let selectedDuration = 3;
+let selectedBudget = 2.49;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const check = setInterval(() => {
+    if (typeof authReady !== 'undefined' && authReady) {
+      clearInterval(check);
+      init();
+    }
+  }, 100);
+});
+
+async function init() {
+  if (!currentUser) {
+    document.getElementById('authWall').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('authWall').style.display = 'none';
+  document.getElementById('statsRow').style.display = 'grid';
+  document.getElementById('tabs').style.display = 'flex';
+
+  await loadAds();
+  await loadPosts();
+  renderAds();
+  renderPostPicker();
+  updateStats();
+}
+
+/* ==================== LOAD ==================== */
+async function loadAds() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('ad_campaigns')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    allAds = data || [];
+  } catch (err) {
+    console.error(err);
+    allAds = [];
+  }
+}
+
+async function loadPosts() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('posts')
+      .select('id, content, media_urls, media_types, created_at')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: false })
+      .limit(12);
+    if (error) throw error;
+    userPosts = data || [];
+  } catch (err) {
+    console.error(err);
+    userPosts = [];
+  }
+}
+
+/* ==================== RENDER ADS ==================== */
+function renderAds() {
+  const list = document.getElementById('adsList');
+
+  if (allAds.length === 0) {
+    list.innerHTML = `
+      <div class="empty">
+        <i class="fas fa-bullhorn"></i>
+        <h3>No campaigns yet</h3>
+        <p>Create your first ad to start reaching more people.</p>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = allAds.map(a => renderAd(a)).join('');
+}
+
+function renderAd(ad) {
+  const now = new Date();
+  const ends = ad.ends_at ? new Date(ad.ends_at) : null;
+  const expired = ends && ends < now;
+  const status = expired && ad.status === 'active' ? 'completed' : ad.status;
+
+  // Progress
+  let progressPct = 0;
+  if (ad.starts_at && ends) {
+    const total = ends - new Date(ad.starts_at);
+    const elapsed = now - new Date(ad.starts_at);
+    progressPct = Math.min(100, Math.max(0, (elapsed / total) * 100));
+  }
+
+  const typeLabel = {
+    post_boost:    '🚀 Post Boost',
+    story_ad:      '📖 Story Ad',
+    profile_promo: '👤 Profile Promo',
+    brand_ad:      '🏢 Brand Ad'
+  }[ad.type] || ad.type;
+
+  const ctr = ad.impressions > 0 ? ((ad.clicks / ad.impressions) * 100).toFixed(1) : '0.0';
+
+  // Action buttons based on status
+  let actionsHtml = '';
+  if (status === 'active') {
+    actionsHtml = `
+      <button onclick="pauseAd('${ad.id}')"><i class="fas fa-pause"></i> Pause</button>
+      <button class="danger" onclick="cancelAd('${ad.id}')"><i class="fas fa-times"></i> Cancel</button>
+    `;
+  } else if (status === 'paused') {
+    actionsHtml = `
+      <button onclick="resumeAd('${ad.id}')"><i class="fas fa-play"></i> Resume</button>
+      <button class="danger" onclick="cancelAd('${ad.id}')"><i class="fas fa-times"></i> Cancel</button>
+    `;
+  } else {
+    actionsHtml = `
+      <button class="danger" onclick="deleteAd('${ad.id}')"><i class="fas fa-trash"></i> Delete</button>
+    `;
+  }
+
+  return `
+    <div class="ad-card">
+      <div class="ad-head">
+        <div class="ad-icon"><i class="fas fa-bullhorn"></i></div>
+        <div class="ad-info">
+          <h3>${escapeHtml(ad.title)}</h3>
+          <div class="type">${typeLabel}</div>
+        </div>
+        <span class="status-badge ${status}">${status}</span>
+      </div>
+
+      <div class="ad-stats">
+        <div class="ad-stat">
+          <div class="n">$${Number(ad.budget).toFixed(2)}</div>
+          <div class="l">Budget</div>
+        </div>
+        <div class="ad-stat">
+          <div class="n">${ad.impressions || 0}</div>
+          <div class="l">Views</div>
+        </div>
+        <div class="ad-stat">
+          <div class="n">${ad.clicks || 0}</div>
+          <div class="l">Clicks</div>
+        </div>
+      </div>
+
+      ${status === 'active' ? `
+        <div class="ad-progress">
+          <div class="ad-progress-fill" style="width:${progressPct}%"></div>
+        </div>
+      ` : ''}
+
+      <div class="ad-actions">
+        ${actionsHtml}
+      </div>
+    </div>
+  `;
+}
+
+/* ==================== POST PICKER ==================== */
+function renderPostPicker() {
+  const picker = document.getElementById('postPicker');
+
+  if (userPosts.length === 0) {
+    picker.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--az-text-secondary);font-size:13px;">
+        <i class="fas fa-info-circle"></i><br>
+        You don't have any posts yet.
+        <br><br>
+        <a href="Post.html" style="color:var(--az-primary);font-weight:700;">Create your first post →</a>
+      </div>`;
+    return;
+  }
+
+  picker.innerHTML = userPosts.map(p => {
+    const mediaUrls = Array.isArray(p.media_urls) ? p.media_urls : [];
+    const first = mediaUrls[0];
+    let mediaHtml;
+    if (first) {
+      if (/\.(mp4|webm|ogg|mov)$/i.test(first)) {
+        mediaHtml = `<video src="${escapeHtml(first)}" muted></video>`;
+      } else {
+        mediaHtml = `<img src="${escapeHtml(first)}" alt="" loading="lazy">`;
+      }
+    } else {
+      const excerpt = (p.content || '').slice(0, 40) || 'Text';
+      mediaHtml = `<div class="no-media">${escapeHtml(excerpt)}</div>`;
+    }
+    return `
+      <div class="pick-post" data-post-id="${p.id}" onclick="pickPost('${p.id}', this)">
+        ${mediaHtml}
+        <div class="check"><i class="fas fa-check"></i></div>
+      </div>
+    `;
+  }).join('');
+}
+
+function pickPost(postId, el) {
+  document.querySelectorAll('.pick-post').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPostId = postId;
+  console.log('[Ads] Selected post:', postId);
+}
+
+/* ==================== PICKERS ==================== */
+function selectAdType(type, el) {
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  selectedAdType = type;
+}
+
+function selectDuration(days, el) {
+  document.querySelectorAll('#durationPresets .budget-preset').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  selectedDuration = days;
+}
+
+function selectBudget(amount, el) {
+  document.querySelectorAll('#budgetPresets .budget-preset').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  selectedBudget = amount;
+}
+
+/* ==================== TABS ==================== */
+function switchTab(name, el) {
+  document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById(name === 'campaigns' ? 'tabCampaigns' : 'tabCreate').classList.add('active');
+}
+
+/* ==================== CREATE ==================== */
+async function submitAd(e) {
+  e.preventDefault();
+  hideAlerts();
+
+  const title       = document.getElementById('adTitle').value.trim();
+  const description = document.getElementById('adDescription').value.trim();
+  const audience    = document.getElementById('adAudience').value;
+
+  if (!selectedPostId) return showAlert('error', 'Please pick a post to promote.');
+  if (!title)          return showAlert('error', 'Please give your campaign a title.');
+
+  const balance = Number(currentWallet?.balance ?? 0);
+  if (balance < selectedBudget) {
+    return showAlert('error', `Insufficient balance. You need $${selectedBudget.toFixed(2)} but have $${balance.toFixed(2)}.`);
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Launching…';
+
+  try {
+    // 1. Create campaign
+    const { error: adErr } = await supabaseClient.from('ad_campaigns').insert({
+      user_id:         currentUser.id,
+      post_id:         selectedPostId,
+      title:           title,
+      description:     description || null,
+      type:            selectedAdType,
+      budget:          selectedBudget,
+      duration_days:   selectedDuration,
+      target_audience: audience,
+      status:          'active'
+    });
+    if (adErr) throw adErr;
+
+    // 2. Deduct balance
+    const newBalance = balance - selectedBudget;
+    const newSpent   = Number(currentWallet?.total_spent || 0) + selectedBudget;
+
+    await supabaseClient.from('wallets')
+      .update({ balance: newBalance, total_spent: newSpent })
+      .eq('user_id', currentUser.id);
+
+    await supabaseClient.from('wallet_transactions').insert({
+      user_id: currentUser.id,
+      amount: -selectedBudget,
+      type: 'spend',
+      source: 'ad_campaign',
+      note: `Ad: ${title}`
+    });
+
+    // 3. Mark post as boosted (if post_boost)
+    if (selectedAdType === 'post_boost') {
+      const endsAt = new Date(Date.now() + selectedDuration * 24 * 3600 * 1000).toISOString();
+      try {
+        await supabaseClient.from('posts')
+          .update({ is_boosted: true, boost_expires_at: endsAt })
+          .eq('id', selectedPostId);
+      } catch (e) { console.warn('Post boost update failed:', e); }
+    }
+
+    // 4. Refresh
+    await loadUserData();
+    await loadAds();
+
+    showAlert('success',
+      `🎉 Campaign <strong>"${escapeHtml(title)}"</strong> is now live!<br>` +
+      `We've deducted <strong>$${selectedBudget.toFixed(2)}</strong> from your wallet.`
+    );
+
+    // Reset form
+    document.getElementById('adTitle').value = '';
+    document.getElementById('adDescription').value = '';
+    document.getElementById('postPicker').querySelectorAll('.pick-post').forEach(p => p.classList.remove('selected'));
+    selectedPostId = null;
+
+    renderAds();
+    updateStats();
+
+    // Switch to campaigns tab
+    setTimeout(() => {
+      document.querySelector('.tabs .tab').click();
+    }, 1500);
+
+  } catch (err) {
+    console.error(err);
+    showAlert('error', err.message || 'Failed to create campaign.');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-rocket"></i> Launch Campaign';
+  }
+  return false;
+}
+
+/* ==================== AD ACTIONS ==================== */
+async function pauseAd(id) {
+  try {
+    await supabaseClient.from('ad_campaigns').update({ status: 'paused' }).eq('id', id).eq('user_id', currentUser.id);
+    showToast('Campaign paused');
+    await loadAds();
+    renderAds();
+    updateStats();
+  } catch (err) { showToast(err.message, 'error'); }
+}
+
+async function resumeAd(id) {
+  try {
+    await supabaseClient.from('ad_campaigns').update({ status: 'active' }).eq('id', id).eq('user_id', currentUser.id);
+    showToast('Campaign resumed');
+    await loadAds();
+    renderAds();
+    updateStats();
+  } catch (err) { showToast(err.message, 'error'); }
+}
+
+async function cancelAd(id) {
+  if (!confirm('Cancel this campaign? Remaining budget will not be refunded.')) return;
+  try {
+    await supabaseClient.from('ad_campaigns').update({ status: 'cancelled' }).eq('id', id).eq('user_id', currentUser.id);
+    showToast('Campaign cancelled');
+    await loadAds();
+    renderAds();
+    updateStats();
+  } catch (err) { showToast(err.message, 'error'); }
+}
+
+async function deleteAd(id) {
+  if (!confirm('Delete this campaign permanently?')) return;
+  try {
+    await supabaseClient.from('ad_campaigns').delete().eq('id', id).eq('user_id', currentUser.id);
+    showToast('Campaign deleted');
+    await loadAds();
+    renderAds();
+    updateStats();
+  } catch (err) { showToast(err.message, 'error'); }
+}
+
+/* ==================== STATS ==================== */
+function updateStats() {
+  const active = allAds.filter(a => {
+    if (a.status !== 'active') return false;
+    if (a.ends_at && new Date(a.ends_at) < new Date()) return false;
+    return true;
+  }).length;
+
+  const totalImpressions = allAds.reduce((sum, a) => sum + (a.impressions || 0), 0);
+  const totalSpent = allAds.reduce((sum, a) => sum + Number(a.budget || 0), 0);
+
+  document.getElementById('statActive').textContent      = active;
+  document.getElementById('statImpressions').textContent = totalImpressions;
+  document.getElementById('statSpent').textContent       = '$' + totalSpent.toFixed(2);
+}
+
+/* ==================== ALERTS ==================== */
+function showAlert(type, html) {
+  hideAlerts();
+  const el = document.getElementById(type === 'error' ? 'formError' : 'formSuccess');
+  el.innerHTML = html;
+  el.style.display = 'block';
+  el.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+function hideAlerts() {
+  document.getElementById('formError').style.display = 'none';
+  document.getElementById('formSuccess').style.display = 'none';
+}
+</script>
+</body>
+</html>
