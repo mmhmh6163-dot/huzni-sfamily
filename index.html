@@ -12,7 +12,7 @@
 <style>
 body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 
-/* ==================== TOP BAR ==================== */
+/* TOP BAR */
 .ig-topbar {
   position:fixed; top:0; left:0; right:0; height:60px;
   background:rgba(10,10,10,.97); backdrop-filter:blur(12px);
@@ -38,14 +38,13 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   display:flex; align-items:center; justify-content:center;
   position:relative; text-decoration:none;
 }
-.ig-icon-btn:hover { background:rgba(255,255,255,.06); }
 .ig-icon-btn .dot {
   position:absolute; top:8px; right:8px;
   width:8px; height:8px; border-radius:50%;
   background:var(--az-primary); border:2px solid #0a0a0a;
 }
 
-/* ==================== USER STRIP (only when logged in) ==================== */
+/* USER STRIP */
 .ig-user-strip {
   max-width:640px; margin:0 auto;
   padding:12px 16px;
@@ -76,9 +75,8 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   border-radius:18px; font-size:12px; font-weight:600;
   cursor:pointer; text-decoration:none;
 }
-.ig-user-strip .logout-mini:hover { background:var(--az-danger); color:#fff; }
 
-/* ==================== GUEST CTA (only when logged out) ==================== */
+/* GUEST CTA */
 .guest-cta {
   max-width:640px; margin:0 auto;
   padding:16px;
@@ -95,7 +93,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   white-space:nowrap;
 }
 
-/* ==================== STORIES ==================== */
+/* STORIES */
 .ig-stories {
   max-width:640px; margin:0 auto;
   display:flex; gap:14px; padding:14px 16px;
@@ -115,12 +113,9 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   font-weight:700; color:#fff; font-size:20px; overflow:hidden;
 }
 .ig-story.add .inner { background:var(--az-accent); color:#1a1a1a; }
-.ig-story .label {
-  font-size:11px; color:var(--az-text-secondary);
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
+.ig-story .label { font-size:11px; color:var(--az-text-secondary); }
 
-/* ==================== FEED ==================== */
+/* FEED */
 .ig-feed { max-width:640px; margin:0 auto; }
 .ig-post {
   background:rgba(255,255,255,.03);
@@ -145,19 +140,13 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   text-decoration:none;
 }
 .ig-post-head .meta .name .verified { color:#3b82f6; font-size:12px; }
-.ig-post-head .meta .sub {
-  font-size:11px; color:var(--az-text-secondary);
-}
-.ig-post-head .more {
-  color:var(--az-text-secondary);
-  background:none; border:none;
-  font-size:18px; cursor:pointer; padding:6px;
-}
+.ig-post-head .meta .sub { font-size:11px; color:var(--az-text-secondary); }
 
 .ig-post-media {
   width:100%; background:#000;
   display:flex; align-items:center; justify-content:center;
   max-height:620px; overflow:hidden;
+  cursor:pointer;
 }
 .ig-post-media img,
 .ig-post-media video {
@@ -196,19 +185,15 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   text-transform:uppercase; letter-spacing:.5px;
 }
 
-/* ==================== EMPTY ==================== */
-.ig-empty {
-  text-align:center; padding:60px 24px;
-  color:var(--az-text-secondary);
+/* COMMENTS PREVIEW */
+.ig-comments-preview {
+  padding:0 16px 12px;
+  font-size:13px; color:var(--az-text-secondary);
+  cursor:pointer;
 }
-.ig-empty i {
-  font-size:56px; color:var(--az-primary);
-  opacity:.4; margin-bottom:16px; display:block;
-}
-.ig-empty h3 { color:var(--az-text); font-size:17px; margin-bottom:6px; }
-.ig-empty p { font-size:14px; }
+.ig-comments-preview:hover { color:var(--az-text); }
 
-/* ==================== BOTTOM NAV ==================== */
+/* BOTTOM NAV */
 .ig-bottom-nav {
   position:fixed; bottom:0; left:50%; transform:translateX(-50%);
   width:100%; max-width:640px;
@@ -232,7 +217,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   width:44px; height:44px; border-radius:12px;
   padding:0; justify-content:center;
 }
-.ig-bottom-nav .bnav-item.create i { font-size:20px; }
 .ig-bottom-nav .bnav-avatar {
   width:26px; height:26px; border-radius:50%;
   background:var(--az-gradient);
@@ -240,14 +224,142 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   font-weight:700; color:#fff; font-size:11px;
   border:2px solid var(--az-text);
 }
-.ig-bottom-nav .bnav-avatar.no-auth {
-  background:transparent; border:2px solid var(--az-text-secondary);
+
+/* EMPTY */
+.ig-empty {
+  text-align:center; padding:60px 24px;
   color:var(--az-text-secondary);
 }
+.ig-empty i {
+  font-size:56px; color:var(--az-primary);
+  opacity:.4; margin-bottom:16px; display:block;
+}
+.ig-empty h3 { color:var(--az-text); font-size:17px; margin-bottom:6px; }
 
-/* ==================== MOBILE ==================== */
+/* ==================== FULLSCREEN IMAGE VIEWER ==================== */
+.fs-viewer {
+  display:none;
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.98);
+  z-index:3000;
+  align-items:center; justify-content:center;
+}
+.fs-viewer.active { display:flex; }
+.fs-viewer img,
+.fs-viewer video {
+  max-width:100vw;
+  max-height:100vh;
+  object-fit:contain;
+  animation:fsIn .25s ease;
+}
+@keyframes fsIn { from { opacity:0; transform:scale(.92); } }
+.fs-viewer .close-btn {
+  position:absolute; top:20px; right:20px;
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(255,255,255,.12); color:#fff;
+  border:none; font-size:22px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  backdrop-filter:blur(8px);
+}
+.fs-viewer .nav-btn {
+  position:absolute; top:50%; transform:translateY(-50%);
+  width:50px; height:50px; border-radius:50%;
+  background:rgba(255,255,255,.12); color:#fff;
+  border:none; font-size:22px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  backdrop-filter:blur(8px);
+}
+.fs-viewer .nav-btn.prev { left:16px; }
+.fs-viewer .nav-btn.next { right:16px; }
+.fs-viewer .counter {
+  position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
+  color:#fff; font-size:13px; font-weight:600;
+  background:rgba(255,255,255,.12);
+  padding:6px 14px; border-radius:20px;
+  backdrop-filter:blur(8px);
+}
+
+/* ==================== COMMENTS MODAL ==================== */
+.comments-modal {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.85); z-index:2000;
+  align-items:flex-end; justify-content:center;
+}
+.comments-modal.active { display:flex; }
+.comments-panel {
+  background:#151515;
+  width:100%; max-width:640px;
+  border-top-left-radius:20px; border-top-right-radius:20px;
+  max-height:85vh; display:flex; flex-direction:column;
+}
+.comments-head {
+  padding:16px 20px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.comments-head h3 { font-size:16px; color:var(--az-text); }
+.comments-head .close-x {
+  background:none; border:none; color:var(--az-text-secondary);
+  font-size:22px; cursor:pointer; padding:4px;
+}
+.comments-list {
+  flex:1; overflow-y:auto;
+  padding:14px 20px;
+}
+.comment-item {
+  display:flex; gap:12px;
+  padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+.comment-item:last-child { border-bottom:none; }
+.comment-item .c-avatar {
+  width:36px; height:36px; border-radius:50%;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:#fff; font-size:14px;
+  flex-shrink:0; overflow:hidden;
+}
+.comment-item .c-avatar img { width:100%; height:100%; object-fit:cover; }
+.comment-item .c-body { flex:1; min-width:0; }
+.comment-item .c-name {
+  font-size:13px; font-weight:700; color:var(--az-text);
+  margin-bottom:3px;
+}
+.comment-item .c-text {
+  font-size:14px; color:var(--az-text); line-height:1.5;
+  word-wrap:break-word;
+}
+.comment-item .c-time {
+  font-size:11px; color:var(--az-text-secondary);
+  margin-top:4px;
+}
+.comments-empty {
+  text-align:center; padding:40px 20px;
+  color:var(--az-text-secondary); font-size:14px;
+}
+.comments-input-wrap {
+  padding:12px 16px;
+  border-top:1px solid rgba(255,255,255,.08);
+  display:flex; gap:10px;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom));
+}
+.comments-input {
+  flex:1; padding:12px 16px;
+  background:#0a0a0a; border:1px solid #333;
+  border-radius:24px; color:#fff; font-size:14px;
+  font-family:inherit;
+}
+.comments-input:focus { outline:none; border-color:var(--az-primary); }
+.comments-send {
+  padding:0 20px;
+  background:var(--az-gradient); color:#fff;
+  border:none; border-radius:24px;
+  font-weight:700; font-size:14px;
+  cursor:pointer;
+}
+.comments-send:disabled { opacity:.5; cursor:not-allowed; }
+
 @media (max-width:380px) {
-  .ig-user-strip .name { font-size:13px; }
   .ig-story { width:64px; }
   .ig-story-ring { width:56px; height:56px; }
 }
@@ -257,18 +369,14 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 
 <div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
 
-<!-- ==================== TOP BAR ==================== -->
 <header class="ig-topbar">
   <a href="index.html" class="brand">
     <i class="fas fa-mountain-sun"></i>
     <span>Arizona AI</span>
   </a>
-  <div class="actions" id="topActions">
-    <!-- Filled by JS -->
-  </div>
+  <div class="actions" id="topActions"></div>
 </header>
 
-<!-- ==================== USER STRIP (logged in) ==================== -->
 <div class="ig-user-strip" id="userStrip" style="display:none;">
   <a href="profile.html" class="avatar" id="uAvatar">U</a>
   <div class="info">
@@ -279,12 +387,9 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
       <span style="color:var(--az-text-secondary);"> · Earn more by posting</span>
     </div>
   </div>
-  <a href="logout.html" class="logout-mini">
-    <i class="fas fa-sign-out-alt"></i> Logout
-  </a>
+  <a href="logout.html" class="logout-mini"><i class="fas fa-sign-out-alt"></i> Logout</a>
 </div>
 
-<!-- ==================== GUEST CTA (logged out) ==================== -->
 <div class="guest-cta" id="guestCta" style="display:none;">
   <div class="text">
     <strong>🏜️ Welcome to Arizona AI</strong>
@@ -293,7 +398,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   <a href="register.html">Sign Up</a>
 </div>
 
-<!-- ==================== STORIES ==================== -->
 <div class="ig-stories" id="storiesRow">
   <div class="ig-story add" onclick="goToPost()">
     <div class="ig-story-ring"><div class="inner"><i class="fas fa-plus"></i></div></div>
@@ -301,36 +405,54 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   </div>
 </div>
 
-<!-- ==================== FEED ==================== -->
 <main class="ig-feed" id="feed">
-  <div class="ig-empty">
-    <i class="fas fa-circle-notch fa-spin"></i>
-    Loading posts…
-  </div>
+  <div class="ig-empty"><i class="fas fa-circle-notch fa-spin"></i>Loading posts…</div>
 </main>
 
-<!-- ==================== BOTTOM NAV ==================== -->
-<nav class="ig-bottom-nav" id="bottomNav">
-  <a href="index.html" class="bnav-item active">
-    <i class="fas fa-home"></i><span>Home</span>
-  </a>
-  <a href="Friends.html" class="bnav-item">
-    <i class="fas fa-search"></i><span>Search</span>
-  </a>
-  <a href="Post.html" class="bnav-item create" id="createBtn">
-    <i class="fas fa-plus"></i>
-  </a>
-  <a href="chats.html" class="bnav-item">
-    <i class="far fa-heart"></i><span>Activity</span>
-  </a>
+<nav class="ig-bottom-nav">
+  <a href="index.html" class="bnav-item active"><i class="fas fa-home"></i><span>Home</span></a>
+  <a href="Friends.html" class="bnav-item"><i class="fas fa-search"></i><span>Search</span></a>
+  <a href="Post.html" class="bnav-item create"><i class="fas fa-plus"></i></a>
+  <a href="chats.html" class="bnav-item"><i class="far fa-heart"></i><span>Activity</span></a>
   <a href="profile.html" class="bnav-item" id="profileNav">
-    <div class="bnav-avatar no-auth" id="bnavAvatar"><i class="far fa-user"></i></div>
+    <div class="bnav-avatar" id="bnavAvatar">U</div>
     <span>Profile</span>
   </a>
 </nav>
 
+<!-- ==================== FULLSCREEN VIEWER ==================== -->
+<div class="fs-viewer" id="fsViewer">
+  <button class="close-btn" onclick="closeFs()"><i class="fas fa-times"></i></button>
+  <button class="nav-btn prev" id="fsPrev" onclick="fsNav(-1)"><i class="fas fa-chevron-left"></i></button>
+  <button class="nav-btn next" id="fsNext" onclick="fsNav(1)"><i class="fas fa-chevron-right"></i></button>
+  <div id="fsContent"></div>
+  <div class="counter" id="fsCounter">1 / 1</div>
+</div>
+
+<!-- ==================== COMMENTS MODAL ==================== -->
+<div class="comments-modal" id="commentsModal">
+  <div class="comments-panel">
+    <div class="comments-head">
+      <h3>Comments</h3>
+      <button class="close-x" onclick="closeComments()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="comments-list" id="commentsList"></div>
+    <div class="comments-input-wrap">
+      <input type="text" class="comments-input" id="commentInput"
+             placeholder="Add a comment…" maxlength="500"
+             onkeydown="if(event.key==='Enter') submitComment()">
+      <button class="comments-send" id="commentSendBtn" onclick="submitComment()">Post</button>
+    </div>
+  </div>
+</div>
+
 <script src="auth.js"></script>
 <script>
+let currentPostId = null;
+let currentMediaList = [];
+let currentMediaIndex = 0;
+let likedPosts = new Set();
+
 document.addEventListener('DOMContentLoaded', () => {
   const check = setInterval(() => {
     if (typeof authReady !== 'undefined' && authReady) {
@@ -340,89 +462,71 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 100);
 });
 
-function init() {
+async function init() {
   renderTopActions();
   renderUserSection();
   renderBottomAvatar();
+  await loadLikedPosts();
   loadFeed();
 }
 
-/* ==================== TOP ACTIONS ==================== */
 function renderTopActions() {
   const el = document.getElementById('topActions');
   if (currentUser) {
     el.innerHTML = `
-      <a href="Friends.html" class="ig-icon-btn" title="Friends">
-        <i class="far fa-heart"></i>
-      </a>
-      <a href="chats.html" class="ig-icon-btn" title="Messages">
-        <i class="far fa-paper-plane"></i>
-        <span class="dot"></span>
-      </a>
-      <a href="notifications.html" class="ig-icon-btn" title="Notifications">
-        <i class="far fa-bell"></i>
-      </a>
+      <a href="Friends.html" class="ig-icon-btn"><i class="far fa-heart"></i></a>
+      <a href="chats.html" class="ig-icon-btn"><i class="far fa-paper-plane"></i><span class="dot"></span></a>
+      <a href="notifications.html" class="ig-icon-btn"><i class="far fa-bell"></i></a>
     `;
   } else {
     el.innerHTML = `
-      <a href="login.html" class="ig-icon-btn" title="Login" style="width:auto; padding:0 12px; font-size:13px; font-weight:600;">
-        Login
-      </a>
-      <a href="register.html" class="ig-icon-btn" title="Sign Up" style="width:auto; padding:0 12px; font-size:13px; font-weight:600; background:var(--az-gradient); color:#fff;">
-        Sign Up
-      </a>
+      <a href="login.html" class="ig-icon-btn" style="width:auto; padding:0 12px; font-size:13px; font-weight:600;">Login</a>
+      <a href="register.html" class="ig-icon-btn" style="width:auto; padding:0 12px; font-size:13px; font-weight:600; background:var(--az-gradient); color:#fff;">Sign Up</a>
     `;
   }
 }
 
-/* ==================== USER SECTION ==================== */
 function renderUserSection() {
   const strip = document.getElementById('userStrip');
   const cta   = document.getElementById('guestCta');
-
   if (currentUser) {
     strip.style.display = 'flex';
-    cta.style.display   = 'none';
-
+    cta.style.display = 'none';
     const name = currentProfile?.username || currentUser.email?.split('@')[0] || 'User';
     const bal  = Number(currentWallet?.balance ?? 0).toFixed(2);
-    const initial = name.charAt(0).toUpperCase();
-
-    document.getElementById('uName').textContent    = name;
+    document.getElementById('uName').textContent = name;
     document.getElementById('uBalance').textContent = '$' + bal;
-    document.getElementById('uAvatar').textContent  = initial;
+    document.getElementById('uAvatar').textContent = name.charAt(0).toUpperCase();
   } else {
     strip.style.display = 'none';
-    cta.style.display   = 'flex';
+    cta.style.display = 'flex';
   }
 }
 
-/* ==================== BOTTOM AVATAR ==================== */
 function renderBottomAvatar() {
   const av = document.getElementById('bnavAvatar');
   if (currentUser) {
     const name = currentProfile?.username || currentUser.email?.split('@')[0] || 'U';
-    av.classList.remove('no-auth');
     av.textContent = name.charAt(0).toUpperCase();
-    av.style.background = 'var(--az-gradient)';
-    av.style.color = '#fff';
-    av.style.border = '2px solid var(--az-text)';
   } else {
-    av.classList.add('no-auth');
     av.innerHTML = '<i class="far fa-user"></i>';
-    av.style.background = 'transparent';
-    av.style.color = 'var(--az-text-secondary)';
-    av.style.border = '2px solid var(--az-text-secondary)';
   }
 }
 
-/* ==================== NAV TO POST ==================== */
 function goToPost() {
-  if (!currentUser) {
-    window.location.href = 'login.html';
-  } else {
-    window.location.href = 'Post.html';
-  }
+  window.location.href = currentUser ? 'Post.html' : 'login.html';
+}
+
+/* ==================== LOAD LIKED POSTS ==================== */
+async function loadLikedPosts() {
+  if (!currentUser) return;
+  try {
+    const { data } = await supabaseClient
+      .from('likes')
+      .select('post_id')
+      .eq('user_id', currentUser.id);
+    likedPosts = new Set((data || []).map(r => r.post_id));
+  } catch (e) { /* ignore */ }
 }
 
 /* ==================== FEED ==================== */
@@ -431,15 +535,9 @@ async function loadFeed() {
   feed.innerHTML = '<div class="ig-empty"><i class="fas fa-circle-notch fa-spin"></i>Loading posts…</div>';
 
   try {
-    // Public feed — no auth required
     const { data, error } = await supabaseClient
       .from('posts')
-      .select(`
-        *,
-        profiles:user_id (
-          username, display_name, avatar_url, is_verified
-        )
-      `)
+      .select(`*, profiles:user_id (username, display_name, avatar_url, is_verified)`)
       .eq('visibility', 'public')
       .order('created_at', { ascending: false })
       .limit(50);
@@ -447,25 +545,14 @@ async function loadFeed() {
     if (error) throw error;
 
     if (!data || data.length === 0) {
-      feed.innerHTML = `
-        <div class="ig-empty">
-          <i class="far fa-newspaper"></i>
-          <h3>No posts yet</h3>
-          <p>${currentUser ? 'Be the first to post — tap ➕ below!' : 'Sign up to be the first to post!'}</p>
-        </div>`;
+      feed.innerHTML = `<div class="ig-empty"><i class="far fa-newspaper"></i><h3>No posts yet</h3><p>${currentUser ? 'Tap ➕ to be the first!' : 'Sign up to be the first!'}</p></div>`;
       return;
     }
 
     feed.innerHTML = data.map(post => renderPost(post)).join('');
-
   } catch (err) {
     console.error('Feed error:', err);
-    feed.innerHTML = `
-      <div class="ig-empty">
-        <i class="fas fa-exclamation-triangle"></i>
-        <h3>Couldn't load feed</h3>
-        <p style="opacity:.6; font-size:12px;">${escapeHtml(err.message)}</p>
-      </div>`;
+    feed.innerHTML = `<div class="ig-empty"><i class="fas fa-exclamation-triangle"></i><h3>Couldn't load feed</h3><p style="opacity:.6; font-size:12px;">${escapeHtml(err.message)}</p></div>`;
   }
 }
 
@@ -476,18 +563,17 @@ function renderPost(post) {
   const initial = name.charAt(0).toUpperCase();
   const verified = prof.is_verified ? '<i class="fas fa-circle-check verified"></i>' : '';
   const timeAgo = formatTimeAgo(post.created_at);
-  const avatarHtml = prof.avatar_url
-    ? `<img src="${escapeHtml(prof.avatar_url)}" alt="">`
-    : initial;
+  const avatarHtml = prof.avatar_url ? `<img src="${escapeHtml(prof.avatar_url)}" alt="">` : initial;
 
   const mediaUrls = Array.isArray(post.media_urls) ? post.media_urls : [];
-  const mediaHtml = mediaUrls.map(url => {
+  const mediaHtml = mediaUrls.map((url, idx) => {
     if (/\.(mp4|webm|ogg|mov)$/i.test(url)) {
-      return `<video src="${escapeHtml(url)}" controls playsinline preload="metadata"></video>`;
+      return `<video src="${escapeHtml(url)}" controls playsinline preload="metadata" data-post="${post.id}" data-idx="${idx}"></video>`;
     }
-    return `<img src="${escapeHtml(url)}" alt="" loading="lazy">`;
+    return `<img src="${escapeHtml(url)}" alt="" loading="lazy" data-post="${post.id}" data-idx="${idx}" onclick="openFs('${post.id}', ${idx})">`;
   }).join('');
 
+  const isLiked = likedPosts.has(post.id);
   const caption = post.content
     ? `<div class="ig-post-caption"><span class="cap-user">${escapeHtml(uname)}</span>${escapeHtml(post.content)}</div>`
     : '';
@@ -500,56 +586,74 @@ function renderPost(post) {
           <a href="profile.html?user=${post.user_id}" class="name">${escapeHtml(name)} ${verified}</a>
           <div class="sub">@${escapeHtml(uname)} · ${timeAgo}</div>
         </div>
-        <button class="more"><i class="fas fa-ellipsis-h"></i></button>
       </div>
 
       ${mediaHtml ? `<div class="ig-post-media">${mediaHtml}</div>` : ''}
 
       <div class="ig-actions">
-        <button class="ig-action" onclick="likePost('${post.id}', this)">
-          <i class="far fa-heart"></i>
+        <button class="ig-action ${isLiked ? 'liked' : ''}" id="likebtn-${post.id}" onclick="toggleLike('${post.id}', this)">
+          <i class="${isLiked ? 'fas' : 'far'} fa-heart"></i>
         </button>
-        <button class="ig-action" onclick="showToast('Comments coming soon')">
+        <button class="ig-action" onclick="openComments('${post.id}')">
           <i class="far fa-comment"></i>
         </button>
         <button class="ig-action" onclick="sharePost('${post.id}')">
           <i class="far fa-paper-plane"></i>
         </button>
-        <button class="ig-action save" onclick="showToast('Saved to collection')">
+        <button class="ig-action save" onclick="showToast('Saved')">
           <i class="far fa-bookmark"></i>
         </button>
       </div>
 
       <div class="ig-likes" id="likes-${post.id}">${post.likes_count || 0} likes</div>
       ${caption}
+      <div class="ig-comments-preview" onclick="openComments('${post.id}')">
+        View all ${post.comments_count || 0} comments
+      </div>
       <div class="ig-time">${timeAgo}</div>
     </article>
   `;
 }
 
-/* ==================== LIKE ==================== */
-async function likePost(postId, btn) {
+/* ==================== LIKE (toggle) ==================== */
+async function toggleLike(postId, btn) {
   if (!currentUser) {
     showToast('Sign in to like posts', 'error');
     return;
   }
 
   const icon = btn.querySelector('i');
-  const liked = btn.classList.toggle('liked');
-  icon.className = liked ? 'fas fa-heart' : 'far fa-heart';
+  const isLiked = likedPosts.has(postId);
 
   try {
-    const { data, error } = await supabaseClient
+    if (isLiked) {
+      // Unlike
+      const { error } = await supabaseClient
+        .from('likes').delete()
+        .eq('user_id', currentUser.id).eq('post_id', postId);
+      if (error) throw error;
+      likedPosts.delete(postId);
+      btn.classList.remove('liked');
+      icon.className = 'far fa-heart';
+    } else {
+      // Like
+      const { error } = await supabaseClient
+        .from('likes').insert({ user_id: currentUser.id, post_id: postId });
+      if (error) throw error;
+      likedPosts.add(postId);
+      btn.classList.add('liked');
+      icon.className = 'fas fa-heart';
+    }
+
+    // Update count display
+    const { data } = await supabaseClient
       .from('posts').select('likes_count').eq('id', postId).single();
-    if (error) throw error;
-
-    const newCount = (data.likes_count || 0) + (liked ? 1 : -1);
-    await supabaseClient.from('posts').update({ likes_count: newCount }).eq('id', postId);
-
     const likesEl = document.getElementById('likes-' + postId);
-    if (likesEl) likesEl.textContent = `${newCount} likes`;
+    if (likesEl && data) likesEl.textContent = `${data.likes_count || 0} likes`;
+
   } catch (err) {
     console.error(err);
+    showToast(err.message, 'error');
   }
 }
 
@@ -557,25 +661,169 @@ async function likePost(postId, btn) {
 async function sharePost(postId) {
   const url = window.location.origin + '/huzni-sfamily/index.html?post=' + postId;
 
-  if (navigator.share) {
+  // Log the share (if logged in)
+  if (currentUser) {
     try {
-      await navigator.share({
-        title: 'Arizona AI',
-        text: 'Check out this post on Arizona AI!',
-        url: url
-      });
-      return;
-    } catch (e) {
-      // user cancelled → fall through
-    }
+      await supabaseClient.from('shares').insert({ user_id: currentUser.id, post_id: postId });
+    } catch (e) { /* ignore */ }
   }
 
-  // Clipboard fallback
+  // Try native share
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: 'Arizona AI', text: 'Check out this post!', url });
+      return;
+    } catch (e) { /* cancelled */ }
+  }
+
+  // Fallback: copy link
   try {
     await navigator.clipboard.writeText(url);
     showToast('Link copied! 📋', 'success');
   } catch {
     showToast('Link: ' + url);
+  }
+}
+
+/* ==================== FULLSCREEN VIEWER ==================== */
+function openFs(postId, idx) {
+  // Collect all media from this post
+  const postEl = document.querySelector(`article[data-id="${postId}"]`);
+  if (!postEl) return;
+  const mediaEls = postEl.querySelectorAll('.ig-post-media img, .ig-post-media video');
+  currentMediaList = Array.from(mediaEls).map(el => ({
+    src: el.src,
+    isVideo: el.tagName === 'VIDEO'
+  }));
+  currentMediaIndex = idx || 0;
+  renderFs();
+  document.getElementById('fsViewer').classList.add('active');
+}
+
+function renderFs() {
+  const content = document.getElementById('fsContent');
+  const counter = document.getElementById('fsCounter');
+  const item = currentMediaList[currentMediaIndex];
+  if (!item) return;
+
+  content.innerHTML = item.isVideo
+    ? `<video src="${item.src}" controls autoplay playsinline></video>`
+    : `<img src="${item.src}" alt="">`;
+
+  counter.textContent = `${currentMediaIndex + 1} / ${currentMediaList.length}`;
+
+  // Show/hide nav buttons
+  const showNav = currentMediaList.length > 1;
+  document.getElementById('fsPrev').style.display = showNav ? 'flex' : 'none';
+  document.getElementById('fsNext').style.display = showNav ? 'flex' : 'none';
+}
+
+function fsNav(dir) {
+  currentMediaIndex = (currentMediaIndex + dir + currentMediaList.length) % currentMediaList.length;
+  renderFs();
+}
+
+function closeFs() {
+  document.getElementById('fsViewer').classList.remove('active');
+  document.getElementById('fsContent').innerHTML = '';
+}
+
+// ESC to close + arrows
+document.addEventListener('keydown', e => {
+  const viewer = document.getElementById('fsViewer');
+  if (!viewer.classList.contains('active')) return;
+  if (e.key === 'Escape') closeFs();
+  if (e.key === 'ArrowLeft') fsNav(-1);
+  if (e.key === 'ArrowRight') fsNav(1);
+});
+
+/* ==================== COMMENTS ==================== */
+async function openComments(postId) {
+  currentPostId = postId;
+  document.getElementById('commentsModal').classList.add('active');
+  await loadComments(postId);
+}
+
+function closeComments() {
+  document.getElementById('commentsModal').classList.remove('active');
+  currentPostId = null;
+}
+
+async function loadComments(postId) {
+  const list = document.getElementById('commentsList');
+  list.innerHTML = '<div class="comments-empty"><i class="fas fa-circle-notch fa-spin"></i></div>';
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('comments')
+      .select(`*, profiles:user_id (username, display_name, avatar_url)`)
+      .eq('post_id', postId)
+      .order('created_at', { ascending: true });
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      list.innerHTML = '<div class="comments-empty"><i class="far fa-comment"></i><br>No comments yet. Be the first!</div>';
+      return;
+    }
+
+    list.innerHTML = data.map(c => {
+      const prof = c.profiles || {};
+      const name = prof.display_name || prof.username || 'user';
+      const initial = name.charAt(0).toUpperCase();
+      const av = prof.avatar_url ? `<img src="${escapeHtml(prof.avatar_url)}" alt="">` : initial;
+      return `
+        <div class="comment-item">
+          <div class="c-avatar">${av}</div>
+          <div class="c-body">
+            <div class="c-name">${escapeHtml(name)}</div>
+            <div class="c-text">${escapeHtml(c.content)}</div>
+            <div class="c-time">${formatTimeAgo(c.created_at)}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch (err) {
+    list.innerHTML = `<div class="comments-empty" style="color:var(--az-danger);">${escapeHtml(err.message)}</div>`;
+  }
+}
+
+async function submitComment() {
+  const input = document.getElementById('commentInput');
+  const text  = input.value.trim();
+  if (!text) return;
+  if (!currentUser) {
+    showToast('Sign in to comment', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('commentSendBtn');
+  btn.disabled = true;
+  btn.textContent = '...';
+
+  try {
+    const { error } = await supabaseClient.from('comments').insert({
+      user_id: currentUser.id,
+      post_id: currentPostId,
+      content: text
+    });
+    if (error) throw error;
+
+    input.value = '';
+    await loadComments(currentPostId);
+
+    // Refresh comments count in feed
+    const { data } = await supabaseClient
+      .from('posts').select('comments_count').eq('id', currentPostId).single();
+    if (data) {
+      const previewEl = document.querySelector(`article[data-id="${currentPostId}"] .ig-comments-preview`);
+      if (previewEl) previewEl.textContent = `View all ${data.comments_count || 0} comments`;
+    }
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Post';
   }
 }
 
