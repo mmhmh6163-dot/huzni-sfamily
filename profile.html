@@ -245,55 +245,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 .modal-actions .primary { background:var(--az-gradient); border:none; color:#fff; }
 .modal-actions button:disabled { opacity:.6; cursor:not-allowed; }
 
-/* ==================== AVATAR MODAL ==================== */
-.avatar-modal-content {
-  text-align:center;
-}
-.avatar-preview-box {
-  width:140px; height:140px; border-radius:50%;
-  margin:0 auto 16px;
-  background:var(--az-gradient);
-  display:flex; align-items:center; justify-content:center;
-  font-size:48px; font-weight:800; color:#fff;
-  border:3px solid var(--az-primary);
-  overflow:hidden;
-  position:relative;
-}
-.avatar-preview-box img {
-  width:100%; height:100%; object-fit:cover;
-}
-.avatar-btn-row {
-  display:flex; gap:10px; justify-content:center;
-  margin-bottom:12px;
-  flex-wrap:wrap;
-}
-.avatar-btn {
-  padding:11px 18px;
-  border-radius:22px;
-  font-size:13px; font-weight:700;
-  cursor:pointer;
-  display:inline-flex; align-items:center; gap:6px;
-  border:none;
-  transition:transform .15s;
-}
-.avatar-btn:active { transform:scale(.96); }
-.avatar-btn.choose {
-  background:rgba(255,107,53,.15);
-  border:1px solid var(--az-primary);
-  color:var(--az-accent);
-}
-.avatar-btn.remove {
-  background:transparent;
-  border:1px solid rgba(255,118,117,.5);
-  color:var(--az-danger);
-}
-.avatar-filename {
-  font-size:11px;
-  color:var(--az-text-secondary);
-  margin-bottom:16px;
-  min-height:14px;
-}
-
 /* ==================== AVATAR VIEWER ==================== */
 .avatar-viewer {
   display:none; position:fixed; inset:0;
@@ -346,8 +297,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 .post-detail-head .av img { width:100%; height:100%; object-fit:cover; }
 .post-detail-head .meta { flex:1; min-width:0; }
 .post-detail-head .meta .name {
-  font-weight:700; font-size:14px; color:var(--az-text);
-  cursor:pointer;
+  font-weight:700; font-size:14px; color:var(--az-text); cursor:pointer;
 }
 .post-detail-head .meta .sub { font-size:11px; color:var(--az-text-secondary); margin-top:2px; }
 .post-detail-head .close-x {
@@ -576,6 +526,9 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 
 <div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
 
+<!-- ⚠️ GLOBAL FILE INPUT — ALWAYS IN DOM, WORKS ON EVERY BROWSER -->
+<input type="file" id="avatarInput" accept="image/*" style="display:none;">
+
 <!-- ==================== TOP BAR ==================== -->
 <header class="topbar" id="topbar" style="display:none;">
   <a href="index.html" class="back"><i class="fas fa-arrow-left"></i></a>
@@ -608,7 +561,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
     <div class="profile-top">
       <div class="profile-avatar-wrap">
         <div class="profile-avatar" id="avatar" onclick="openAvatarViewer()">U</div>
-        <div class="camera" id="cameraBtn" onclick="pickAvatar()" style="display:none;">
+        <div class="camera" id="cameraBtn" onclick="openAvatarModal()" style="display:none;">
           <i class="fas fa-camera"></i>
         </div>
         <div class="verified-badge" id="verifiedBadge"><i class="fas fa-check"></i></div>
@@ -655,7 +608,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 
   <div class="profile-actions" id="profileActions">
     <button onclick="openEdit()"><i class="fas fa-pen"></i> Edit Profile</button>
-    <button onclick="openStory()"><i class="fas fa-circle-plus"></i> Add Story</button>
+    <button onclick="openAvatarModal()"><i class="fas fa-camera"></i> Change Photo</button>
     <a href="Post.html"><i class="fas fa-plus-circle"></i> New Post</a>
   </div>
 
@@ -712,50 +665,55 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 
 <!-- ==================== AVATAR MODAL ==================== -->
 <div class="modal-backdrop" id="avatarModal">
-  <div class="modal-content avatar-modal-content">
+  <div class="modal-content" style="text-align:center;">
     <div class="handle"></div>
     <h3 id="avatarModalTitle">Profile Photo</h3>
 
-    <div class="avatar-preview-box" id="avatarPreview">U</div>
-    <div class="avatar-filename" id="avatarFileName"></div>
+    <div id="avatarPreview" style="
+      width:140px; height:140px; border-radius:50%;
+      margin:0 auto 16px;
+      background:var(--az-gradient);
+      display:flex; align-items:center; justify-content:center;
+      font-size:48px; font-weight:800; color:#fff;
+      border:3px solid var(--az-primary);
+      overflow:hidden;
+    ">U</div>
 
-    <div class="avatar-btn-row">
-      <button class="avatar-btn choose" onclick="document.getElementById('avatarInput').click()">
+    <div id="avatarFileName" style="
+      font-size:12px; color:var(--az-text-secondary);
+      margin-bottom:16px; min-height:16px;
+    "></div>
+
+    <div style="display:flex; gap:10px; justify-content:center; margin-bottom:16px; flex-wrap:wrap;">
+      <button id="choosePhotoBtn" style="
+        padding:11px 18px; border-radius:22px;
+        font-size:13px; font-weight:700;
+        cursor:pointer;
+        background:rgba(255,107,53,.15);
+        border:1px solid var(--az-primary);
+        color:var(--az-accent);
+        display:inline-flex; align-items:center; gap:6px;
+      ">
         <i class="fas fa-image"></i> Choose Photo
       </button>
-      <button class="avatar-btn remove" id="avatarRemoveBtn" onclick="removeAvatar()" style="display:none;">
+      <button id="avatarRemoveBtn" onclick="removeAvatar()" style="
+        padding:11px 18px; border-radius:22px;
+        font-size:13px; font-weight:700;
+        cursor:pointer; display:none;
+        background:transparent;
+        border:1px solid rgba(255,118,117,.5);
+        color:var(--az-danger);
+        align-items:center; gap:6px;
+      ">
         <i class="fas fa-trash"></i> Remove
       </button>
     </div>
-
-    <!-- File input — MUST be visible enough to be clickable by all browsers -->
-    <input type="file" id="avatarInput" accept="image/*"
-           style="position:absolute; left:-9999px; width:1px; height:1px; opacity:0;"
-           onchange="onAvatarPicked(event)">
 
     <div class="modal-actions">
       <button class="cancel" onclick="closeAvatar()">Cancel</button>
       <button class="primary" id="avatarSaveBtn" onclick="saveAvatar()" disabled>
         <i class="fas fa-upload"></i> Upload
       </button>
-    </div>
-  </div>
-</div>
-
-<!-- ==================== STORY MODAL ==================== -->
-<div class="modal-backdrop" id="storyModal">
-  <div class="modal-content">
-    <div class="handle"></div>
-    <h3>Add Story</h3>
-    <div class="field"><label>Story Image / Video</label>
-      <input type="file" id="storyInput" accept="image/*,video/*" style="padding:10px;">
-    </div>
-    <div class="field"><label>Caption (optional)</label>
-      <input type="text" id="storyCaption" maxlength="100" placeholder="Add a caption">
-    </div>
-    <div class="modal-actions">
-      <button class="cancel" onclick="closeStory()">Cancel</button>
-      <button class="primary" id="storySaveBtn" onclick="saveStory()"><i class="fas fa-upload"></i> Publish</button>
     </div>
   </div>
 </div>
@@ -820,31 +778,44 @@ let userPosts = [];
 let viewedUserId = null;
 let isOwnProfile = false;
 let pendingAvatarFile = null;
-let pendingAvatarPreviewUrl = null;
 let likedPosts = new Set();
 let currentTab = 'posts';
 let followersData = { followers: [], following: [] };
 
 /* ==================== INIT ==================== */
 document.addEventListener('DOMContentLoaded', () => {
+  // Bind avatar file input FIRST (independent of auth)
+  bindAvatarInput();
+
   const check = setInterval(() => {
     if (typeof authReady !== 'undefined' && authReady) {
       clearInterval(check);
       initProfile();
-      setupAvatarInput();
     }
   }, 100);
 });
 
-/* ==================== SETUP AVATAR INPUT (fired once) ==================== */
-function setupAvatarInput() {
+/* ==================== BIND AVATAR INPUT ==================== */
+function bindAvatarInput() {
   const input = document.getElementById('avatarInput');
-  if (!input || input.dataset.bound === '1') return;
-  input.dataset.bound = '1';
-  input.addEventListener('change', onAvatarPicked);
-  console.log('[Avatar] File input listener attached ✅');
+  const chooseBtn = document.getElementById('choosePhotoBtn');
+
+  if (input && !input.dataset.bound) {
+    input.dataset.bound = '1';
+    input.addEventListener('change', handleAvatarFilePick);
+    console.log('[Avatar] File input bound ✅');
+  }
+
+  if (chooseBtn && !chooseBtn.dataset.bound) {
+    chooseBtn.dataset.bound = '1';
+    chooseBtn.addEventListener('click', () => {
+      console.log('[Avatar] Choose Photo clicked');
+      document.getElementById('avatarInput').click();
+    });
+  }
 }
 
+/* ==================== INIT PROFILE ==================== */
 async function initProfile() {
   const params = new URLSearchParams(window.location.search);
   const urlUserId = params.get('user');
@@ -936,9 +907,7 @@ async function loadUserPosts() {
 
   try {
     const { data, error } = await supabaseClient
-      .from('posts')
-      .select('*')
-      .eq('user_id', viewedUserId)
+      .from('posts').select('*').eq('user_id', viewedUserId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -997,10 +966,7 @@ function renderGridItem(post, postIndex) {
   return `
     <div class="grid-item" onclick="openPostDetail('${post.id}')">
       ${mediaHtml}
-      <div class="watermark">
-        <img src="arizonan%20png%20icon.jpeg" alt="">
-        Arizona AI
-      </div>
+      <div class="watermark"><img src="arizonan%20png%20icon.jpeg" alt=""> Arizona AI</div>
       <div class="overlay">
         <span><i class="fas fa-heart"></i> ${post.likes_count || 0}</span>
         <span><i class="fas fa-comment"></i> ${post.comments_count || 0}</span>
@@ -1010,7 +976,6 @@ function renderGridItem(post, postIndex) {
   `;
 }
 
-/* ==================== TABS ==================== */
 function switchTab(tab, el) {
   currentTab = tab;
   document.querySelectorAll('.profile-tabs .tab').forEach(t => t.classList.remove('active'));
@@ -1028,11 +993,8 @@ async function openPostDetail(postId) {
 
   const [postRes, profRes, commentsRes] = await Promise.all([
     supabaseClient.from('posts').select('*').eq('id', postId).single(),
-    supabaseClient.from('profiles').select('id, username, display_name, avatar_url, is_verified')
-      .eq('id', post.user_id).maybeSingle(),
-    supabaseClient.from('comments')
-      .select('*, profiles:user_id(username, display_name, avatar_url)')
-      .eq('post_id', postId).order('created_at', { ascending: true })
+    supabaseClient.from('profiles').select('id, username, display_name, avatar_url, is_verified').eq('id', post.user_id).maybeSingle(),
+    supabaseClient.from('comments').select('*, profiles:user_id(username, display_name, avatar_url)').eq('post_id', postId).order('created_at', { ascending: true })
   ]);
 
   const freshPost = postRes.data || post;
@@ -1048,9 +1010,7 @@ async function openPostDetail(postId) {
 
   const mediaUrls = Array.isArray(freshPost.media_urls) ? freshPost.media_urls : [];
   const mediaHtml = mediaUrls.map(url => {
-    if (/\.(mp4|webm|ogg|mov)$/i.test(url)) {
-      return `<video src="${escapeHtml(url)}" controls playsinline></video>`;
-    }
+    if (/\.(mp4|webm|ogg|mov)$/i.test(url)) return `<video src="${escapeHtml(url)}" controls playsinline></video>`;
     return `<img src="${escapeHtml(url)}" alt="">`;
   }).join('');
 
@@ -1069,8 +1029,7 @@ async function openPostDetail(postId) {
               <div class="cbody">${escapeHtml(c.content)}</div>
               <div class="ctime">${formatTimeAgo(c.created_at)}</div>
             </div>
-          </div>
-        `;
+          </div>`;
       }).join('');
 
   card.innerHTML = `
@@ -1082,33 +1041,23 @@ async function openPostDetail(postId) {
       </div>
       <button class="close-x" onclick="closePostDetail()"><i class="fas fa-times"></i></button>
     </div>
-
     ${mediaHtml ? `<div class="post-detail-media">${mediaHtml}</div>` : ''}
-
     <div class="post-detail-body">
       ${freshPost.content ? `<div class="post-detail-caption">${escapeHtml(freshPost.content)}</div>` : ''}
     </div>
-
     <div class="post-detail-stats">
-      <span><i class="fas fa-heart" style="color:var(--az-primary);"></i> <strong id="pdLikes">${freshPost.likes_count || 0}</strong> likes</span>
-      <span><i class="fas fa-comment" style="color:#5eb8ff;"></i> <strong id="pdComments">${freshPost.comments_count || 0}</strong> comments</span>
-      <span><i class="fas fa-share" style="color:#00b894;"></i> <strong id="pdShares">${freshPost.shares_count || 0}</strong> shares</span>
-      <span><i class="fas fa-eye" style="color:#a78bfa;"></i> <strong id="pdViews">${freshPost.views_count || 0}</strong> views</span>
+      <span><i class="fas fa-heart" style="color:var(--az-primary);"></i> <strong id="pdLikes">${freshPost.likes_count || 0}</strong></span>
+      <span><i class="fas fa-comment" style="color:#5eb8ff;"></i> <strong id="pdComments">${freshPost.comments_count || 0}</strong></span>
+      <span><i class="fas fa-share" style="color:#00b894;"></i> <strong id="pdShares">${freshPost.shares_count || 0}</strong></span>
+      <span><i class="fas fa-eye" style="color:#a78bfa;"></i> <strong id="pdViews">${freshPost.views_count || 0}</strong></span>
     </div>
-
     <div class="post-detail-actions">
       <button id="pdLikeBtn" class="${isLiked ? 'liked' : ''}" onclick="toggleLikeDetail('${postId}', this)">
         <i class="${isLiked ? 'fas' : 'far'} fa-heart"></i> <span>Like</span>
       </button>
-      <button onclick="sharePostDetail('${postId}')">
-        <i class="far fa-paper-plane"></i> <span>Share</span>
-      </button>
+      <button onclick="sharePostDetail('${postId}')"><i class="far fa-paper-plane"></i> <span>Share</span></button>
     </div>
-
-    <div class="post-detail-comments" id="pdCommentsList">
-      ${commentsHtml}
-    </div>
-
+    <div class="post-detail-comments" id="pdCommentsList">${commentsHtml}</div>
     <div class="post-detail-add-comment">
       <input type="text" id="pdCommentInput" placeholder="Add a comment…" maxlength="500"
              onkeydown="if(event.key==='Enter') submitDetailComment('${postId}')">
@@ -1135,10 +1084,7 @@ function closePostDetail() {
 
 function gotoUser(userId) {
   if (!userId) return;
-  if (userId === currentUser?.id) {
-    closePostDetail();
-    return;
-  }
+  if (userId === currentUser?.id) { closePostDetail(); return; }
   window.location.href = 'profile.html?user=' + userId;
 }
 
@@ -1159,10 +1105,8 @@ async function toggleLikeDetail(postId, btn) {
       btn.classList.add('liked');
       icon.className = 'fas fa-heart';
     }
-
     await new Promise(r => setTimeout(r, 150));
-    const { data } = await supabaseClient.from('posts')
-      .select('likes_count').eq('id', postId).single();
+    const { data } = await supabaseClient.from('posts').select('likes_count').eq('id', postId).single();
     if (data) {
       const el = document.getElementById('pdLikes');
       if (el) el.textContent = data.likes_count || 0;
@@ -1195,8 +1139,7 @@ async function submitDetailComment(postId) {
     });
     input.value = '';
 
-    const { data } = await supabaseClient
-      .from('comments')
+    const { data } = await supabaseClient.from('comments')
       .select('*, profiles:user_id(username, display_name, avatar_url)')
       .eq('post_id', postId).order('created_at', { ascending: true });
 
@@ -1207,17 +1150,8 @@ async function submitDetailComment(postId) {
           const p = c.profiles || {};
           const cname = p.display_name || p.username || 'user';
           const cinit = cname.charAt(0).toUpperCase();
-          const cav   = p.avatar_url ? `<img src="${escapeHtml(p.avatar_url)}" alt="">` : cinit;
-          return `
-            <div class="comment-row">
-              <div class="cav">${cav}</div>
-              <div class="ctext">
-                <div class="cname">${escapeHtml(cname)}</div>
-                <div class="cbody">${escapeHtml(c.content)}</div>
-                <div class="ctime">${formatTimeAgo(c.created_at)}</div>
-              </div>
-            </div>
-          `;
+          const cav = p.avatar_url ? `<img src="${escapeHtml(p.avatar_url)}" alt="">` : cinit;
+          return `<div class="comment-row"><div class="cav">${cav}</div><div class="ctext"><div class="cname">${escapeHtml(cname)}</div><div class="cbody">${escapeHtml(c.content)}</div><div class="ctime">${formatTimeAgo(c.created_at)}</div></div></div>`;
         }).join('');
 
     await new Promise(r => setTimeout(r, 150));
@@ -1238,17 +1172,12 @@ async function loadFollowersData() {
       supabaseClient.from('follows').select('follower_id').eq('following_id', viewedUserId),
       supabaseClient.from('follows').select('following_id').eq('follower_id', viewedUserId)
     ]);
-
     const followerIds  = (followersRes.data || []).map(f => f.follower_id);
     const followingIds = (followingRes.data || []).map(f => f.following_id);
-
     const allIds = [...new Set([...followerIds, ...followingIds])];
     if (allIds.length === 0) return;
-
     const { data: profiles } = await supabaseClient
-      .from('profiles').select('id, username, display_name, avatar_url, is_verified')
-      .in('id', allIds);
-
+      .from('profiles').select('id, username, display_name, avatar_url, is_verified').in('id', allIds);
     const profileMap = new Map((profiles || []).map(p => [p.id, p]));
     followersData.followers = followerIds.map(id => profileMap.get(id)).filter(Boolean);
     followersData.following = followingIds.map(id => profileMap.get(id)).filter(Boolean);
@@ -1265,11 +1194,8 @@ async function openFollowers(type) {
   modal.classList.add('active');
 
   const users = type === 'followers' ? followersData.followers : followersData.following;
-
   if (users.length === 0) {
-    list.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--az-text-secondary);font-size:14px;">
-      ${type === 'followers' ? 'No followers yet' : 'Not following anyone yet'}
-    </div>`;
+    list.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--az-text-secondary);font-size:14px;">${type === 'followers' ? 'No followers yet' : 'Not following anyone yet'}</div>`;
     return;
   }
 
@@ -1286,13 +1212,11 @@ async function openFollowers(type) {
     const verified = u.is_verified ? '<i class="fas fa-circle-check" style="color:#3b82f6;font-size:11px;"></i>' : '';
     const isMe = currentUser && u.id === currentUser.id;
     const isFollowing = myFollowing.has(u.id);
-
     const btnHtml = isMe
       ? `<span style="font-size:12px;color:var(--az-text-secondary);">You</span>`
       : isFollowing
         ? `<button class="following" onclick="unfollowFromModal('${u.id}', this)">Following</button>`
         : `<button onclick="followFromModal('${u.id}', this)">Follow</button>`;
-
     return `
       <div class="followers-row">
         <div class="av" onclick="gotoUser('${u.id}')">${av}</div>
@@ -1301,8 +1225,7 @@ async function openFollowers(type) {
           <div class="sub">@${escapeHtml(u.username || 'user')}</div>
         </div>
         ${btnHtml}
-      </div>
-    `;
+      </div>`;
   }).join('');
 }
 
@@ -1323,8 +1246,7 @@ async function unfollowFromModal(targetId, btn) {
   if (!currentUser) return;
   btn.disabled = true;
   try {
-    await supabaseClient.from('follows').delete()
-      .eq('follower_id', currentUser.id).eq('following_id', targetId);
+    await supabaseClient.from('follows').delete().eq('follower_id', currentUser.id).eq('following_id', targetId);
     btn.classList.remove('following');
     btn.textContent = 'Follow';
     btn.onclick = () => followFromModal(targetId, btn);
@@ -1337,10 +1259,10 @@ async function unfollowFromModal(targetId, btn) {
 function openEdit() {
   const p = currentProfile || {};
   document.getElementById('editDisplayName').value = p.display_name || p.username || '';
-  document.getElementById('editUsername').value    = p.username     || '';
-  document.getElementById('editBio').value         = p.bio          || '';
-  document.getElementById('editWebsite').value     = p.website      || '';
-  document.getElementById('editLocation').value    = p.location     || '';
+  document.getElementById('editUsername').value    = p.username || '';
+  document.getElementById('editBio').value         = p.bio || '';
+  document.getElementById('editWebsite').value     = p.website || '';
+  document.getElementById('editLocation').value    = p.location || '';
   document.getElementById('editModal').classList.add('active');
 }
 function closeEdit() { document.getElementById('editModal').classList.remove('active'); }
@@ -1372,8 +1294,7 @@ async function saveProfile() {
       .from('profiles').select('id').eq('username', username).neq('id', currentUser.id).maybeSingle();
     if (existing) throw new Error('Username already taken');
 
-    const { error } = await supabaseClient
-      .from('profiles')
+    const { error } = await supabaseClient.from('profiles')
       .update({ display_name, username, bio, website, location })
       .eq('id', currentUser.id);
     if (error) throw error;
@@ -1389,24 +1310,20 @@ async function saveProfile() {
   }
 }
 
-/* ==================== AVATAR (REBUILT) ==================== */
-function pickAvatar() {
+/* ==================== AVATAR (SIMPLE & RELIABLE) ==================== */
+function openAvatarModal() {
   if (!isOwnProfile) return;
 
   pendingAvatarFile = null;
-  pendingAvatarPreviewUrl = null;
-
-  // Reset file input
   const input = document.getElementById('avatarInput');
-  input.value = '';
+  if (input) input.value = '';
 
-  // Show current avatar in preview
   const preview = document.getElementById('avatarPreview');
   const currentAvatar = currentProfile?.avatar_url;
   const initial = (currentProfile?.username || 'U').charAt(0).toUpperCase();
 
   if (currentAvatar) {
-    preview.innerHTML = `<img src="${escapeHtml(currentAvatar)}" alt="">`;
+    preview.innerHTML = `<img src="${escapeHtml(currentAvatar)}" style="width:100%;height:100%;object-fit:cover;" alt="">`;
     document.getElementById('avatarRemoveBtn').style.display = 'inline-flex';
     document.getElementById('avatarModalTitle').textContent = 'Change Profile Photo';
   } else {
@@ -1416,8 +1333,9 @@ function pickAvatar() {
   }
 
   document.getElementById('avatarFileName').textContent = '';
-  document.getElementById('avatarSaveBtn').disabled = true;
-  document.getElementById('avatarSaveBtn').innerHTML = '<i class="fas fa-upload"></i> Upload';
+  const saveBtn = document.getElementById('avatarSaveBtn');
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = '<i class="fas fa-upload"></i> Upload';
 
   document.getElementById('avatarModal').classList.add('active');
 }
@@ -1425,21 +1343,13 @@ function pickAvatar() {
 function closeAvatar() {
   document.getElementById('avatarModal').classList.remove('active');
   pendingAvatarFile = null;
-  if (pendingAvatarPreviewUrl) {
-    URL.revokeObjectURL(pendingAvatarPreviewUrl);
-    pendingAvatarPreviewUrl = null;
-  }
   document.getElementById('avatarFileName').textContent = '';
 }
 
-function onAvatarPicked(event) {
-  console.log('[Avatar] File picked');
+function handleAvatarFilePick(event) {
   const file = event.target.files[0];
-  if (!file) {
-    console.log('[Avatar] No file selected');
-    return;
-  }
-  console.log('[Avatar] Selected:', file.name, file.size, file.type);
+  console.log('[Avatar] File picked:', file?.name, file?.size);
+  if (!file) return;
 
   if (!file.type.startsWith('image/')) {
     showToast('Please choose an image file', 'error');
@@ -1454,14 +1364,12 @@ function onAvatarPicked(event) {
 
   pendingAvatarFile = file;
 
-  // Show preview using FileReader (most reliable)
+  // Show preview
   const preview = document.getElementById('avatarPreview');
   const reader = new FileReader();
   reader.onload = (e) => {
-    preview.innerHTML = `<img src="${e.target.result}" alt="">`;
-    console.log('[Avatar] Preview rendered');
+    preview.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;" alt="">`;
   };
-  reader.onerror = () => console.error('[Avatar] FileReader error');
   reader.readAsDataURL(file);
 
   // Show filename + size
@@ -1472,7 +1380,7 @@ function onAvatarPicked(event) {
   const saveBtn = document.getElementById('avatarSaveBtn');
   saveBtn.disabled = false;
   saveBtn.innerHTML = '<i class="fas fa-upload"></i> Upload';
-  console.log('[Avatar] Upload button enabled');
+  console.log('[Avatar] Save button enabled ✅');
 }
 
 async function saveAvatar() {
@@ -1501,16 +1409,11 @@ async function saveAvatar() {
 
     console.log('[Avatar] Upload success:', uploadData);
 
-    const { data: urlData } = supabaseClient.storage
-      .from('avatars')
-      .getPublicUrl(uploadData.path);
-
+    const { data: urlData } = supabaseClient.storage.from('avatars').getPublicUrl(uploadData.path);
     const avatarUrl = urlData.publicUrl + '?t=' + Date.now();
 
     const { error: dbErr } = await supabaseClient
-      .from('profiles')
-      .update({ avatar_url: avatarUrl })
-      .eq('id', currentUser.id);
+      .from('profiles').update({ avatar_url: avatarUrl }).eq('id', currentUser.id);
 
     if (dbErr) throw dbErr;
 
@@ -1519,6 +1422,8 @@ async function saveAvatar() {
 
     closeAvatar();
     showToast('Profile photo updated ✅', 'success');
+    setTimeout(() => window.location.reload(), 800);
+
   } catch (err) {
     console.error('[Avatar] Save error:', err);
     showToast(err.message || 'Upload failed', 'error');
@@ -1537,81 +1442,20 @@ async function removeAvatar() {
 
   try {
     const { error: dbErr } = await supabaseClient
-      .from('profiles')
-      .update({ avatar_url: null })
-      .eq('id', currentUser.id);
-
+      .from('profiles').update({ avatar_url: null }).eq('id', currentUser.id);
     if (dbErr) throw dbErr;
 
     currentProfile = { ...(currentProfile || {}), avatar_url: null };
     fillProfile(currentProfile, currentWallet);
 
-    try {
-      const { data: files } = await supabaseClient.storage
-        .from('avatars')
-        .list(currentUser.id);
-      if (files && files.length > 0) {
-        const paths = files.map(f => `${currentUser.id}/${f.name}`);
-        await supabaseClient.storage.from('avatars').remove(paths);
-      }
-    } catch (e) { console.warn('Storage cleanup skipped:', e); }
-
     closeAvatar();
     showToast('Profile photo removed', 'success');
+    setTimeout(() => window.location.reload(), 800);
   } catch (err) {
     console.error('[Avatar] Remove error:', err);
     showToast(err.message || 'Failed to remove', 'error');
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-trash"></i> Remove';
-  }
-}
-
-/* ==================== STORY ==================== */
-function openStory() {
-  if (!isOwnProfile) return;
-  document.getElementById('storyModal').classList.add('active');
-}
-function closeStory() {
-  document.getElementById('storyModal').classList.remove('active');
-  document.getElementById('storyInput').value = '';
-  document.getElementById('storyCaption').value = '';
-}
-async function saveStory() {
-  const file = document.getElementById('storyInput').files[0];
-  const caption = document.getElementById('storyCaption').value.trim();
-
-  if (!file) { showToast('Choose an image or video', 'error'); return; }
-  if (file.size > 50 * 1024 * 1024) { showToast('Max 50 MB', 'error'); return; }
-
-  const btn = document.getElementById('storySaveBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Uploading…';
-
-  try {
-    const isVideo = file.type.startsWith('video/');
-    const ext = file.name.split('.').pop().toLowerCase();
-    const path = `${currentUser.id}/story-${Date.now()}.${ext}`;
-
-    const { error: upErr } = await supabaseClient.storage
-      .from('stories').upload(path, file, { cacheControl: '3600' });
-    if (upErr) throw upErr;
-
-    const { data: urlData } = supabaseClient.storage.from('stories').getPublicUrl(path);
-
-    const { error: dbErr } = await supabaseClient.from('stories').insert({
-      user_id:    currentUser.id,
-      media_url:  urlData.publicUrl,
-      media_type: isVideo ? 'video' : 'image',
-      caption:    caption || null
-    });
-    if (dbErr) throw dbErr;
-
-    closeStory();
-    showToast('Story published! 🎉', 'success');
-  } catch (err) {
-    showToast(err.message, 'error');
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fas fa-upload"></i> Publish';
   }
 }
 
