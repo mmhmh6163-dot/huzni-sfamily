@@ -29,25 +29,25 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
 .topbar .title { font-size:16px; font-weight:700; color:var(--az-text); }
 
 .search-bar {
-  max-width:640px; margin:16px auto 8px;
+  max-width:640px; margin:12px auto 6px;
   padding:0 16px;
 }
 .search-bar .wrap {
   display:flex; align-items:center; gap:10px;
   background:rgba(255,255,255,.06);
   border:1px solid rgba(255,255,255,.1);
-  border-radius:12px; padding:12px 14px;
+  border-radius:12px; padding:10px 14px;
 }
 .search-bar input {
   flex:1; background:transparent; border:none;
-  color:var(--az-text); font-size:15px; font-family:inherit;
+  color:var(--az-text); font-size:14px; font-family:inherit;
 }
 .search-bar input:focus { outline:none; }
 .search-bar i { color:var(--az-text-secondary); }
 
 .msg-tabs {
   max-width:640px; margin:0 auto;
-  padding:8px 16px;
+  padding:6px 16px;
   display:flex; gap:8px;
 }
 .msg-tabs .tab {
@@ -75,22 +75,49 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
 
 .msg-list-wrap {
   max-width:640px; margin:0 auto;
-  padding:0 16px;
-  height: calc(100vh - 200px);
+  padding:8px 16px 80px;
+  height: calc(100vh - 190px);
   overflow-y: auto;
-  padding-bottom:80px;
+  -webkit-overflow-scrolling: touch;
 }
 .msg-list-wrap::-webkit-scrollbar { width:4px; }
 .msg-list-wrap::-webkit-scrollbar-thumb { background:#333; border-radius:2px; }
+
+/* Skeleton loading */
+.skeleton {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 8px;
+}
+.skeleton .sk-av {
+  width:52px; height:52px; border-radius:50%;
+  background:linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  flex-shrink:0;
+}
+.skeleton .sk-lines { flex:1; }
+.skeleton .sk-line {
+  height:12px; border-radius:6px; margin-bottom:8px;
+  background:linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+.skeleton .sk-line.short { width:60%; }
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 
 .chat-row {
   display:flex; align-items:center; gap:12px;
   padding:12px 8px;
   border-bottom:1px solid rgba(255,255,255,.05);
   cursor:pointer; border-radius:10px;
-  transition:background .2s;
+  transition:background .15s;
+  animation: fadeIn .2s ease;
 }
-.chat-row:hover { background:rgba(255,107,53,.06); }
+@keyframes fadeIn { from { opacity:0; transform:translateY(4px); } }
+.chat-row:active { background:rgba(255,107,53,.08); }
 .chat-row .av {
   width:52px; height:52px; border-radius:50%;
   background:var(--az-gradient);
@@ -110,9 +137,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
   margin-top:2px;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
-.chat-row .info .preview.unread {
-  color:var(--az-text); font-weight:600;
-}
+.chat-row .info .preview.unread { color:var(--az-text); font-weight:600; }
 .chat-row .meta {
   text-align:right; font-size:11px;
   color:var(--az-text-secondary);
@@ -177,6 +202,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
   flex:1; overflow-y:auto;
   padding:16px;
   display:flex; flex-direction:column; gap:8px;
+  -webkit-overflow-scrolling: touch;
 }
 .chat-messages::-webkit-scrollbar { width:4px; }
 .chat-messages::-webkit-scrollbar-thumb { background:#333; border-radius:2px; }
@@ -238,7 +264,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
 
 <div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
 
-<header class="topbar" id="mainTopbar">
+<header class="topbar">
   <a href="index.html" class="back"><i class="fas fa-arrow-left"></i></a>
   <span class="title">Messages</span>
   <a href="Friends.html" class="icon-btn"><i class="fas fa-user-plus"></i></a>
@@ -262,7 +288,10 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
 </div>
 
 <div class="msg-list-wrap" id="listWrap">
-  <div class="empty"><i class="fas fa-circle-notch fa-spin"></i>Loading…</div>
+  <!-- Skeleton shown immediately -->
+  <div class="skeleton"><div class="sk-av"></div><div class="sk-lines"><div class="sk-line"></div><div class="sk-line short"></div></div></div>
+  <div class="skeleton"><div class="sk-av"></div><div class="sk-lines"><div class="sk-line"></div><div class="sk-line short"></div></div></div>
+  <div class="skeleton"><div class="sk-av"></div><div class="sk-lines"><div class="sk-line"></div><div class="sk-line short"></div></div></div>
 </div>
 
 <div class="chat-view" id="chatView">
@@ -273,9 +302,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
       <div class="name" id="cvName">User</div>
       <div class="status" id="cvStatus">Tap to view profile</div>
     </div>
-    <button class="back" onclick="viewProfile()" title="View Profile">
-      <i class="fas fa-info-circle"></i>
-    </button>
+    <button class="back" onclick="viewProfile()"><i class="fas fa-info-circle"></i></button>
   </div>
   <div class="chat-messages" id="chatMessages"></div>
   <div class="chat-input-wrap">
@@ -287,13 +314,18 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
 
 <script src="auth.js"></script>
 <script>
+/* ==================== STATE ==================== */
 let currentTab = 'chats';
 let conversations = [];
 let requests = [];
 let activePartner = null;
 let searchQuery = '';
 let realtimeChannel = null;
+let profileCache = new Map();     // id → profile object
+let messageCache = new Map();     // partnerId → array of messages
+let isOpeningChat = false;
 
+/* ==================== INIT ==================== */
 document.addEventListener('DOMContentLoaded', () => {
   const check = setInterval(() => {
     if (typeof authReady !== 'undefined' && authReady) {
@@ -315,26 +347,108 @@ async function init() {
     return;
   }
 
-  await loadChats();
-  await loadRequests();
+  // Run in parallel — much faster
+  await Promise.all([loadChats(), loadRequests()]);
+
   updateReqBadge();
+  renderList();
   setupRealtime();
 
   // Auto-open chat if ?user=ID is passed
   const params = new URLSearchParams(window.location.search);
   const autoUser = params.get('user');
   if (autoUser && autoUser !== currentUser.id) {
-    await openChat(autoUser);
-  } else {
-    renderList();
+    openChat(autoUser);
   }
 }
 
-function switchTab(tab, el) {
-  currentTab = tab;
-  document.querySelectorAll('.msg-tabs .tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  renderList();
+/* ==================== FAST LOAD ==================== */
+async function loadChats() {
+  try {
+    // Only fetch the LATEST message per conversation — 10x faster
+    const { data, error } = await supabaseClient.rpc('get_conversations', {
+      viewer_id: currentUser.id
+    });
+
+    if (error) {
+      // Fallback: if RPC not set up, use a lighter query
+      const { data: fallback, error: fbErr } = await supabaseClient
+        .from('messages')
+        .select('id, content, created_at, is_read, sender_id, receiver_id')
+        .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+        .order('created_at', { ascending: false })
+        .limit(80);
+      if (fbErr) throw fbErr;
+
+      // Group locally
+      const map = new Map();
+      (fallback || []).forEach(m => {
+        const partnerId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
+        if (!map.has(partnerId)) map.set(partnerId, { partnerId, lastMessage: m, unread: 0 });
+        const entry = map.get(partnerId);
+        if (!m.is_read && m.receiver_id === currentUser.id) entry.unread++;
+      });
+      conversations = Array.from(map.values());
+    } else {
+      // RPC returned ready-to-use conversations
+      conversations = (data || []).map(row => ({
+        partnerId: row.partner_id,
+        lastMessage: {
+          content: row.last_content,
+          created_at: row.last_at,
+          sender_id: row.last_sender_id,
+          is_read: row.last_is_read
+        },
+        unread: row.unread_count || 0
+      }));
+    }
+
+    // Fetch all partner profiles in ONE query (not N queries)
+    const partnerIds = [...new Set(conversations.map(c => c.partnerId))];
+    if (partnerIds.length > 0) {
+      const { data: profiles } = await supabaseClient
+        .from('profiles')
+        .select('id, username, display_name, avatar_url, is_verified')
+        .in('id', partnerIds);
+      (profiles || []).forEach(p => profileCache.set(p.id, p));
+      conversations.forEach(c => {
+        c.partner = profileCache.get(c.partnerId) || { id: c.partnerId, username: 'user' };
+      });
+    }
+
+    // Sort by latest
+    conversations.sort((a, b) => new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at));
+  } catch (err) {
+    console.error('loadChats:', err);
+    conversations = [];
+  }
+}
+
+async function loadRequests() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('follow_requests')
+      .select('id, status, created_at, requester_id, target_id')
+      .eq('target_id', currentUser.id)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    requests = data || [];
+
+    // Fetch requester profiles in one query
+    const requesterIds = [...new Set(requests.map(r => r.requester_id))];
+    if (requesterIds.length > 0) {
+      const { data: profiles } = await supabaseClient
+        .from('profiles')
+        .select('id, username, display_name, avatar_url, is_verified, is_private')
+        .in('id', requesterIds);
+      (profiles || []).forEach(p => profileCache.set(p.id, p));
+      requests.forEach(r => { r.requester = profileCache.get(r.requester_id) || { id: r.requester_id }; });
+    }
+  } catch (err) {
+    console.error('loadRequests:', err);
+    requests = [];
+  }
 }
 
 function updateReqBadge() {
@@ -342,62 +456,6 @@ function updateReqBadge() {
   const badge = document.getElementById('reqBadge');
   badge.textContent = pending;
   badge.classList.toggle('show', pending > 0);
-}
-
-/* ==================== LOAD CHATS ==================== */
-async function loadChats() {
-  try {
-    const { data, error } = await supabaseClient
-      .from('messages')
-      .select(`
-        id, content, created_at, is_read, sender_id, receiver_id,
-        sender:profiles!messages_sender_id_fkey(id, username, display_name, avatar_url, is_verified),
-        receiver:profiles!messages_receiver_id_fkey(id, username, display_name, avatar_url, is_verified)
-      `)
-      .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
-      .order('created_at', { ascending: false })
-      .limit(300);
-
-    if (error) throw error;
-
-    const map = new Map();
-    (data || []).forEach(m => {
-      const partnerId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
-      const partner   = m.sender_id === currentUser.id ? m.receiver : m.sender;
-      if (!partner) return;
-
-      if (!map.has(partnerId)) map.set(partnerId, { partner, lastMessage: m, unread: 0 });
-      const entry = map.get(partnerId);
-      if (!m.is_read && m.receiver_id === currentUser.id) entry.unread++;
-      if (new Date(m.created_at) > new Date(entry.lastMessage.created_at)) entry.lastMessage = m;
-    });
-
-    conversations = Array.from(map.values()).sort((a, b) =>
-      new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at)
-    );
-  } catch (err) {
-    console.error(err);
-    conversations = [];
-  }
-}
-
-/* ==================== LOAD REQUESTS ==================== */
-async function loadRequests() {
-  try {
-    const { data, error } = await supabaseClient
-      .from('follow_requests')
-      .select(`
-        id, status, created_at, requester_id, target_id,
-        requester:profiles!follow_requests_requester_id_fkey(id, username, display_name, avatar_url, is_verified, is_private)
-      `)
-      .eq('target_id', currentUser.id)
-      .order('created_at', { ascending: false });
-    if (error) throw error;
-    requests = data || [];
-  } catch (err) {
-    console.error(err);
-    requests = [];
-  }
 }
 
 /* ==================== RENDER ==================== */
@@ -421,7 +479,7 @@ function renderChats(wrap) {
 
   const filtered = conversations.filter(c => {
     if (!searchQuery) return true;
-    const name = (c.partner.display_name || c.partner.username || '').toLowerCase();
+    const name = (c.partner?.display_name || c.partner?.username || '').toLowerCase();
     return name.includes(searchQuery.toLowerCase());
   });
 
@@ -430,12 +488,13 @@ function renderChats(wrap) {
     return;
   }
 
+  // Build HTML in one chunk (faster than DOM appends)
   wrap.innerHTML = filtered.map(c => {
-    const p = c.partner;
+    const p = c.partner || {};
     const name = p.display_name || p.username || 'user';
     const initial = name.charAt(0).toUpperCase();
     const verified = p.is_verified ? '<i class="fas fa-circle-check v"></i>' : '';
-    const avatar = p.avatar_url ? `<img src="${escapeHtml(p.avatar_url)}" alt="">` : initial;
+    const avatar = p.avatar_url ? `<img src="${escapeHtml(p.avatar_url)}" alt="" loading="lazy">` : initial;
     const preview = (c.lastMessage.sender_id === currentUser.id ? 'You: ' : '') + (c.lastMessage.content || '📎');
     const time = formatTimeAgo(c.lastMessage.created_at);
     const unread = c.unread > 0 ? `<div class="unread-dot">${c.unread}</div>` : '';
@@ -468,10 +527,10 @@ function renderRequests(wrap) {
   }
 
   wrap.innerHTML = requests.map(r => {
-    const p = r.requester;
+    const p = r.requester || {};
     const name = p.display_name || p.username || 'user';
     const initial = name.charAt(0).toUpperCase();
-    const avatar = p.avatar_url ? `<img src="${escapeHtml(p.avatar_url)}" alt="">` : initial;
+    const avatar = p.avatar_url ? `<img src="${escapeHtml(p.avatar_url)}" alt="" loading="lazy">` : initial;
 
     if (r.status === 'pending') {
       return `
@@ -483,18 +542,12 @@ function renderRequests(wrap) {
           </div>
           <div style="display:flex;gap:6px;">
             <button onclick="respondRequest('${r.id}', 'accepted', this)"
-              style="padding:8px 14px; border-radius:20px; background:var(--az-gradient); border:none; color:#fff; font-weight:700; font-size:12px; cursor:pointer;">
-              Accept
-            </button>
+              style="padding:8px 14px; border-radius:20px; background:var(--az-gradient); border:none; color:#fff; font-weight:700; font-size:12px; cursor:pointer;">Accept</button>
             <button onclick="respondRequest('${r.id}', 'rejected', this)"
-              style="padding:8px 14px; border-radius:20px; background:transparent; border:1px solid rgba(255,255,255,.2); color:#fff; font-weight:700; font-size:12px; cursor:pointer;">
-              Decline
-            </button>
+              style="padding:8px 14px; border-radius:20px; background:transparent; border:1px solid rgba(255,255,255,.2); color:#fff; font-weight:700; font-size:12px; cursor:pointer;">Decline</button>
           </div>
-        </div>
-      `;
+        </div>`;
     }
-
     return `
       <div class="chat-row" style="cursor:default;">
         <div class="av">${avatar}</div>
@@ -502,8 +555,7 @@ function renderRequests(wrap) {
           <div class="name">${escapeHtml(name)}</div>
           <div class="preview">${r.status === 'accepted' ? '✅ Accepted' : '❌ Declined'}</div>
         </div>
-      </div>
-    `;
+      </div>`;
   }).join('');
 }
 
@@ -512,25 +564,26 @@ function filterChats() {
   renderList();
 }
 
+function switchTab(tab, el) {
+  currentTab = tab;
+  document.querySelectorAll('.msg-tabs .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderList();
+}
+
 /* ==================== RESPOND REQUEST ==================== */
 async function respondRequest(reqId, status, btn) {
   btn.disabled = true;
   try {
-    const { data: req, error: fetchErr } = await supabaseClient
-      .from('follow_requests').select('*').eq('id', reqId).single();
-    if (fetchErr) throw fetchErr;
-
+    const { data: req } = await supabaseClient.from('follow_requests').select('*').eq('id', reqId).single();
     await supabaseClient.from('follow_requests').update({ status }).eq('id', reqId);
 
-    if (status === 'accepted') {
-      const { error: followErr } = await supabaseClient
-        .from('follows').insert({ follower_id: req.requester_id, following_id: req.target_id });
-      if (followErr && followErr.code !== '23505') throw followErr;
+    if (status === 'accepted' && req) {
+      await supabaseClient.from('follows').insert({ follower_id: req.requester_id, following_id: req.target_id });
       showToast('Request accepted ✅', 'success');
     } else {
-      showToast('Request declined', 'success');
+      showToast('Declined', 'success');
     }
-
     await loadRequests();
     updateReqBadge();
     renderList();
@@ -542,40 +595,45 @@ async function respondRequest(reqId, status, btn) {
 
 /* ==================== OPEN CHAT ==================== */
 async function openChat(partnerId) {
-  let conv = conversations.find(c => c.partner.id === partnerId);
+  if (isOpeningChat) return;
+  isOpeningChat = true;
 
-  // If no conversation yet, load partner profile
-  if (!conv) {
-    const { data: profile } = await supabaseClient
-      .from('profiles').select('*').eq('id', partnerId).maybeSingle();
-    if (!profile) { showToast('User not found', 'error'); return; }
-    conv = { partner: profile, lastMessage: null, unread: 0 };
+  try {
+    // Get partner from cache or fetch
+    let partner = profileCache.get(partnerId);
+    if (!partner) {
+      const { data } = await supabaseClient
+        .from('profiles').select('*').eq('id', partnerId).maybeSingle();
+      if (!data) { showToast('User not found', 'error'); return; }
+      partner = data;
+      profileCache.set(partnerId, partner);
+    }
+
+    activePartner = partner;
+    const name = partner.display_name || partner.username || 'user';
+    const initial = name.charAt(0).toUpperCase();
+    const avatar = partner.avatar_url ? `<img src="${escapeHtml(partner.avatar_url)}" alt="">` : initial;
+
+    document.getElementById('cvAvatar').innerHTML = avatar;
+    document.getElementById('cvName').textContent = name;
+    document.getElementById('cvStatus').textContent = '@' + (partner.username || 'user');
+
+    document.getElementById('chatView').classList.add('active');
+
+    await loadMessages();
+    await markMessagesRead();
+  } finally {
+    isOpeningChat = false;
   }
-
-  activePartner = conv.partner;
-  const p = activePartner;
-  const name = p.display_name || p.username || 'user';
-  const initial = name.charAt(0).toUpperCase();
-  const avatar = p.avatar_url ? `<img src="${escapeHtml(p.avatar_url)}" alt="">` : initial;
-
-  document.getElementById('cvAvatar').innerHTML = avatar;
-  document.getElementById('cvName').textContent = name;
-  document.getElementById('cvStatus').textContent = '@' + (p.username || 'user');
-
-  document.getElementById('chatView').classList.add('active');
-
-  await loadMessages();
-  await markMessagesRead();
 }
 
 function closeChat() {
   document.getElementById('chatView').classList.remove('active');
   activePartner = null;
-  // Remove ?user= from URL
   if (window.history.replaceState) {
     window.history.replaceState(null, '', 'chats.html');
   }
-  loadChats().then(renderList);
+  loadChats().then(() => renderList());
 }
 
 function viewProfile() {
@@ -586,17 +644,23 @@ function viewProfile() {
 async function loadMessages() {
   const box = document.getElementById('chatMessages');
   if (!activePartner) return;
-  box.innerHTML = '<div style="text-align:center;color:#666;padding:20px;"><i class="fas fa-circle-notch fa-spin"></i></div>';
+
+  // Show skeleton while loading
+  box.innerHTML = `
+    <div style="text-align:center;padding:20px;">
+      <div class="skeleton"><div class="sk-av"></div><div class="sk-lines"><div class="sk-line"></div></div></div>
+    </div>`;
 
   try {
     const { data, error } = await supabaseClient
       .from('messages')
-      .select('*')
+      .select('id, sender_id, receiver_id, content, created_at')
       .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${activePartner.id}),and(sender_id.eq.${activePartner.id},receiver_id.eq.${currentUser.id})`)
       .order('created_at', { ascending: true })
-      .limit(200);
+      .limit(100);
 
     if (error) throw error;
+    messageCache.set(activePartner.id, data || []);
     box.innerHTML = (data || []).map(m => renderBubble(m)).join('');
     box.scrollTop = box.scrollHeight;
   } catch (err) {
@@ -611,8 +675,7 @@ function renderBubble(m) {
     <div class="bubble ${mine ? 'me' : 'them'}">
       ${escapeHtml(m.content || '')}
       <span class="time">${time}</span>
-    </div>
-  `;
+    </div>`;
 }
 
 /* ==================== SEND MESSAGE ==================== */
@@ -625,6 +688,16 @@ async function sendMessage() {
   const btn = document.getElementById('sendBtn');
   btn.disabled = true;
 
+  // Optimistic append (instant feedback)
+  const box = document.getElementById('chatMessages');
+  const optimisticId = 'temp-' + Date.now();
+  box.insertAdjacentHTML('beforeend', `
+    <div class="bubble me" id="${optimisticId}">
+      ${escapeHtml(content)}
+      <span class="time">Sending…</span>
+    </div>`);
+  box.scrollTop = box.scrollHeight;
+
   try {
     const { error } = await supabaseClient.from('messages').insert({
       sender_id:   currentUser.id,
@@ -632,8 +705,20 @@ async function sendMessage() {
       content:     content
     });
     if (error) throw error;
-    await loadMessages();
+
+    // Remove optimistic + reload quietly
+    document.getElementById(optimisticId)?.remove();
+    const { data } = await supabaseClient
+      .from('messages')
+      .select('id, sender_id, receiver_id, content, created_at')
+      .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${activePartner.id}),and(sender_id.eq.${activePartner.id},receiver_id.eq.${currentUser.id})`)
+      .order('created_at', { ascending: true })
+      .limit(100);
+    box.innerHTML = (data || []).map(m => renderBubble(m)).join('');
+    box.scrollTop = box.scrollHeight;
+    messageCache.set(activePartner.id, data || []);
   } catch (err) {
+    document.getElementById(optimisticId)?.remove();
     showToast(err.message, 'error');
   } finally {
     btn.disabled = false;
@@ -644,15 +729,17 @@ async function sendMessage() {
 /* ==================== MARK READ ==================== */
 async function markMessagesRead() {
   if (!activePartner) return;
-  await supabaseClient
+  // Fire and forget — don't await
+  supabaseClient
     .from('messages')
     .update({ is_read: true })
     .eq('sender_id', activePartner.id)
     .eq('receiver_id', currentUser.id)
-    .eq('is_read', false);
+    .eq('is_read', false)
+    .then(() => {});
 }
 
-/* ==================== REALTIME ==================== */
+/* ==================== REALTIME (efficient) ==================== */
 function setupRealtime() {
   if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
 
@@ -662,14 +749,47 @@ function setupRealtime() {
       { event: 'INSERT', schema: 'public', table: 'messages' },
       payload => {
         const m = payload.new;
+
+        // If open chat, append bubble instantly
         if (activePartner &&
             ((m.sender_id === activePartner.id && m.receiver_id === currentUser.id) ||
              (m.sender_id === currentUser.id && m.receiver_id === activePartner.id))) {
-          document.getElementById('chatMessages').insertAdjacentHTML('beforeend', renderBubble(m));
-          document.getElementById('chatMessages').scrollTop = 999999;
-          markMessagesRead();
+          const box = document.getElementById('chatMessages');
+          box.insertAdjacentHTML('beforeend', renderBubble(m));
+          box.scrollTop = 999999;
+          if (m.receiver_id === currentUser.id) markMessagesRead();
         }
-        loadChats().then(renderList);
+
+        // Update the conversation list WITHOUT full reload
+        const partnerId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
+        const existing = conversations.find(c => c.partnerId === partnerId);
+
+        if (existing) {
+          existing.lastMessage = m;
+          if (m.receiver_id === currentUser.id && !m.is_read) existing.unread++;
+          conversations = conversations.filter(c => c.partnerId !== partnerId);
+          conversations.unshift(existing);
+        } else {
+          // New conversation — fetch partner profile once
+          (async () => {
+            const { data } = await supabaseClient
+              .from('profiles').select('id, username, display_name, avatar_url, is_verified')
+              .eq('id', partnerId).maybeSingle();
+            if (data) {
+              profileCache.set(partnerId, data);
+              conversations.unshift({
+                partnerId,
+                partner: data,
+                lastMessage: m,
+                unread: 1
+              });
+              renderList();
+            }
+          })();
+          return;
+        }
+
+        if (currentTab === 'chats') renderList();
       }
     )
     .subscribe();
