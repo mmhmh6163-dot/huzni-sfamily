@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Create Post — Arizona AI</title>
 
+<link rel="icon" type="image/jpeg" href="arizonan%20png%20icon.jpeg">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="style.css">
@@ -16,12 +17,12 @@ body {
   padding-bottom: 30px;
 }
 
-/* ---- TOP BAR ---- */
+/* ==================== TOP BAR ==================== */
 .create-topbar {
   position: fixed; top: 0; left: 0; right: 0; height: 60px;
-  background: rgba(10,10,10,0.97);
+  background: rgba(10,10,10,.97);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255,107,53,0.25);
+  border-bottom: 1px solid rgba(255,107,53,.25);
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 16px; z-index: 1000;
   max-width: 640px; margin: 0 auto;
@@ -32,11 +33,8 @@ body {
   display: flex; align-items: center; justify-content: center;
   border-radius: 50%;
 }
-.create-topbar .back:hover { background: rgba(255,255,255,0.06); }
-.create-topbar .title {
-  font-size: 16px; font-weight: 700;
-  color: var(--az-text);
-}
+.create-topbar .back:hover { background: rgba(255,255,255,.06); }
+.create-topbar .title { font-size: 16px; font-weight: 700; color: var(--az-text); }
 .create-topbar .share {
   background: var(--az-gradient);
   color: #fff; border: none;
@@ -47,17 +45,12 @@ body {
 }
 .create-topbar .share:disabled { opacity: 0.6; cursor: not-allowed; }
 
-/* ---- UPLOAD AREA ---- */
-.upload-zone {
-  max-width: 640px; margin: 0 auto;
-  padding: 16px;
-}
+/* ==================== UPLOAD ZONE ==================== */
+.upload-zone { max-width: 640px; margin: 0 auto; padding: 16px; }
 .upload-box {
   border: 2px dashed rgba(255,107,53,0.4);
-  border-radius: 16px;
-  padding: 40px 20px;
-  text-align: center;
-  cursor: pointer;
+  border-radius: 16px; padding: 40px 20px;
+  text-align: center; cursor: pointer;
   transition: all 0.2s ease;
   background: rgba(255,255,255,0.02);
 }
@@ -69,20 +62,14 @@ body {
   font-size: 42px; color: var(--az-accent);
   margin-bottom: 12px; display: block;
 }
-.upload-box h3 {
-  font-size: 16px; color: var(--az-text);
-  margin-bottom: 6px;
-}
-.upload-box p {
-  font-size: 13px; color: var(--az-text-secondary);
-}
+.upload-box h3 { font-size: 16px; color: var(--az-text); margin-bottom: 6px; }
+.upload-box p { font-size: 13px; color: var(--az-text-secondary); }
 
-/* ---- PREVIEWS ---- */
+/* ==================== PREVIEWS ==================== */
 .previews {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-top: 14px;
+  gap: 8px; margin-top: 14px;
 }
 .preview-item {
   position: relative;
@@ -92,8 +79,7 @@ body {
   background: #111;
 }
 .preview-item img, .preview-item video {
-  width: 100%; height: 100%; object-fit: cover;
-  display: block;
+  width: 100%; height: 100%; object-fit: cover; display: block;
 }
 .preview-item .remove {
   position: absolute; top: 6px; right: 6px;
@@ -109,12 +95,20 @@ body {
   padding: 2px 8px; border-radius: 10px;
   font-size: 10px; font-weight: 600;
 }
-
-/* ---- FORM ---- */
-.create-form {
-  max-width: 640px; margin: 0 auto;
-  padding: 0 16px 30px;
+.preview-item .watermark {
+  position: absolute; bottom: 6px; right: 6px;
+  display: flex; align-items: center; gap: 4px;
+  font-size: 9px; color: rgba(255,255,255,.85);
+  background: rgba(0,0,0,.5);
+  padding: 2px 6px; border-radius: 8px;
+  font-weight: 700;
 }
+.preview-item .watermark img {
+  width: 10px; height: 10px; border-radius: 2px;
+}
+
+/* ==================== FORM ==================== */
+.create-form { max-width: 640px; margin: 0 auto; padding: 0 16px 30px; }
 .create-form .field { margin-bottom: 18px; }
 .create-form label {
   display: block; font-size: 12px;
@@ -131,16 +125,14 @@ body {
   color: var(--az-text); font-size: 15px;
   font-family: inherit; resize: vertical;
 }
-.create-form textarea:focus {
-  outline: none; border-color: var(--az-primary);
-}
+.create-form textarea:focus { outline: none; border-color: var(--az-primary); }
 .create-form .counter {
   text-align: right; font-size: 11px;
   color: var(--az-text-secondary);
   margin-top: 4px;
 }
 
-/* ---- POST TYPE ---- */
+/* ==================== POST TYPE ==================== */
 .type-grid {
   display: grid; grid-template-columns: repeat(4, 1fr);
   gap: 8px;
@@ -151,8 +143,7 @@ body {
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 10px;
   color: var(--az-text-secondary);
-  cursor: pointer;
-  font-size: 12px; font-weight: 600;
+  cursor: pointer; font-size: 12px; font-weight: 600;
   display: flex; flex-direction: column;
   align-items: center; gap: 4px;
   transition: all 0.2s;
@@ -164,7 +155,7 @@ body {
   color: var(--az-accent);
 }
 
-/* ---- PROGRESS ---- */
+/* ==================== PROGRESS ==================== */
 .upload-progress {
   display: none;
   max-width: 640px; margin: 20px auto 0;
@@ -191,7 +182,25 @@ body {
   margin-top: 8px;
 }
 
-/* ---- AUTH WALL ---- */
+/* ==================== EARN BANNER ==================== */
+.earn-banner {
+  max-width: 640px; margin: 16px auto;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, rgba(0,184,148,.12), rgba(255,178,15,.08));
+  border: 1px solid rgba(0,184,148,.35);
+  border-radius: 14px;
+  display: flex; align-items: center; gap: 12px;
+}
+.earn-banner i {
+  font-size: 22px; color: #00b894;
+}
+.earn-banner .text {
+  flex: 1; font-size: 13px; color: var(--az-text);
+  line-height: 1.45;
+}
+.earn-banner .text strong { color: #00b894; }
+
+/* ==================== AUTH WALL ==================== */
 .auth-wall {
   max-width: 440px; margin: 60px auto;
   padding: 32px 24px; text-align: center;
@@ -213,7 +222,7 @@ body {
 
 <div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
 
-<!-- ============ TOP BAR ============ -->
+<!-- ==================== TOP BAR ==================== -->
 <header class="create-topbar" id="topbar" style="display:none;">
   <a href="index.html" class="back"><i class="fas fa-times"></i></a>
   <span class="title">New Post</span>
@@ -222,7 +231,7 @@ body {
   </button>
 </header>
 
-<!-- ============ AUTH WALL ============ -->
+<!-- ==================== AUTH WALL ==================== -->
 <div id="authWall" style="display:none;">
   <div class="auth-wall">
     <i class="fas fa-lock"></i>
@@ -233,8 +242,16 @@ body {
   </div>
 </div>
 
-<!-- ============ CREATE CONTENT ============ -->
+<!-- ==================== CREATE CONTENT ==================== -->
 <div id="createContent" style="display:none;">
+
+  <!-- Earn banner -->
+  <div class="earn-banner">
+    <i class="fas fa-coins"></i>
+    <div class="text">
+      <strong>Earn $0.001</strong> for every post you create! Plus, every like, comment, and share boosts your reach.
+    </div>
+  </div>
 
   <!-- Upload zone -->
   <div class="upload-zone">
@@ -267,16 +284,16 @@ body {
     <div class="field">
       <label>Post Type</label>
       <div class="type-grid">
-        <button class="type-btn active" data-type="post"   onclick="selectType('post', this)">
+        <button class="type-btn active" data-type="post"  onclick="selectType('post', this)">
           <i class="fas fa-image"></i> Post
         </button>
-        <button class="type-btn" data-type="short"         onclick="selectType('short', this)">
+        <button class="type-btn" data-type="short"        onclick="selectType('short', this)">
           <i class="fas fa-bolt"></i> Short
         </button>
-        <button class="type-btn" data-type="reel"          onclick="selectType('reel', this)">
+        <button class="type-btn" data-type="reel"         onclick="selectType('reel', this)">
           <i class="fas fa-video"></i> Reel
         </button>
-        <button class="type-btn" data-type="note"          onclick="selectType('note', this)">
+        <button class="type-btn" data-type="note"         onclick="selectType('note', this)">
           <i class="fas fa-note-sticky"></i> Note
         </button>
       </div>
@@ -295,10 +312,9 @@ body {
       </select>
     </div>
   </div>
-
 </div>
 
-<!-- ============ SCRIPTS ============ -->
+<!-- ==================== SCRIPTS ==================== -->
 <script src="auth.js"></script>
 <script>
 let selectedFiles = [];
@@ -321,7 +337,6 @@ function init() {
   document.getElementById('topbar').style.display = 'flex';
   document.getElementById('createContent').style.display = 'block';
 
-  // Drag & drop
   const box = document.getElementById('uploadBox');
   box.addEventListener('dragover', e => { e.preventDefault(); box.classList.add('dragover'); });
   box.addEventListener('dragleave', () => box.classList.remove('dragover'));
@@ -363,6 +378,10 @@ function renderPreviews() {
         ? `<video src="${url}" muted></video>`
         : `<img src="${url}" alt="">`}
       <span class="type-badge">${isVideo ? 'VIDEO' : 'IMAGE'}</span>
+      <div class="watermark">
+        <img src="arizonan%20png%20icon.jpeg" alt="">
+        Arizona AI
+      </div>
       <button class="remove" onclick="removeFile(${index})">
         <i class="fas fa-times"></i>
       </button>
@@ -406,8 +425,8 @@ async function submitPost() {
   progress.classList.add('active');
 
   try {
-    // 1. Upload files to Supabase Storage
-    const mediaUrls = [];
+    // 1. Upload files
+    const mediaUrls  = [];
     const mediaTypes = [];
 
     for (let i = 0; i < selectedFiles.length; i++) {
@@ -423,13 +442,9 @@ async function submitPost() {
       const { data, error } = await supabaseClient.storage
         .from(bucket)
         .upload(path, file, { upsert: false, cacheControl: '3600' });
-
       if (error) throw new Error(`Upload failed: ${error.message}`);
 
-      const { data: urlData } = supabaseClient.storage
-        .from(bucket)
-        .getPublicUrl(data.path);
-
+      const { data: urlData } = supabaseClient.storage.from(bucket).getPublicUrl(data.path);
       mediaUrls.push(urlData.publicUrl);
       mediaTypes.push(isVideo ? 'video' : 'image');
     }
@@ -437,24 +452,59 @@ async function submitPost() {
     progressFill.style.width = '100%';
     progressText.textContent = 'Saving post…';
 
-    // 2. Insert into posts table
-    const { error: dbError } = await supabaseClient.from('posts').insert({
-      user_id:        currentUser.id,
-      content:        caption,
-      media_urls:     mediaUrls,
-      media_types:    mediaTypes,
-      post_type:      selectedType,
-      visibility:     visibility,
-      likes_count:    0,
-      comments_count: 0,
-      shares_count:   0
-    });
+    // 2. Insert into posts
+    const { data: postData, error: dbError } = await supabaseClient
+      .from('posts')
+      .insert({
+        user_id:        currentUser.id,
+        content:        caption,
+        media_urls:     mediaUrls,
+        media_types:    mediaTypes,
+        post_type:      selectedType,
+        visibility:     visibility,
+        likes_count:    0,
+        comments_count: 0,
+        shares_count:   0,
+        views_count:    0
+      })
+      .select()
+      .single();
 
     if (dbError) throw dbError;
 
-    progressText.textContent = 'Posted! 🎉';
-    showToast('Posted successfully! 🎉', 'success');
+    // 3. Award $0.001 — use RPC or direct fallback
+    try {
+      const { error: rpcErr } = await supabaseClient.rpc('award_post_earning', {
+        p_user_id: currentUser.id
+      });
+      if (rpcErr) throw rpcErr;
+      showToast('Posted! +$0.001 earned 🎉', 'success');
+    } catch (e) {
+      // Fallback: direct wallet update
+      console.warn('RPC failed, using fallback:', e);
+      try {
+        const newBalance = (Number(currentWallet?.balance) || 0) + 0.001;
+        const newEarned  = (Number(currentWallet?.total_earned) || 0) + 0.001;
+        await supabaseClient.from('wallets')
+          .update({ balance: newBalance, total_earned: newEarned })
+          .eq('user_id', currentUser.id);
+        await supabaseClient.from('wallet_transactions').insert({
+          user_id: currentUser.id,
+          amount: 0.001,
+          type: 'earn',
+          source: 'post_created',
+          note: 'Earned from creating a post'
+        });
+        showToast('Posted! +$0.001 earned 🎉', 'success');
+      } catch (e2) {
+        console.warn('Earning failed:', e2);
+        showToast('Posted successfully! 🎉', 'success');
+      }
+    }
 
+    progressText.textContent = 'Posted! Redirecting…';
+
+    // 4. Redirect to feed
     setTimeout(() => { window.location.href = 'index.html'; }, 900);
 
   } catch (err) {
