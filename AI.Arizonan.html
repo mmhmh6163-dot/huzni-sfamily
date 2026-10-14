@@ -54,9 +54,10 @@ body {
    TOP BAR
    ============================================================ */
 .topbar {
-  height: 56px;
   flex-shrink: 0;
   padding: 0 10px;
+  padding-top: env(safe-area-inset-top);
+  height: calc(56px + env(safe-area-inset-top));
   background: rgba(10,20,35,.98);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -65,8 +66,6 @@ body {
   align-items: center;
   gap: 6px;
   z-index: 20;
-  padding-top: env(safe-area-inset-top);
-  height: calc(56px + env(safe-area-inset-top));
 }
 .topbar .icon-btn {
   width: 40px; height: 40px;
@@ -111,7 +110,7 @@ body {
 }
 
 /* ============================================================
-   MESSAGES AREA
+   MESSAGES
    ============================================================ */
 .messages {
   flex: 1;
@@ -124,9 +123,6 @@ body {
 .messages::-webkit-scrollbar { width: 3px; }
 .messages::-webkit-scrollbar-thumb { background: rgba(94,184,255,.3); border-radius: 2px; }
 
-/* ============================================================
-   MESSAGE ROWS
-   ============================================================ */
 .msg {
   display: flex;
   gap: 8px;
@@ -183,13 +179,10 @@ body {
   border-bottom-left-radius: 5px;
 }
 
-/* ============================================================
-   MEDIA
-   ============================================================ */
+/* Media inside bubbles */
 .msg .bubble .media {
   display: block;
   width: 100%;
-  max-width: 100%;
   margin-top: 8px;
   border-radius: 12px;
   overflow: hidden;
@@ -215,11 +208,10 @@ body {
   min-width: 220px;
 }
 
-/* Media actions (download) */
 .msg .media-actions {
   display: flex;
   gap: 6px;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 .msg .media-actions a {
   background: rgba(94,184,255,.15);
@@ -235,9 +227,6 @@ body {
   gap: 4px;
 }
 
-/* ============================================================
-   ACTIONS
-   ============================================================ */
 .msg .actions {
   display: flex;
   gap: 5px;
@@ -718,7 +707,7 @@ body {
     </button>
   </div>
 
-  <!-- INPUT -->
+  <!-- INPUT BAR -->
   <div class="input-wrap">
     <div class="input-inner">
       <button class="icon-inline" onclick="pickFile()" aria-label="Attach">
@@ -972,13 +961,13 @@ function createMessageEl(msg, index) {
     const url = escapeHtml(msg.media_url);
     if (msg.media_type === 'image') {
       mediaHtml = `<div class="media"><img src="${url}" alt="" loading="lazy" onclick="viewImage('${url}')"></div>`;
-      mediaActions = `<div class="media-actions"><a href="${url}" download="arizona-ai-image.png" target="_blank"><i class="fas fa-download"></i> Download</a></div>`;
+      mediaActions = `<div class="media-actions"><a href="${url}" download="arizona-ai-image.png" target="_blank" rel="noopener"><i class="fas fa-download"></i> Download</a></div>`;
     } else if (msg.media_type === 'video') {
       mediaHtml = `<div class="media"><video src="${url}" controls playsinline preload="metadata"></video></div>`;
-      mediaActions = `<div class="media-actions"><a href="${url}" download="arizona-ai-video.mp4" target="_blank"><i class="fas fa-download"></i> Download</a></div>`;
+      mediaActions = `<div class="media-actions"><a href="${url}" download="arizona-ai-video.mp4" target="_blank" rel="noopener"><i class="fas fa-download"></i> Download</a></div>`;
     } else if (msg.media_type === 'audio') {
       mediaHtml = `<div class="media"><audio src="${url}" controls preload="metadata"></audio></div>`;
-      mediaActions = `<div class="media-actions"><a href="${url}" download="arizona-ai-audio.mp3" target="_blank"><i class="fas fa-download"></i> Download</a></div>`;
+      mediaActions = `<div class="media-actions"><a href="${url}" download="arizona-ai-audio.mp3" target="_blank" rel="noopener"><i class="fas fa-download"></i> Download</a></div>`;
     }
   }
 
