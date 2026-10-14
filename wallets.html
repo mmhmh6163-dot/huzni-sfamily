@@ -54,10 +54,11 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   margin-bottom:8px; position:relative;
 }
 .balance-card .amount {
-  font-size:42px; font-weight:800;
+  font-size:40px; font-weight:800;
   line-height:1; margin-bottom:20px;
   position:relative;
   word-break:break-all;
+  font-variant-numeric:tabular-nums;
 }
 .balance-card .sub-row {
   display:flex; gap:20px;
@@ -67,8 +68,9 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 }
 .balance-card .sub-row .col { flex:1; }
 .balance-card .sub-row .col .n {
-  font-size:16px; font-weight:800;
+  font-size:15px; font-weight:800;
   word-break:break-all;
+  font-variant-numeric:tabular-nums;
 }
 .balance-card .sub-row .col .l {
   font-size:10px; opacity:.85;
@@ -129,10 +131,11 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 .stat-box.pend .ico  { background:rgba(255,178,15,.15); color:#FFB20F; }
 .stat-box.total .ico { background:rgba(94,184,255,.15); color:#5eb8ff; }
 .stat-box .val {
-  font-size:20px; font-weight:800;
+  font-size:17px; font-weight:800;
   color:var(--az-text);
   line-height:1; margin-bottom:4px;
   word-break:break-all;
+  font-variant-numeric:tabular-nums;
 }
 .stat-box .lbl {
   font-size:11px;
@@ -457,7 +460,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   <a href="offers.html" class="icon-btn" title="Offers"><i class="fas fa-gift"></i></a>
 </header>
 
-<!-- AUTH WALL -->
 <div id="authWall" style="display:none;">
   <div class="auth-wall">
     <i class="fas fa-wallet"></i>
@@ -468,28 +470,25 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   </div>
 </div>
 
-<!-- WALLET CONTENT -->
 <div id="walletContent" style="display:none;">
 
-  <!-- BALANCE CARD -->
   <div class="balance-hero">
     <div class="balance-card">
       <div class="label"><i class="fas fa-wallet"></i> Available Balance</div>
-      <div class="amount" id="bigBalance">$0.0000</div>
+      <div class="amount" id="bigBalance">$0.000</div>
       <div class="sub-row">
         <div class="col">
-          <div class="n" id="earnedVal">$0.0000</div>
+          <div class="n" id="earnedVal">$0.000</div>
           <div class="l">Total Earned</div>
         </div>
         <div class="col">
-          <div class="n" id="spentVal">$0.0000</div>
+          <div class="n" id="spentVal">$0.000</div>
           <div class="l">Total Spent</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- QUICK ACTIONS -->
   <div class="wallet-actions">
     <button class="wallet-action" onclick="openWithdraw()">
       <i class="fas fa-arrow-up-from-bracket"></i> Withdraw
@@ -505,21 +504,20 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
     </a>
   </div>
 
-  <!-- STATS GRID -->
   <div class="stats-grid">
     <div class="stat-box earn">
       <div class="ico"><i class="fas fa-arrow-down"></i></div>
-      <div class="val" id="statEarned">$0.0000</div>
+      <div class="val" id="statEarned">$0.000</div>
       <div class="lbl">Earned</div>
     </div>
     <div class="stat-box spend">
       <div class="ico"><i class="fas fa-arrow-up"></i></div>
-      <div class="val" id="statSpent">$0.0000</div>
+      <div class="val" id="statSpent">$0.000</div>
       <div class="lbl">Spent</div>
     </div>
     <div class="stat-box pend">
       <div class="ico"><i class="fas fa-clock"></i></div>
-      <div class="val" id="statPending">$0.0000</div>
+      <div class="val" id="statPending">$0.000</div>
       <div class="lbl">Pending</div>
     </div>
     <div class="stat-box total">
@@ -529,7 +527,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
     </div>
   </div>
 
-  <!-- EARNINGS CHART -->
   <div class="chart-card">
     <div class="chart-inner">
       <div class="chart-title">
@@ -541,19 +538,16 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
     </div>
   </div>
 
-  <!-- SECTION TITLE -->
   <div class="section-title">
     <i class="fas fa-receipt" style="color:var(--az-accent);"></i>
     Transaction History
   </div>
 
-  <!-- SEARCH -->
   <div class="search-wrap">
     <i class="fas fa-search"></i>
     <input type="text" id="txSearch" placeholder="Search transactions…" oninput="applyFilters()">
   </div>
 
-  <!-- FILTERS -->
   <div class="filters">
     <div class="filter-chip active" data-filter="all"      onclick="setFilter('all', this)">All</div>
     <div class="filter-chip"        data-filter="earn"     onclick="setFilter('earn', this)">💰 Earned</div>
@@ -563,14 +557,12 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
     <div class="filter-chip"        data-filter="deposit"  onclick="setFilter('deposit', this)">⬇️ Deposit</div>
   </div>
 
-  <!-- TRANSACTIONS LIST -->
   <div class="tx-list" id="txList">
     <div class="empty"><i class="fas fa-circle-notch fa-spin"></i></div>
   </div>
 
 </div>
 
-<!-- WITHDRAW MODAL -->
 <div class="modal-backdrop" id="withdrawModal">
   <div class="modal-content">
     <div class="handle"></div>
@@ -612,7 +604,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   </div>
 </div>
 
-<!-- DEPOSIT MODAL -->
 <div class="modal-backdrop" id="depositModal">
   <div class="modal-content">
     <div class="handle"></div>
@@ -665,28 +656,27 @@ async function init() {
   updateStats();
 }
 
-/* ==================== AMOUNT FORMATTING ==================== */
-/* Shows 4 decimals if amount < $0.01 — so $0.001 displays correctly */
-function formatAmount(n) {
+/* ============================================================
+   AMOUNT FORMATTING
+   Always 3 decimals — makes $0.001 visible
+   ============================================================ */
+function fmt(n) {
   const num = Number(n || 0);
-  if (Math.abs(num) < 0.01 && num !== 0) return num.toFixed(4);
-  return num.toFixed(2);
+  return '$' + num.toFixed(3);
 }
 
-function formatBalance(n) {
+function fmtSigned(n) {
   const num = Number(n || 0);
-  // Always show 4 decimals if user has less than $1
-  if (Math.abs(num) < 1) return '$' + num.toFixed(4);
-  return '$' + num.toFixed(2);
+  const sign = num > 0 ? '+' : (num < 0 ? '−' : '');
+  return sign + '$' + Math.abs(num).toFixed(3);
 }
 
 /* ==================== BALANCE ==================== */
 function updateBalanceDisplay() {
   const w = currentWallet || {};
-
-  document.getElementById('bigBalance').textContent = formatBalance(w.balance);
-  document.getElementById('earnedVal').textContent  = formatBalance(w.total_earned);
-  document.getElementById('spentVal').textContent   = formatBalance(w.total_spent);
+  document.getElementById('bigBalance').textContent = fmt(w.balance);
+  document.getElementById('earnedVal').textContent  = fmt(w.total_earned);
+  document.getElementById('spentVal').textContent   = fmt(w.total_spent);
 }
 
 /* ==================== TRANSACTIONS ==================== */
@@ -726,16 +716,8 @@ function renderTransactions() {
 function renderTx(tx) {
   const amount = Number(tx.amount);
   const positive = amount > 0;
-  const sign = positive ? '+' : '−';
-
-  // Show 4 decimals for tiny amounts like 0.001
-  const abs = Math.abs(amount) < 0.01
-    ? Math.abs(amount).toFixed(4)
-    : Math.abs(amount).toFixed(2);
-
   const isPending = tx.status === 'pending';
 
-  // IMPORTANT: positive amounts = green, negative = red
   const amountClass = isPending ? 'pending' : (positive ? 'pos' : 'neg');
 
   const type = tx.type || 'earn';
@@ -770,7 +752,7 @@ function renderTx(tx) {
         </div>
       </div>
       <div class="tx-amount ${amountClass}">
-        ${sign}$${abs}
+        ${fmtSigned(amount)}
       </div>
     </div>
   `;
@@ -791,31 +773,28 @@ function applyFilters() {
 
 function applyFiltersLogic() {
   let filtered = allTransactions;
-
   if (currentFilter !== 'all') {
     filtered = filtered.filter(t => t.type === currentFilter);
   }
-
   if (searchTerm) {
     filtered = filtered.filter(t => {
       const haystack = `${t.source || ''} ${t.note || ''} ${t.type || ''}`.toLowerCase();
       return haystack.includes(searchTerm);
     });
   }
-
   return filtered;
 }
 
 /* ==================== STATS ==================== */
 function updateStats() {
   const w = currentWallet || {};
-  document.getElementById('statEarned').textContent  = formatBalance(w.total_earned);
-  document.getElementById('statSpent').textContent   = formatBalance(w.total_spent);
+  document.getElementById('statEarned').textContent = fmt(w.total_earned);
+  document.getElementById('statSpent').textContent  = fmt(w.total_spent);
 
   const pending = allTransactions
     .filter(t => t.status === 'pending' && Number(t.amount) < 0)
     .reduce((s, t) => s + Math.abs(Number(t.amount)), 0);
-  document.getElementById('statPending').textContent = formatBalance(pending);
+  document.getElementById('statPending').textContent = fmt(pending);
 
   document.getElementById('statCount').textContent = allTransactions.length;
 }
@@ -852,9 +831,7 @@ function buildChart() {
 
   barsEl.innerHTML = days.map(d => {
     const pct = d.earned > 0 ? Math.max(8, (d.earned / maxEarned) * 100) : 3;
-    const label = d.earned > 0
-      ? (d.earned < 0.01 ? '$' + d.earned.toFixed(4) : '$' + d.earned.toFixed(2))
-      : '';
+    const label = d.earned > 0 ? fmt(d.earned) : '';
     return `
       <div class="bar-wrap">
         <div class="bar-value">${label}</div>
@@ -887,7 +864,7 @@ function setWdAmount(amt, el) {
 
 function setWdMax(el) {
   const bal = Number(currentWallet?.balance || 0);
-  document.getElementById('wdAmount').value = bal.toFixed(2);
+  document.getElementById('wdAmount').value = bal.toFixed(3);
   document.querySelectorAll('#wdPresets .amount-preset').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
 }
@@ -898,7 +875,7 @@ async function submitWithdraw() {
   const account = document.getElementById('wdAccount').value.trim();
 
   if (!amount || amount <= 0) return showWdError('Please enter a valid amount.');
-  if (amount < 1)              return showWdError('Minimum withdrawal is $1.00.');
+  if (amount < 1)              return showWdError('Minimum withdrawal is $1.000.');
   if (!account)                return showWdError('Please enter your account info.');
   if (amount > Number(currentWallet?.balance || 0)) {
     return showWdError('Amount exceeds your balance.');
@@ -919,7 +896,7 @@ async function submitWithdraw() {
     if (data && data.success === false) throw new Error(data.error || 'Request failed');
 
     closeWithdraw();
-    showToast(`✅ Withdrawal of $${amount.toFixed(2)} requested`, 'success');
+    showToast(`✅ Withdrawal of $${amount.toFixed(3)} requested`, 'success');
 
     await loadUserData();
     updateBalanceDisplay();
