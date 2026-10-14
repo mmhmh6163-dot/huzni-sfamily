@@ -13,6 +13,7 @@
 <style>
 body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 
+/* ==================== TOP BAR ==================== */
 .topbar {
   position:fixed; top:0; left:0; right:0; height:60px;
   background:rgba(10,10,10,.97); backdrop-filter:blur(12px);
@@ -25,78 +26,185 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   width:40px; height:40px;
   display:flex; align-items:center; justify-content:center;
   border-radius:50%; text-decoration:none; cursor:pointer;
+  background:none; border:none;
 }
+.topbar .icon-btn:hover { background:rgba(255,255,255,.06); }
 .topbar .title { font-size:16px; font-weight:700; color:var(--az-text); }
 
-.notif-list {
+/* ==================== SUMMARY HEADER ==================== */
+.notif-summary {
   max-width:640px; margin:0 auto;
-  padding:8px 0 80px;
+  padding:16px;
+  display:flex; align-items:center; gap:14px;
+  background:linear-gradient(135deg, rgba(255,107,53,.1), rgba(255,178,15,.05));
+  border-bottom:1px solid rgba(255,107,53,.15);
 }
-.notif-row {
-  display:flex; align-items:center; gap:12px;
-  padding:12px 16px;
-  border-bottom:1px solid rgba(255,255,255,.04);
-  cursor:pointer;
-  transition:background .2s;
-  position:relative;
+.notif-summary .icon-wrap {
+  width:52px; height:52px; border-radius:50%;
+  background:linear-gradient(135deg, #FF6B35, #FFB20F);
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; color:#fff;
+  flex-shrink:0;
+  box-shadow:0 6px 18px rgba(255,107,53,.35);
 }
-.notif-row:hover { background:rgba(255,107,53,.05); }
-.notif-row.unread::before {
-  content:'';
-  position:absolute; left:6px; top:50%; transform:translateY(-50%);
-  width:6px; height:6px; border-radius:50%;
-  background:var(--az-primary);
+.notif-summary .info { flex:1; }
+.notif-summary .info h2 {
+  font-size:17px; font-weight:800; color:var(--az-text);
+  margin-bottom:3px;
+}
+.notif-summary .info p {
+  font-size:13px; color:var(--az-text-secondary);
+}
+.notif-summary .info p strong { color:var(--az-primary); }
+
+/* ==================== SECTION HEADER ==================== */
+.notif-section-header {
+  max-width:640px; margin:0 auto;
+  padding:18px 16px 8px;
+  font-size:12px; font-weight:800;
+  color:var(--az-text-secondary);
+  text-transform:uppercase; letter-spacing:1.2px;
+  display:flex; align-items:center; gap:8px;
+}
+.notif-section-header::after {
+  content:''; flex:1; height:1px;
+  background:linear-gradient(to right, rgba(255,107,53,.25), transparent);
 }
 
+/* ==================== LIST ==================== */
+.notif-list {
+  max-width:640px; margin:0 auto;
+  padding:0 8px 80px;
+}
+
+.notif-row {
+  display:flex; align-items:flex-start; gap:12px;
+  padding:12px 10px;
+  margin-bottom:4px;
+  border-radius:14px;
+  cursor:pointer;
+  transition:all .18s ease;
+  position:relative;
+  background:transparent;
+}
+.notif-row:hover {
+  background:rgba(255,255,255,.04);
+  transform:translateX(2px);
+}
+.notif-row.unread {
+  background:linear-gradient(90deg, rgba(255,107,53,.08), transparent 80%);
+}
+.notif-row.unread::before {
+  content:'';
+  position:absolute; left:2px; top:50%; transform:translateY(-50%);
+  width:4px; height:36px; border-radius:2px;
+  background:var(--az-gradient);
+}
+.notif-row.unread .body .text strong { color:#fff; }
+
+/* Avatar with badge */
+.notif-row .av-wrap { position:relative; flex-shrink:0; }
 .notif-row .av {
-  width:44px; height:44px; border-radius:50%;
+  width:48px; height:48px; border-radius:50%;
   background:var(--az-gradient);
   display:flex; align-items:center; justify-content:center;
-  font-weight:700; color:#fff; font-size:17px;
-  flex-shrink:0; overflow:hidden; position:relative;
+  font-weight:700; color:#fff; font-size:18px;
+  overflow:hidden;
+  border:2px solid #1a1a1a;
 }
 .notif-row .av img { width:100%; height:100%; object-fit:cover; }
 
 .notif-row .type-icon {
   position:absolute; bottom:-2px; right:-2px;
-  width:20px; height:20px; border-radius:50%;
+  width:22px; height:22px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
-  font-size:10px; color:#fff; border:2px solid #0a0a0a;
+  font-size:10px; color:#fff;
+  border:2.5px solid #0a0a0a;
+  box-shadow:0 2px 6px rgba(0,0,0,.5);
 }
-.type-icon.like    { background:var(--az-primary); }
-.type-icon.comment { background:#5eb8ff; }
-.type-icon.follow  { background:#00b894; }
-.type-icon.message { background:#7c3aed; }
-.type-icon.request { background:var(--az-accent); color:#1a1a1a; }
-.type-icon.tip     { background:#FFB20F; color:#1a1a1a; }
+.type-icon.like    { background:linear-gradient(135deg,#FF6B35,#FF2D55); }
+.type-icon.comment { background:linear-gradient(135deg,#5eb8ff,#7c3aed); }
+.type-icon.follow  { background:linear-gradient(135deg,#00b894,#00cec9); }
+.type-icon.message { background:linear-gradient(135deg,#7c3aed,#a855f7); }
+.type-icon.request { background:linear-gradient(135deg,#FFB20F,#FF6B35); }
+.type-icon.tip     { background:linear-gradient(135deg,#FFB20F,#F59E0B); }
 
-.notif-row .body { flex:1; min-width:0; }
+/* Body */
+.notif-row .body { flex:1; min-width:0; padding-top:2px; }
 .notif-row .body .text {
-  font-size:14px; color:var(--az-text);
-  line-height:1.4;
+  font-size:14px; color:var(--az-text-secondary);
+  line-height:1.5;
 }
-.notif-row .body .text strong { font-weight:700; }
+.notif-row .body .text strong {
+  color:var(--az-text); font-weight:700;
+  cursor:pointer;
+}
+.notif-row .body .text strong:hover { color:var(--az-primary); }
+.notif-row .body .text .action-text { color:var(--az-text-secondary); }
+.notif-row .body .text .post-snippet {
+  display:block; margin-top:4px;
+  font-size:13px; color:rgba(255,255,255,.7);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  max-width:100%;
+}
 .notif-row .body .time {
   font-size:11px; color:var(--az-text-secondary);
-  margin-top:3px;
+  margin-top:6px;
+  display:flex; align-items:center; gap:6px;
+}
+.notif-row .body .time .unread-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--az-primary);
+  display:inline-block;
 }
 
+/* Post thumbnail preview */
 .notif-row .thumb {
-  width:44px; height:44px; border-radius:8px;
+  width:56px; height:56px; border-radius:12px;
   background:#111; overflow:hidden; flex-shrink:0;
+  border:1px solid rgba(255,255,255,.08);
+  position:relative;
 }
-.notif-row .thumb img { width:100%; height:100%; object-fit:cover; }
+.notif-row .thumb img,
+.notif-row .thumb video {
+  width:100%; height:100%; object-fit:cover;
+}
+.notif-row .thumb .no-media {
+  width:100%; height:100%;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg,#1a1a1a,#2d2d2d);
+  color:rgba(255,255,255,.4);
+  font-size:16px;
+}
+.notif-row .thumb .play-overlay {
+  position:absolute; inset:0;
+  background:rgba(0,0,0,.3);
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:14px;
+  pointer-events:none;
+}
 
+/* ==================== EMPTY ==================== */
 .empty {
   text-align:center; padding:80px 20px;
   color:var(--az-text-secondary);
+  max-width:440px; margin:0 auto;
 }
 .empty i {
-  font-size:56px; color:var(--az-primary);
-  opacity:.4; margin-bottom:14px; display:block;
+  font-size:64px; color:var(--az-primary);
+  opacity:.35; margin-bottom:18px; display:block;
 }
-.empty h3 { color:var(--az-text); font-size:16px; margin-bottom:6px; }
-.empty p { font-size:13px; }
+.empty h3 {
+  color:var(--az-text); font-size:17px;
+  margin-bottom:8px; font-weight:700;
+}
+.empty p { font-size:14px; line-height:1.6; }
+
+/* ==================== TOASTS ==================== */
+.toast-container {
+  position:fixed; top:80px; right:20px;
+  z-index:10000;
+}
 </style>
 </head>
 <body>
@@ -111,12 +219,24 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   </button>
 </header>
 
-<div class="notif-list" id="notifList">
+<!-- Summary banner -->
+<div class="notif-summary" id="notifSummary" style="display:none;">
+  <div class="icon-wrap"><i class="fas fa-bell"></i></div>
+  <div class="info">
+    <h2>Your Activity</h2>
+    <p><strong id="unreadCount">0</strong> unread · <span id="totalCount">0</span> total</p>
+  </div>
+</div>
+
+<div id="notifList" class="notif-list">
   <div class="empty"><i class="fas fa-circle-notch fa-spin"></i></div>
 </div>
 
 <script src="auth.js"></script>
 <script>
+let notifRealtimeChannel = null;
+let allNotifs = [];
+
 document.addEventListener('DOMContentLoaded', () => {
   const check = setInterval(() => {
     if (typeof authReady !== 'undefined' && authReady) {
@@ -137,10 +257,12 @@ async function init() {
     return;
   }
   await loadNotifications();
+  setupNotifListener();
 }
 
 async function loadNotifications() {
   const list = document.getElementById('notifList');
+  list.innerHTML = '<div class="empty"><i class="fas fa-circle-notch fa-spin"></i></div>';
 
   try {
     const { data, error } = await supabaseClient
@@ -151,7 +273,7 @@ async function loadNotifications() {
       `)
       .eq('user_id', currentUser.id)
       .order('created_at', { ascending: false })
-      .limit(100);
+      .limit(150);
 
     if (error) throw error;
 
@@ -160,53 +282,163 @@ async function loadNotifications() {
         <div class="empty">
           <i class="far fa-bell"></i>
           <h3>No notifications yet</h3>
-          <p>Likes, comments, follows, and messages will appear here.</p>
+          <p>When people like, comment, follow, or message you — you'll see it here.</p>
         </div>`;
+      document.getElementById('notifSummary').style.display = 'none';
       return;
     }
 
-    list.innerHTML = data.map(n => renderNotif(n)).join('');
+    // Fetch posts referenced by like/comment notifications
+    const postIds = [...new Set(data.filter(n => (n.type === 'like' || n.type === 'comment') && n.ref_id).map(n => n.ref_id))];
+    let postMap = new Map();
+    if (postIds.length > 0) {
+      const { data: posts } = await supabaseClient
+        .from('posts')
+        .select('id, content, media_urls, media_types')
+        .in('id', postIds);
+      (posts || []).forEach(p => postMap.set(p.id, p));
+    }
+
+    allNotifs = data.map(n => ({
+      ...n,
+      post: (n.type === 'like' || n.type === 'comment') ? postMap.get(n.ref_id) : null
+    }));
+
+    renderNotifications();
+
   } catch (err) {
+    console.error(err);
     list.innerHTML = `<div class="empty"><i class="fas fa-exclamation-triangle"></i><h3>Couldn't load</h3><p>${escapeHtml(err.message)}</p></div>`;
   }
 }
 
+function renderNotifications() {
+  const list = document.getElementById('notifList');
+  const unread = allNotifs.filter(n => !n.is_read).length;
+
+  // Update summary
+  document.getElementById('notifSummary').style.display = 'flex';
+  document.getElementById('unreadCount').textContent = unread;
+  document.getElementById('totalCount').textContent = allNotifs.length;
+
+  if (allNotifs.length === 0) {
+    list.innerHTML = `
+      <div class="empty">
+        <i class="far fa-bell"></i>
+        <h3>No notifications yet</h3>
+        <p>When people like, comment, follow, or message you — you'll see it here.</p>
+      </div>`;
+    return;
+  }
+
+  // Group by day
+  const groups = {
+    today: [],
+    yesterday: [],
+    week: [],
+    older: []
+  };
+
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterdayStart = new Date(todayStart.getTime() - 86400000);
+  const weekStart = new Date(todayStart.getTime() - 7 * 86400000);
+
+  allNotifs.forEach(n => {
+    const d = new Date(n.created_at);
+    if (d >= todayStart) groups.today.push(n);
+    else if (d >= yesterdayStart) groups.yesterday.push(n);
+    else if (d >= weekStart) groups.week.push(n);
+    else groups.older.push(n);
+  });
+
+  let html = '';
+  if (groups.today.length)     html += `<div class="notif-section-header">Today</div>`     + groups.today.map(renderNotif).join('');
+  if (groups.yesterday.length) html += `<div class="notif-section-header">Yesterday</div>` + groups.yesterday.map(renderNotif).join('');
+  if (groups.week.length)      html += `<div class="notif-section-header">This Week</div>` + groups.week.map(renderNotif).join('');
+  if (groups.older.length)     html += `<div class="notif-section-header">Earlier</div>`   + groups.older.map(renderNotif).join('');
+
+  list.innerHTML = html;
+}
+
 function renderNotif(n) {
   const actor = n.actor || {};
-  const name = actor.display_name || actor.username || 'Someone';
+  const name  = actor.display_name || actor.username || 'Someone';
   const initial = name.charAt(0).toUpperCase();
-  const avatar = actor.avatar_url ? `<img src="${escapeHtml(actor.avatar_url)}" alt="">` : initial;
+  const avatar  = actor.avatar_url ? `<img src="${escapeHtml(actor.avatar_url)}" alt="">` : initial;
 
+  // Build message
   const typeMap = {
-    like:    { icon:'fa-heart',         msg:`<strong>${escapeHtml(name)}</strong> liked your post` },
-    comment: { icon:'fa-comment',       msg:`<strong>${escapeHtml(name)}</strong> commented on your post` },
-    follow:  { icon:'fa-user-plus',     msg:`<strong>${escapeHtml(name)}</strong> started following you` },
-    message: { icon:'fa-paper-plane',   msg:`<strong>${escapeHtml(name)}</strong> sent you a message` },
-    mention: { icon:'fa-at',            msg:`<strong>${escapeHtml(name)}</strong> mentioned you` },
-    tip:     { icon:'fa-coins',         msg:`<strong>${escapeHtml(name)}</strong> sent you a tip` },
-    request: { icon:'fa-user-clock',    msg:`<strong>${escapeHtml(name)}</strong> requested to follow you` }
+    like:    { icon:'fa-heart',       verb:'liked your post' },
+    comment: { icon:'fa-comment',     verb:'commented on your post' },
+    follow:  { icon:'fa-user-plus',   verb:'started following you' },
+    message: { icon:'fa-paper-plane', verb:'sent you a message' },
+    mention: { icon:'fa-at',          verb:'mentioned you' },
+    tip:     { icon:'fa-coins',       verb:'sent you a tip' },
+    request: { icon:'fa-user-clock',  verb:'requested to follow you' }
   };
-  const info = typeMap[n.type] || { icon:'fa-bell', msg:`New notification from <strong>${escapeHtml(name)}</strong>` };
+  const info = typeMap[n.type] || { icon:'fa-bell', verb:'sent you a notification' };
+
+  // Post snippet (content preview)
+  let snippetHtml = '';
+  if (n.post) {
+    const content = (n.post.content || '').slice(0, 60);
+    if (content) {
+      snippetHtml = `<span class="post-snippet">"${escapeHtml(content)}${n.post.content.length > 60 ? '…' : ''}"</span>`;
+    }
+  }
+
+  // Post thumbnail
+  let thumbHtml = '';
+  if (n.post && Array.isArray(n.post.media_urls) && n.post.media_urls.length > 0) {
+    const first = n.post.media_urls[0];
+    const isVideo = /\.(mp4|webm|ogg|mov)$/i.test(first);
+    thumbHtml = `
+      <div class="thumb">
+        ${isVideo
+          ? `<video src="${escapeHtml(first)}" muted></video><div class="play-overlay"><i class="fas fa-play"></i></div>`
+          : `<img src="${escapeHtml(first)}" alt="" loading="lazy">`}
+      </div>`;
+  } else if (n.post && n.post.content) {
+    thumbHtml = `<div class="thumb"><div class="no-media"><i class="far fa-file-alt"></i></div></div>`;
+  }
 
   return `
-    <div class="notif-row ${n.is_read ? '' : 'unread'}" onclick="openNotif('${n.type}', '${n.ref_id || ''}', '${actor.id || ''}')">
-      <div class="av">
-        ${avatar}
+    <div class="notif-row ${n.is_read ? '' : 'unread'}"
+         onclick="openNotif('${n.type}', '${n.ref_id || ''}', '${actor.id || ''}')">
+      <div class="av-wrap">
+        <div class="av">${avatar}</div>
         <div class="type-icon ${n.type}"><i class="fas ${info.icon}"></i></div>
       </div>
       <div class="body">
-        <div class="text">${info.msg}</div>
-        <div class="time">${formatTimeAgo(n.created_at)}</div>
+        <div class="text">
+          <strong onclick="event.stopPropagation(); gotoUser('${actor.id || ''}')">${escapeHtml(name)}</strong>
+          <span class="action-text"> ${info.verb}</span>
+          ${snippetHtml}
+        </div>
+        <div class="time">
+          ${n.is_read ? '' : '<span class="unread-dot"></span>'}
+          ${formatTimeAgo(n.created_at)}
+        </div>
       </div>
+      ${thumbHtml}
     </div>
   `;
+}
+
+function gotoUser(userId) {
+  if (userId) window.location.href = 'profile.html?user=' + userId;
 }
 
 async function openNotif(type, refId, actorId) {
   // Mark as read
   try {
-    await supabaseClient.from('notifications').update({ is_read: true })
-      .eq('user_id', currentUser.id).eq('ref_id', refId).eq('type', type);
+    const updates = { is_read: true };
+    await supabaseClient.from('notifications')
+      .update(updates)
+      .eq('user_id', currentUser.id)
+      .eq('type', type)
+      .eq('ref_id', refId);
   } catch(e){}
 
   // Route based on type
@@ -215,9 +447,13 @@ async function openNotif(type, refId, actorId) {
   } else if (type === 'message') {
     if (actorId) window.location.href = 'chats.html?user=' + actorId;
   } else if (type === 'like' || type === 'comment' || type === 'mention') {
-    window.location.href = 'index.html';
+    // Direct to the exact post
+    if (refId) window.location.href = 'index.html?post=' + refId;
+    else window.location.href = 'index.html';
   } else if (type === 'tip') {
     window.location.href = 'wallets.html';
+  } else if (actorId) {
+    window.location.href = 'profile.html?user=' + actorId;
   }
 }
 
@@ -226,10 +462,28 @@ async function markAllRead() {
   try {
     await supabaseClient.from('notifications')
       .update({ is_read: true })
-      .eq('user_id', currentUser.id).eq('is_read', false);
+      .eq('user_id', currentUser.id)
+      .eq('is_read', false);
     showToast('All marked as read ✅', 'success');
     loadNotifications();
   } catch (err) { showToast(err.message, 'error'); }
+}
+
+function setupNotifListener() {
+  if (notifRealtimeChannel) supabaseClient.removeChannel(notifRealtimeChannel);
+  notifRealtimeChannel = supabaseClient
+    .channel('notifications-page')
+    .on('postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'notifications',
+        filter: `user_id=eq.${currentUser.id}` },
+      () => { loadNotifications(); }
+    )
+    .on('postgres_changes',
+      { event: 'UPDATE', schema: 'public', table: 'notifications',
+        filter: `user_id=eq.${currentUser.id}` },
+      () => { loadNotifications(); }
+    )
+    .subscribe();
 }
 
 function formatTimeAgo(dateStr) {
