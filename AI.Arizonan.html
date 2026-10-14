@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#050a14">
-<title>AI.Arizonan — Chat</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>AI.Arizonan — Your AI Assistant</title>
 
 <link rel="icon" type="image/jpeg" href="arizonan%20png%20icon.jpeg">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -28,9 +29,6 @@ body {
   overscroll-behavior: none;
 }
 
-/* ============================================================
-   APP WRAPPER — Mobile centered, desktop framed
-   ============================================================ */
 .app {
   position: relative;
   max-width: 480px;
@@ -67,6 +65,8 @@ body {
   align-items: center;
   gap: 6px;
   z-index: 20;
+  padding-top: env(safe-area-inset-top);
+  height: calc(56px + env(safe-area-inset-top));
 }
 .topbar .icon-btn {
   width: 40px; height: 40px;
@@ -184,7 +184,7 @@ body {
 }
 
 /* ============================================================
-   MEDIA IN CHAT
+   MEDIA
    ============================================================ */
 .msg .bubble .media {
   display: block;
@@ -215,8 +215,28 @@ body {
   min-width: 220px;
 }
 
+/* Media actions (download) */
+.msg .media-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+.msg .media-actions a {
+  background: rgba(94,184,255,.15);
+  border: 1px solid rgba(94,184,255,.35);
+  color: #5eb8ff;
+  border-radius: 10px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 /* ============================================================
-   MESSAGE ACTIONS
+   ACTIONS
    ============================================================ */
 .msg .actions {
   display: flex;
@@ -243,7 +263,7 @@ body {
 }
 
 /* ============================================================
-   WELCOME SCREEN
+   WELCOME
    ============================================================ */
 .welcome {
   padding: 30px 16px 20px;
@@ -307,10 +327,15 @@ body {
   background: rgba(94,184,255,.18);
   transform: scale(.98);
 }
-.chip i { color: #5eb8ff; font-size: 14px; width: 18px; text-align: center; }
+.chip i {
+  color: #5eb8ff;
+  font-size: 14px;
+  width: 18px;
+  text-align: center;
+}
 
 /* ============================================================
-   TYPING INDICATOR
+   TYPING
    ============================================================ */
 .typing {
   display: flex;
@@ -372,7 +397,11 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.attach-preview .info .meta { font-size: 11px; color: rgba(255,255,255,.45); margin-top: 2px; }
+.attach-preview .info .meta {
+  font-size: 11px;
+  color: rgba(255,255,255,.45);
+  margin-top: 2px;
+}
 .attach-preview .remove {
   background: transparent;
   border: none;
@@ -500,11 +529,11 @@ body {
 
 .drawer-head {
   padding: 14px;
+  padding-top: calc(14px + env(safe-area-inset-top));
   border-bottom: 1px solid rgba(94,184,255,.15);
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-top: calc(14px + env(safe-area-inset-top));
 }
 .drawer-head .brand {
   display: flex;
@@ -654,27 +683,6 @@ body {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
-
-/* ============================================================
-   LOADING IMAGE OVERLAY
-   ============================================================ */
-.generating-image {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 20px;
-  background: rgba(94,184,255,.06);
-  border: 1px dashed rgba(94,184,255,.3);
-  border-radius: 12px;
-  margin-top: 8px;
-  font-size: 12px;
-  color: rgba(255,255,255,.6);
-}
-.generating-image i {
-  font-size: 26px;
-  color: #5eb8ff;
-}
 </style>
 </head>
 <body>
@@ -710,7 +718,7 @@ body {
     </button>
   </div>
 
-  <!-- INPUT BAR -->
+  <!-- INPUT -->
   <div class="input-wrap">
     <div class="input-inner">
       <button class="icon-inline" onclick="pickFile()" aria-label="Attach">
@@ -728,7 +736,6 @@ body {
     </div>
   </div>
 
-  <!-- HIDDEN FILE INPUT -->
   <input type="file" id="fileInput" accept="image/*,video/*,audio/*" style="display:none;">
 </div>
 
@@ -842,7 +849,9 @@ function renderDrawerList() {
     <div class="chat-item ${c.id === currentChatId ? 'active' : ''}" onclick="openChat('${c.id}')">
       <i class="far fa-comment"></i>
       <span class="title">${escapeHtml(c.title || 'New chat')}</span>
-      <button class="del" onclick="event.stopPropagation(); deleteChat('${c.id}')"><i class="fas fa-trash"></i></button>
+      <button class="del" onclick="event.stopPropagation(); deleteChat('${c.id}')">
+        <i class="fas fa-trash"></i>
+      </button>
     </div>
   `).join('');
 }
@@ -914,26 +923,26 @@ async function createChatIfNeeded(firstMessage) {
 }
 
 /* ============================================================
-   RENDERING
+   RENDER
    ============================================================ */
 function renderWelcome() {
   document.getElementById('messages').innerHTML = `
     <div class="welcome">
       <div class="icon"><i class="fas fa-robot"></i></div>
       <h1>Hi, I'm AI.Arizonan</h1>
-      <p>Your AI assistant. Send text, images, videos, or voice — I can even draw images for you! 🎨</p>
+      <p>Your AI assistant. I can chat, draw images, create videos, and compose music — just ask!</p>
       <div class="chips">
         <button class="chip" onclick="quickAsk('Draw a sunset over a desert with a tall cactus')">
           <i class="fas fa-image"></i> Draw an image
         </button>
+        <button class="chip" onclick="quickAsk('Create a video of ocean waves at sunrise')">
+          <i class="fas fa-video"></i> Create a video
+        </button>
+        <button class="chip" onclick="quickAsk('Create an upbeat electronic music track')">
+          <i class="fas fa-music"></i> Make music
+        </button>
         <button class="chip" onclick="quickAsk('Write a caption for my post')">
           <i class="fas fa-pen-fancy"></i> Write a caption
-        </button>
-        <button class="chip" onclick="quickAsk('Suggest hashtags for a post')">
-          <i class="fas fa-hashtag"></i> Suggest hashtags
-        </button>
-        <button class="chip" onclick="quickAsk('How do I earn on Arizona AI?')">
-          <i class="fas fa-dollar-sign"></i> Earn tips
         </button>
       </div>
     </div>
@@ -957,15 +966,19 @@ function createMessageEl(msg, index) {
     ? (currentProfile?.username || currentUser?.email?.split('@')[0] || 'U').charAt(0).toUpperCase()
     : 'AI';
 
-  // Build media HTML
   let mediaHtml = '';
+  let mediaActions = '';
   if (msg.media_url) {
+    const url = escapeHtml(msg.media_url);
     if (msg.media_type === 'image') {
-      mediaHtml = `<div class="media"><img src="${escapeHtml(msg.media_url)}" alt="" loading="lazy" onclick="viewImage('${escapeHtml(msg.media_url)}')"></div>`;
+      mediaHtml = `<div class="media"><img src="${url}" alt="" loading="lazy" onclick="viewImage('${url}')"></div>`;
+      mediaActions = `<div class="media-actions"><a href="${url}" download="arizona-ai-image.png" target="_blank"><i class="fas fa-download"></i> Download</a></div>`;
     } else if (msg.media_type === 'video') {
-      mediaHtml = `<div class="media"><video src="${escapeHtml(msg.media_url)}" controls playsinline preload="metadata"></video></div>`;
+      mediaHtml = `<div class="media"><video src="${url}" controls playsinline preload="metadata"></video></div>`;
+      mediaActions = `<div class="media-actions"><a href="${url}" download="arizona-ai-video.mp4" target="_blank"><i class="fas fa-download"></i> Download</a></div>`;
     } else if (msg.media_type === 'audio') {
-      mediaHtml = `<div class="media"><audio src="${escapeHtml(msg.media_url)}" controls preload="metadata"></audio></div>`;
+      mediaHtml = `<div class="media"><audio src="${url}" controls preload="metadata"></audio></div>`;
+      mediaActions = `<div class="media-actions"><a href="${url}" download="arizona-ai-audio.mp3" target="_blank"><i class="fas fa-download"></i> Download</a></div>`;
     }
   }
 
@@ -979,6 +992,7 @@ function createMessageEl(msg, index) {
     <div class="av">${avText}</div>
     <div class="body">
       <div class="bubble">${bubbleContent || '<em style="opacity:.5;">…</em>'}</div>
+      ${mediaActions}
       ${!isUser ? `
         <div class="actions">
           <button onclick="copyMessage(${index})"><i class="fas fa-copy"></i> Copy</button>
@@ -1093,16 +1107,17 @@ async function toggleRecording() {
    ============================================================ */
 async function sendMessage() {
   if (isSending) return;
+
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
 
   if (!text && !pendingFile) return;
 
-  // Upload file if pending
   let mediaUrl = null;
   let mediaType = null;
 
-  if (pendingFile && currentUser) {
+  // Upload file if present
+  if (pendingFile && pendingFile instanceof File && currentUser) {
     try {
       const ext = (pendingFile.name.split('.').pop() || 'bin').toLowerCase();
       const path = `${currentUser.id}/ai-${Date.now()}.${ext}`;
@@ -1180,12 +1195,11 @@ async function sendMessage() {
       return;
     }
 
-    // Build assistant message (may include image)
     const assistantMsg = {
       role: 'assistant',
       content: data.reply || '',
       media_url: data.image_url || null,
-      media_type: data.image_url ? 'image' : null
+      media_type: data.media_type || (data.image_url ? 'image' : null)
     };
     messages.push(assistantMsg);
 
@@ -1196,7 +1210,7 @@ async function sendMessage() {
           role: 'assistant',
           content: data.reply || '',
           media_url: data.image_url || null,
-          media_type: data.image_url ? 'image' : null
+          media_type: data.media_type || (data.image_url ? 'image' : null)
         });
       } catch (e) { console.warn('[AI] save assistant msg failed:', e); }
     }
