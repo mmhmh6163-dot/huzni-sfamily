@@ -11,211 +11,260 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
-body {
-  background: #0a0a0a;
-  padding-top: 60px;
-  padding-bottom: 30px;
-}
+body { background:#0a0a0a; padding-top:60px; padding-bottom:30px; }
 
 /* ==================== TOP BAR ==================== */
 .create-topbar {
-  position: fixed; top: 0; left: 0; right: 0; height: 60px;
-  background: rgba(10,10,10,.97);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255,107,53,.25);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 16px; z-index: 1000;
-  max-width: 640px; margin: 0 auto;
+  position:fixed; top:0; left:0; right:0; height:60px;
+  background:rgba(10,10,10,.97); backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,107,53,.25);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 16px; z-index:1000; max-width:640px; margin:0 auto;
 }
 .create-topbar .back {
-  color: var(--az-text); font-size: 20px; text-decoration: none;
-  width: 40px; height: 40px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 50%;
+  color:var(--az-text); font-size:20px; text-decoration:none;
+  width:40px; height:40px;
+  display:flex; align-items:center; justify-content:center; border-radius:50%;
 }
-.create-topbar .back:hover { background: rgba(255,255,255,.06); }
-.create-topbar .title { font-size: 16px; font-weight: 700; color: var(--az-text); }
+.create-topbar .back:hover { background:rgba(255,255,255,.06); }
+.create-topbar .title { font-size:16px; font-weight:700; color:var(--az-text); }
 .create-topbar .share {
-  background: var(--az-gradient);
-  color: #fff; border: none;
-  padding: 8px 18px; border-radius: 20px;
-  font-size: 13px; font-weight: 700;
-  cursor: pointer;
-  display: flex; align-items: center; gap: 6px;
+  background:var(--az-gradient); color:#fff; border:none;
+  padding:8px 18px; border-radius:20px;
+  font-size:13px; font-weight:700; cursor:pointer;
+  display:flex; align-items:center; gap:6px;
+  transition:transform .15s;
 }
-.create-topbar .share:disabled { opacity: 0.6; cursor: not-allowed; }
+.create-topbar .share:active { transform:scale(.96); }
+.create-topbar .share:disabled { opacity:.6; cursor:not-allowed; }
+
+/* ==================== EARN BANNER ==================== */
+.earn-banner {
+  max-width:640px; margin:16px auto;
+  padding:14px 18px;
+  background:linear-gradient(135deg, rgba(0,184,148,.12), rgba(255,178,15,.08));
+  border:1px solid rgba(0,184,148,.35);
+  border-radius:14px;
+  display:flex; align-items:center; gap:12px;
+}
+.earn-banner i { font-size:22px; color:#00b894; flex-shrink:0; }
+.earn-banner .text { flex:1; font-size:13px; color:var(--az-text); line-height:1.45; }
+.earn-banner .text strong { color:#00b894; }
+.earn-banner.capped {
+  background:linear-gradient(135deg, rgba(255,118,117,.12), rgba(255,118,117,.05));
+  border-color:rgba(255,118,117,.35);
+}
+.earn-banner.capped i { color:#ff7675; }
+.earn-banner.capped .text strong { color:#ff7675; }
 
 /* ==================== UPLOAD ZONE ==================== */
-.upload-zone { max-width: 640px; margin: 0 auto; padding: 16px; }
+.upload-zone { max-width:640px; margin:0 auto; padding:16px; }
 .upload-box {
-  border: 2px dashed rgba(255,107,53,0.4);
-  border-radius: 16px; padding: 40px 20px;
-  text-align: center; cursor: pointer;
-  transition: all 0.2s ease;
-  background: rgba(255,255,255,0.02);
+  border:2px dashed rgba(255,107,53,0.4);
+  border-radius:16px; padding:40px 20px;
+  text-align:center; cursor:pointer;
+  transition:all .2s ease;
+  background:rgba(255,255,255,0.02);
 }
 .upload-box:hover, .upload-box.dragover {
-  border-color: var(--az-primary);
-  background: rgba(255,107,53,0.06);
+  border-color:var(--az-primary);
+  background:rgba(255,107,53,0.06);
 }
 .upload-box i {
-  font-size: 42px; color: var(--az-accent);
-  margin-bottom: 12px; display: block;
+  font-size:42px; color:var(--az-accent);
+  margin-bottom:12px; display:block;
 }
-.upload-box h3 { font-size: 16px; color: var(--az-text); margin-bottom: 6px; }
-.upload-box p { font-size: 13px; color: var(--az-text-secondary); }
+.upload-box h3 { font-size:16px; color:var(--az-text); margin-bottom:6px; }
+.upload-box p { font-size:13px; color:var(--az-text-secondary); }
 
 /* ==================== PREVIEWS ==================== */
 .previews {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px; margin-top: 14px;
+  display:grid; grid-template-columns:repeat(3, 1fr);
+  gap:8px; margin-top:14px;
 }
 .preview-item {
-  position: relative;
-  aspect-ratio: 1 / 1;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #111;
+  position:relative; aspect-ratio:1 / 1;
+  border-radius:10px; overflow:hidden; background:#111;
 }
 .preview-item img, .preview-item video {
-  width: 100%; height: 100%; object-fit: cover; display: block;
+  width:100%; height:100%; object-fit:cover; display:block;
 }
 .preview-item .remove {
-  position: absolute; top: 6px; right: 6px;
-  background: rgba(0,0,0,0.75); color: #fff;
-  width: 26px; height: 26px; border-radius: 50%;
-  border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px;
+  position:absolute; top:6px; right:6px;
+  background:rgba(0,0,0,.75); color:#fff;
+  width:26px; height:26px; border-radius:50%;
+  border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px;
 }
 .preview-item .type-badge {
-  position: absolute; bottom: 6px; left: 6px;
-  background: rgba(0,0,0,0.7); color: #fff;
-  padding: 2px 8px; border-radius: 10px;
-  font-size: 10px; font-weight: 600;
+  position:absolute; bottom:6px; left:6px;
+  background:rgba(0,0,0,.7); color:#fff;
+  padding:2px 8px; border-radius:10px;
+  font-size:10px; font-weight:600;
 }
 .preview-item .watermark {
-  position: absolute; bottom: 6px; right: 6px;
-  display: flex; align-items: center; gap: 4px;
-  font-size: 9px; color: rgba(255,255,255,.85);
-  background: rgba(0,0,0,.5);
-  padding: 2px 6px; border-radius: 8px;
-  font-weight: 700;
+  position:absolute; bottom:6px; right:6px;
+  display:flex; align-items:center; gap:4px;
+  font-size:9px; color:rgba(255,255,255,.85);
+  background:rgba(0,0,0,.5);
+  padding:2px 6px; border-radius:8px;
+  font-weight:700;
 }
 .preview-item .watermark img {
-  width: 10px; height: 10px; border-radius: 2px;
+  width:10px; height:10px; border-radius:2px;
 }
 
 /* ==================== FORM ==================== */
-.create-form { max-width: 640px; margin: 0 auto; padding: 0 16px 30px; }
-.create-form .field { margin-bottom: 18px; }
+.create-form { max-width:640px; margin:0 auto; padding:0 16px 30px; }
+.create-form .field { margin-bottom:18px; }
 .create-form label {
-  display: block; font-size: 12px;
-  color: var(--az-text-secondary);
-  margin-bottom: 6px;
-  text-transform: uppercase; letter-spacing: 0.5px;
+  display:block; font-size:12px;
+  color:var(--az-text-secondary);
+  margin-bottom:6px;
+  text-transform:uppercase; letter-spacing:.5px;
 }
 .create-form textarea {
-  width: 100%; min-height: 130px;
-  padding: 14px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 12px;
-  color: var(--az-text); font-size: 15px;
-  font-family: inherit; resize: vertical;
+  width:100%; min-height:130px;
+  padding:14px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:12px;
+  color:var(--az-text); font-size:15px;
+  font-family:inherit; resize:vertical;
 }
-.create-form textarea:focus { outline: none; border-color: var(--az-primary); }
+.create-form textarea:focus { outline:none; border-color:var(--az-primary); }
 .create-form .counter {
-  text-align: right; font-size: 11px;
-  color: var(--az-text-secondary);
-  margin-top: 4px;
+  text-align:right; font-size:11px;
+  color:var(--az-text-secondary); margin-top:4px;
 }
 
 /* ==================== POST TYPE ==================== */
 .type-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;
 }
 .type-btn {
-  padding: 12px 8px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 10px;
-  color: var(--az-text-secondary);
-  cursor: pointer; font-size: 12px; font-weight: 600;
-  display: flex; flex-direction: column;
-  align-items: center; gap: 4px;
-  transition: all 0.2s;
+  padding:12px 8px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:10px;
+  color:var(--az-text-secondary);
+  cursor:pointer; font-size:12px; font-weight:600;
+  display:flex; flex-direction:column;
+  align-items:center; gap:4px;
+  transition:all .2s;
 }
-.type-btn i { font-size: 18px; }
+.type-btn i { font-size:18px; }
 .type-btn.active {
-  background: rgba(255,107,53,0.15);
-  border-color: var(--az-primary);
-  color: var(--az-accent);
+  background:rgba(255,107,53,0.15);
+  border-color:var(--az-primary);
+  color:var(--az-accent);
 }
 
 /* ==================== PROGRESS ==================== */
 .upload-progress {
-  display: none;
-  max-width: 640px; margin: 20px auto 0;
-  padding: 0 16px;
+  display:none;
+  max-width:640px; margin:20px auto 0;
+  padding:0 16px;
 }
-.upload-progress.active { display: block; }
+.upload-progress.active { display:block; }
 .progress-bar {
-  height: 8px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 4px;
-  overflow: hidden;
+  height:8px;
+  background:rgba(255,255,255,0.08);
+  border-radius:4px; overflow:hidden;
 }
 .progress-fill {
-  height: 100%;
-  background: var(--az-gradient);
-  width: 0%;
-  transition: width 0.3s ease;
-  border-radius: 4px;
+  height:100%;
+  background:var(--az-gradient);
+  width:0%;
+  transition:width .3s ease;
+  border-radius:4px;
 }
 .progress-text {
-  text-align: center;
-  font-size: 12px;
-  color: var(--az-text-secondary);
-  margin-top: 8px;
+  text-align:center; font-size:12px;
+  color:var(--az-text-secondary);
+  margin-top:8px;
 }
 
-/* ==================== EARN BANNER ==================== */
-.earn-banner {
-  max-width: 640px; margin: 16px auto;
-  padding: 14px 18px;
-  background: linear-gradient(135deg, rgba(0,184,148,.12), rgba(255,178,15,.08));
-  border: 1px solid rgba(0,184,148,.35);
-  border-radius: 14px;
-  display: flex; align-items: center; gap: 12px;
+/* ==================== SUCCESS SCREEN ==================== */
+.success-screen {
+  display:none;
+  max-width:440px; margin:40px auto;
+  padding:32px 24px; text-align:center;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(0,184,148,.35);
+  border-radius:20px;
 }
-.earn-banner i {
-  font-size: 22px; color: #00b894;
+.success-screen.active { display:block; }
+.success-screen i.success-icon {
+  font-size:60px; color:#00b894;
+  margin-bottom:16px; display:block;
+  animation:pop .4s ease;
 }
-.earn-banner .text {
-  flex: 1; font-size: 13px; color: var(--az-text);
-  line-height: 1.45;
+@keyframes pop { from { transform:scale(0); } }
+.success-screen h2 {
+  color:var(--az-text); margin-bottom:8px;
+  font-size:22px;
 }
-.earn-banner .text strong { color: #00b894; }
+.success-screen p {
+  color:var(--az-text-secondary);
+  font-size:14px; line-height:1.6;
+  margin-bottom:20px;
+}
+.success-screen .earned-box {
+  background:linear-gradient(135deg, rgba(0,184,148,.15), rgba(255,178,15,.1));
+  border:1px solid rgba(0,184,148,.4);
+  border-radius:14px; padding:16px;
+  margin-bottom:20px;
+}
+.success-screen .earned-box .amount {
+  font-size:26px; font-weight:800;
+  color:#00b894; line-height:1;
+  margin-bottom:4px;
+}
+.success-screen .earned-box .lbl {
+  font-size:12px; color:var(--az-text-secondary);
+  text-transform:uppercase; letter-spacing:.5px;
+}
+.success-screen .remaining {
+  font-size:12px; color:var(--az-text-secondary);
+  margin-top:8px;
+}
+.success-screen .actions {
+  display:flex; gap:10px; flex-direction:column;
+}
+.success-screen .actions a,
+.success-screen .actions button {
+  padding:13px; border-radius:12px;
+  font-weight:700; font-size:14px;
+  text-decoration:none; cursor:pointer;
+  border:none;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.success-screen .actions .primary {
+  background:var(--az-gradient); color:#fff;
+}
+.success-screen .actions .outline {
+  background:transparent; color:var(--az-primary);
+  border:1px solid var(--az-primary);
+}
 
 /* ==================== AUTH WALL ==================== */
 .auth-wall {
-  max-width: 440px; margin: 60px auto;
-  padding: 32px 24px; text-align: center;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,107,53,0.25);
-  border-radius: 20px;
+  max-width:440px; margin:60px auto;
+  padding:32px 24px; text-align:center;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,107,53,.25);
+  border-radius:20px;
 }
-.auth-wall i { font-size: 48px; color: var(--az-primary); margin-bottom: 14px; }
-.auth-wall h2 { color: var(--az-text); margin-bottom: 8px; }
-.auth-wall p { color: var(--az-text-secondary); font-size: 14px; margin-bottom: 20px; }
+.auth-wall i { font-size:48px; color:var(--az-primary); margin-bottom:14px; }
+.auth-wall h2 { color:var(--az-text); margin-bottom:8px; }
+.auth-wall p { color:var(--az-text-secondary); font-size:14px; margin-bottom:20px; }
 .auth-wall a {
-  display: block; padding: 13px; border-radius: 12px;
-  text-decoration: none; font-weight: 700; margin-bottom: 10px;
+  display:block; padding:13px; border-radius:12px;
+  text-decoration:none; font-weight:700; margin-bottom:10px;
 }
-.auth-wall a.primary { background: var(--az-gradient); color: #fff; }
+.auth-wall a.primary { background:var(--az-gradient); color:#fff; }
 </style>
 </head>
 <body>
@@ -246,10 +295,10 @@ body {
 <div id="createContent" style="display:none;">
 
   <!-- Earn banner -->
-  <div class="earn-banner">
-    <i class="fas fa-coins"></i>
-    <div class="text">
-      <strong>Earn $0.001</strong> for every post you create! Plus, every like, comment, and share boosts your reach.
+  <div class="earn-banner" id="earnBanner">
+    <i class="fas fa-coins" id="earnIcon"></i>
+    <div class="text" id="earnBannerText">
+      <strong>Earn $0.001</strong> per post · Loading status…
     </div>
   </div>
 
@@ -261,7 +310,6 @@ body {
       <p>Images & videos · Up to 50 MB per file</p>
     </div>
     <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display:none;">
-
     <div class="previews" id="previews"></div>
   </div>
 
@@ -284,16 +332,16 @@ body {
     <div class="field">
       <label>Post Type</label>
       <div class="type-grid">
-        <button class="type-btn active" data-type="post"  onclick="selectType('post', this)">
+        <button class="type-btn active" data-type="post" onclick="selectType('post', this)">
           <i class="fas fa-image"></i> Post
         </button>
-        <button class="type-btn" data-type="short"        onclick="selectType('short', this)">
+        <button class="type-btn" data-type="short" onclick="selectType('short', this)">
           <i class="fas fa-bolt"></i> Short
         </button>
-        <button class="type-btn" data-type="reel"         onclick="selectType('reel', this)">
+        <button class="type-btn" data-type="reel" onclick="selectType('reel', this)">
           <i class="fas fa-video"></i> Reel
         </button>
-        <button class="type-btn" data-type="note"         onclick="selectType('note', this)">
+        <button class="type-btn" data-type="note" onclick="selectType('note', this)">
           <i class="fas fa-note-sticky"></i> Note
         </button>
       </div>
@@ -314,12 +362,36 @@ body {
   </div>
 </div>
 
+<!-- ==================== SUCCESS SCREEN ==================== -->
+<div class="success-screen" id="successScreen">
+  <i class="fas fa-check-circle success-icon"></i>
+  <h2>Posted Successfully! 🎉</h2>
+  <p>Your post is now live on Arizona AI.</p>
+
+  <div class="earned-box" id="earnedBox">
+    <div class="amount" id="earnedAmount">+$0.001</div>
+    <div class="lbl" id="earnedLabel">Earned from this post</div>
+    <div class="remaining" id="earnedRemaining"></div>
+  </div>
+
+  <div class="actions">
+    <a href="index.html" class="primary"><i class="fas fa-home"></i> View Feed</a>
+    <button class="outline" onclick="resetForm()"><i class="fas fa-plus"></i> Create Another</button>
+    <button class="outline" onclick="shareMyPost()" id="shareMyPostBtn" style="display:none;">
+      <i class="fas fa-share"></i> Share Post Link
+    </button>
+  </div>
+</div>
+
 <!-- ==================== SCRIPTS ==================== -->
 <script src="auth.js"></script>
 <script>
-let selectedFiles = [];
-let selectedType  = 'post';
+let selectedFiles   = [];
+let selectedType    = 'post';
+let lastPostId      = null;
+let earnStatus      = { count:0, cap:100, remaining:100, reached:false };
 
+/* ==================== INIT ==================== */
 document.addEventListener('DOMContentLoaded', () => {
   const check = setInterval(() => {
     if (typeof authReady !== 'undefined' && authReady) {
@@ -345,12 +417,49 @@ function init() {
     box.classList.remove('dragover');
     handleFiles(e.dataTransfer.files);
   });
+  document.getElementById('fileInput').addEventListener('change', e => handleFiles(e.target.files));
 
-  document.getElementById('fileInput').addEventListener('change', e => {
-    handleFiles(e.target.files);
-  });
+  loadEarnStatus();
 }
 
+/* ==================== EARN STATUS ==================== */
+async function loadEarnStatus() {
+  try {
+    const { data, error } = await supabaseClient.rpc('get_post_earning_status', {
+      p_user_id: currentUser.id
+    });
+    if (error) throw error;
+    if (data) earnStatus = data;
+    updateEarnBanner();
+  } catch (e) {
+    console.warn('Status fetch failed:', e);
+  }
+}
+
+function updateEarnBanner() {
+  const banner = document.getElementById('earnBanner');
+  const text   = document.getElementById('earnBannerText');
+  const icon   = document.getElementById('earnIcon');
+
+  if (earnStatus.reached) {
+    banner.classList.add('capped');
+    icon.className = 'fas fa-exclamation-circle';
+    text.innerHTML = `
+      <strong>🚫 Daily earning limit reached</strong><br>
+      Maxed at <strong>$${(earnStatus.cap * 0.001).toFixed(3)}</strong> today.
+      Resets at midnight UTC. Your posts still work!
+    `;
+  } else {
+    banner.classList.remove('capped');
+    icon.className = 'fas fa-coins';
+    text.innerHTML = `
+      <strong>Earn $0.001</strong> per post 🎉<br>
+      ${earnStatus.remaining} of ${earnStatus.cap} earning posts remaining today
+    `;
+  }
+}
+
+/* ==================== FILE HANDLING ==================== */
 function handleFiles(files) {
   for (const file of files) {
     if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) continue;
@@ -369,22 +478,14 @@ function renderPreviews() {
   selectedFiles.forEach((file, index) => {
     const div = document.createElement('div');
     div.className = 'preview-item';
-
     const isVideo = file.type.startsWith('video/');
     const url = URL.createObjectURL(file);
 
     div.innerHTML = `
-      ${isVideo
-        ? `<video src="${url}" muted></video>`
-        : `<img src="${url}" alt="">`}
+      ${isVideo ? `<video src="${url}" muted></video>` : `<img src="${url}" alt="">`}
       <span class="type-badge">${isVideo ? 'VIDEO' : 'IMAGE'}</span>
-      <div class="watermark">
-        <img src="arizonan%20png%20icon.jpeg" alt="">
-        Arizona AI
-      </div>
-      <button class="remove" onclick="removeFile(${index})">
-        <i class="fas fa-times"></i>
-      </button>
+      <div class="watermark"><img src="arizonan%20png%20icon.jpeg" alt=""> Arizona AI</div>
+      <button class="remove" onclick="removeFile(${index})"><i class="fas fa-times"></i></button>
     `;
     container.appendChild(div);
   });
@@ -406,7 +507,7 @@ function updateCounter() {
   document.getElementById('charCount').textContent = len;
 }
 
-/* ==================== UPLOAD + SUBMIT ==================== */
+/* ==================== SUBMIT ==================== */
 async function submitPost() {
   const caption    = document.getElementById('caption').value.trim();
   const visibility = document.getElementById('visibility').value;
@@ -452,7 +553,7 @@ async function submitPost() {
     progressFill.style.width = '100%';
     progressText.textContent = 'Saving post…';
 
-    // 2. Insert into posts
+    // 2. Insert post with ALL counters at 0
     const { data: postData, error: dbError } = await supabaseClient
       .from('posts')
       .insert({
@@ -471,41 +572,22 @@ async function submitPost() {
       .single();
 
     if (dbError) throw dbError;
+    lastPostId = postData.id;
 
-    // 3. Award $0.001 — use RPC or direct fallback
+    // 3. Award $0.001 (respecting 100/day cap)
+    let earnedResult = { awarded: false };
     try {
-      const { error: rpcErr } = await supabaseClient.rpc('award_post_earning', {
+      const { data: rpcData, error: rpcErr } = await supabaseClient.rpc('award_post_earning', {
         p_user_id: currentUser.id
       });
       if (rpcErr) throw rpcErr;
-      showToast('Posted! +$0.001 earned 🎉', 'success');
+      earnedResult = rpcData || { awarded: false };
     } catch (e) {
-      // Fallback: direct wallet update
-      console.warn('RPC failed, using fallback:', e);
-      try {
-        const newBalance = (Number(currentWallet?.balance) || 0) + 0.001;
-        const newEarned  = (Number(currentWallet?.total_earned) || 0) + 0.001;
-        await supabaseClient.from('wallets')
-          .update({ balance: newBalance, total_earned: newEarned })
-          .eq('user_id', currentUser.id);
-        await supabaseClient.from('wallet_transactions').insert({
-          user_id: currentUser.id,
-          amount: 0.001,
-          type: 'earn',
-          source: 'post_created',
-          note: 'Earned from creating a post'
-        });
-        showToast('Posted! +$0.001 earned 🎉', 'success');
-      } catch (e2) {
-        console.warn('Earning failed:', e2);
-        showToast('Posted successfully! 🎉', 'success');
-      }
+      console.warn('Earning RPC failed:', e);
     }
 
-    progressText.textContent = 'Posted! Redirecting…';
-
-    // 4. Redirect to feed
-    setTimeout(() => { window.location.href = 'index.html'; }, 900);
+    // 4. Show success screen
+    showSuccessScreen(earnedResult);
 
   } catch (err) {
     console.error(err);
@@ -513,6 +595,82 @@ async function submitPost() {
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-share"></i> Share';
     progress.classList.remove('active');
+  }
+}
+
+function showSuccessScreen(earned) {
+  // Hide create form
+  document.getElementById('createContent').style.display = 'none';
+  document.getElementById('topbar').style.display = 'none';
+  document.getElementById('uploadProgress').classList.remove('active');
+
+  const screen = document.getElementById('successScreen');
+  const box    = document.getElementById('earnedBox');
+  const amount = document.getElementById('earnedAmount');
+  const label  = document.getElementById('earnedLabel');
+  const rem    = document.getElementById('earnedRemaining');
+
+  if (earned.awarded) {
+    box.style.borderColor = 'rgba(0,184,148,.4)';
+    amount.style.color = '#00b894';
+    amount.textContent = '+$0.001';
+    label.textContent = 'Earned from this post 🎉';
+    rem.textContent = `${earned.remaining} of ${earned.cap} earning posts remaining today`;
+  } else if (earned.reason === 'daily_cap_reached') {
+    box.style.borderColor = 'rgba(255,118,117,.4)';
+    amount.style.color = '#ff7675';
+    amount.textContent = 'Daily cap reached';
+    label.textContent = 'Max $0.10 earned today';
+    rem.textContent = 'Resets at midnight UTC · Your post still counts!';
+  } else {
+    box.style.display = 'none';
+  }
+
+  // Show share button
+  if (lastPostId) {
+    document.getElementById('shareMyPostBtn').style.display = 'flex';
+  }
+
+  screen.classList.add('active');
+
+  // Refresh earn status for next post
+  loadEarnStatus();
+}
+
+function resetForm() {
+  selectedFiles = [];
+  document.getElementById('previews').innerHTML = '';
+  document.getElementById('caption').value = '';
+  document.getElementById('charCount').textContent = '0';
+  document.getElementById('successScreen').classList.remove('active');
+  document.getElementById('createContent').style.display = 'block';
+  document.getElementById('topbar').style.display = 'flex';
+  document.getElementById('shareBtn').disabled = false;
+  document.getElementById('shareBtn').innerHTML = '<i class="fas fa-share"></i> Share';
+  lastPostId = null;
+}
+
+/* ==================== SHARE LINK ==================== */
+async function shareMyPost() {
+  if (!lastPostId) return;
+  const url = window.location.origin + '/huzni-sfamily/index.html?post=' + lastPostId;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'Arizona AI',
+        text: 'Check out my new post on Arizona AI!',
+        url: url
+      });
+      return;
+    } catch (e) {}
+  }
+
+  try {
+    await navigator.clipboard.writeText(url);
+    showToast('Post link copied! 📋', 'success');
+  } catch {
+    showToast('Link: ' + url);
   }
 }
 </script>
