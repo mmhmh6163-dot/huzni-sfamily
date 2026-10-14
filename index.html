@@ -12,7 +12,7 @@
 <style>
 body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 
-/* TOP BAR */
+/* ==================== TOP BAR ==================== */
 .ig-topbar {
   position:fixed; top:0; left:0; right:0; height:60px;
   background:rgba(10,10,10,.97); backdrop-filter:blur(12px);
@@ -38,13 +38,14 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   display:flex; align-items:center; justify-content:center;
   position:relative; text-decoration:none;
 }
+.ig-icon-btn:hover { background:rgba(255,255,255,.06); }
 .ig-icon-btn .dot {
   position:absolute; top:8px; right:8px;
   width:8px; height:8px; border-radius:50%;
   background:var(--az-primary); border:2px solid #0a0a0a;
 }
 
-/* USER STRIP */
+/* ==================== USER STRIP ==================== */
 .ig-user-strip {
   max-width:640px; margin:0 auto;
   padding:12px 16px;
@@ -59,6 +60,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   font-weight:700; color:#fff; font-size:16px; flex-shrink:0;
   text-decoration:none; overflow:hidden;
 }
+.ig-user-strip .avatar img { width:100%; height:100%; object-fit:cover; }
 .ig-user-strip .info { flex:1; min-width:0; }
 .ig-user-strip .name {
   font-weight:700; font-size:14px; color:var(--az-text);
@@ -76,7 +78,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   cursor:pointer; text-decoration:none;
 }
 
-/* GUEST CTA */
+/* ==================== GUEST CTA ==================== */
 .guest-cta {
   max-width:640px; margin:0 auto;
   padding:16px;
@@ -93,7 +95,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   white-space:nowrap;
 }
 
-/* STORIES */
+/* ==================== STORIES ==================== */
 .ig-stories {
   max-width:640px; margin:0 auto;
   display:flex; gap:14px; padding:14px 16px;
@@ -104,18 +106,27 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 .ig-story { flex-shrink:0; text-align:center; cursor:pointer; width:72px; }
 .ig-story-ring {
   width:64px; height:64px; border-radius:50%;
-  background:var(--az-gradient); padding:2.5px; margin:0 auto 6px;
+  padding:2.5px; margin:0 auto 6px;
+  transition:background .3s;
 }
+.ig-story-ring.unseen {
+  background: linear-gradient(135deg, #FF6B35 0%, #FFB20F 100%);
+  box-shadow: 0 0 12px rgba(255,107,53,.5);
+}
+.ig-story-ring.seen { background: #3a3a3a; }
 .ig-story-ring .inner {
   width:100%; height:100%; border-radius:50%;
   background:#0a0a0a; border:2px solid #0a0a0a;
   display:flex; align-items:center; justify-content:center;
   font-weight:700; color:#fff; font-size:20px; overflow:hidden;
 }
+.ig-story-ring.seen .inner { opacity:.7; }
+.ig-story-ring .inner img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.ig-story.add .ig-story-ring { background: #2a2a2a; }
 .ig-story.add .inner { background:var(--az-accent); color:#1a1a1a; }
 .ig-story .label { font-size:11px; color:var(--az-text-secondary); }
 
-/* FEED */
+/* ==================== FEED ==================== */
 .ig-feed { max-width:640px; margin:0 auto; }
 .ig-post {
   background:rgba(255,255,255,.03);
@@ -133,20 +144,24 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   font-weight:700; color:#fff; font-size:15px; flex-shrink:0;
   text-decoration:none; overflow:hidden;
 }
+.ig-post-head .p-avatar img { width:100%; height:100%; object-fit:cover; }
 .ig-post-head .meta { flex:1; min-width:0; }
 .ig-post-head .meta .name {
   font-weight:700; font-size:14px; color:var(--az-text);
-  display:flex; align-items:center; gap:5px;
-  text-decoration:none;
+  display:flex; align-items:center; gap:5px; text-decoration:none;
 }
 .ig-post-head .meta .name .verified { color:#3b82f6; font-size:12px; }
 .ig-post-head .meta .sub { font-size:11px; color:var(--az-text-secondary); }
+.ig-post-head .more {
+  color:var(--az-text-secondary);
+  background:none; border:none;
+  font-size:18px; cursor:pointer; padding:6px;
+}
 
 .ig-post-media {
   width:100%; background:#000;
   display:flex; align-items:center; justify-content:center;
-  max-height:620px; overflow:hidden;
-  cursor:pointer;
+  max-height:620px; overflow:hidden; cursor:pointer;
 }
 .ig-post-media img,
 .ig-post-media video {
@@ -184,21 +199,28 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   font-size:10px; color:var(--az-text-secondary);
   text-transform:uppercase; letter-spacing:.5px;
 }
-
-/* COMMENTS PREVIEW */
 .ig-comments-preview {
   padding:0 16px 12px;
   font-size:13px; color:var(--az-text-secondary);
   cursor:pointer;
 }
-.ig-comments-preview:hover { color:var(--az-text); }
 
-/* BOTTOM NAV */
+/* ==================== EMPTY ==================== */
+.ig-empty {
+  text-align:center; padding:60px 24px;
+  color:var(--az-text-secondary);
+}
+.ig-empty i {
+  font-size:56px; color:var(--az-primary);
+  opacity:.4; margin-bottom:16px; display:block;
+}
+.ig-empty h3 { color:var(--az-text); font-size:17px; margin-bottom:6px; }
+
+/* ==================== BOTTOM NAV ==================== */
 .ig-bottom-nav {
   position:fixed; bottom:0; left:50%; transform:translateX(-50%);
   width:100%; max-width:640px;
-  background:rgba(10,10,10,.98);
-  backdrop-filter:blur(12px);
+  background:rgba(10,10,10,.98); backdrop-filter:blur(12px);
   border-top:1px solid rgba(255,107,53,.25);
   display:flex; justify-content:space-around; align-items:center;
   padding:8px 0 calc(8px + env(safe-area-inset-bottom));
@@ -223,34 +245,24 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   display:flex; align-items:center; justify-content:center;
   font-weight:700; color:#fff; font-size:11px;
   border:2px solid var(--az-text);
+  overflow:hidden;
 }
-
-/* EMPTY */
-.ig-empty {
-  text-align:center; padding:60px 24px;
+.ig-bottom-nav .bnav-avatar img { width:100%; height:100%; object-fit:cover; }
+.ig-bottom-nav .bnav-avatar.no-auth {
+  background:transparent; border:2px solid var(--az-text-secondary);
   color:var(--az-text-secondary);
 }
-.ig-empty i {
-  font-size:56px; color:var(--az-primary);
-  opacity:.4; margin-bottom:16px; display:block;
-}
-.ig-empty h3 { color:var(--az-text); font-size:17px; margin-bottom:6px; }
 
-/* ==================== FULLSCREEN IMAGE VIEWER ==================== */
+/* ==================== FULLSCREEN VIEWER ==================== */
 .fs-viewer {
-  display:none;
-  position:fixed; inset:0;
-  background:rgba(0,0,0,.98);
-  z-index:3000;
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.98); z-index:3000;
   align-items:center; justify-content:center;
 }
 .fs-viewer.active { display:flex; }
-.fs-viewer img,
-.fs-viewer video {
-  max-width:100vw;
-  max-height:100vh;
-  object-fit:contain;
-  animation:fsIn .25s ease;
+.fs-viewer img, .fs-viewer video {
+  max-width:100vw; max-height:100vh;
+  object-fit:contain; animation:fsIn .25s ease;
 }
 @keyframes fsIn { from { opacity:0; transform:scale(.92); } }
 .fs-viewer .close-btn {
@@ -302,13 +314,9 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   background:none; border:none; color:var(--az-text-secondary);
   font-size:22px; cursor:pointer; padding:4px;
 }
-.comments-list {
-  flex:1; overflow-y:auto;
-  padding:14px 20px;
-}
+.comments-list { flex:1; overflow-y:auto; padding:14px 20px; }
 .comment-item {
-  display:flex; gap:12px;
-  padding:10px 0;
+  display:flex; gap:12px; padding:10px 0;
   border-bottom:1px solid rgba(255,255,255,.04);
 }
 .comment-item:last-child { border-bottom:none; }
@@ -326,49 +334,60 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   margin-bottom:3px;
 }
 .comment-item .c-text {
-  font-size:14px; color:var(--az-text); line-height:1.5;
-  word-wrap:break-word;
+  font-size:14px; color:var(--az-text); line-height:1.5; word-wrap:break-word;
 }
-.comment-item .c-time {
-  font-size:11px; color:var(--az-text-secondary);
-  margin-top:4px;
-}
-.comments-empty {
-  text-align:center; padding:40px 20px;
-  color:var(--az-text-secondary); font-size:14px;
-}
+.comment-item .c-time { font-size:11px; color:var(--az-text-secondary); margin-top:4px; }
+.comments-empty { text-align:center; padding:40px 20px; color:var(--az-text-secondary); font-size:14px; }
 .comments-input-wrap {
   padding:12px 16px;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom));
   border-top:1px solid rgba(255,255,255,.08);
   display:flex; gap:10px;
-  padding-bottom:calc(12px + env(safe-area-inset-bottom));
 }
 .comments-input {
   flex:1; padding:12px 16px;
   background:#0a0a0a; border:1px solid #333;
-  border-radius:24px; color:#fff; font-size:14px;
-  font-family:inherit;
+  border-radius:24px; color:#fff; font-size:14px; font-family:inherit;
 }
 .comments-input:focus { outline:none; border-color:var(--az-primary); }
 .comments-send {
   padding:0 20px;
   background:var(--az-gradient); color:#fff;
   border:none; border-radius:24px;
-  font-weight:700; font-size:14px;
-  cursor:pointer;
+  font-weight:700; font-size:14px; cursor:pointer;
 }
 .comments-send:disabled { opacity:.5; cursor:not-allowed; }
 
-@media (max-width:380px) {
-  .ig-story { width:64px; }
-  .ig-story-ring { width:56px; height:56px; }
+/* ==================== LANGUAGE SELECTOR ==================== */
+.lang-menu {
+  position:fixed; top:60px; right:16px;
+  background:#1a1a1a; border:1px solid rgba(255,178,15,.3);
+  border-radius:12px; padding:6px;
+  z-index:1500; display:none; min-width:140px;
+  box-shadow:0 15px 40px rgba(0,0,0,.6);
 }
+.lang-menu.active { display:block; }
+.lang-menu button {
+  display:flex; align-items:center; gap:10px;
+  width:100%; padding:10px 12px;
+  background:transparent; border:none;
+  color:var(--az-text); font-size:14px;
+  cursor:pointer; border-radius:8px; text-align:left;
+}
+.lang-menu button:hover { background:rgba(255,107,53,.2); }
+.lang-menu button.active { background:var(--az-primary); color:#fff; }
+
+/* RTL */
+html[dir="rtl"] .ig-user-strip .info { text-align: right; }
+html[dir="rtl"] .ig-post-head .meta { text-align: right; }
+html[dir="rtl"] .ig-comments-preview { text-align: right; }
 </style>
 </head>
 <body>
 
 <div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
 
+<!-- ==================== TOP BAR ==================== -->
 <header class="ig-topbar">
   <a href="index.html" class="brand">
     <i class="fas fa-mountain-sun"></i>
@@ -377,6 +396,17 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   <div class="actions" id="topActions"></div>
 </header>
 
+<!-- ==================== LANGUAGE MENU ==================== -->
+<div class="lang-menu" id="langMenu">
+  <button onclick="setLang('en', this)" class="active">
+    <span style="font-size:18px;">🇬🇧</span> English
+  </button>
+  <button onclick="setLang('ar', this)">
+    <span style="font-size:18px;">🇸🇦</span> العربية
+  </button>
+</div>
+
+<!-- ==================== USER STRIP ==================== -->
 <div class="ig-user-strip" id="userStrip" style="display:none;">
   <a href="profile.html" class="avatar" id="uAvatar">U</a>
   <div class="info">
@@ -384,39 +414,44 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
     <div class="balance">
       <i class="fas fa-wallet"></i>
       <span id="uBalance">$0.00</span>
-      <span style="color:var(--az-text-secondary);"> · Earn more by posting</span>
+      <span style="color:var(--az-text-secondary);"> · <span data-i18n="earn-more">Earn more by posting</span></span>
     </div>
   </div>
-  <a href="logout.html" class="logout-mini"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  <a href="logout.html" class="logout-mini"><i class="fas fa-sign-out-alt"></i> <span data-i18n="logout">Logout</span></a>
 </div>
 
+<!-- ==================== GUEST CTA ==================== -->
 <div class="guest-cta" id="guestCta" style="display:none;">
   <div class="text">
-    <strong>🏜️ Welcome to Arizona AI</strong>
-    Sign up free — earn money for your posts!
+    <strong data-i18n="welcome">🏜️ Welcome to Arizona AI</strong>
+    <span data-i18n="signup-cta">Sign up free — earn money for your posts!</span>
   </div>
-  <a href="register.html">Sign Up</a>
+  <a href="register.html" data-i18n="sign-up">Sign Up</a>
 </div>
 
+<!-- ==================== STORIES ==================== -->
 <div class="ig-stories" id="storiesRow">
   <div class="ig-story add" onclick="goToPost()">
     <div class="ig-story-ring"><div class="inner"><i class="fas fa-plus"></i></div></div>
-    <div class="label">Your story</div>
+    <div class="label" data-i18n="your-story">Your story</div>
   </div>
+  <!-- Real stories load here -->
 </div>
 
+<!-- ==================== FEED ==================== -->
 <main class="ig-feed" id="feed">
-  <div class="ig-empty"><i class="fas fa-circle-notch fa-spin"></i>Loading posts…</div>
+  <div class="ig-empty"><i class="fas fa-circle-notch fa-spin"></i>Loading…</div>
 </main>
 
+<!-- ==================== BOTTOM NAV ==================== -->
 <nav class="ig-bottom-nav">
-  <a href="index.html" class="bnav-item active"><i class="fas fa-home"></i><span>Home</span></a>
-  <a href="Friends.html" class="bnav-item"><i class="fas fa-search"></i><span>Search</span></a>
+  <a href="index.html" class="bnav-item active"><i class="fas fa-home"></i><span data-i18n="home">Home</span></a>
+  <a href="Friends.html" class="bnav-item"><i class="fas fa-search"></i><span data-i18n="search">Search</span></a>
   <a href="Post.html" class="bnav-item create"><i class="fas fa-plus"></i></a>
-  <a href="chats.html" class="bnav-item"><i class="far fa-heart"></i><span>Activity</span></a>
+  <a href="chats.html" class="bnav-item"><i class="far fa-heart"></i><span data-i18n="activity">Activity</span></a>
   <a href="profile.html" class="bnav-item" id="profileNav">
-    <div class="bnav-avatar" id="bnavAvatar">U</div>
-    <span>Profile</span>
+    <div class="bnav-avatar no-auth" id="bnavAvatar"><i class="far fa-user"></i></div>
+    <span data-i18n="profile">Profile</span>
   </a>
 </nav>
 
@@ -433,7 +468,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 <div class="comments-modal" id="commentsModal">
   <div class="comments-panel">
     <div class="comments-head">
-      <h3>Comments</h3>
+      <h3 data-i18n="comments">Comments</h3>
       <button class="close-x" onclick="closeComments()"><i class="fas fa-times"></i></button>
     </div>
     <div class="comments-list" id="commentsList"></div>
@@ -441,7 +476,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
       <input type="text" class="comments-input" id="commentInput"
              placeholder="Add a comment…" maxlength="500"
              onkeydown="if(event.key==='Enter') submitComment()">
-      <button class="comments-send" id="commentSendBtn" onclick="submitComment()">Post</button>
+      <button class="comments-send" id="commentSendBtn" onclick="submitComment()" data-i18n="post">Post</button>
     </div>
   </div>
 </div>
@@ -452,7 +487,62 @@ let currentPostId = null;
 let currentMediaList = [];
 let currentMediaIndex = 0;
 let likedPosts = new Set();
+let storiesByUser = [];
+let currentLang = localStorage.getItem('az_lang') || 'en';
 
+/* ==================== TRANSLATIONS ==================== */
+const TRANSLATIONS = {
+  en: {
+    'home': 'Home', 'search': 'Search', 'activity': 'Activity', 'profile': 'Profile',
+    'logout': 'Logout', 'sign-up': 'Sign Up',
+    'earn-more': 'Earn more by posting',
+    'welcome': '🏜️ Welcome to Arizona AI',
+    'signup-cta': 'Sign up free — earn money for your posts!',
+    'your-story': 'Your story',
+    'comments': 'Comments', 'post': 'Post',
+    'view-comments': 'View all {n} comments',
+    'no-posts-title': 'No posts yet',
+    'no-posts-sub': 'Be the first to post!'
+  },
+  ar: {
+    'home': 'الرئيسية', 'search': 'بحث', 'activity': 'النشاط', 'profile': 'الملف',
+    'logout': 'خروج', 'sign-up': 'إنشاء حساب',
+    'earn-more': 'اكسب أكثر بالمشاركة',
+    'welcome': '🏜️ مرحباً بك في أريزونا AI',
+    'signup-cta': 'سجّل مجاناً — اكسب المال من منشوراتك!',
+    'your-story': 'قصتك',
+    'comments': 'التعليقات', 'post': 'نشر',
+    'view-comments': 'عرض كل {n} تعليق',
+    'no-posts-title': 'لا توجد منشورات بعد',
+    'no-posts-sub': 'كن أول من ينشر!'
+  }
+};
+
+function t(key) {
+  return (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || key;
+}
+
+function setLang(lang, el) {
+  currentLang = lang;
+  localStorage.setItem('az_lang', lang);
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+  document.querySelectorAll('.lang-menu button').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+
+  document.querySelectorAll('[data-i18n]').forEach(node => {
+    const key = node.getAttribute('data-i18n');
+    const val = t(key);
+    if (val) node.textContent = val;
+  });
+
+  // Re-render feed for translated labels
+  if (document.querySelectorAll('.ig-post').length) loadFeed();
+  document.getElementById('langMenu').classList.remove('active');
+}
+
+/* ==================== INIT ==================== */
 document.addEventListener('DOMContentLoaded', () => {
   const check = setInterval(() => {
     if (typeof authReady !== 'undefined' && authReady) {
@@ -463,13 +553,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function init() {
+  setLang(currentLang);
   renderTopActions();
   renderUserSection();
   renderBottomAvatar();
   await loadLikedPosts();
   loadFeed();
+  loadStories();
 }
 
+/* ==================== TOP ACTIONS ==================== */
 function renderTopActions() {
   const el = document.getElementById('topActions');
   if (currentUser) {
@@ -477,26 +570,50 @@ function renderTopActions() {
       <a href="Friends.html" class="ig-icon-btn"><i class="far fa-heart"></i></a>
       <a href="chats.html" class="ig-icon-btn"><i class="far fa-paper-plane"></i><span class="dot"></span></a>
       <a href="notifications.html" class="ig-icon-btn"><i class="far fa-bell"></i></a>
+      <button class="ig-icon-btn" onclick="toggleLangMenu()" title="Language">
+        <i class="fas fa-globe"></i>
+      </button>
     `;
   } else {
     el.innerHTML = `
-      <a href="login.html" class="ig-icon-btn" style="width:auto; padding:0 12px; font-size:13px; font-weight:600;">Login</a>
-      <a href="register.html" class="ig-icon-btn" style="width:auto; padding:0 12px; font-size:13px; font-weight:600; background:var(--az-gradient); color:#fff;">Sign Up</a>
+      <a href="login.html" class="ig-icon-btn" style="width:auto;padding:0 12px;font-size:13px;font-weight:600;">Login</a>
+      <a href="register.html" class="ig-icon-btn" style="width:auto;padding:0 12px;font-size:13px;font-weight:600;background:var(--az-gradient);color:#fff;">Sign Up</a>
+      <button class="ig-icon-btn" onclick="toggleLangMenu()"><i class="fas fa-globe"></i></button>
     `;
   }
 }
 
+function toggleLangMenu() {
+  document.getElementById('langMenu').classList.toggle('active');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.lang-menu') && !e.target.closest('[onclick="toggleLangMenu()"]')) {
+    document.getElementById('langMenu').classList.remove('active');
+  }
+});
+
+/* ==================== USER STRIP ==================== */
 function renderUserSection() {
   const strip = document.getElementById('userStrip');
   const cta   = document.getElementById('guestCta');
   if (currentUser) {
     strip.style.display = 'flex';
     cta.style.display = 'none';
+
     const name = currentProfile?.username || currentUser.email?.split('@')[0] || 'User';
     const bal  = Number(currentWallet?.balance ?? 0).toFixed(2);
+    const av   = currentProfile?.avatar_url;
+
     document.getElementById('uName').textContent = name;
     document.getElementById('uBalance').textContent = '$' + bal;
-    document.getElementById('uAvatar').textContent = name.charAt(0).toUpperCase();
+
+    const uAvatarEl = document.getElementById('uAvatar');
+    if (av) {
+      uAvatarEl.innerHTML = `<img src="${escapeHtml(av)}" alt="">`;
+    } else {
+      uAvatarEl.textContent = name.charAt(0).toUpperCase();
+    }
   } else {
     strip.style.display = 'none';
     cta.style.display = 'flex';
@@ -507,8 +624,12 @@ function renderBottomAvatar() {
   const av = document.getElementById('bnavAvatar');
   if (currentUser) {
     const name = currentProfile?.username || currentUser.email?.split('@')[0] || 'U';
-    av.textContent = name.charAt(0).toUpperCase();
+    const img  = currentProfile?.avatar_url;
+    av.classList.remove('no-auth');
+    if (img) av.innerHTML = `<img src="${escapeHtml(img)}" alt="">`;
+    else av.textContent = name.charAt(0).toUpperCase();
   } else {
+    av.classList.add('no-auth');
     av.innerHTML = '<i class="far fa-user"></i>';
   }
 }
@@ -517,22 +638,20 @@ function goToPost() {
   window.location.href = currentUser ? 'Post.html' : 'login.html';
 }
 
-/* ==================== LOAD LIKED POSTS ==================== */
+/* ==================== LOAD LIKED ==================== */
 async function loadLikedPosts() {
   if (!currentUser) return;
   try {
     const { data } = await supabaseClient
-      .from('likes')
-      .select('post_id')
-      .eq('user_id', currentUser.id);
+      .from('likes').select('post_id').eq('user_id', currentUser.id);
     likedPosts = new Set((data || []).map(r => r.post_id));
-  } catch (e) { /* ignore */ }
+  } catch (e) {}
 }
 
 /* ==================== FEED ==================== */
 async function loadFeed() {
   const feed = document.getElementById('feed');
-  feed.innerHTML = '<div class="ig-empty"><i class="fas fa-circle-notch fa-spin"></i>Loading posts…</div>';
+  feed.innerHTML = '<div class="ig-empty"><i class="fas fa-circle-notch fa-spin"></i></div>';
 
   try {
     const { data, error } = await supabaseClient
@@ -545,14 +664,14 @@ async function loadFeed() {
     if (error) throw error;
 
     if (!data || data.length === 0) {
-      feed.innerHTML = `<div class="ig-empty"><i class="far fa-newspaper"></i><h3>No posts yet</h3><p>${currentUser ? 'Tap ➕ to be the first!' : 'Sign up to be the first!'}</p></div>`;
+      feed.innerHTML = `<div class="ig-empty"><i class="far fa-newspaper"></i><h3>${t('no-posts-title')}</h3><p>${t('no-posts-sub')}</p></div>`;
       return;
     }
 
     feed.innerHTML = data.map(post => renderPost(post)).join('');
   } catch (err) {
-    console.error('Feed error:', err);
-    feed.innerHTML = `<div class="ig-empty"><i class="fas fa-exclamation-triangle"></i><h3>Couldn't load feed</h3><p style="opacity:.6; font-size:12px;">${escapeHtml(err.message)}</p></div>`;
+    console.error(err);
+    feed.innerHTML = `<div class="ig-empty"><i class="fas fa-exclamation-triangle"></i><h3>Couldn't load feed</h3><p style="opacity:.6;font-size:12px;">${escapeHtml(err.message)}</p></div>`;
   }
 }
 
@@ -563,14 +682,17 @@ function renderPost(post) {
   const initial = name.charAt(0).toUpperCase();
   const verified = prof.is_verified ? '<i class="fas fa-circle-check verified"></i>' : '';
   const timeAgo = formatTimeAgo(post.created_at);
-  const avatarHtml = prof.avatar_url ? `<img src="${escapeHtml(prof.avatar_url)}" alt="">` : initial;
+
+  const avatarHtml = prof.avatar_url
+    ? `<img src="${escapeHtml(prof.avatar_url)}" alt="">`
+    : initial;
 
   const mediaUrls = Array.isArray(post.media_urls) ? post.media_urls : [];
   const mediaHtml = mediaUrls.map((url, idx) => {
     if (/\.(mp4|webm|ogg|mov)$/i.test(url)) {
-      return `<video src="${escapeHtml(url)}" controls playsinline preload="metadata" data-post="${post.id}" data-idx="${idx}"></video>`;
+      return `<video src="${escapeHtml(url)}" controls playsinline preload="metadata"></video>`;
     }
-    return `<img src="${escapeHtml(url)}" alt="" loading="lazy" data-post="${post.id}" data-idx="${idx}" onclick="openFs('${post.id}', ${idx})">`;
+    return `<img src="${escapeHtml(url)}" alt="" loading="lazy" onclick="openFs('${post.id}', ${idx})">`;
   }).join('');
 
   const isLiked = likedPosts.has(post.id);
@@ -594,107 +716,146 @@ function renderPost(post) {
         <button class="ig-action ${isLiked ? 'liked' : ''}" id="likebtn-${post.id}" onclick="toggleLike('${post.id}', this)">
           <i class="${isLiked ? 'fas' : 'far'} fa-heart"></i>
         </button>
-        <button class="ig-action" onclick="openComments('${post.id}')">
-          <i class="far fa-comment"></i>
-        </button>
-        <button class="ig-action" onclick="sharePost('${post.id}')">
-          <i class="far fa-paper-plane"></i>
-        </button>
-        <button class="ig-action save" onclick="showToast('Saved')">
-          <i class="far fa-bookmark"></i>
-        </button>
+        <button class="ig-action" onclick="openComments('${post.id}')"><i class="far fa-comment"></i></button>
+        <button class="ig-action" onclick="sharePost('${post.id}')"><i class="far fa-paper-plane"></i></button>
+        <button class="ig-action save" onclick="showToast('Saved')"><i class="far fa-bookmark"></i></button>
       </div>
 
       <div class="ig-likes" id="likes-${post.id}">${post.likes_count || 0} likes</div>
       ${caption}
       <div class="ig-comments-preview" onclick="openComments('${post.id}')">
-        View all ${post.comments_count || 0} comments
+        ${t('view-comments').replace('{n}', post.comments_count || 0)}
       </div>
-      <div class="ig-time">${timeAgo}</div>
     </article>
   `;
 }
 
-/* ==================== LIKE (toggle) ==================== */
+/* ==================== LIKE ==================== */
 async function toggleLike(postId, btn) {
-  if (!currentUser) {
-    showToast('Sign in to like posts', 'error');
-    return;
-  }
-
+  if (!currentUser) { showToast('Sign in to like', 'error'); return; }
   const icon = btn.querySelector('i');
   const isLiked = likedPosts.has(postId);
 
   try {
     if (isLiked) {
-      // Unlike
-      const { error } = await supabaseClient
-        .from('likes').delete()
+      await supabaseClient.from('likes').delete()
         .eq('user_id', currentUser.id).eq('post_id', postId);
-      if (error) throw error;
       likedPosts.delete(postId);
       btn.classList.remove('liked');
       icon.className = 'far fa-heart';
     } else {
-      // Like
-      const { error } = await supabaseClient
-        .from('likes').insert({ user_id: currentUser.id, post_id: postId });
-      if (error) throw error;
+      await supabaseClient.from('likes').insert({ user_id: currentUser.id, post_id: postId });
       likedPosts.add(postId);
       btn.classList.add('liked');
       icon.className = 'fas fa-heart';
     }
-
-    // Update count display
-    const { data } = await supabaseClient
-      .from('posts').select('likes_count').eq('id', postId).single();
-    const likesEl = document.getElementById('likes-' + postId);
-    if (likesEl && data) likesEl.textContent = `${data.likes_count || 0} likes`;
-
-  } catch (err) {
-    console.error(err);
-    showToast(err.message, 'error');
-  }
+    const { data } = await supabaseClient.from('posts').select('likes_count').eq('id', postId).single();
+    const el = document.getElementById('likes-' + postId);
+    if (el && data) el.textContent = `${data.likes_count || 0} likes`;
+  } catch (err) { showToast(err.message, 'error'); }
 }
 
 /* ==================== SHARE ==================== */
 async function sharePost(postId) {
   const url = window.location.origin + '/huzni-sfamily/index.html?post=' + postId;
-
-  // Log the share (if logged in)
   if (currentUser) {
-    try {
-      await supabaseClient.from('shares').insert({ user_id: currentUser.id, post_id: postId });
-    } catch (e) { /* ignore */ }
+    try { await supabaseClient.from('shares').insert({ user_id: currentUser.id, post_id: postId }); } catch(e){}
   }
-
-  // Try native share
   if (navigator.share) {
-    try {
-      await navigator.share({ title: 'Arizona AI', text: 'Check out this post!', url });
-      return;
-    } catch (e) { /* cancelled */ }
+    try { await navigator.share({ title:'Arizona AI', text:'Check out this post!', url }); return; } catch(e){}
   }
+  try { await navigator.clipboard.writeText(url); showToast('Link copied! 📋','success'); } catch { showToast('Link: '+url); }
+}
 
-  // Fallback: copy link
+/* ==================== STORIES ==================== */
+async function loadStories() {
   try {
-    await navigator.clipboard.writeText(url);
-    showToast('Link copied! 📋', 'success');
-  } catch {
-    showToast('Link: ' + url);
+    const { data, error } = await supabaseClient
+      .from('stories')
+      .select(`
+        id, media_url, media_type, caption, created_at, expires_at,
+        profiles:user_id (id, username, display_name, avatar_url, is_verified)
+      `)
+      .gt('expires_at', new Date().toISOString())
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+
+    const map = new Map();
+    (data || []).forEach(s => {
+      const p = s.profiles;
+      if (!p) return;
+      if (!map.has(p.id)) map.set(p.id, { user: p, stories: [] });
+      map.get(p.id).stories.push(s);
+    });
+    storiesByUser = Array.from(map.values());
+
+    let seenIds = new Set();
+    if (currentUser) {
+      const { data: views } = await supabaseClient
+        .from('story_views').select('story_id').eq('viewer_id', currentUser.id);
+      seenIds = new Set((views || []).map(v => v.story_id));
+    }
+    renderStories(seenIds);
+  } catch (err) { console.error('Stories:', err); }
+}
+
+function renderStories(seenIds) {
+  const row = document.getElementById('storiesRow');
+  if (!row) return;
+
+  const addTile = row.querySelector('.ig-story.add');
+  row.innerHTML = '';
+  if (addTile) row.appendChild(addTile);
+
+  storiesByUser.forEach(group => {
+    const p = group.user;
+    const name = p.display_name || p.username || 'user';
+    const hasUnseen = group.stories.some(s => !seenIds.has(s.id));
+    const ringClass = hasUnseen ? 'unseen' : 'seen';
+
+    const firstStory = group.stories[0];
+    const thumb = firstStory.media_type === 'video'
+      ? `<div class="inner"><i class="fas fa-play" style="font-size:16px;"></i></div>`
+      : `<div class="inner"><img src="${escapeHtml(firstStory.media_url)}" alt=""></div>`;
+
+    const storyEl = document.createElement('div');
+    storyEl.className = 'ig-story';
+    storyEl.onclick = () => openStoryViewer(p.id);
+    storyEl.innerHTML = `
+      <div class="ig-story-ring ${ringClass}">${thumb}</div>
+      <div class="label">${escapeHtml(name)}</div>
+    `;
+    row.appendChild(storyEl);
+  });
+}
+
+function openStoryViewer(userId) {
+  const group = storiesByUser.find(g => g.user.id === userId);
+  if (!group) return;
+  currentMediaList = group.stories.map(s => ({ src: s.media_url, isVideo: s.media_type === 'video', storyId: s.id }));
+  currentMediaIndex = 0;
+  renderFs();
+  document.getElementById('fsViewer').classList.add('active');
+  markStoriesViewed(group.stories);
+}
+
+async function markStoriesViewed(stories) {
+  if (!currentUser) return;
+  for (const s of stories) {
+    try { await supabaseClient.from('story_views').insert({ story_id: s.id, viewer_id: currentUser.id }); } catch(e){}
   }
+  const { data: views } = await supabaseClient
+    .from('story_views').select('story_id').eq('viewer_id', currentUser.id);
+  const seenIds = new Set((views || []).map(v => v.story_id));
+  renderStories(seenIds);
 }
 
 /* ==================== FULLSCREEN VIEWER ==================== */
 function openFs(postId, idx) {
-  // Collect all media from this post
   const postEl = document.querySelector(`article[data-id="${postId}"]`);
   if (!postEl) return;
   const mediaEls = postEl.querySelectorAll('.ig-post-media img, .ig-post-media video');
-  currentMediaList = Array.from(mediaEls).map(el => ({
-    src: el.src,
-    isVideo: el.tagName === 'VIDEO'
-  }));
+  currentMediaList = Array.from(mediaEls).map(el => ({ src: el.src, isVideo: el.tagName === 'VIDEO' }));
   currentMediaIndex = idx || 0;
   renderFs();
   document.getElementById('fsViewer').classList.add('active');
@@ -705,14 +866,10 @@ function renderFs() {
   const counter = document.getElementById('fsCounter');
   const item = currentMediaList[currentMediaIndex];
   if (!item) return;
-
   content.innerHTML = item.isVideo
-    ? `<video src="${item.src}" controls autoplay playsinline></video>`
-    : `<img src="${item.src}" alt="">`;
-
+    ? `<video src="${escapeHtml(item.src)}" controls autoplay playsinline></video>`
+    : `<img src="${escapeHtml(item.src)}" alt="">`;
   counter.textContent = `${currentMediaIndex + 1} / ${currentMediaList.length}`;
-
-  // Show/hide nav buttons
   const showNav = currentMediaList.length > 1;
   document.getElementById('fsPrev').style.display = showNav ? 'flex' : 'none';
   document.getElementById('fsNext').style.display = showNav ? 'flex' : 'none';
@@ -722,16 +879,13 @@ function fsNav(dir) {
   currentMediaIndex = (currentMediaIndex + dir + currentMediaList.length) % currentMediaList.length;
   renderFs();
 }
-
 function closeFs() {
   document.getElementById('fsViewer').classList.remove('active');
   document.getElementById('fsContent').innerHTML = '';
 }
-
-// ESC to close + arrows
 document.addEventListener('keydown', e => {
-  const viewer = document.getElementById('fsViewer');
-  if (!viewer.classList.contains('active')) return;
+  const v = document.getElementById('fsViewer');
+  if (!v.classList.contains('active')) return;
   if (e.key === 'Escape') closeFs();
   if (e.key === 'ArrowLeft') fsNav(-1);
   if (e.key === 'ArrowRight') fsNav(1);
@@ -743,30 +897,23 @@ async function openComments(postId) {
   document.getElementById('commentsModal').classList.add('active');
   await loadComments(postId);
 }
-
 function closeComments() {
   document.getElementById('commentsModal').classList.remove('active');
   currentPostId = null;
 }
-
 async function loadComments(postId) {
   const list = document.getElementById('commentsList');
   list.innerHTML = '<div class="comments-empty"><i class="fas fa-circle-notch fa-spin"></i></div>';
-
   try {
     const { data, error } = await supabaseClient
       .from('comments')
       .select(`*, profiles:user_id (username, display_name, avatar_url)`)
-      .eq('post_id', postId)
-      .order('created_at', { ascending: true });
-
+      .eq('post_id', postId).order('created_at', { ascending: true });
     if (error) throw error;
-
     if (!data || data.length === 0) {
-      list.innerHTML = '<div class="comments-empty"><i class="far fa-comment"></i><br>No comments yet. Be the first!</div>';
+      list.innerHTML = '<div class="comments-empty">No comments yet. Be the first!</div>';
       return;
     }
-
     list.innerHTML = data.map(c => {
       const prof = c.profiles || {};
       const name = prof.display_name || prof.username || 'user';
@@ -780,63 +927,39 @@ async function loadComments(postId) {
             <div class="c-text">${escapeHtml(c.content)}</div>
             <div class="c-time">${formatTimeAgo(c.created_at)}</div>
           </div>
-        </div>
-      `;
+        </div>`;
     }).join('');
   } catch (err) {
     list.innerHTML = `<div class="comments-empty" style="color:var(--az-danger);">${escapeHtml(err.message)}</div>`;
   }
 }
-
 async function submitComment() {
   const input = document.getElementById('commentInput');
-  const text  = input.value.trim();
+  const text = input.value.trim();
   if (!text) return;
-  if (!currentUser) {
-    showToast('Sign in to comment', 'error');
-    return;
-  }
-
+  if (!currentUser) { showToast('Sign in to comment', 'error'); return; }
   const btn = document.getElementById('commentSendBtn');
   btn.disabled = true;
-  btn.textContent = '...';
-
   try {
-    const { error } = await supabaseClient.from('comments').insert({
-      user_id: currentUser.id,
-      post_id: currentPostId,
-      content: text
-    });
-    if (error) throw error;
-
+    await supabaseClient.from('comments').insert({ user_id: currentUser.id, post_id: currentPostId, content: text });
     input.value = '';
     await loadComments(currentPostId);
-
-    // Refresh comments count in feed
-    const { data } = await supabaseClient
-      .from('posts').select('comments_count').eq('id', currentPostId).single();
+    const { data } = await supabaseClient.from('posts').select('comments_count').eq('id', currentPostId).single();
     if (data) {
-      const previewEl = document.querySelector(`article[data-id="${currentPostId}"] .ig-comments-preview`);
-      if (previewEl) previewEl.textContent = `View all ${data.comments_count || 0} comments`;
+      const el = document.querySelector(`article[data-id="${currentPostId}"] .ig-comments-preview`);
+      if (el) el.textContent = t('view-comments').replace('{n}', data.comments_count || 0);
     }
-  } catch (err) {
-    showToast(err.message, 'error');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Post';
-  }
+  } catch (err) { showToast(err.message, 'error'); }
+  finally { btn.disabled = false; }
 }
 
 /* ==================== HELPERS ==================== */
 function formatTimeAgo(dateStr) {
-  const seconds = Math.floor((Date.now() - new Date(dateStr)) / 1000);
-  if (seconds < 60) return 'Just now';
-  const mins = Math.floor(seconds / 60);
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
+  const s = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+  if (s < 60) return 'Just now';
+  const m = Math.floor(s / 60); if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60); if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24); if (d < 7) return `${d}d ago`;
   return new Date(dateStr).toLocaleDateString();
 }
 </script>
