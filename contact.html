@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Contact Support — Arizona AI</title>
+
+<link rel="icon" type="image/jpeg" href="arizonan%20png%20icon.jpeg">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+
+<style>
+body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
+
+/* TOP BAR */
+.topbar {
+  position:fixed; top:0; left:0; right:0; height:60px;
+  background:rgba(10,10,10,.97); backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,107,53,.25);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 16px; z-index:1000; max-width:640px; margin:0 auto;
+}
+.topbar .back, .topbar .icon-btn {
+  color:var(--az-text); font-size:19px;
+  width:40px; height:40px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%; text-decoration:none; cursor:pointer;
+  background:none; border:none;
+}
+.topbar .title { font-size:16px; font-weight:700; color:var(--az-text); }
+
+/* HEADER */
+.contact-hero {
+  max-width:640px; margin:0 auto;
+  padding:32px 20px 24px;
+  text-align:center;
+}
+.contact-hero .icon {
+  width:76px; height:76px; border-radius:24px;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  font-size:32px; color:#fff; margin:0 auto 16px;
+  box-shadow:0 0 40px rgba(255,107,53,.5);
+}
+.contact-hero h1 {
+  font-size:26px; font-weight:800;
+  background:var(--az-gradient);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  margin-bottom:8px;
+}
+.contact-hero p {
+  color:var(--az-text-secondary);
+  font-size:14px; line-height:1.6;
+}
+
+/* TABS */
+.tabs {
+  max-width:640px; margin:0 auto 16px;
+  padding:0 16px;
+  display:flex; gap:8px;
+}
+.tabs .tab {
+  flex:1; padding:11px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;
+  color:var(--az-text-secondary);
+  font-size:13px; font-weight:600;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  transition:all .15s;
+}
+.tabs .tab.active {
+  background:rgba(255,107,53,.15);
+  border-color:var(--az-primary);
+  color:var(--az-accent);
+}
+
+/* FORM */
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+
+.contact-form {
+  max-width:640px; margin:0 auto;
+  padding:0 16px;
+}
+.form-card {
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;
+  padding:24px 20px;
+}
+.form-field { margin-bottom:16px; }
+.form-field label {
+  display:block; font-size:12px;
+  color:var(--az-text-secondary);
+  margin-bottom:6px;
+  text-transform:uppercase; letter-spacing:.5px;
+}
+.form-field input,
+.form-field textarea,
+.form-field select {
+  width:100%; padding:13px 14px;
+  background:#0a0a0a; border:1px solid #333;
+  border-radius:12px;
+  color:#fff; font-size:14px;
+  font-family:inherit;
+  transition:border-color .15s;
+}
+.form-field textarea { min-height:140px; resize:vertical; }
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus {
+  outline:none;
+  border-color:var(--az-primary);
+}
+.form-field select { appearance:none; cursor:pointer; }
+
+.counter {
+  text-align:right;
+  font-size:11px;
+  color:var(--az-text-secondary);
+  margin-top:4px;
+}
+
+.btn-submit {
+  width:100%; padding:14px;
+  background:var(--az-gradient); color:#fff;
+  border:none; border-radius:12px;
+  font-weight:700; font-size:15px;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  transition:transform .15s;
+  margin-top:8px;
+}
+.btn-submit:active { transform:scale(.98); }
+.btn-submit:disabled { opacity:.6; cursor:not-allowed; }
+
+.form-alert {
+  padding:12px 14px; border-radius:12px;
+  font-size:13px; margin-bottom:16px;
+  display:none;
+}
+.form-alert.error {
+  background:rgba(255,118,117,.12);
+  color:#fca5a5;
+  border:1px solid rgba(255,118,117,.3);
+}
+.form-alert.success {
+  background:rgba(0,184,148,.12);
+  color:#86efac;
+  border:1px solid rgba(0,184,148,.3);
+}
+
+/* QUICK CONTACT INFO */
+.quick-info {
+  max-width:640px; margin:24px auto;
+  padding:0 16px;
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.info-card {
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;
+  padding:14px;
+}
+.info-card i {
+  font-size:18px; color:var(--az-accent);
+  margin-bottom:8px; display:block;
+}
+.info-card .lbl {
+  font-size:11px; color:var(--az-text-secondary);
+  text-transform:uppercase; letter-spacing:.5px;
+  margin-bottom:4px;
+}
+.info-card .val {
+  font-size:13px; color:var(--az-text);
+  font-weight:600;
+  word-break:break-word;
+}
+
+/* TICKETS LIST */
+.tickets-wrap {
+  max-width:640px; margin:0 auto;
+  padding:0 16px;
+}
+.ticket-card {
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:10px;
+  cursor:pointer;
+  transition:all .15s;
+}
+.ticket-card:hover {
+  background:rgba(255,107,53,.08);
+  border-color:var(--az-primary);
+  transform:translateX(2px);
+}
+.ticket-card .row1 {
+  display:flex; justify-content:space-between;
+  align-items:flex-start; gap:10px;
+  margin-bottom:6px;
+}
+.ticket-card .row1 .subject {
+  font-weight:700; font-size:14px;
+  color:var(--az-text);
+  flex:1;
+}
+.ticket-card .status {
+  padding:3px 10px; border-radius:12px;
+  font-size:10px; font-weight:800;
+  text-transform:uppercase; letter-spacing:.5px;
+}
+.status.open        { background:rgba(94,184,255,.2); color:#5eb8ff; }
+.status.in_progress { background:rgba(255,178,15,.2); color:#FFB20F; }
+.status.resolved    { background:rgba(0,184,148,.2); color:#00b894; }
+.status.closed      { background:rgba(150,150,150,.2); color:#999; }
+
+.ticket-card .meta {
+  display:flex; gap:12px; font-size:11px;
+  color:var(--az-text-secondary);
+  flex-wrap:wrap;
+}
+.ticket-card .meta i { margin-right:3px; }
+
+/* TICKET DETAIL */
+.ticket-detail {
+  display:none; position:fixed; inset:0;
+  background:#0a0a0a; z-index:3000;
+  flex-direction:column;
+}
+.ticket-detail.active { display:flex; }
+.ticket-detail-header {
+  display:flex; align-items:center; gap:12px;
+  padding:14px 16px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  background:rgba(10,10,10,.97);
+  height:60px;
+  flex-shrink:0;
+}
+.ticket-detail-header .back {
+  color:var(--az-text); font-size:20px;
+  width:40px; height:40px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%; cursor:pointer; background:none; border:none;
+}
+.ticket-detail-header .title {
+  flex:1; font-size:14px; font-weight:700;
+  color:var(--az-text);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+.messages-area {
+  flex:1; overflow-y:auto;
+  padding:20px 16px;
+  max-width:640px; margin:0 auto; width:100%;
+}
+
+.msg-bubble {
+  max-width:78%;
+  padding:12px 16px;
+  border-radius:16px;
+  font-size:14px; line-height:1.5;
+  margin-bottom:12px;
+  word-wrap:break-word;
+  animation:msgIn .2s ease;
+}
+@keyframes msgIn { from { opacity:0; transform:translateY(6px); } }
+.msg-bubble.user {
+  background:var(--az-gradient);
+  color:#fff;
+  margin-left:auto;
+  border-bottom-right-radius:4px;
+}
+.msg-bubble.support {
+  background:rgba(255,255,255,.08);
+  color:var(--az-text);
+  border-bottom-left-radius:4px;
+}
+.msg-bubble .time {
+  display:block; font-size:10px;
+  opacity:.7; margin-top:5px;
+}
+.msg-bubble .sender {
+  display:block; font-size:10px;
+  font-weight:800; text-transform:uppercase;
+  letter-spacing:.5px; opacity:.8; margin-bottom:4px;
+}
+.msg-bubble.support .sender { color:var(--az-accent); }
+
+.reply-wrap {
+  display:flex; gap:10px;
+  padding:12px 16px;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom));
+  border-top:1px solid rgba(255,255,255,.08);
+  background:rgba(10,10,10,.97);
+  flex-shrink:0;
+  max-width:640px; margin:0 auto; width:100%;
+}
+.reply-wrap input {
+  flex:1;
+  padding:12px 16px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:24px;
+  color:#fff; font-size:14px; font-family:inherit;
+}
+.reply-wrap input:focus { outline:none; border-color:var(--az-primary); }
+.reply-wrap button {
+  width:44px; height:44px; border-radius:50%;
+  background:var(--az-gradient); color:#fff;
+  border:none; font-size:16px;
+  cursor:pointer; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+}
+.reply-wrap button:disabled { opacity:.5; }
+
+/* EMPTY */
+.empty {
+  text-align:center; padding:60px 24px;
+  color:var(--az-text-secondary);
+}
+.empty i {
+  font-size:52px; color:var(--az-primary);
+  opacity:.4; margin-bottom:14px; display:block;
+}
+.empty h3 { color:var(--az-text); font-size:16px; margin-bottom:6px; }
+.empty p { font-size:13px; }
+
+/* AUTH WALL */
+.auth-wall {
+  max-width:440px; margin:40px auto;
+  padding:32px 24px; text-align:center;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,107,53,.25);
+  border-radius:20px;
+}
+.auth-wall i { font-size:48px; color:var(--az-primary); margin-bottom:14px; }
+.auth-wall h2 { color:var(--az-text); margin-bottom:8px; font-size:20px; }
+.auth-wall p { color:var(--az-text-secondary); font-size:14px; margin-bottom:20px; }
+.auth-wall a {
+  display:block; padding:13px; border-radius:12px;
+  text-decoration:none; font-weight:700; margin-bottom:10px;
+}
+.auth-wall a.primary { background:var(--az-gradient); color:#fff; }
+.auth-wall a.outline {
+  border:1px solid var(--az-primary); color:var(--az-primary);
+}
+</style>
+</head>
+<body>
+
+<div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
+
+<header class="topbar">
+  <a href="index.html" class="back"><i class="fas fa-arrow-left"></i></a>
+  <span class="title">Contact Support</span>
+  <a href="aboutus.html" class="icon-btn"><i class="fas fa-info-circle"></i></a>
+</header>
+
+<!-- HERO -->
+<div class="contact-hero">
+  <div class="icon"><i class="fas fa-headset"></i></div>
+  <h1>How can we help?</h1>
+  <p>Send us a message and we'll reply as soon as possible.<br>Every request gets its own ticket so nothing is lost.</p>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('new', this)">
+    <i class="fas fa-paper-plane"></i> New Ticket
+  </button>
+  <button class="tab" onclick="switchTab('mine', this)">
+    <i class="fas fa-inbox"></i> My Tickets
+  </button>
+</div>
+
+<!-- TAB: NEW TICKET -->
+<div class="tab-content active" id="tabNew">
+  <div class="contact-form">
+    <div class="form-card">
+
+      <div class="form-alert error"   id="formError"></div>
+      <div class="form-alert success" id="formSuccess"></div>
+
+      <form onsubmit="return submitTicket(event)">
+
+        <div class="form-field">
+          <label>Your Name</label>
+          <input type="text" id="cName" placeholder="Your full name" required maxlength="100"
+                 value="">
+        </div>
+
+        <div class="form-field">
+          <label>Email Address</label>
+          <input type="email" id="cEmail" placeholder="you@example.com" required maxlength="150">
+        </div>
+
+        <div class="form-field">
+          <label>Category</label>
+          <select id="cCategory">
+            <option value="general">💬 General Question</option>
+            <option value="bug">🐛 Report a Bug</option>
+            <option value="payment">💳 Payment / Wallet</option>
+            <option value="account">👤 Account Issue</option>
+            <option value="content">📷 Content Problem</option>
+            <option value="other">❓ Other</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label>Subject</label>
+          <input type="text" id="cSubject" placeholder="Brief summary of your issue"
+                 required maxlength="150">
+        </div>
+
+        <div class="form-field">
+          <label>Message</label>
+          <textarea id="cMessage" placeholder="Describe your issue in detail…"
+                    required maxlength="2000" oninput="updateCounter()"></textarea>
+          <div class="counter"><span id="cCount">0</span> / 2000</div>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <i class="fas fa-paper-plane"></i> Send Message
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: MY TICKETS -->
+<div class="tab-content" id="tabMine">
+  <div class="tickets-wrap" id="ticketsWrap">
+    <div class="empty">
+      <i class="fas fa-circle-notch fa-spin"></i>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK INFO -->
+<div class="quick-info">
+  <div class="info-card">
+    <i class="fas fa-clock"></i>
+    <div class="lbl">Response Time</div>
+    <div class="val">Within 24 hours</div>
+  </div>
+  <div class="info-card">
+    <i class="fas fa-globe"></i>
+    <div class="lbl">Website</div>
+    <div class="val">www.aiarizonan.com</div>
+  </div>
+</div>
+
+<!-- TICKET DETAIL VIEW -->
+<div class="ticket-detail" id="ticketDetail">
+  <div class="ticket-detail-header">
+    <button class="back" onclick="closeTicketDetail()"><i class="fas fa-arrow-left"></i></button>
+    <div class="title" id="tdTitle">Ticket</div>
+    <button class="back" onclick="closeTicket()"><i class="fas fa-check-circle"></i></button>
+  </div>
+  <div class="messages-area" id="tdMessages"></div>
+  <div class="reply-wrap">
+    <input type="text" id="tdInput" placeholder="Type your reply…" maxlength="1000"
+           onkeydown="if(event.key==='Enter') sendReply()">
+    <button onclick="sendReply()" id="tdSendBtn"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<div id="app-footer"></div>
+
+<script src="auth.js"></script>
+<script>
+let currentTicket = null;
+let realtimeChannel = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const check = setInterval(() => {
+    if (typeof authReady !== 'undefined' && authReady) {
+      clearInterval(check);
+      init();
+    }
+  }, 100);
+});
+
+async function init() {
+  // Pre-fill email + name if logged in
+  if (currentUser) {
+    document.getElementById('cEmail').value = currentUser.email || '';
+    document.getElementById('cName').value  = currentProfile?.display_name || currentProfile?.username || '';
+  }
+  loadMyTickets();
+}
+
+/* ==================== TABS ==================== */
+function switchTab(name, el) {
+  document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById(name === 'new' ? 'tabNew' : 'tabMine').classList.add('active');
+
+  if (name === 'mine') loadMyTickets();
+}
+
+/* ==================== COUNTER ==================== */
+function updateCounter() {
+  const len = document.getElementById('cMessage').value.length;
+  document.getElementById('cCount').textContent = len;
+}
+
+/* ==================== SUBMIT TICKET ==================== */
+async function submitTicket(e) {
+  e.preventDefault();
+  hideAlerts();
+
+  const name     = document.getElementById('cName').value.trim();
+  const email    = document.getElementById('cEmail').value.trim();
+  const category = document.getElementById('cCategory').value;
+  const subject  = document.getElementById('cSubject').value.trim();
+  const message  = document.getElementById('cMessage').value.trim();
+
+  if (!name)    return showAlert('error', 'Please enter your name.');
+  if (!email)   return showAlert('error', 'Please enter your email.');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+                return showAlert('error', 'Please enter a valid email.');
+  if (!subject) return showAlert('error', 'Please enter a subject.');
+  if (message.length < 10)
+                return showAlert('error', 'Message must be at least 10 characters.');
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Sending…';
+
+  try {
+    // 1. Create ticket
+    const { data: ticket, error: ticketErr } = await supabaseClient
+      .from('support_tickets')
+      .insert({
+        user_id:  currentUser?.id || null,
+        email:    email,
+        name:     name,
+        subject:  subject,
+        category: category
+      })
+      .select()
+      .single();
+
+    if (ticketErr) throw ticketErr;
+
+    // 2. Add first message
+    const { error: msgErr } = await supabaseClient
+      .from('ticket_messages')
+      .insert({
+        ticket_id: ticket.id,
+        sender:    'user',
+        user_id:   currentUser?.id || null,
+        content:   message
+      });
+
+    if (msgErr) throw msgErr;
+
+    // 3. Show success
+    showAlert('success',
+      `🎉 Your ticket <strong>#${ticket.id.slice(0,8)}</strong> has been created.<br>` +
+      `We'll reply to <strong>${escapeHtml(email)}</strong> soon.`
+    );
+
+    // 4. Reset form
+    document.getElementById('cSubject').value = '';
+    document.getElementById('cMessage').value = '';
+    document.getElementById('cCount').textContent = '0';
+
+    // 5. Reload tickets
+    if (currentUser) loadMyTickets();
+
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
+
+  } catch (err) {
+    console.error(err);
+    showAlert('error', err.message || 'Failed to send message.');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
+  }
+
+  return false;
+}
+
+function showAlert(type, html) {
+  hideAlerts();
+  const el = document.getElementById(type === 'error' ? 'formError' : 'formSuccess');
+  el.innerHTML = html;
+  el.style.display = 'block';
+  el.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+function hideAlerts() {
+  document.getElementById('formError').style.display = 'none';
+  document.getElementById('formSuccess').style.display = 'none';
+}
+
+/* ==================== MY TICKETS ==================== */
+async function loadMyTickets() {
+  const wrap = document.getElementById('ticketsWrap');
+
+  if (!currentUser) {
+    wrap.innerHTML = `
+      <div class="auth-wall">
+        <i class="fas fa-ticket-alt"></i>
+        <h2>Sign in to view your tickets</h2>
+        <p>You can still send us a message without an account — but signing in lets you track replies.</p>
+        <a href="login.html" class="primary">Sign In</a>
+        <a href="register.html" class="outline">Create Account</a>
+      </div>`;
+    return;
+  }
+
+  wrap.innerHTML = '<div class="empty"><i class="fas fa-circle-notch fa-spin"></i></div>';
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('support_tickets')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('updated_at', { ascending: false });
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      wrap.innerHTML = `
+        <div class="empty">
+          <i class="fas fa-ticket-alt"></i>
+          <h3>No tickets yet</h3>
+          <p>Send us a message and we'll get back to you.</p>
+        </div>`;
+      return;
+    }
+
+    wrap.innerHTML = data.map(t => renderTicket(t)).join('');
+
+  } catch (err) {
+    console.error(err);
+    wrap.innerHTML = `<div class="empty"><i class="fas fa-exclamation-triangle"></i><h3>Couldn't load</h3><p>${escapeHtml(err.message)}</p></div>`;
+  }
+}
+
+function renderTicket(t) {
+  const statusLabel = {
+    open:        'Open',
+    in_progress: 'In Progress',
+    resolved:    'Resolved',
+    closed:      'Closed'
+  }[t.status] || t.status;
+
+  const categoryIcon = {
+    general: 'fa-comment',
+    bug: 'fa-bug',
+    payment: 'fa-credit-card',
+    account: 'fa-user',
+    content: 'fa-image',
+    other: 'fa-question'
+  }[t.category] || 'fa-comment';
+
+  return `
+    <div class="ticket-card" onclick="openTicket('${t.id}')">
+      <div class="row1">
+        <div class="subject">
+          <i class="fas ${categoryIcon}" style="color:var(--az-accent);margin-right:6px;"></i>
+          ${escapeHtml(t.subject)}
+        </div>
+        <span class="status ${t.status}">${statusLabel}</span>
+      </div>
+      <div class="meta">
+        <span><i class="fas fa-hashtag"></i>${t.id.slice(0, 8)}</span>
+        <span><i class="fas fa-clock"></i>${formatTimeAgo(t.updated_at || t.created_at)}</span>
+      </div>
+    </div>
+  `;
+}
+
+/* ==================== OPEN TICKET ==================== */
+async function openTicket(ticketId) {
+  document.getElementById('ticketDetail').classList.add('active');
+  await loadTicketMessages(ticketId);
+  setupTicketRealtime(ticketId);
+}
+
+function closeTicketDetail() {
+  document.getElementById('ticketDetail').classList.remove('active');
+  if (realtimeChannel) {
+    supabaseClient.removeChannel(realtimeChannel);
+    realtimeChannel = null;
+  }
+  currentTicket = null;
+  loadMyTickets();
+}
+
+async function loadTicketMessages(ticketId) {
+  const box = document.getElementById('tdMessages');
+  box.innerHTML = '<div style="text-align:center;padding:30px;color:#666;"><i class="fas fa-circle-notch fa-spin"></i></div>';
+
+  try {
+    const [ticketRes, msgsRes] = await Promise.all([
+      supabaseClient.from('support_tickets').select('*').eq('id', ticketId).single(),
+      supabaseClient.from('ticket_messages')
+        .select('*').eq('ticket_id', ticketId)
+        .order('created_at', { ascending: true })
+    ]);
+
+    if (ticketRes.error) throw ticketRes.error;
+
+    currentTicket = ticketRes.data;
+    document.getElementById('tdTitle').textContent = currentTicket.subject;
+
+    const msgs = msgsRes.data || [];
+    box.innerHTML = msgs.map(m => renderMessage(m)).join('');
+    box.scrollTop = box.scrollHeight;
+
+  } catch (err) {
+    console.error(err);
+    box.innerHTML = `<div style="text-align:center;padding:30px;color:#ff7675;">${escapeHtml(err.message)}</div>`;
+  }
+}
+
+function renderMessage(m) {
+  const senderLabel = m.sender === 'user' ? 'You' : 'Support';
+  return `
+    <div class="msg-bubble ${m.sender}">
+      ${m.sender === 'support' ? `<span class="sender">${senderLabel}</span>` : ''}
+      ${escapeHtml(m.content)}
+      <span class="time">${formatTimeAgo(m.created_at)}</span>
+    </div>
+  `;
+}
+
+async function sendReply() {
+  const input = document.getElementById('tdInput');
+  const text = input.value.trim();
+  if (!text || !currentTicket || !currentUser) return;
+
+  input.value = '';
+  const btn = document.getElementById('tdSendBtn');
+  btn.disabled = true;
+
+  try {
+    const { error } = await supabaseClient.from('ticket_messages').insert({
+      ticket_id: currentTicket.id,
+      sender:    'user',
+      user_id:   currentUser.id,
+      content:   text
+    });
+    if (error) throw error;
+
+    await loadTicketMessages(currentTicket.id);
+
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    input.focus();
+  }
+}
+
+/* ==================== REALTIME ==================== */
+function setupTicketRealtime(ticketId) {
+  if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
+
+  realtimeChannel = supabaseClient
+    .channel('ticket-' + ticketId)
+    .on('postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'ticket_messages',
+        filter: `ticket_id=eq.${ticketId}` },
+      payload => {
+        const m = payload.new;
+        if (m.sender === 'support') {
+          const box = document.getElementById('tdMessages');
+          box.insertAdjacentHTML('beforeend', renderMessage(m));
+          box.scrollTop = 999999;
+          showToast('💬 New reply from support', 'success');
+        }
+      }
+    )
+    .subscribe();
+}
+
+/* ==================== HELPERS ==================== */
+function formatTimeAgo(dateStr) {
+  const s = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+  if (s < 60) return 'Just now';
+  const m = Math.floor(s / 60); if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60); if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24); if (d < 7) return `${d}d ago`;
+  return new Date(dateStr).toLocaleDateString();
+}
+</script>
+</body>
+</html>
