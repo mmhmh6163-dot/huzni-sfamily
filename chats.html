@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Messages — Arizona AI</title>
 
+<link rel="icon" type="image/jpeg" href="arizonan%20png%20icon.jpeg">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="style.css">
@@ -12,7 +13,6 @@
 <style>
 body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; overflow:hidden; }
 
-/* ==================== TOP BAR ==================== */
 .topbar {
   position:fixed; top:0; left:0; right:0; height:60px;
   background:rgba(10,10,10,.97); backdrop-filter:blur(12px);
@@ -26,10 +26,8 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
   display:flex; align-items:center; justify-content:center;
   border-radius:50%; text-decoration:none; cursor:pointer;
 }
-.topbar .back:hover, .topbar .icon-btn:hover { background:rgba(255,255,255,.06); }
 .topbar .title { font-size:16px; font-weight:700; color:var(--az-text); }
 
-/* ==================== SEARCH BAR ==================== */
 .search-bar {
   max-width:640px; margin:16px auto 8px;
   padding:0 16px;
@@ -40,16 +38,13 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
   border:1px solid rgba(255,255,255,.1);
   border-radius:12px; padding:12px 14px;
 }
-.search-bar i { color:var(--az-text-secondary); }
 .search-bar input {
   flex:1; background:transparent; border:none;
-  color:var(--az-text); font-size:15px;
-  font-family:inherit;
+  color:var(--az-text); font-size:15px; font-family:inherit;
 }
 .search-bar input:focus { outline:none; }
-.search-bar input::placeholder { color:var(--az-text-secondary); }
+.search-bar i { color:var(--az-text-secondary); }
 
-/* ==================== TABS ==================== */
 .msg-tabs {
   max-width:640px; margin:0 auto;
   padding:8px 16px;
@@ -78,13 +73,12 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
 }
 .msg-tabs .tab .badge.show { display:inline-block; }
 
-/* ==================== LIST AREA ==================== */
 .msg-list-wrap {
   max-width:640px; margin:0 auto;
   padding:0 16px;
   height: calc(100vh - 200px);
   overflow-y: auto;
-  padding-bottom:100px;
+  padding-bottom:80px;
 }
 .msg-list-wrap::-webkit-scrollbar { width:4px; }
 .msg-list-wrap::-webkit-scrollbar-thumb { background:#333; border-radius:2px; }
@@ -93,8 +87,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
   display:flex; align-items:center; gap:12px;
   padding:12px 8px;
   border-bottom:1px solid rgba(255,255,255,.05);
-  cursor:pointer;
-  border-radius:10px;
+  cursor:pointer; border-radius:10px;
   transition:background .2s;
 }
 .chat-row:hover { background:rgba(255,107,53,.06); }
@@ -104,16 +97,8 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
   display:flex; align-items:center; justify-content:center;
   font-weight:700; color:#fff; font-size:20px;
   flex-shrink:0; overflow:hidden;
-  position:relative;
 }
 .chat-row .av img { width:100%; height:100%; object-fit:cover; }
-.chat-row .av .online-dot {
-  position:absolute; bottom:2px; right:2px;
-  width:12px; height:12px; border-radius:50%;
-  background:#00b894; border:2px solid #0a0a0a;
-  display:none;
-}
-.chat-row .av .online-dot.show { display:block; }
 .chat-row .info { flex:1; min-width:0; }
 .chat-row .info .name {
   font-size:14px; font-weight:700; color:var(--az-text);
@@ -141,7 +126,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
   margin-top:6px;
 }
 
-/* ==================== EMPTY ==================== */
 .empty {
   text-align:center; padding:60px 20px;
   color:var(--az-text-secondary);
@@ -155,7 +139,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
   text-decoration:none; font-weight:700; font-size:13px;
 }
 
-/* ==================== CHAT VIEW ==================== */
+/* CHAT VIEW */
 .chat-view {
   position:fixed; inset:0;
   background:#0a0a0a;
@@ -186,12 +170,8 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
 }
 .chat-view-header .av img { width:100%; height:100%; object-fit:cover; }
 .chat-view-header .info { flex:1; }
-.chat-view-header .info .name {
-  font-size:14px; font-weight:700; color:var(--az-text);
-}
-.chat-view-header .info .status {
-  font-size:11px; color:var(--az-text-secondary);
-}
+.chat-view-header .info .name { font-size:14px; font-weight:700; color:var(--az-text); }
+.chat-view-header .info .status { font-size:11px; color:var(--az-text-secondary); }
 
 .chat-messages {
   flex:1; overflow-y:auto;
@@ -211,8 +191,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
 }
 @keyframes bubbleIn { from { opacity:0; transform:translateY(6px); } }
 .bubble.me {
-  background:var(--az-gradient);
-  color:#fff;
+  background:var(--az-gradient); color:#fff;
   align-self:flex-end;
   border-bottom-right-radius:4px;
 }
@@ -224,8 +203,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
 }
 .bubble .time {
   display:block;
-  font-size:10px;
-  opacity:.7;
+  font-size:10px; opacity:.7;
   margin-top:4px;
 }
 
@@ -253,21 +231,19 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
   cursor:pointer; flex-shrink:0;
   display:flex; align-items:center; justify-content:center;
 }
-.chat-input-wrap button:disabled { opacity:.5; cursor:not-allowed; }
+.chat-input-wrap button:disabled { opacity:.5; }
 </style>
 </head>
 <body>
 
 <div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
 
-<!-- ==================== TOP BAR ==================== -->
 <header class="topbar" id="mainTopbar">
   <a href="index.html" class="back"><i class="fas fa-arrow-left"></i></a>
   <span class="title">Messages</span>
   <a href="Friends.html" class="icon-btn"><i class="fas fa-user-plus"></i></a>
 </header>
 
-<!-- ==================== SEARCH ==================== -->
 <div class="search-bar">
   <div class="wrap">
     <i class="fas fa-search"></i>
@@ -275,7 +251,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
   </div>
 </div>
 
-<!-- ==================== TABS ==================== -->
 <div class="msg-tabs">
   <button class="tab active" data-tab="chats" onclick="switchTab('chats', this)">
     <i class="fas fa-comments"></i> Chats
@@ -286,12 +261,10 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
   </button>
 </div>
 
-<!-- ==================== LIST ==================== -->
 <div class="msg-list-wrap" id="listWrap">
   <div class="empty"><i class="fas fa-circle-notch fa-spin"></i>Loading…</div>
 </div>
 
-<!-- ==================== CHAT VIEW ==================== -->
 <div class="chat-view" id="chatView">
   <div class="chat-view-header">
     <button class="back" onclick="closeChat()"><i class="fas fa-arrow-left"></i></button>
@@ -300,9 +273,9 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
       <div class="name" id="cvName">User</div>
       <div class="status" id="cvStatus">Tap to view profile</div>
     </div>
-    <a href="#" class="back" onclick="event.preventDefault();viewProfile()" title="View Profile">
+    <button class="back" onclick="viewProfile()" title="View Profile">
       <i class="fas fa-info-circle"></i>
-    </a>
+    </button>
   </div>
   <div class="chat-messages" id="chatMessages"></div>
   <div class="chat-input-wrap">
@@ -341,19 +314,29 @@ async function init() {
       </div>`;
     return;
   }
+
   await loadChats();
   await loadRequests();
   updateReqBadge();
   setupRealtime();
+
+  // Auto-open chat if ?user=ID is passed
+  const params = new URLSearchParams(window.location.search);
+  const autoUser = params.get('user');
+  if (autoUser && autoUser !== currentUser.id) {
+    await openChat(autoUser);
+  } else {
+    renderList();
+  }
 }
 
-/* ==================== TABS ==================== */
 function switchTab(tab, el) {
   currentTab = tab;
   document.querySelectorAll('.msg-tabs .tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
   renderList();
 }
+
 function updateReqBadge() {
   const pending = requests.filter(r => r.status === 'pending').length;
   const badge = document.getElementById('reqBadge');
@@ -373,29 +356,23 @@ async function loadChats() {
       `)
       .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
       .order('created_at', { ascending: false })
-      .limit(200);
+      .limit(300);
 
     if (error) throw error;
 
-    // Group by partner — keep latest message + unread count
     const map = new Map();
     (data || []).forEach(m => {
       const partnerId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
       const partner   = m.sender_id === currentUser.id ? m.receiver : m.sender;
       if (!partner) return;
 
-      if (!map.has(partnerId)) {
-        map.set(partnerId, { partner, lastMessage: m, unread: 0 });
-      }
+      if (!map.has(partnerId)) map.set(partnerId, { partner, lastMessage: m, unread: 0 });
       const entry = map.get(partnerId);
       if (!m.is_read && m.receiver_id === currentUser.id) entry.unread++;
-      if (new Date(m.created_at) > new Date(entry.lastMessage.created_at)) {
-        entry.lastMessage = m;
-      }
+      if (new Date(m.created_at) > new Date(entry.lastMessage.created_at)) entry.lastMessage = m;
     });
 
-    conversations = Array.from(map.values());
-    conversations.sort((a, b) =>
+    conversations = Array.from(map.values()).sort((a, b) =>
       new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at)
     );
   } catch (err) {
@@ -415,7 +392,6 @@ async function loadRequests() {
       `)
       .eq('target_id', currentUser.id)
       .order('created_at', { ascending: false });
-
     if (error) throw error;
     requests = data || [];
   } catch (err) {
@@ -536,7 +512,7 @@ function filterChats() {
   renderList();
 }
 
-/* ==================== RESPOND TO REQUEST ==================== */
+/* ==================== RESPOND REQUEST ==================== */
 async function respondRequest(reqId, status, btn) {
   btn.disabled = true;
   try {
@@ -544,15 +520,11 @@ async function respondRequest(reqId, status, btn) {
       .from('follow_requests').select('*').eq('id', reqId).single();
     if (fetchErr) throw fetchErr;
 
-    const { error: updErr } = await supabaseClient
-      .from('follow_requests').update({ status }).eq('id', reqId);
-    if (updErr) throw updErr;
+    await supabaseClient.from('follow_requests').update({ status }).eq('id', reqId);
 
     if (status === 'accepted') {
-      // Add follow
       const { error: followErr } = await supabaseClient
-        .from('follows')
-        .insert({ follower_id: req.requester_id, following_id: req.target_id });
+        .from('follows').insert({ follower_id: req.requester_id, following_id: req.target_id });
       if (followErr && followErr.code !== '23505') throw followErr;
       showToast('Request accepted ✅', 'success');
     } else {
@@ -564,16 +536,21 @@ async function respondRequest(reqId, status, btn) {
     renderList();
   } catch (err) {
     showToast(err.message, 'error');
-  } finally {
     btn.disabled = false;
   }
 }
 
 /* ==================== OPEN CHAT ==================== */
 async function openChat(partnerId) {
-  // Find partner info
-  const conv = conversations.find(c => c.partner.id === partnerId);
-  if (!conv) return;
+  let conv = conversations.find(c => c.partner.id === partnerId);
+
+  // If no conversation yet, load partner profile
+  if (!conv) {
+    const { data: profile } = await supabaseClient
+      .from('profiles').select('*').eq('id', partnerId).maybeSingle();
+    if (!profile) { showToast('User not found', 'error'); return; }
+    conv = { partner: profile, lastMessage: null, unread: 0 };
+  }
 
   activePartner = conv.partner;
   const p = activePartner;
@@ -594,6 +571,10 @@ async function openChat(partnerId) {
 function closeChat() {
   document.getElementById('chatView').classList.remove('active');
   activePartner = null;
+  // Remove ?user= from URL
+  if (window.history.replaceState) {
+    window.history.replaceState(null, '', 'chats.html');
+  }
   loadChats().then(renderList);
 }
 
@@ -638,8 +619,7 @@ function renderBubble(m) {
 async function sendMessage() {
   const input = document.getElementById('chatInput');
   const content = input.value.trim();
-  if (!content) return;
-  if (!activePartner) return;
+  if (!content || !activePartner) return;
 
   input.value = '';
   const btn = document.getElementById('sendBtn');
@@ -682,7 +662,6 @@ function setupRealtime() {
       { event: 'INSERT', schema: 'public', table: 'messages' },
       payload => {
         const m = payload.new;
-        // If this message involves us and we're viewing this chat, append
         if (activePartner &&
             ((m.sender_id === activePartner.id && m.receiver_id === currentUser.id) ||
              (m.sender_id === currentUser.id && m.receiver_id === activePartner.id))) {
@@ -690,7 +669,6 @@ function setupRealtime() {
           document.getElementById('chatMessages').scrollTop = 999999;
           markMessagesRead();
         }
-        // Refresh the list
         loadChats().then(renderList);
       }
     )
@@ -699,14 +677,11 @@ function setupRealtime() {
 
 /* ==================== HELPERS ==================== */
 function formatTimeAgo(dateStr) {
-  const seconds = Math.floor((Date.now() - new Date(dateStr)) / 1000);
-  if (seconds < 60) return 'now';
-  const mins = Math.floor(seconds / 60);
-  if (mins < 60) return `${mins}m`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d`;
+  const s = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+  if (s < 60) return 'now';
+  const m = Math.floor(s / 60); if (m < 60) return `${m}m`;
+  const h = Math.floor(m / 60); if (h < 24) return `${h}h`;
+  const d = Math.floor(h / 24); if (d < 7) return `${d}d`;
   return new Date(dateStr).toLocaleDateString();
 }
 </script>
