@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Create Post — Arizona AI</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+
+<style>
+body {
+  background: #0a0a0a;
+  padding-top: 60px;
+  padding-bottom: 30px;
+}
+
+/* ---- TOP BAR ---- */
+.create-topbar {
+  position: fixed; top: 0; left: 0; right: 0; height: 60px;
+  background: rgba(10,10,10,0.97);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,107,53,0.25);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px; z-index: 1000;
+  max-width: 640px; margin: 0 auto;
+}
+.create-topbar .back {
+  color: var(--az-text); font-size: 20px; text-decoration: none;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+}
+.create-topbar .back:hover { background: rgba(255,255,255,0.06); }
+.create-topbar .title {
+  font-size: 16px; font-weight: 700;
+  color: var(--az-text);
+}
+.create-topbar .share {
+  background: var(--az-gradient);
+  color: #fff; border: none;
+  padding: 8px 18px; border-radius: 20px;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+}
+.create-topbar .share:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ---- UPLOAD AREA ---- */
+.upload-zone {
+  max-width: 640px; margin: 0 auto;
+  padding: 16px;
+}
+.upload-box {
+  border: 2px dashed rgba(255,107,53,0.4);
+  border-radius: 16px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: rgba(255,255,255,0.02);
+}
+.upload-box:hover, .upload-box.dragover {
+  border-color: var(--az-primary);
+  background: rgba(255,107,53,0.06);
+}
+.upload-box i {
+  font-size: 42px; color: var(--az-accent);
+  margin-bottom: 12px; display: block;
+}
+.upload-box h3 {
+  font-size: 16px; color: var(--az-text);
+  margin-bottom: 6px;
+}
+.upload-box p {
+  font-size: 13px; color: var(--az-text-secondary);
+}
+
+/* ---- PREVIEWS ---- */
+.previews {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+}
+.preview-item {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #111;
+}
+.preview-item img, .preview-item video {
+  width: 100%; height: 100%; object-fit: cover;
+  display: block;
+}
+.preview-item .remove {
+  position: absolute; top: 6px; right: 6px;
+  background: rgba(0,0,0,0.75); color: #fff;
+  width: 26px; height: 26px; border-radius: 50%;
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+}
+.preview-item .type-badge {
+  position: absolute; bottom: 6px; left: 6px;
+  background: rgba(0,0,0,0.7); color: #fff;
+  padding: 2px 8px; border-radius: 10px;
+  font-size: 10px; font-weight: 600;
+}
+
+/* ---- FORM ---- */
+.create-form {
+  max-width: 640px; margin: 0 auto;
+  padding: 0 16px 30px;
+}
+.create-form .field { margin-bottom: 18px; }
+.create-form label {
+  display: block; font-size: 12px;
+  color: var(--az-text-secondary);
+  margin-bottom: 6px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.create-form textarea {
+  width: 100%; min-height: 130px;
+  padding: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  color: var(--az-text); font-size: 15px;
+  font-family: inherit; resize: vertical;
+}
+.create-form textarea:focus {
+  outline: none; border-color: var(--az-primary);
+}
+.create-form .counter {
+  text-align: right; font-size: 11px;
+  color: var(--az-text-secondary);
+  margin-top: 4px;
+}
+
+/* ---- POST TYPE ---- */
+.type-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.type-btn {
+  padding: 12px 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  color: var(--az-text-secondary);
+  cursor: pointer;
+  font-size: 12px; font-weight: 600;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 4px;
+  transition: all 0.2s;
+}
+.type-btn i { font-size: 18px; }
+.type-btn.active {
+  background: rgba(255,107,53,0.15);
+  border-color: var(--az-primary);
+  color: var(--az-accent);
+}
+
+/* ---- PROGRESS ---- */
+.upload-progress {
+  display: none;
+  max-width: 640px; margin: 20px auto 0;
+  padding: 0 16px;
+}
+.upload-progress.active { display: block; }
+.progress-bar {
+  height: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--az-gradient);
+  width: 0%;
+  transition: width 0.3s ease;
+  border-radius: 4px;
+}
+.progress-text {
+  text-align: center;
+  font-size: 12px;
+  color: var(--az-text-secondary);
+  margin-top: 8px;
+}
+
+/* ---- AUTH WALL ---- */
+.auth-wall {
+  max-width: 440px; margin: 60px auto;
+  padding: 32px 24px; text-align: center;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,107,53,0.25);
+  border-radius: 20px;
+}
+.auth-wall i { font-size: 48px; color: var(--az-primary); margin-bottom: 14px; }
+.auth-wall h2 { color: var(--az-text); margin-bottom: 8px; }
+.auth-wall p { color: var(--az-text-secondary); font-size: 14px; margin-bottom: 20px; }
+.auth-wall a {
+  display: block; padding: 13px; border-radius: 12px;
+  text-decoration: none; font-weight: 700; margin-bottom: 10px;
+}
+.auth-wall a.primary { background: var(--az-gradient); color: #fff; }
+</style>
+</head>
+<body>
+
+<div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
+
+<!-- ============ TOP BAR ============ -->
+<header class="create-topbar" id="topbar" style="display:none;">
+  <a href="index.html" class="back"><i class="fas fa-times"></i></a>
+  <span class="title">New Post</span>
+  <button class="share" id="shareBtn" onclick="submitPost()">
+    <i class="fas fa-share"></i> Share
+  </button>
+</header>
+
+<!-- ============ AUTH WALL ============ -->
+<div id="authWall" style="display:none;">
+  <div class="auth-wall">
+    <i class="fas fa-lock"></i>
+    <h2>Sign in to post</h2>
+    <p>Please log in to share your content with the community.</p>
+    <a href="login.html" class="primary">Sign In</a>
+    <a href="register.html" style="border:1px solid var(--az-primary); color:var(--az-primary);">Create Account</a>
+  </div>
+</div>
+
+<!-- ============ CREATE CONTENT ============ -->
+<div id="createContent" style="display:none;">
+
+  <!-- Upload zone -->
+  <div class="upload-zone">
+    <div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()">
+      <i class="fas fa-cloud-arrow-up"></i>
+      <h3>Tap to upload</h3>
+      <p>Images & videos · Up to 50 MB per file</p>
+    </div>
+    <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display:none;">
+
+    <div class="previews" id="previews"></div>
+  </div>
+
+  <!-- Upload progress -->
+  <div class="upload-progress" id="uploadProgress">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText">Uploading…</div>
+  </div>
+
+  <!-- Caption + Type -->
+  <div class="create-form">
+    <div class="field">
+      <label>Caption</label>
+      <textarea id="caption" maxlength="2200"
+                placeholder="Write a caption… #hashtags @mentions"
+                oninput="updateCounter()"></textarea>
+      <div class="counter"><span id="charCount">0</span> / 2200</div>
+    </div>
+
+    <div class="field">
+      <label>Post Type</label>
+      <div class="type-grid">
+        <button class="type-btn active" data-type="post"   onclick="selectType('post', this)">
+          <i class="fas fa-image"></i> Post
+        </button>
+        <button class="type-btn" data-type="short"         onclick="selectType('short', this)">
+          <i class="fas fa-bolt"></i> Short
+        </button>
+        <button class="type-btn" data-type="reel"          onclick="selectType('reel', this)">
+          <i class="fas fa-video"></i> Reel
+        </button>
+        <button class="type-btn" data-type="note"          onclick="selectType('note', this)">
+          <i class="fas fa-note-sticky"></i> Note
+        </button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Visibility</label>
+      <select id="visibility" style="
+        width:100%; padding:12px 14px; border-radius:10px;
+        background:#0a0a0a; border:1px solid #333; color:#fff;
+        font-size:14px; font-family:inherit;
+      ">
+        <option value="public">🌍 Public — Everyone</option>
+        <option value="followers">👥 Followers Only</option>
+        <option value="private">🔒 Private — Only Me</option>
+      </select>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SCRIPTS ============ -->
+<script src="auth.js"></script>
+<script>
+let selectedFiles = [];
+let selectedType  = 'post';
+
+document.addEventListener('DOMContentLoaded', () => {
+  const check = setInterval(() => {
+    if (typeof authReady !== 'undefined' && authReady) {
+      clearInterval(check);
+      init();
+    }
+  }, 100);
+});
+
+function init() {
+  if (!currentUser) {
+    document.getElementById('authWall').style.display = 'block';
+    return;
+  }
+  document.getElementById('topbar').style.display = 'flex';
+  document.getElementById('createContent').style.display = 'block';
+
+  // Drag & drop
+  const box = document.getElementById('uploadBox');
+  box.addEventListener('dragover', e => { e.preventDefault(); box.classList.add('dragover'); });
+  box.addEventListener('dragleave', () => box.classList.remove('dragover'));
+  box.addEventListener('drop', e => {
+    e.preventDefault();
+    box.classList.remove('dragover');
+    handleFiles(e.dataTransfer.files);
+  });
+
+  document.getElementById('fileInput').addEventListener('change', e => {
+    handleFiles(e.target.files);
+  });
+}
+
+function handleFiles(files) {
+  for (const file of files) {
+    if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) continue;
+    if (file.size > 50 * 1024 * 1024) {
+      showToast(`${file.name} is over 50 MB`, 'error');
+      continue;
+    }
+    selectedFiles.push(file);
+  }
+  renderPreviews();
+}
+
+function renderPreviews() {
+  const container = document.getElementById('previews');
+  container.innerHTML = '';
+  selectedFiles.forEach((file, index) => {
+    const div = document.createElement('div');
+    div.className = 'preview-item';
+
+    const isVideo = file.type.startsWith('video/');
+    const url = URL.createObjectURL(file);
+
+    div.innerHTML = `
+      ${isVideo
+        ? `<video src="${url}" muted></video>`
+        : `<img src="${url}" alt="">`}
+      <span class="type-badge">${isVideo ? 'VIDEO' : 'IMAGE'}</span>
+      <button class="remove" onclick="removeFile(${index})">
+        <i class="fas fa-times"></i>
+      </button>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function removeFile(index) {
+  selectedFiles.splice(index, 1);
+  renderPreviews();
+}
+
+function selectType(type, el) {
+  selectedType = type;
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function updateCounter() {
+  const len = document.getElementById('caption').value.length;
+  document.getElementById('charCount').textContent = len;
+}
+
+/* ==================== UPLOAD + SUBMIT ==================== */
+async function submitPost() {
+  const caption    = document.getElementById('caption').value.trim();
+  const visibility = document.getElementById('visibility').value;
+
+  if (selectedFiles.length === 0 && !caption) {
+    return showToast('Add media or write a caption', 'error');
+  }
+
+  const btn = document.getElementById('shareBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Posting…';
+
+  const progress      = document.getElementById('uploadProgress');
+  const progressFill  = document.getElementById('progressFill');
+  const progressText  = document.getElementById('progressText');
+  progress.classList.add('active');
+
+  try {
+    // 1. Upload files to Supabase Storage
+    const mediaUrls = [];
+    const mediaTypes = [];
+
+    for (let i = 0; i < selectedFiles.length; i++) {
+      const file = selectedFiles[i];
+      const isVideo = file.type.startsWith('video/');
+      const bucket = isVideo ? 'videos' : 'posts';
+      const ext = file.name.split('.').pop().toLowerCase();
+      const path = `${currentUser.id}/${Date.now()}-${i}.${ext}`;
+
+      progressText.textContent = `Uploading ${i + 1} of ${selectedFiles.length}…`;
+      progressFill.style.width = `${((i) / selectedFiles.length) * 100}%`;
+
+      const { data, error } = await supabaseClient.storage
+        .from(bucket)
+        .upload(path, file, { upsert: false, cacheControl: '3600' });
+
+      if (error) throw new Error(`Upload failed: ${error.message}`);
+
+      const { data: urlData } = supabaseClient.storage
+        .from(bucket)
+        .getPublicUrl(data.path);
+
+      mediaUrls.push(urlData.publicUrl);
+      mediaTypes.push(isVideo ? 'video' : 'image');
+    }
+
+    progressFill.style.width = '100%';
+    progressText.textContent = 'Saving post…';
+
+    // 2. Insert into posts table
+    const { error: dbError } = await supabaseClient.from('posts').insert({
+      user_id:        currentUser.id,
+      content:        caption,
+      media_urls:     mediaUrls,
+      media_types:    mediaTypes,
+      post_type:      selectedType,
+      visibility:     visibility,
+      likes_count:    0,
+      comments_count: 0,
+      shares_count:   0
+    });
+
+    if (dbError) throw dbError;
+
+    progressText.textContent = 'Posted! 🎉';
+    showToast('Posted successfully! 🎉', 'success');
+
+    setTimeout(() => { window.location.href = 'index.html'; }, 900);
+
+  } catch (err) {
+    console.error(err);
+    showToast(err.message || 'Failed to post', 'error');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-share"></i> Share';
+    progress.classList.remove('active');
+  }
+}
+</script>
+</body>
+</html>
