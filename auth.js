@@ -11,17 +11,15 @@ const SUPABASE_KEY = 'sb_publishable_fenXy1YUuiY7B3HOObcHfQ_YIXDC5Ja';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 /* ---------------- GLOBAL STATE ---------------- */
-let currentUser   = null;
+let currentUser    = null;
 let currentProfile = null;
 let currentWallet  = null;
 let authReady      = false;
 
 /* ---------------- INIT ---------------- */
 document.addEventListener('DOMContentLoaded', async () => {
-  // Load language first
   applyLanguage(localStorage.getItem('az_lang') || 'en');
 
-  // Load session
   const { data: { session } } = await supabaseClient.auth.getSession();
   currentUser = session?.user || null;
   if (currentUser) await loadUserData();
@@ -31,16 +29,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderFooter();
   updateAuthUI();
 
-  // Listen for auth changes
+  // Fire event so notification system and page scripts can init
+  document.dispatchEvent(new CustomEvent('auth-ready'));
+
+  // Auth state changes
   supabaseClient.auth.onAuthStateChange(async (_event, session) => {
     currentUser = session?.user || null;
-    if (currentUser) await loadUserData();
-    else { currentProfile = null; currentWallet = null; }
+    if (currentUser) {
+      await loadUserData();
+      refreshNotifCount();
+      setupNotifRealtime();
+    } else {
+      currentProfile = null;
+      currentWallet  = null;
+      notifListenerSetup = false;
+    }
     updateAuthUI();
     if (typeof onAuthChange === 'function') onAuthChange();
   });
 
-  // Hide loader if present
   const loader = document.getElementById('loadingOverlay');
   if (loader) setTimeout(() => loader.classList.add('hidden'), 500);
 });
@@ -120,6 +127,9 @@ function renderHeader() {
         </div>
 
         <div class="user-menu" id="userMenu" style="display:none;">
+          <a href="notifications.html" class="notif-bell" data-notif-bell title="Notifications" style="position:relative; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--az-text); font-size:18px; text-decoration:none;">
+            <i class="far fa-bell"></i>
+          </a>
           <a href="profile.html" class="user-profile">
             <div class="user-avatar" id="userAvatar">U</div>
             <div class="user-info">
@@ -140,6 +150,9 @@ function renderHeader() {
         <a href="chats.html"><i class="fas fa-comments"></i> Chat</a>
         <a href="Friends.html"><i class="fas fa-users"></i> Friends</a>
         <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a href="notifications.html" data-notif-bell style="position:relative;">
+          <i class="far fa-bell"></i> Notifications
+        </a>
         <a href="wallets.html"><i class="fas fa-wallet"></i> Wallet</a>
         <a href="ads.html"><i class="fas fa-ad"></i> Ads</a>
         <a href="crypto.forex.html"><i class="fas fa-chart-line"></i> Exchange</a>
@@ -210,9 +223,21 @@ function updateAuthUI() {
     userMenu.style.display = 'flex';
     const name = currentProfile?.username || currentUser.email?.split('@')[0] || 'User';
     const bal  = currentWallet?.balance ?? 0;
+    const avatar = currentProfile?.avatar_url;
+
     document.getElementById('userName').textContent = name;
     document.getElementById('userBalance').textContent = '$' + Number(bal).toFixed(2);
-    document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
+
+    const avatarEl = document.getElementById('userAvatar');
+    if (avatar) {
+      avatarEl.innerHTML = `<img src="${avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    } else {
+      avatarEl.textContent = name.charAt(0).toUpperCase();
+    }
+
+    // Init notifications
+    refreshNotifCount();
+    setupNotifRealtime();
   } else {
     authBtns.style.display = 'flex';
     userMenu.style.display = 'none';
@@ -306,3 +331,174 @@ function requireGuest() {
   if (currentUser) { window.location.href = 'index.html'; return false; }
   return true;
 }
+
+/* ============================================================
+   GLOBAL NOTIFICATIONS — runs on every page
+   ============================================================ */
+let notifChannel = null;
+let notifListenerSetup = false;
+
+async function fetchUnreadNotifCount() {
+  if (!currentUser) return 0;
+  try {
+    const { count } = await supabaseClient
+      .from('notifications')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', currentUser.id)
+      .eq('is_read', false);
+    return count || 0;
+  } catch { return 0; }
+}
+
+function updateBellBadge(count) {
+  const bellEls = document.querySelectorAll('[data-notif-bell]');
+  bellEls.forEach(el => {
+    let dot = el.querySelector('.notif-count');
+    if (count > 0) {
+      if (!dot) {
+        dot = document.createElement('span');
+        dot.className = 'notif-count';
+        dot.style.cssText = `
+          position:absolute; top:2px; right:2px;
+          background:var(--az-primary); color:#fff;
+          font-size:10px; font-weight:800;
+          min-width:18px; height:18px;
+          border-radius:9px; padding:0 5px;
+          display:flex; align-items:center; justify-content:center;
+          border:2px solid #0a0a0a;
+          line-height:1;
+          z-index:5;
+        `;
+        el.style.position = 'relative';
+        el.appendChild(dot);
+      }
+      dot.textContent = count > 99 ? '99+' : count;
+    } else if (dot) {
+      dot.remove();
+    }
+  });
+}
+
+async function refreshNotifCount() {
+  const count = await fetchUnreadNotifCount();
+  updateBellBadge(count);
+  return count;
+}
+
+function setupNotifRealtime() {
+  if (!currentUser || notifListenerSetup) return;
+  notifListenerSetup = true;
+
+  notifChannel = supabaseClient
+    .channel('global-notif-' + currentUser.id)
+    .on('postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'notifications',
+        filter: `user_id=eq.${currentUser.id}` },
+      async (payload) => {
+        const n = payload.new;
+        await refreshNotifCount();
+        showNotifToast(n);
+      }
+    )
+    .subscribe();
+}
+
+async function showNotifToast(n) {
+  let actorName = 'Someone';
+  let actorAvatar = null;
+  try {
+    const { data } = await supabaseClient
+      .from('profiles')
+      .select('username, display_name, avatar_url')
+      .eq('id', n.actor_id)
+      .maybeSingle();
+    if (data) {
+      actorName = data.display_name || data.username || actorName;
+      actorAvatar = data.avatar_url;
+    }
+  } catch (e) {}
+
+  const msgMap = {
+    like:    `❤️ ${actorName} liked your post`,
+    comment: `💬 ${actorName} commented on your post`,
+    follow:  `👤 ${actorName} started following you`,
+    message: `📩 ${actorName} sent you a message`,
+    mention: `@ ${actorName} mentioned you`,
+    tip:     `💰 ${actorName} sent you a tip`,
+    request: `📨 ${actorName} requested to follow you`
+  };
+  const msg = msgMap[n.type] || '🔔 New notification';
+
+  let container = document.getElementById('globalNotifToasts');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'globalNotifToasts';
+    container.style.cssText = `
+      position:fixed; top:70px; left:50%;
+      transform:translateX(-50%);
+      z-index:9999; width:92%; max-width:420px;
+      display:flex; flex-direction:column; gap:8px;
+      pointer-events:none;
+    `;
+    document.body.appendChild(container);
+  }
+
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    background:#1a1a1a;
+    border:1px solid rgba(255,107,53,.4);
+    border-left:4px solid var(--az-primary);
+    border-radius:12px;
+    padding:12px 14px;
+    display:flex; align-items:center; gap:12px;
+    box-shadow:0 10px 30px rgba(0,0,0,.6);
+    color:#fff;
+    font-size:13px;
+    animation: slideDown .3s ease;
+    cursor:pointer;
+    pointer-events:auto;
+  `;
+
+  toast.innerHTML = `
+    ${actorAvatar
+      ? `<img src="${actorAvatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;">`
+      : `<div style="width:36px;height:36px;border-radius:50%;background:var(--az-gradient);display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">${actorName.charAt(0).toUpperCase()}</div>`}
+    <div style="flex:1;line-height:1.4;">${msg}</div>
+    <i class="fas fa-chevron-right" style="opacity:.5;font-size:12px;"></i>
+  `;
+
+  toast.onclick = () => { window.location.href = 'notifications.html'; };
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity .3s';
+    setTimeout(() => toast.remove(), 300);
+  }, 5000);
+
+  if (!document.getElementById('notifKeyframes')) {
+    const style = document.createElement('style');
+    style.id = 'notifKeyframes';
+    style.textContent = `
+      @keyframes slideDown {
+        from { opacity:0; transform: translateY(-10px); }
+        to   { opacity:1; transform: translateY(0); }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
+/* ---------------- AUTO INIT ---------------- */
+document.addEventListener('auth-ready', () => {
+  refreshNotifCount();
+  setupNotifRealtime();
+});
+
+// Fallback safety net
+setInterval(() => {
+  if (currentUser && !notifListenerSetup) {
+    setupNotifRealtime();
+    refreshNotifCount();
+  }
+}, 3000);
