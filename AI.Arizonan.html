@@ -17,7 +17,7 @@ body {
   min-height:100vh;
 }
 
-/* TOP BAR */
+/* ============ TOP BAR ============ */
 .topbar {
   position:fixed; top:0; left:0; right:0; height:60px;
   background:rgba(10,20,35,.97); backdrop-filter:blur(12px);
@@ -31,7 +31,9 @@ body {
   display:flex; align-items:center; justify-content:center;
   border-radius:50%; text-decoration:none;
   background:none; border:none; cursor:pointer;
+  transition: background .15s;
 }
+.topbar .icon-btn:hover { background:rgba(94,184,255,.1); }
 .topbar .title {
   font-size:16px; font-weight:800;
   background:linear-gradient(135deg,#5eb8ff,#7c3aed);
@@ -43,7 +45,21 @@ body {
   -webkit-text-fill-color: initial;
 }
 
-/* HERO */
+/* ============ STATUS BADGE ============ */
+.status-badge {
+  position:fixed; top:70px; left:50%; transform:translateX(-50%);
+  padding:6px 14px; border-radius:20px;
+  font-size:11px; font-weight:700;
+  z-index:999;
+  display:none;
+  white-space:nowrap;
+  box-shadow: 0 4px 14px rgba(0,0,0,.4);
+}
+.status-badge.checking { display:block; background:rgba(255,178,15,.2); color:#FFB20F; border:1px solid rgba(255,178,15,.4); }
+.status-badge.online   { display:block; background:rgba(0,184,148,.2);  color:#00b894; border:1px solid rgba(0,184,148,.4); }
+.status-badge.offline  { display:block; background:rgba(255,118,117,.2); color:#ff7675; border:1px solid rgba(255,118,117,.4); }
+
+/* ============ HERO ============ */
 .ai-hero {
   max-width:640px; margin:0 auto;
   padding:24px 20px 16px;
@@ -70,7 +86,7 @@ body {
 }
 .ai-hero p { color:rgba(255,255,255,.6); font-size:13px; }
 
-/* QUICK ACTIONS */
+/* ============ QUICK ACTIONS ============ */
 .quick-actions {
   max-width:640px; margin:16px auto;
   padding:0 16px;
@@ -92,7 +108,7 @@ body {
 }
 .quick-action i { font-size:16px; }
 
-/* CHAT AREA */
+/* ============ CHAT AREA ============ */
 .chat-area {
   max-width:640px; margin:0 auto;
   padding:0 16px 140px;
@@ -108,12 +124,10 @@ body {
   display:flex; align-items:center; justify-content:center;
   font-weight:700; font-size:13px; color:#fff;
 }
-.chat-msg.bot .av {
-  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
-}
-.chat-msg.user .av {
-  background:var(--az-gradient);
-}
+.chat-msg.bot .av { background:linear-gradient(135deg,#5eb8ff,#7c3aed); }
+.chat-msg.user .av { background:var(--az-gradient); }
+.chat-msg.error .av { background:rgba(255,118,117,.25); color:#ff7675; }
+
 .chat-msg .bubble {
   max-width:78%;
   padding:12px 16px;
@@ -134,12 +148,13 @@ body {
   color:#fff;
   border-bottom-right-radius:4px;
 }
-.chat-msg.bot .bubble .time {
-  display:block; font-size:10px;
-  color:rgba(255,255,255,.4); margin-top:6px;
+.chat-msg.error .bubble {
+  background:rgba(255,118,117,.1);
+  border:1px solid rgba(255,118,117,.35);
+  color:#ffcbcb;
 }
 
-/* TYPING INDICATOR */
+/* ============ TYPING INDICATOR ============ */
 .typing-indicator {
   display:flex; gap:4px;
   padding:14px 16px;
@@ -161,7 +176,7 @@ body {
   30% { transform: translateY(-6px); opacity:1; }
 }
 
-/* INPUT */
+/* ============ INPUT ============ */
 .chat-input-wrap {
   position:fixed; bottom:0; left:50%; transform:translateX(-50%);
   max-width:640px; width:100%;
@@ -182,6 +197,7 @@ body {
   font-family:inherit;
 }
 .chat-input-wrap input:focus { outline:none; border-color:#5eb8ff; }
+.chat-input-wrap input:disabled { opacity:.5; }
 .chat-input-wrap button {
   width:48px; height:48px; border-radius:50%;
   background:linear-gradient(135deg,#5eb8ff,#7c3aed);
@@ -203,13 +219,17 @@ body {
   <button class="icon-btn" onclick="clearChat()" title="Clear chat"><i class="fas fa-trash"></i></button>
 </header>
 
+<div class="status-badge checking" id="statusBadge">
+  <i class="fas fa-circle-notch fa-spin"></i> Connecting to AI…
+</div>
+
 <div class="ai-hero">
   <div class="icon"><i class="fas fa-robot"></i></div>
   <h1>AI.Arizonan</h1>
   <p>Your personal AI assistant · ask anything</p>
 </div>
 
-<div class="quick-actions" id="quickActions">
+<div class="quick-actions">
   <button class="quick-action" onclick="quickAsk('Give me a caption for my post')">
     <i class="fas fa-pen-fancy"></i> Caption ideas
   </button>
@@ -239,80 +259,137 @@ body {
 
 <script src="auth.js"></script>
 <script>
-/* ==================== STATE ==================== */
+/* ============================================================
+   STATE
+   ============================================================ */
 let conversationHistory = [];
 let isSending = false;
 
-/* ==================== SEND MESSAGE ==================== */
+/* ============================================================
+   SEND MESSAGE
+   ============================================================ */
 async function sendMessage() {
   if (isSending) return;
 
   const input = document.getElementById('chatInput');
-  const text = input.value.trim();
+  const text  = input.value.trim();
   if (!text) return;
 
   input.value = '';
   addMessage('user', text);
   conversationHistory.push({ role: 'user', content: text });
 
-  // Show typing indicator
   const typingEl = showTyping();
   isSending = true;
   document.getElementById('sendBtn').disabled = true;
+  document.getElementById('chatInput').disabled = true;
 
   try {
-    // Call Supabase Edge Function
+    console.log('[AI] Sending request...');
+
     const { data, error } = await supabaseClient.functions.invoke('ai-chat', {
       body: { messages: conversationHistory }
     });
 
     typingEl.remove();
 
+    /* ============ ERROR HANDLING ============ */
     if (error) {
-      console.error('[AI] Function error:', error);
-      addMessage('bot', '⚠️ Connection error. Please try again.');
+      console.error('[AI] Supabase function error:', error);
+
+      let detailedError = error.message || 'Unknown error';
+      let statusCode = 0;
+
+      // Try to extract status + body from Supabase's FunctionsHttpError
+      try {
+        if (error.context) {
+          statusCode = error.context.status || 0;
+          if (typeof error.context.json === 'function') {
+            const body = await error.context.json();
+            detailedError = body.error || body.details || body.message || detailedError;
+          } else if (error.context.text) {
+            detailedError = await error.context.text();
+          }
+        }
+      } catch (e) {
+        console.warn('[AI] Could not parse error body:', e);
+      }
+
+      // Show helpful message
+      let userMsg = '';
+
+      if (statusCode === 404) {
+        userMsg = '⚠️ <strong>AI service not deployed</strong><br>The Edge Function <code>ai-chat</code> was not found. Please redeploy it in Supabase.';
+      } else if (statusCode === 401) {
+        userMsg = '⚠️ <strong>API key issue</strong><br>Your OpenRouter API key is invalid. Please update the secret in Supabase.';
+      } else if (statusCode === 402) {
+        userMsg = '⚠️ <strong>Out of credits</strong><br>Top up at openrouter.ai/settings/credits';
+      } else if (statusCode === 429) {
+        userMsg = '⚠️ <strong>Rate limit hit</strong><br>Too many requests. Wait a moment and try again.';
+      } else if (statusCode === 500) {
+        userMsg = `⚠️ <strong>Server error</strong><br>${escapeHtml(detailedError)}`;
+      } else {
+        userMsg = `⚠️ <strong>Error</strong><br>${escapeHtml(detailedError)}`;
+      }
+
+      addMessage('error', userMsg);
       return;
     }
 
-    if (data?.error) {
+    /* ============ RESPONSE ERROR ============ */
+    if (data && data.error) {
       console.error('[AI] Response error:', data.error);
-      addMessage('bot', `⚠️ ${data.error}`);
+      addMessage('error', `⚠️ ${escapeHtml(String(data.error))}`);
       return;
     }
 
-    const reply = data?.reply || 'Sorry, I didn\'t get a response.';
+    /* ============ SUCCESS ============ */
+    const reply = data?.reply || "Sorry, I didn't get a response.";
     addMessage('bot', reply);
     conversationHistory.push({ role: 'assistant', content: reply });
+    console.log('[AI] Success. Reply received.');
 
   } catch (err) {
     typingEl.remove();
-    console.error('[AI] Error:', err);
-    addMessage('bot', '⚠️ Something went wrong. Please try again.');
+    console.error('[AI] Unexpected error:', err);
+    addMessage('error', `⚠️ <strong>Network error</strong><br>${escapeHtml(String(err))}`);
   } finally {
     isSending = false;
     document.getElementById('sendBtn').disabled = false;
+    document.getElementById('chatInput').disabled = false;
     document.getElementById('chatInput').focus();
   }
 }
 
-/* ==================== QUICK ACTIONS ==================== */
+/* ============================================================
+   QUICK ACTIONS
+   ============================================================ */
 function quickAsk(question) {
   document.getElementById('chatInput').value = question;
   sendMessage();
 }
 
-/* ==================== ADD MESSAGE TO UI ==================== */
+/* ============================================================
+   ADD MESSAGE
+   ============================================================ */
 function addMessage(who, text) {
   const area = document.getElementById('chatArea');
-  const div = document.createElement('div');
+  const div  = document.createElement('div');
   div.className = 'chat-msg ' + who;
 
-  const av = who === 'user'
-    ? (currentProfile?.username || currentUser?.email?.split('@')[0] || 'U').charAt(0).toUpperCase()
-    : 'AI';
+  let av;
+  if (who === 'user') {
+    av = (currentProfile?.username || currentUser?.email?.split('@')[0] || 'U').charAt(0).toUpperCase();
+  } else if (who === 'error') {
+    av = '<i class="fas fa-exclamation-triangle"></i>';
+  } else {
+    av = 'AI';
+  }
 
-  // Escape HTML, preserve line breaks
-  const safeText = escapeHtml(text).replace(/\n/g, '<br>');
+  // Error messages contain HTML; user messages are escaped
+  const safeText = who === 'user'
+    ? escapeHtml(text).replace(/\n/g, '<br>')
+    : text.replace(/\n/g, '<br>');
 
   div.innerHTML = `
     <div class="av">${av}</div>
@@ -320,50 +397,79 @@ function addMessage(who, text) {
   `;
   area.appendChild(div);
 
-  // Smooth scroll to bottom
   setTimeout(() => {
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   }, 50);
 }
 
-/* ==================== TYPING INDICATOR ==================== */
+/* ============================================================
+   TYPING INDICATOR
+   ============================================================ */
 function showTyping() {
   const area = document.getElementById('chatArea');
-  const div = document.createElement('div');
+  const div  = document.createElement('div');
   div.className = 'chat-msg bot';
   div.innerHTML = `
     <div class="av">AI</div>
-    <div class="typing-indicator">
-      <span></span><span></span><span></span>
-    </div>
+    <div class="typing-indicator"><span></span><span></span><span></span></div>
   `;
   area.appendChild(div);
   window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   return div;
 }
 
-/* ==================== CLEAR CHAT ==================== */
+/* ============================================================
+   CLEAR CHAT
+   ============================================================ */
 function clearChat() {
   if (!confirm('Clear the conversation?')) return;
   conversationHistory = [];
-  const area = document.getElementById('chatArea');
-  area.innerHTML = `
+  document.getElementById('chatArea').innerHTML = `
     <div class="chat-msg bot">
       <div class="av">AI</div>
-      <div class="bubble">👋 Hi! I'm <strong>AI.Arizonan</strong>. Fresh start! What can I help you with?</div>
+      <div class="bubble">👋 Fresh start! What can I help you with?</div>
     </div>
   `;
 }
 
-/* ==================== HELPERS ==================== */
+/* ============================================================
+   HELPERS
+   ============================================================ */
 function escapeHtml(s) {
   return String(s ?? '').replace(/[&<>"']/g, c =>
     ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-// Autofocus input on load
+/* ============================================================
+   INIT — ping the function to check it's alive
+   ============================================================ */
+async function pingAI() {
+  const badge = document.getElementById('statusBadge');
+  try {
+    const { error } = await supabaseClient.functions.invoke('ai-chat', {
+      body: { messages: [{ role: 'user', content: 'ping' }] }
+    });
+
+    // If we got any response other than 404, the function is deployed
+    if (error && error.context && error.context.status === 404) {
+      badge.className = 'status-badge offline';
+      badge.innerHTML = '<i class="fas fa-exclamation-circle"></i> AI service not deployed';
+    } else {
+      badge.className = 'status-badge online';
+      badge.innerHTML = '<i class="fas fa-check-circle"></i> AI ready';
+      setTimeout(() => { badge.style.display = 'none'; }, 2500);
+    }
+  } catch (e) {
+    badge.className = 'status-badge offline';
+    badge.innerHTML = '<i class="fas fa-exclamation-circle"></i> Connection failed';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => document.getElementById('chatInput').focus(), 500);
+  setTimeout(() => {
+    document.getElementById('chatInput').focus();
+    pingAI();
+  }, 500);
 });
 </script>
 </body>
