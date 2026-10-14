@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Notifications — Arizona AI</title>
+
+<link rel="icon" type="image/jpeg" href="arizonan%20png%20icon.jpeg">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+
+<style>
+body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
+
+.topbar {
+  position:fixed; top:0; left:0; right:0; height:60px;
+  background:rgba(10,10,10,.97); backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,107,53,.25);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 16px; z-index:1000; max-width:640px; margin:0 auto;
+}
+.topbar .back, .topbar .icon-btn {
+  color:var(--az-text); font-size:19px;
+  width:40px; height:40px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%; text-decoration:none; cursor:pointer;
+}
+.topbar .title { font-size:16px; font-weight:700; color:var(--az-text); }
+
+.notif-list {
+  max-width:640px; margin:0 auto;
+  padding:8px 0 80px;
+}
+.notif-row {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  cursor:pointer;
+  transition:background .2s;
+  position:relative;
+}
+.notif-row:hover { background:rgba(255,107,53,.05); }
+.notif-row.unread::before {
+  content:'';
+  position:absolute; left:6px; top:50%; transform:translateY(-50%);
+  width:6px; height:6px; border-radius:50%;
+  background:var(--az-primary);
+}
+
+.notif-row .av {
+  width:44px; height:44px; border-radius:50%;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:#fff; font-size:17px;
+  flex-shrink:0; overflow:hidden; position:relative;
+}
+.notif-row .av img { width:100%; height:100%; object-fit:cover; }
+
+.notif-row .type-icon {
+  position:absolute; bottom:-2px; right:-2px;
+  width:20px; height:20px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; color:#fff; border:2px solid #0a0a0a;
+}
+.type-icon.like    { background:var(--az-primary); }
+.type-icon.comment { background:#5eb8ff; }
+.type-icon.follow  { background:#00b894; }
+.type-icon.message { background:#7c3aed; }
+.type-icon.request { background:var(--az-accent); color:#1a1a1a; }
+.type-icon.tip     { background:#FFB20F; color:#1a1a1a; }
+
+.notif-row .body { flex:1; min-width:0; }
+.notif-row .body .text {
+  font-size:14px; color:var(--az-text);
+  line-height:1.4;
+}
+.notif-row .body .text strong { font-weight:700; }
+.notif-row .body .time {
+  font-size:11px; color:var(--az-text-secondary);
+  margin-top:3px;
+}
+
+.notif-row .thumb {
+  width:44px; height:44px; border-radius:8px;
+  background:#111; overflow:hidden; flex-shrink:0;
+}
+.notif-row .thumb img { width:100%; height:100%; object-fit:cover; }
+
+.empty {
+  text-align:center; padding:80px 20px;
+  color:var(--az-text-secondary);
+}
+.empty i {
+  font-size:56px; color:var(--az-primary);
+  opacity:.4; margin-bottom:14px; display:block;
+}
+.empty h3 { color:var(--az-text); font-size:16px; margin-bottom:6px; }
+.empty p { font-size:13px; }
+</style>
+</head>
+<body>
+
+<div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
+
+<header class="topbar">
+  <a href="index.html" class="back"><i class="fas fa-arrow-left"></i></a>
+  <span class="title">Notifications</span>
+  <button class="icon-btn" onclick="markAllRead()" title="Mark all read">
+    <i class="fas fa-check-double"></i>
+  </button>
+</header>
+
+<div class="notif-list" id="notifList">
+  <div class="empty"><i class="fas fa-circle-notch fa-spin"></i></div>
+</div>
+
+<script src="auth.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const check = setInterval(() => {
+    if (typeof authReady !== 'undefined' && authReady) {
+      clearInterval(check);
+      init();
+    }
+  }, 100);
+});
+
+async function init() {
+  if (!currentUser) {
+    document.getElementById('notifList').innerHTML = `
+      <div class="empty">
+        <i class="fas fa-bell-slash"></i>
+        <h3>Sign in to see notifications</h3>
+        <p><a href="login.html" style="color:var(--az-primary);font-weight:700;">Sign In →</a></p>
+      </div>`;
+    return;
+  }
+  await loadNotifications();
+}
+
+async function loadNotifications() {
+  const list = document.getElementById('notifList');
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('notifications')
+      .select(`
+        id, type, ref_id, is_read, created_at,
+        actor:profiles!notifications_actor_id_fkey(id, username, display_name, avatar_url, is_verified)
+      `)
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: false })
+      .limit(100);
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      list.innerHTML = `
+        <div class="empty">
+          <i class="far fa-bell"></i>
+          <h3>No notifications yet</h3>
+          <p>Likes, comments, follows, and messages will appear here.</p>
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = data.map(n => renderNotif(n)).join('');
+  } catch (err) {
+    list.innerHTML = `<div class="empty"><i class="fas fa-exclamation-triangle"></i><h3>Couldn't load</h3><p>${escapeHtml(err.message)}</p></div>`;
+  }
+}
+
+function renderNotif(n) {
+  const actor = n.actor || {};
+  const name = actor.display_name || actor.username || 'Someone';
+  const initial = name.charAt(0).toUpperCase();
+  const avatar = actor.avatar_url ? `<img src="${escapeHtml(actor.avatar_url)}" alt="">` : initial;
+
+  const typeMap = {
+    like:    { icon:'fa-heart',         msg:`<strong>${escapeHtml(name)}</strong> liked your post` },
+    comment: { icon:'fa-comment',       msg:`<strong>${escapeHtml(name)}</strong> commented on your post` },
+    follow:  { icon:'fa-user-plus',     msg:`<strong>${escapeHtml(name)}</strong> started following you` },
+    message: { icon:'fa-paper-plane',   msg:`<strong>${escapeHtml(name)}</strong> sent you a message` },
+    mention: { icon:'fa-at',            msg:`<strong>${escapeHtml(name)}</strong> mentioned you` },
+    tip:     { icon:'fa-coins',         msg:`<strong>${escapeHtml(name)}</strong> sent you a tip` },
+    request: { icon:'fa-user-clock',    msg:`<strong>${escapeHtml(name)}</strong> requested to follow you` }
+  };
+  const info = typeMap[n.type] || { icon:'fa-bell', msg:`New notification from <strong>${escapeHtml(name)}</strong>` };
+
+  return `
+    <div class="notif-row ${n.is_read ? '' : 'unread'}" onclick="openNotif('${n.type}', '${n.ref_id || ''}', '${actor.id || ''}')">
+      <div class="av">
+        ${avatar}
+        <div class="type-icon ${n.type}"><i class="fas ${info.icon}"></i></div>
+      </div>
+      <div class="body">
+        <div class="text">${info.msg}</div>
+        <div class="time">${formatTimeAgo(n.created_at)}</div>
+      </div>
+    </div>
+  `;
+}
+
+async function openNotif(type, refId, actorId) {
+  // Mark as read
+  try {
+    await supabaseClient.from('notifications').update({ is_read: true })
+      .eq('user_id', currentUser.id).eq('ref_id', refId).eq('type', type);
+  } catch(e){}
+
+  // Route based on type
+  if (type === 'follow' || type === 'request') {
+    if (actorId) window.location.href = 'profile.html?user=' + actorId;
+  } else if (type === 'message') {
+    if (actorId) window.location.href = 'chats.html?user=' + actorId;
+  } else if (type === 'like' || type === 'comment' || type === 'mention') {
+    window.location.href = 'index.html';
+  } else if (type === 'tip') {
+    window.location.href = 'wallets.html';
+  }
+}
+
+async function markAllRead() {
+  if (!currentUser) return;
+  try {
+    await supabaseClient.from('notifications')
+      .update({ is_read: true })
+      .eq('user_id', currentUser.id).eq('is_read', false);
+    showToast('All marked as read ✅', 'success');
+    loadNotifications();
+  } catch (err) { showToast(err.message, 'error'); }
+}
+
+function formatTimeAgo(dateStr) {
+  const s = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+  if (s < 60) return 'Just now';
+  const m = Math.floor(s / 60); if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60); if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24); if (d < 7) return `${d}d ago`;
+  return new Date(dateStr).toLocaleDateString();
+}
+</script>
+</body>
+</html>
