@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#050a14">
-<meta name="apple-mobile-web-app-capable" content="yes">
 <title>AI.Arizonan — Your AI Assistant</title>
 
 <link rel="icon" type="image/jpeg" href="arizonan%20png%20icon.jpeg">
@@ -13,9 +12,6 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
-/* ============================================================
-   RESET & BASE
-   ============================================================ */
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; padding: 0; }
 
@@ -50,9 +46,7 @@ body {
   }
 }
 
-/* ============================================================
-   TOP BAR
-   ============================================================ */
+/* TOP BAR */
 .topbar {
   flex-shrink: 0;
   padding: 0 10px;
@@ -109,9 +103,31 @@ body {
   max-width: 180px;
 }
 
-/* ============================================================
-   MESSAGES
-   ============================================================ */
+/* QUOTA BADGE */
+.quota-badge {
+  position: fixed;
+  top: calc(64px + env(safe-area-inset-top));
+  right: 12px;
+  background: rgba(10,20,35,.95);
+  border: 1px solid rgba(94,184,255,.35);
+  border-radius: 14px;
+  padding: 5px 11px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #5eb8ff;
+  z-index: 30;
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  gap: 5px;
+}
+.quota-badge.show { display: flex; }
+.quota-badge.empty {
+  border-color: rgba(255,118,117,.5);
+  color: #ff7675;
+}
+
+/* MESSAGES */
 .messages {
   flex: 1;
   overflow-y: auto;
@@ -179,7 +195,6 @@ body {
   border-bottom-left-radius: 5px;
 }
 
-/* Media inside bubbles */
 .msg .bubble .media {
   display: block;
   width: 100%;
@@ -206,6 +221,22 @@ body {
   display: block;
   width: 100%;
   min-width: 220px;
+}
+
+/* POWERED BY FOOTER */
+.powered-by {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: rgba(255,255,255,.35);
+  margin-top: 4px;
+  padding-left: 2px;
+  letter-spacing: 0.3px;
+}
+.powered-by i {
+  color: var(--az-accent, #FFB20F);
+  font-size: 10px;
 }
 
 .msg .media-actions {
@@ -251,9 +282,7 @@ body {
   color: #5eb8ff;
 }
 
-/* ============================================================
-   WELCOME
-   ============================================================ */
+/* WELCOME */
 .welcome {
   padding: 30px 16px 20px;
   text-align: center;
@@ -290,6 +319,19 @@ body {
   margin: 0 0 22px;
   line-height: 1.5;
 }
+.welcome .quota-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(94,184,255,.1);
+  border: 1px solid rgba(94,184,255,.25);
+  border-radius: 20px;
+  padding: 6px 14px;
+  margin-bottom: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #5eb8ff;
+}
 .welcome .chips {
   display: flex;
   flex-direction: column;
@@ -316,21 +358,10 @@ body {
   background: rgba(94,184,255,.18);
   transform: scale(.98);
 }
-.chip i {
-  color: #5eb8ff;
-  font-size: 14px;
-  width: 18px;
-  text-align: center;
-}
+.chip i { color: #5eb8ff; font-size: 14px; width: 18px; text-align: center; }
 
-/* ============================================================
-   TYPING
-   ============================================================ */
-.typing {
-  display: flex;
-  gap: 4px;
-  padding: 3px 0;
-}
+/* TYPING */
+.typing { display: flex; gap: 4px; padding: 3px 0; }
 .typing span {
   width: 6px; height: 6px;
   border-radius: 50%;
@@ -344,9 +375,7 @@ body {
   30% { transform: translateY(-5px); opacity: 1; }
 }
 
-/* ============================================================
-   ATTACHMENT PREVIEW
-   ============================================================ */
+/* ATTACHMENT PREVIEW */
 .attach-preview {
   display: none;
   padding: 8px 12px;
@@ -401,9 +430,7 @@ body {
   flex-shrink: 0;
 }
 
-/* ============================================================
-   INPUT BAR
-   ============================================================ */
+/* INPUT */
 .input-wrap {
   flex-shrink: 0;
   background: rgba(10,20,35,.98);
@@ -413,7 +440,6 @@ body {
   padding: 8px 10px;
   padding-bottom: calc(8px + env(safe-area-inset-bottom));
 }
-
 .input-inner {
   display: flex;
   align-items: flex-end;
@@ -428,7 +454,6 @@ body {
   border-color: #5eb8ff;
   box-shadow: 0 0 0 3px rgba(94,184,255,.12);
 }
-
 .input-inner .icon-inline {
   width: 36px; height: 36px;
   border-radius: 50%;
@@ -453,7 +478,6 @@ body {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.12); }
 }
-
 .input-inner textarea {
   flex: 1;
   background: transparent;
@@ -469,7 +493,6 @@ body {
   padding: 8px 4px;
 }
 .input-inner textarea::placeholder { color: rgba(255,255,255,.4); }
-
 .input-inner .send-btn {
   width: 38px; height: 38px;
   border-radius: 50%;
@@ -487,9 +510,7 @@ body {
 .input-inner .send-btn:active { transform: scale(.92); }
 .input-inner .send-btn:disabled { opacity: .35; cursor: not-allowed; }
 
-/* ============================================================
-   DRAWER
-   ============================================================ */
+/* DRAWER */
 .drawer-overlay {
   position: fixed;
   inset: 0;
@@ -500,7 +521,6 @@ body {
   transition: opacity .2s;
 }
 .drawer-overlay.active { display: block; opacity: 1; }
-
 .drawer {
   position: fixed;
   top: 0; left: 0; bottom: 0;
@@ -515,7 +535,6 @@ body {
   flex-direction: column;
 }
 .drawer.open { transform: translateX(0); }
-
 .drawer-head {
   padding: 14px;
   padding-top: calc(14px + env(safe-area-inset-top));
@@ -554,16 +573,11 @@ body {
   justify-content: center;
   gap: 8px;
 }
-.drawer-head .new-btn:active { transform: scale(.98); }
-
 .drawer-list {
   flex: 1;
   overflow-y: auto;
   padding: 8px;
 }
-.drawer-list::-webkit-scrollbar { width: 3px; }
-.drawer-list::-webkit-scrollbar-thumb { background: rgba(94,184,255,.3); border-radius: 2px; }
-
 .chat-item {
   display: flex;
   align-items: center;
@@ -577,10 +591,7 @@ body {
   transition: background .15s;
 }
 .chat-item:active { background: rgba(94,184,255,.15); }
-.chat-item.active {
-  background: rgba(94,184,255,.15);
-  color: #5eb8ff;
-}
+.chat-item.active { background: rgba(94,184,255,.15); color: #5eb8ff; }
 .chat-item i { color: rgba(255,255,255,.4); font-size: 13px; flex-shrink: 0; }
 .chat-item.active i { color: #5eb8ff; }
 .chat-item .title {
@@ -599,7 +610,6 @@ body {
   flex-shrink: 0;
 }
 .chat-item .del:active { color: #ff7675; }
-
 .drawer-foot {
   padding: 12px;
   padding-bottom: calc(12px + env(safe-area-inset-bottom));
@@ -609,9 +619,7 @@ body {
   text-align: center;
 }
 
-/* ============================================================
-   IMAGE VIEWER
-   ============================================================ */
+/* IMAGE VIEWER */
 .image-viewer {
   position: fixed;
   inset: 0;
@@ -645,9 +653,7 @@ body {
   justify-content: center;
 }
 
-/* ============================================================
-   TOAST
-   ============================================================ */
+/* TOAST */
 .toast-mini {
   position: fixed;
   bottom: 100px;
@@ -672,11 +678,76 @@ body {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+/* AUTH WALL */
+.auth-wall {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  text-align: center;
+}
+.auth-wall .icon {
+  width: 90px; height: 90px;
+  border-radius: 26px;
+  background: linear-gradient(135deg,#5eb8ff,#7c3aed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: #fff;
+  margin-bottom: 20px;
+  box-shadow: 0 0 60px rgba(94,184,255,.4);
+}
+.auth-wall h2 {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0 0 8px;
+  background: linear-gradient(135deg,#5eb8ff,#7c3aed);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.auth-wall p {
+  color: rgba(255,255,255,.6);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0 0 24px;
+  max-width: 320px;
+}
+.auth-wall a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 300px;
+  padding: 14px 20px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none;
+  margin-bottom: 10px;
+  transition: transform .15s;
+}
+.auth-wall a:active { transform: scale(.97); }
+.auth-wall a.primary {
+  background: linear-gradient(135deg,#5eb8ff,#7c3aed);
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(94,184,255,.4);
+}
+.auth-wall a.outline {
+  background: transparent;
+  border: 1.5px solid rgba(94,184,255,.5);
+  color: #5eb8ff;
+}
 </style>
 </head>
 <body>
 
-<div class="app">
+<div class="app" id="appShell" style="display:none;">
 
   <!-- TOP BAR -->
   <header class="topbar">
@@ -691,6 +762,12 @@ body {
       <i class="fas fa-plus"></i>
     </button>
   </header>
+
+  <!-- QUOTA BADGE -->
+  <div class="quota-badge" id="quotaBadge">
+    <i class="fas fa-image"></i>
+    <span id="quotaText">4/4</span>
+  </div>
 
   <!-- MESSAGES -->
   <div class="messages" id="messages"></div>
@@ -707,7 +784,7 @@ body {
     </button>
   </div>
 
-  <!-- INPUT BAR -->
+  <!-- INPUT -->
   <div class="input-wrap">
     <div class="input-inner">
       <button class="icon-inline" onclick="pickFile()" aria-label="Attach">
@@ -728,6 +805,15 @@ body {
   <input type="file" id="fileInput" accept="image/*,video/*,audio/*" style="display:none;">
 </div>
 
+<!-- AUTH WALL -->
+<div class="auth-wall" id="authWall" style="display:none;">
+  <div class="icon"><i class="fas fa-robot"></i></div>
+  <h2>Sign in to chat with AI.Arizonan</h2>
+  <p>Only Arizona AI members can use the AI assistant. Sign in or create a free account to get started — you'll get 4 free image generations per day.</p>
+  <a href="login.html" class="primary"><i class="fas fa-sign-in-alt"></i> Sign In</a>
+  <a href="register.html" class="outline"><i class="fas fa-user-plus"></i> Create Free Account</a>
+</div>
+
 <!-- DRAWER -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 <aside class="drawer" id="drawer">
@@ -742,7 +828,7 @@ body {
   </div>
   <div class="drawer-list" id="drawerList"></div>
   <div class="drawer-foot">
-    <i class="fas fa-shield-halved"></i> Chats saved securely
+    <i class="fas fa-shield-halved"></i> Powered by Huzni's Family
   </div>
 </aside>
 
@@ -770,6 +856,8 @@ let pendingFileUrl   = null;
 let mediaRecorder    = null;
 let audioChunks      = [];
 let isRecording      = false;
+let imagesUsedToday  = 0;
+const DAILY_IMAGE_LIMIT = 4;
 
 /* ============================================================
    INIT
@@ -778,7 +866,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const check = setInterval(async () => {
     if (typeof authReady !== 'undefined' && authReady) {
       clearInterval(check);
-      await initChat();
+      initChat();
     }
   }, 100);
 
@@ -787,9 +875,66 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function initChat() {
+  // Login required
+  if (!currentUser) {
+    document.getElementById('appShell').style.display = 'none';
+    document.getElementById('authWall').style.display = 'flex';
+    return;
+  }
+
+  document.getElementById('appShell').style.display = 'flex';
+  document.getElementById('authWall').style.display = 'none';
+
+  await loadImageQuota();
   await loadChatsList();
   await startNewChat();
   setTimeout(() => document.getElementById('chatInput').focus(), 300);
+}
+
+/* ============================================================
+   IMAGE QUOTA
+   ============================================================ */
+async function loadImageQuota() {
+  if (!currentUser) return;
+  try {
+    const { data, error } = await supabaseClient.rpc('images_used_last_24h', {
+      p_user_id: currentUser.id
+    });
+    if (error) throw error;
+    imagesUsedToday = data || 0;
+    updateQuotaBadge();
+  } catch (e) {
+    console.warn('[Quota] load failed:', e);
+  }
+}
+
+function updateQuotaBadge() {
+  const badge = document.getElementById('quotaBadge');
+  const text = document.getElementById('quotaText');
+  const remaining = Math.max(0, DAILY_IMAGE_LIMIT - imagesUsedToday);
+
+  badge.classList.add('show');
+  text.textContent = `${remaining}/${DAILY_IMAGE_LIMIT} images left`;
+
+  if (remaining === 0) {
+    badge.classList.add('empty');
+  } else {
+    badge.classList.remove('empty');
+  }
+}
+
+async function registerImageUse(prompt) {
+  if (!currentUser) return;
+  try {
+    await supabaseClient.from('ai_image_usage').insert({
+      user_id: currentUser.id,
+      prompt: prompt.slice(0, 200)
+    });
+    imagesUsedToday++;
+    updateQuotaBadge();
+  } catch (e) {
+    console.warn('[Quota] register failed:', e);
+  }
 }
 
 /* ============================================================
@@ -805,7 +950,7 @@ function closeDrawer() {
 }
 
 /* ============================================================
-   CHAT LIST
+   CHATS LIST
    ============================================================ */
 async function loadChatsList() {
   if (!currentUser) return;
@@ -819,9 +964,7 @@ async function loadChatsList() {
     if (error) throw error;
     allChats = data || [];
     renderDrawerList();
-  } catch (e) {
-    console.warn('[AI] load chats failed:', e);
-  }
+  } catch (e) { console.warn('[AI] load chats failed:', e); }
 }
 
 function renderDrawerList() {
@@ -915,23 +1058,30 @@ async function createChatIfNeeded(firstMessage) {
    RENDER
    ============================================================ */
 function renderWelcome() {
+  const name = currentProfile?.display_name || currentProfile?.username || currentUser?.email?.split('@')[0] || 'friend';
+  const remaining = Math.max(0, DAILY_IMAGE_LIMIT - imagesUsedToday);
+
   document.getElementById('messages').innerHTML = `
     <div class="welcome">
       <div class="icon"><i class="fas fa-robot"></i></div>
-      <h1>Hi, I'm AI.Arizonan</h1>
-      <p>Your AI assistant. I can chat, draw images, create videos, and compose music — just ask!</p>
+      <h1>Hi ${escapeHtml(name)}, I'm AI.Arizonan</h1>
+      <p>Your AI assistant. I can chat, draw images, and help with content ideas.</p>
+      <div class="quota-info">
+        <i class="fas fa-image"></i>
+        ${remaining} of ${DAILY_IMAGE_LIMIT} free images remaining today
+      </div>
       <div class="chips">
         <button class="chip" onclick="quickAsk('Draw a sunset over a desert with a tall cactus')">
           <i class="fas fa-image"></i> Draw an image
         </button>
-        <button class="chip" onclick="quickAsk('Create a video of ocean waves at sunrise')">
-          <i class="fas fa-video"></i> Create a video
-        </button>
-        <button class="chip" onclick="quickAsk('Create an upbeat electronic music track')">
-          <i class="fas fa-music"></i> Make music
-        </button>
         <button class="chip" onclick="quickAsk('Write a caption for my post')">
           <i class="fas fa-pen-fancy"></i> Write a caption
+        </button>
+        <button class="chip" onclick="quickAsk('Suggest hashtags for a post')">
+          <i class="fas fa-hashtag"></i> Suggest hashtags
+        </button>
+        <button class="chip" onclick="quickAsk('How do I earn on Arizona AI?')">
+          <i class="fas fa-dollar-sign"></i> Earn tips
         </button>
       </div>
     </div>
@@ -977,11 +1127,19 @@ function createMessageEl(msg, index) {
 
   const bubbleContent = textContent + mediaHtml;
 
+  // Powered by footer only for bot messages
+  const poweredBy = !isUser ? `
+    <div class="powered-by">
+      <i class="fas fa-bolt"></i>
+      Powered by Huzni's Family
+    </div>` : '';
+
   div.innerHTML = `
     <div class="av">${avText}</div>
     <div class="body">
       <div class="bubble">${bubbleContent || '<em style="opacity:.5;">…</em>'}</div>
       ${mediaActions}
+      ${poweredBy}
       ${!isUser ? `
         <div class="actions">
           <button onclick="copyMessage(${index})"><i class="fas fa-copy"></i> Copy</button>
@@ -1092,21 +1250,40 @@ async function toggleRecording() {
 }
 
 /* ============================================================
+   IMAGE INTENT DETECTION (frontend)
+   ============================================================ */
+function wantsImage(text) {
+  const t = text.toLowerCase();
+  return ["draw", "create an image", "generate an image", "make an image",
+          "paint", "illustrate", "picture of", "image of", "photo of",
+          "design a logo", "make a logo", "create a logo",
+          "sketch", "art of", "wallpaper of", "generate a picture"].some(k => t.includes(k));
+}
+
+/* ============================================================
    SEND MESSAGE
    ============================================================ */
 async function sendMessage() {
   if (isSending) return;
+  if (!currentUser) { toast('Please sign in'); return; }
 
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
 
   if (!text && !pendingFile) return;
 
+  // Check quota for image requests
+  const isImageRequest = wantsImage(text);
+  if (isImageRequest && imagesUsedToday >= DAILY_IMAGE_LIMIT) {
+    toast(`You've used all ${DAILY_IMAGE_LIMIT} free images today. Try again tomorrow!`);
+    return;
+  }
+
   let mediaUrl = null;
   let mediaType = null;
 
   // Upload file if present
-  if (pendingFile && pendingFile instanceof File && currentUser) {
+  if (pendingFile && pendingFile instanceof File) {
     try {
       const ext = (pendingFile.name.split('.').pop() || 'bin').toLowerCase();
       const path = `${currentUser.id}/ai-${Date.now()}.${ext}`;
@@ -1140,7 +1317,6 @@ async function sendMessage() {
   messages.push(userMsg);
   clearAttachment();
 
-  // Save user message
   try {
     await createChatIfNeeded(text || `[${mediaType || 'file'}]`);
     await supabaseClient.from('ai_messages').insert({
@@ -1154,7 +1330,6 @@ async function sendMessage() {
 
   renderMessages();
 
-  // Typing indicator
   const container = document.getElementById('messages');
   const typingEl = document.createElement('div');
   typingEl.className = 'msg bot';
@@ -1184,6 +1359,11 @@ async function sendMessage() {
       return;
     }
 
+    // Register image use for quota
+    if (isImageRequest && data.image_url) {
+      await registerImageUse(text);
+    }
+
     const assistantMsg = {
       role: 'assistant',
       content: data.reply || '',
@@ -1192,17 +1372,15 @@ async function sendMessage() {
     };
     messages.push(assistantMsg);
 
-    if (currentUser) {
-      try {
-        await supabaseClient.from('ai_messages').insert({
-          chat_id: currentChatId,
-          role: 'assistant',
-          content: data.reply || '',
-          media_url: data.image_url || null,
-          media_type: data.media_type || (data.image_url ? 'image' : null)
-        });
-      } catch (e) { console.warn('[AI] save assistant msg failed:', e); }
-    }
+    try {
+      await supabaseClient.from('ai_messages').insert({
+        chat_id: currentChatId,
+        role: 'assistant',
+        content: data.reply || '',
+        media_url: data.image_url || null,
+        media_type: data.media_type || (data.image_url ? 'image' : null)
+      });
+    } catch (e) { console.warn('[AI] save assistant msg failed:', e); }
 
     renderMessages();
   } catch (e) {
@@ -1279,7 +1457,7 @@ function toast(msg) {
   el.textContent = msg;
   el.classList.add('show');
   clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+  window._toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
 }
 
 /* ============================================================
