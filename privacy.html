@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Privacy Policy — Arizona AI</title>
+
+<link rel="icon" type="image/jpeg" href="arizonan%20png%20icon.jpeg">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+
+<style>
+body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
+
+.topbar {
+  position:fixed; top:0; left:0; right:0; height:60px;
+  background:rgba(10,10,10,.97); backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,107,53,.25);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 16px; z-index:1000; max-width:640px; margin:0 auto;
+}
+.topbar .back, .topbar .icon-btn {
+  color:var(--az-text); font-size:19px;
+  width:40px; height:40px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%; text-decoration:none; cursor:pointer;
+  background:none; border:none;
+}
+.topbar .title { font-size:16px; font-weight:700; color:var(--az-text); }
+
+/* HERO */
+.privacy-hero {
+  max-width:640px; margin:0 auto;
+  padding:32px 20px 24px;
+  text-align:center;
+}
+.privacy-hero .icon {
+  width:76px; height:76px; border-radius:24px;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  font-size:32px; color:#fff; margin:0 auto 16px;
+  box-shadow:0 0 40px rgba(255,107,53,.5);
+}
+.privacy-hero h1 {
+  font-size:26px; font-weight:800;
+  background:var(--az-gradient);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  margin-bottom:8px;
+}
+.privacy-hero .updated {
+  color:var(--az-text-secondary);
+  font-size:13px;
+}
+.privacy-hero .intro {
+  color:var(--az-text-secondary);
+  font-size:14px; line-height:1.65;
+  margin-top:16px;
+}
+
+/* CONTENT */
+.privacy-content {
+  max-width:640px; margin:0 auto;
+  padding:0 20px 40px;
+}
+.section {
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  padding:22px 20px;
+  margin-bottom:14px;
+}
+.section h2 {
+  font-size:16px; font-weight:800;
+  color:var(--az-text);
+  margin-bottom:12px;
+  display:flex; align-items:center; gap:10px;
+}
+.section h2 .num {
+  background:var(--az-gradient);
+  width:26px; height:26px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; color:#fff;
+  flex-shrink:0;
+}
+.section p {
+  color:var(--az-text-secondary);
+  font-size:14px; line-height:1.7;
+  margin-bottom:10px;
+}
+.section p:last-child { margin-bottom:0; }
+.section ul {
+  list-style:none;
+  padding:0;
+  margin:8px 0;
+}
+.section li {
+  color:var(--az-text-secondary);
+  font-size:14px; line-height:1.7;
+  padding-left:22px;
+  position:relative;
+  margin-bottom:6px;
+}
+.section li::before {
+  content:'▸';
+  color:var(--az-accent);
+  position:absolute; left:6px;
+  font-weight:800;
+}
+.section strong {
+  color:var(--az-text);
+  font-weight:700;
+}
+.section a {
+  color:var(--az-primary);
+  text-decoration:none;
+  font-weight:600;
+}
+.section a:hover { text-decoration:underline; }
+
+/* HIGHLIGHT BOX */
+.highlight-box {
+  background:linear-gradient(135deg, rgba(0,184,148,.12), rgba(255,178,15,.08));
+  border:1px solid rgba(0,184,148,.35);
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:14px;
+  display:flex; gap:14px;
+}
+.highlight-box i {
+  font-size:24px; color:#00b894;
+  flex-shrink:0;
+}
+.highlight-box .text {
+  font-size:14px; line-height:1.6;
+  color:var(--az-text);
+}
+.highlight-box .text strong {
+  color:#00b894; display:block;
+  margin-bottom:4px;
+}
+
+/* CONTACT BOX */
+.contact-box {
+  background:linear-gradient(135deg, rgba(255,107,53,.15), rgba(255,178,15,.08));
+  border:1px solid rgba(255,107,53,.35);
+  border-radius:16px;
+  padding:22px 20px;
+  margin:20px auto;
+  max-width:640px;
+  text-align:center;
+}
+.contact-box h3 {
+  color:var(--az-text);
+  font-size:17px;
+  margin-bottom:8px;
+}
+.contact-box p {
+  color:var(--az-text-secondary);
+  font-size:14px;
+  margin-bottom:18px;
+  line-height:1.6;
+}
+.contact-box a {
+  display:inline-flex;
+  align-items:center; gap:8px;
+  padding:12px 24px;
+  background:var(--az-gradient);
+  color:#fff;
+  border-radius:22px;
+  text-decoration:none;
+  font-weight:700;
+  font-size:14px;
+}
+</style>
+</head>
+<body>
+
+<div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
+
+<header class="topbar">
+  <a href="index.html" class="back"><i class="fas fa-arrow-left"></i></a>
+  <span class="title">Privacy Policy</span>
+  <a href="policy.html" class="icon-btn" title="Terms"><i class="fas fa-file-contract"></i></a>
+</header>
+
+<!-- HERO -->
+<div class="privacy-hero">
+  <div class="icon"><i class="fas fa-shield-halved"></i></div>
+  <h1>Privacy Policy</h1>
+  <div class="updated">Last updated: October 14, 2026</div>
+  <p class="intro">
+    At <strong>Arizona AI</strong>, we take your privacy seriously. This policy explains what data we collect, how we use it, and the controls you have. We believe privacy is a right — not a feature.
+  </p>
+</div>
+
+<!-- HIGHLIGHT -->
+<div class="privacy-content">
+  <div class="highlight-box">
+    <i class="fas fa-lock"></i>
+    <div class="text">
+      <strong>Your data is yours.</strong>
+      We use Supabase Row-Level Security (RLS) at the database level. This means even our engineers cannot read your private messages, drafts, or personal data without your explicit consent.
+    </div>
+  </div>
+</div>
+
+<!-- SECTIONS -->
+<div class="privacy-content">
+
+  <div class="section">
+    <h2><span class="num">1</span> What We Collect</h2>
+    <p>When you use Arizona AI, we collect the minimum amount of information needed to run the service:</p>
+    <ul>
+      <li><strong>Account info:</strong> Email address, username, and password (encrypted)</li>
+      <li><strong>Profile data:</strong> Display name, bio, avatar, location (all optional)</li>
+      <li><strong>Content:</strong> Posts, comments, messages, and media you upload</li>
+      <li><strong>Usage data:</strong> Posts viewed, likes given, follows, and interactions</li>
+      <li><strong>Device info:</strong> Browser type and IP address (for security only)</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">2</span> How We Use Your Data</h2>
+    <p>We use your information only to:</p>
+    <ul>
+      <li>Provide the core features of the platform</li>
+      <li>Personalize your feed with AI-powered recommendations</li>
+      <li>Calculate your earnings and manage your wallet</li>
+      <li>Send important account and security emails</li>
+      <li>Protect against fraud, spam, and abuse</li>
+      <li>Improve our services and fix bugs</li>
+    </ul>
+    <p><strong>We never sell your data</strong> to third parties or advertisers.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">3</span> What We Don't Do</h2>
+    <ul>
+      <li>❌ We do not sell your personal information</li>
+      <li>❌ We do not share your private messages with anyone</li>
+      <li>❌ We do not track you across other websites</li>
+      <li>❌ We do not use your content to train third-party AI models</li>
+      <li>❌ We do not read your DMs unless legally required</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">4</span> Data Security</h2>
+    <p>We protect your data using industry-standard practices:</p>
+    <ul>
+      <li><strong>Encryption in transit:</strong> All traffic uses HTTPS/TLS</li>
+      <li><strong>Encryption at rest:</strong> Database and storage are encrypted</li>
+      <li><strong>Row-Level Security:</strong> Users can only access their own data</li>
+      <li><strong>Password hashing:</strong> We never store passwords in plain text</li>
+      <li><strong>Regular backups:</strong> Your data is backed up securely</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">5</span> Your Rights</h2>
+    <p>You have full control over your data. You can:</p>
+    <ul>
+      <li><strong>Access</strong> — Download a copy of your data anytime</li>
+      <li><strong>Correct</strong> — Edit your profile info at any time</li>
+      <li><strong>Delete</strong> — Delete individual posts or your entire account</li>
+      <li><strong>Export</strong> — Request a full data export</li>
+      <li><strong>Opt out</strong> — Disable non-essential emails</li>
+    </ul>
+    <p>To exercise any of these rights, visit your <a href="profile.html">Profile Settings</a> or contact our support team.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">6</span> Data Retention</h2>
+    <p>We keep your data only as long as needed:</p>
+    <ul>
+      <li><strong>Active accounts:</strong> Data retained while you use the platform</li>
+      <li><strong>Deleted posts:</strong> Removed immediately from public view</li>
+      <li><strong>Deleted accounts:</strong> Fully removed within 30 days</li>
+      <li><strong>Backups:</strong> Purged after 90 days</li>
+      <li><strong>Legal holds:</strong> May extend retention if required by law</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">7</span> Cookies & Tracking</h2>
+    <p>We use minimal cookies for essential functionality only:</p>
+    <ul>
+      <li><strong>Session cookies:</strong> To keep you logged in</li>
+      <li><strong>Preference cookies:</strong> To remember your language choice</li>
+      <li><strong>Security cookies:</strong> To protect against CSRF attacks</li>
+    </ul>
+    <p>We <strong>do not</strong> use third-party tracking, advertising cookies, or analytics that identify you personally.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">8</span> Children's Privacy</h2>
+    <p>Arizona AI is not intended for users under 13 years of age. We do not knowingly collect data from children. If we learn that a child under 13 has created an account, we will delete it immediately.</p>
+    <p>If you are between 13 and 18, please use the platform with parental consent.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">9</span> Third-Party Services</h2>
+    <p>We use a small number of trusted services to run the platform:</p>
+    <ul>
+      <li><strong>Supabase</strong> — Database, authentication, and file storage</li>
+      <li><strong>Resend</strong> — Transactional email delivery</li>
+      <li><strong>GitHub Pages</strong> — Website hosting</li>
+    </ul>
+    <p>Each service has its own privacy policy and is contractually bound to protect your data.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">10</span> Changes to This Policy</h2>
+    <p>We may update this policy from time to time. When we do:</p>
+    <ul>
+      <li>We'll update the "Last updated" date at the top</li>
+      <li>We'll notify you via email if changes are significant</li>
+      <li>Continued use of the platform means you accept the changes</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">11</span> Governing Law</h2>
+    <p>This Privacy Policy is governed by the laws applicable to Arizona AI's operations. Any disputes will be handled through good-faith negotiation before legal action.</p>
+  </div>
+
+</div>
+
+<!-- CONTACT -->
+<div class="contact-box">
+  <h3>Questions about your privacy?</h3>
+  <p>Our support team is here to help. We aim to respond within 24 hours.</p>
+  <a href="contact.html">
+    <i class="fas fa-envelope"></i> Contact Support
+  </a>
+</div>
+
+<div id="app-footer"></div>
+
+<script src="auth.js"></script>
+</body>
+</html>
