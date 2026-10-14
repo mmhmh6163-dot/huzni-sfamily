@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>AI.Arizonan — Chat with AI</title>
+<title>AI.Arizonan — Your AI Assistant</title>
 
 <link rel="icon" type="image/jpeg" href="arizonan%20png%20icon.jpeg">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -16,6 +16,8 @@ body {
   padding-top:60px; padding-bottom:0;
   min-height:100vh;
 }
+
+/* TOP BAR */
 .topbar {
   position:fixed; top:0; left:0; right:0; height:60px;
   background:rgba(10,20,35,.97); backdrop-filter:blur(12px);
@@ -28,6 +30,7 @@ body {
   width:40px; height:40px;
   display:flex; align-items:center; justify-content:center;
   border-radius:50%; text-decoration:none;
+  background:none; border:none; cursor:pointer;
 }
 .topbar .title {
   font-size:16px; font-weight:800;
@@ -35,19 +38,23 @@ body {
   -webkit-background-clip:text; background-clip:text; color:transparent;
   display:flex; align-items:center; gap:8px;
 }
-.topbar .title img { width:24px; height:24px; border-radius:6px; }
+.topbar .title img {
+  width:24px; height:24px; border-radius:6px;
+  -webkit-text-fill-color: initial;
+}
 
+/* HERO */
 .ai-hero {
   max-width:640px; margin:0 auto;
-  padding:30px 20px 20px;
+  padding:24px 20px 16px;
   text-align:center;
 }
 .ai-hero .icon {
-  width:80px; height:80px; border-radius:24px;
+  width:70px; height:70px; border-radius:22px;
   background:linear-gradient(135deg,#5eb8ff,#7c3aed);
   display:flex; align-items:center; justify-content:center;
-  font-size:38px; color:#fff;
-  margin:0 auto 16px;
+  font-size:32px; color:#fff;
+  margin:0 auto 14px;
   box-shadow:0 0 40px rgba(94,184,255,.5);
   animation: pulse 3s ease-in-out infinite;
 }
@@ -56,23 +63,24 @@ body {
   50% { box-shadow:0 0 60px rgba(124,58,237,.7); }
 }
 .ai-hero h1 {
-  font-size:26px; font-weight:800;
+  font-size:22px; font-weight:800;
   background:linear-gradient(135deg,#5eb8ff,#7c3aed);
   -webkit-background-clip:text; background-clip:text; color:transparent;
-  margin-bottom:8px;
+  margin-bottom:6px;
 }
-.ai-hero p { color:rgba(255,255,255,.6); font-size:14px; }
+.ai-hero p { color:rgba(255,255,255,.6); font-size:13px; }
 
+/* QUICK ACTIONS */
 .quick-actions {
-  max-width:640px; margin:0 auto 16px;
+  max-width:640px; margin:16px auto;
   padding:0 16px;
   display:grid; grid-template-columns:repeat(2,1fr); gap:10px;
 }
 .quick-action {
   background:rgba(94,184,255,.08);
   border:1px solid rgba(94,184,255,.25);
-  border-radius:14px; padding:14px;
-  color:#5eb8ff; font-weight:600; font-size:13px;
+  border-radius:14px; padding:12px 14px;
+  color:#5eb8ff; font-weight:600; font-size:12px;
   cursor:pointer; text-align:left;
   display:flex; align-items:center; gap:10px;
   transition:all .2s;
@@ -82,11 +90,12 @@ body {
   border-color:#5eb8ff;
   transform:translateY(-2px);
 }
-.quick-action i { font-size:18px; }
+.quick-action i { font-size:16px; }
 
+/* CHAT AREA */
 .chat-area {
   max-width:640px; margin:0 auto;
-  padding:0 16px 100px;
+  padding:0 16px 140px;
 }
 .chat-msg {
   display:flex; gap:10px; margin-bottom:16px;
@@ -97,7 +106,7 @@ body {
 .chat-msg .av {
   width:34px; height:34px; border-radius:50%; flex-shrink:0;
   display:flex; align-items:center; justify-content:center;
-  font-weight:700; font-size:14px; color:#fff;
+  font-weight:700; font-size:13px; color:#fff;
 }
 .chat-msg.bot .av {
   background:linear-gradient(135deg,#5eb8ff,#7c3aed);
@@ -109,8 +118,9 @@ body {
   max-width:78%;
   padding:12px 16px;
   border-radius:16px;
-  font-size:14px; line-height:1.5;
+  font-size:14px; line-height:1.55;
   word-wrap:break-word;
+  white-space:pre-wrap;
 }
 .chat-msg.bot .bubble {
   background:rgba(94,184,255,.1);
@@ -124,7 +134,34 @@ body {
   color:#fff;
   border-bottom-right-radius:4px;
 }
+.chat-msg.bot .bubble .time {
+  display:block; font-size:10px;
+  color:rgba(255,255,255,.4); margin-top:6px;
+}
 
+/* TYPING INDICATOR */
+.typing-indicator {
+  display:flex; gap:4px;
+  padding:14px 16px;
+  background:rgba(94,184,255,.1);
+  border:1px solid rgba(94,184,255,.25);
+  border-radius:16px;
+  border-bottom-left-radius:4px;
+  width:fit-content;
+}
+.typing-indicator span {
+  width:6px; height:6px; border-radius:50%;
+  background:#5eb8ff;
+  animation: bounce 1.4s infinite;
+}
+.typing-indicator span:nth-child(2) { animation-delay:.2s; }
+.typing-indicator span:nth-child(3) { animation-delay:.4s; }
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity:.4; }
+  30% { transform: translateY(-6px); opacity:1; }
+}
+
+/* INPUT */
 .chat-input-wrap {
   position:fixed; bottom:0; left:50%; transform:translateX(-50%);
   max-width:640px; width:100%;
@@ -149,10 +186,13 @@ body {
   width:48px; height:48px; border-radius:50%;
   background:linear-gradient(135deg,#5eb8ff,#7c3aed);
   color:#fff; border:none; font-size:18px;
-  cursor:pointer;
+  cursor:pointer; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
   box-shadow: 0 8px 24px rgba(94,184,255,.4);
+  transition: transform .15s;
 }
-.chat-input-wrap button:disabled { opacity:.5; }
+.chat-input-wrap button:active { transform:scale(.95); }
+.chat-input-wrap button:disabled { opacity:.5; cursor:not-allowed; }
 </style>
 </head>
 <body>
@@ -160,7 +200,7 @@ body {
 <header class="topbar">
   <a href="index.html" class="back"><i class="fas fa-arrow-left"></i></a>
   <span class="title"><img src="arizonan%20png%20icon.jpeg" alt=""> AI.Arizonan</span>
-  <a href="Post.html" class="icon-btn" title="New Post"><i class="fas fa-plus-circle"></i></a>
+  <button class="icon-btn" onclick="clearChat()" title="Clear chat"><i class="fas fa-trash"></i></button>
 </header>
 
 <div class="ai-hero">
@@ -169,7 +209,7 @@ body {
   <p>Your personal AI assistant · ask anything</p>
 </div>
 
-<div class="quick-actions">
+<div class="quick-actions" id="quickActions">
   <button class="quick-action" onclick="quickAsk('Give me a caption for my post')">
     <i class="fas fa-pen-fancy"></i> Caption ideas
   </button>
@@ -193,78 +233,138 @@ body {
 
 <div class="chat-input-wrap">
   <input type="text" id="chatInput" placeholder="Ask AI.Arizonan anything…"
-         onkeydown="if(event.key==='Enter') sendMessage()">
+         onkeydown="if(event.key==='Enter' && !event.shiftKey) { event.preventDefault(); sendMessage(); }">
   <button id="sendBtn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
 </div>
 
 <script src="auth.js"></script>
 <script>
-function sendMessage() {
+/* ==================== STATE ==================== */
+let conversationHistory = [];
+let isSending = false;
+
+/* ==================== SEND MESSAGE ==================== */
+async function sendMessage() {
+  if (isSending) return;
+
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
   if (!text) return;
+
   input.value = '';
   addMessage('user', text);
-  const btn = document.getElementById('sendBtn');
-  btn.disabled = true;
-  setTimeout(() => {
-    addMessage('bot', aiReply(text));
-    btn.disabled = false;
-  }, 500 + Math.random() * 400);
+  conversationHistory.push({ role: 'user', content: text });
+
+  // Show typing indicator
+  const typingEl = showTyping();
+  isSending = true;
+  document.getElementById('sendBtn').disabled = true;
+
+  try {
+    // Call Supabase Edge Function
+    const { data, error } = await supabaseClient.functions.invoke('ai-chat', {
+      body: { messages: conversationHistory }
+    });
+
+    typingEl.remove();
+
+    if (error) {
+      console.error('[AI] Function error:', error);
+      addMessage('bot', '⚠️ Connection error. Please try again.');
+      return;
+    }
+
+    if (data?.error) {
+      console.error('[AI] Response error:', data.error);
+      addMessage('bot', `⚠️ ${data.error}`);
+      return;
+    }
+
+    const reply = data?.reply || 'Sorry, I didn\'t get a response.';
+    addMessage('bot', reply);
+    conversationHistory.push({ role: 'assistant', content: reply });
+
+  } catch (err) {
+    typingEl.remove();
+    console.error('[AI] Error:', err);
+    addMessage('bot', '⚠️ Something went wrong. Please try again.');
+  } finally {
+    isSending = false;
+    document.getElementById('sendBtn').disabled = false;
+    document.getElementById('chatInput').focus();
+  }
 }
 
-function quickAsk(q) {
-  document.getElementById('chatInput').value = q;
+/* ==================== QUICK ACTIONS ==================== */
+function quickAsk(question) {
+  document.getElementById('chatInput').value = question;
   sendMessage();
 }
 
+/* ==================== ADD MESSAGE TO UI ==================== */
 function addMessage(who, text) {
   const area = document.getElementById('chatArea');
   const div = document.createElement('div');
   div.className = 'chat-msg ' + who;
+
   const av = who === 'user'
     ? (currentProfile?.username || currentUser?.email?.split('@')[0] || 'U').charAt(0).toUpperCase()
     : 'AI';
+
+  // Escape HTML, preserve line breaks
+  const safeText = escapeHtml(text).replace(/\n/g, '<br>');
+
   div.innerHTML = `
     <div class="av">${av}</div>
-    <div class="bubble">${escapeHtml(text)}</div>
+    <div class="bubble">${safeText}</div>
   `;
   area.appendChild(div);
-  window.scrollTo(0, document.body.scrollHeight);
+
+  // Smooth scroll to bottom
+  setTimeout(() => {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  }, 50);
 }
 
-function aiReply(msg) {
-  const m = msg.toLowerCase();
-
-  if (m.includes('caption') || m.includes('caption for'))
-    return "Here are 3 captions:\n\n1. ✨ Just another day being awesome\n2. 🌅 Chasing sunsets and dreams\n3. 💫 Living my best life — you should too!";
-
-  if (m.includes('hashtag'))
-    return "Try these: #ArizonaAI #HuznisFamily #EarnWhileYouShare #AI #SocialMedia #ContentCreator";
-
-  if (m.includes('earn') || m.includes('money'))
-    return "💰 To earn more on Arizona AI:\n\n• Post consistently (2-3x daily)\n• Use trending sounds & hashtags\n• Engage with comments\n• Boost your best posts\n• Build your following\n\nYour wallet grows with every interaction!";
-
-  if (m.includes('bio'))
-    return "Here's a bio template for you:\n\n📍 [Your Location]\n🏜️ Arizona AI Creator\n💫 [Your Passion]\n🔗 [Your Link]\n\nShort, punchy, and shows personality!";
-
-  if (m.includes('hello') || m.includes('hi') || m.includes('hey'))
-    return "Hey there! 👋 What are we creating today?";
-
-  if (m.includes('post') || m.includes('idea'))
-    return "📸 Post ideas for you:\n\n1. Behind-the-scenes of your day\n2. A quick tip in your niche\n3. Before/after transformation\n4. Q&A with your followers\n5. Trending audio + your twist";
-
-  if (m.includes('boost'))
-    return "🚀 Boosting your post gives it extra reach. You can boost from any of your own posts by tapping the 🚀 icon. Prices start at $0.99 for 24 hours!";
-
-  return "Great question! Here's what I think: " +
-         "be authentic, post consistently, and engage with your community. " +
-         "If you want help with captions, hashtags, or content ideas — just ask! 🚀";
+/* ==================== TYPING INDICATOR ==================== */
+function showTyping() {
+  const area = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = 'chat-msg bot';
+  div.innerHTML = `
+    <div class="av">AI</div>
+    <div class="typing-indicator">
+      <span></span><span></span><span></span>
+    </div>
+  `;
+  area.appendChild(div);
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  return div;
 }
 
+/* ==================== CLEAR CHAT ==================== */
+function clearChat() {
+  if (!confirm('Clear the conversation?')) return;
+  conversationHistory = [];
+  const area = document.getElementById('chatArea');
+  area.innerHTML = `
+    <div class="chat-msg bot">
+      <div class="av">AI</div>
+      <div class="bubble">👋 Hi! I'm <strong>AI.Arizonan</strong>. Fresh start! What can I help you with?</div>
+    </div>
+  `;
+}
+
+/* ==================== HELPERS ==================== */
 function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  return String(s ?? '').replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
+
+// Autofocus input on load
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => document.getElementById('chatInput').focus(), 500);
+});
 </script>
 </body>
 </html>
