@@ -65,9 +65,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 }
 .profile-avatar-wrap .verified-badge.show { display:flex; }
 
-.profile-stats {
-  flex:1; display:flex; justify-content:space-around; text-align:center;
-}
+.profile-stats { flex:1; display:flex; justify-content:space-around; text-align:center; }
 .profile-stats .stat { cursor:pointer; padding:4px 8px; border-radius:8px; }
 .profile-stats .stat:hover { background:rgba(255,255,255,.04); }
 .profile-stats .stat .num { font-size:18px; font-weight:800; color:var(--az-text); }
@@ -91,7 +89,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 .profile-name .meta i { font-size:12px; }
 .profile-name .meta a { color:var(--az-accent); text-decoration:none; }
 
-/* ==================== WALLET (own only) ==================== */
+/* ==================== WALLET ==================== */
 .wallet-card {
   max-width:640px; margin:0 20px 20px;
   background:linear-gradient(135deg,rgba(255,107,53,.15),rgba(255,178,15,.08));
@@ -187,6 +185,18 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 .grid-item:hover .overlay { display:flex; }
 .grid-item .overlay span { display:flex; align-items:center; gap:5px; }
 
+/* ==================== WATERMARK ==================== */
+.watermark {
+  position:absolute; bottom:6px; right:6px;
+  display:flex; align-items:center; gap:4px;
+  font-size:9px; color:rgba(255,255,255,.75);
+  background:rgba(0,0,0,.45);
+  padding:3px 8px; border-radius:10px;
+  backdrop-filter:blur(4px);
+  font-weight:700; pointer-events:none;
+}
+.watermark img { width:12px; height:12px; border-radius:3px; object-fit:cover; }
+
 /* ==================== EMPTY ==================== */
 .profile-empty {
   max-width:640px; margin:0 auto;
@@ -235,7 +245,56 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 .modal-actions .primary { background:var(--az-gradient); border:none; color:#fff; }
 .modal-actions button:disabled { opacity:.6; cursor:not-allowed; }
 
-/* ==================== AVATAR VIEWER (zoom) ==================== */
+/* ==================== AVATAR MODAL ==================== */
+.avatar-modal-content {
+  text-align:center;
+}
+.avatar-preview-box {
+  width:140px; height:140px; border-radius:50%;
+  margin:0 auto 16px;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  font-size:48px; font-weight:800; color:#fff;
+  border:3px solid var(--az-primary);
+  overflow:hidden;
+  position:relative;
+}
+.avatar-preview-box img {
+  width:100%; height:100%; object-fit:cover;
+}
+.avatar-btn-row {
+  display:flex; gap:10px; justify-content:center;
+  margin-bottom:12px;
+  flex-wrap:wrap;
+}
+.avatar-btn {
+  padding:11px 18px;
+  border-radius:22px;
+  font-size:13px; font-weight:700;
+  cursor:pointer;
+  display:inline-flex; align-items:center; gap:6px;
+  border:none;
+  transition:transform .15s;
+}
+.avatar-btn:active { transform:scale(.96); }
+.avatar-btn.choose {
+  background:rgba(255,107,53,.15);
+  border:1px solid var(--az-primary);
+  color:var(--az-accent);
+}
+.avatar-btn.remove {
+  background:transparent;
+  border:1px solid rgba(255,118,117,.5);
+  color:var(--az-danger);
+}
+.avatar-filename {
+  font-size:11px;
+  color:var(--az-text-secondary);
+  margin-bottom:16px;
+  min-height:14px;
+}
+
+/* ==================== AVATAR VIEWER ==================== */
 .avatar-viewer {
   display:none; position:fixed; inset:0;
   background:rgba(0,0,0,.96); z-index:3200;
@@ -258,7 +317,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   display:flex; align-items:center; justify-content:center;
 }
 
-/* ==================== POST DETAIL MODAL ==================== */
+/* ==================== POST DETAIL ==================== */
 .post-detail-modal {
   display:none; position:fixed; inset:0;
   background:rgba(0,0,0,.95); z-index:3100;
@@ -270,8 +329,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   background:#151515; border-radius:20px;
   width:100%; max-width:640px;
   border:1px solid rgba(255,107,53,.25);
-  margin:auto 0;
-  overflow:hidden;
+  margin:auto 0; overflow:hidden;
 }
 .post-detail-head {
   display:flex; align-items:center; gap:12px;
@@ -296,7 +354,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   background:none; border:none; color:var(--az-text-secondary);
   font-size:20px; cursor:pointer; padding:6px;
 }
-
 .post-detail-media {
   width:100%; background:#000;
   display:flex; align-items:center; justify-content:center;
@@ -308,7 +365,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   max-height:500px; object-fit:contain;
   display:block;
 }
-
 .post-detail-body { padding:14px 18px; }
 .post-detail-caption {
   font-size:14px; line-height:1.55; color:var(--az-text);
@@ -324,7 +380,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 }
 .post-detail-stats span { display:flex; align-items:center; gap:6px; }
 .post-detail-stats strong { color:var(--az-text); }
-
 .post-detail-actions {
   display:flex; gap:16px; padding:12px 18px;
 }
@@ -362,7 +417,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   font-size:10px; color:var(--az-text-secondary);
   margin-top:3px;
 }
-
 .post-detail-add-comment {
   padding:12px 16px;
   padding-bottom:calc(12px + env(safe-area-inset-bottom));
@@ -428,27 +482,21 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   z-index:2500;
   display:none;
   justify-content:flex-end;
-  animation:fadeIn .2s ease;
 }
 .settings-overlay.active { display:flex; }
-@keyframes fadeIn { from { opacity:0; } }
-
 .settings-drawer {
   background:#0f0f0f;
   width:100%; max-width:400px;
-  height:100vh;
-  overflow-y:auto;
+  height:100vh; overflow-y:auto;
   padding:20px;
   padding-bottom:calc(20px + env(safe-area-inset-bottom));
   border-left:1px solid rgba(255,107,53,.25);
   animation:slideIn .3s ease;
 }
 @keyframes slideIn { from { transform:translateX(100%); } }
-
 .settings-header {
   display:flex; justify-content:space-between; align-items:center;
-  margin-bottom:24px;
-  padding-bottom:16px;
+  margin-bottom:24px; padding-bottom:16px;
   border-bottom:1px solid rgba(255,255,255,.08);
 }
 .settings-header h3 { font-size:18px; font-weight:800; color:var(--az-text); }
@@ -500,11 +548,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   border-radius:10px;
   color:var(--az-text); font-size:13px;
   font-weight:600; cursor:pointer;
-  transition:all .15s;
-}
-.settings-lang .lang-btn:hover {
-  background:rgba(255,107,53,.15);
-  border-color:var(--az-primary);
 }
 .settings-footer {
   text-align:center; color:var(--az-text-secondary);
@@ -527,22 +570,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   text-decoration:none; font-weight:700; margin-bottom:10px;
 }
 .auth-wall a.primary { background:var(--az-gradient); color:#fff; }
-
-/* ==================== WATERMARK ==================== */
-.watermark {
-  position:absolute; bottom:6px; right:6px;
-  display:flex; align-items:center; gap:4px;
-  font-size:9px; color:rgba(255,255,255,.7);
-  background:rgba(0,0,0,.4);
-  padding:3px 8px; border-radius:10px;
-  backdrop-filter:blur(4px);
-  font-weight:700; letter-spacing:.3px;
-  pointer-events:none;
-}
-.watermark img {
-  width:12px; height:12px; border-radius:3px;
-  object-fit:cover;
-}
 </style>
 </head>
 <body>
@@ -613,7 +640,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
     </div>
   </div>
 
-  <!-- Wallet (own profile only) -->
   <div class="wallet-card" id="walletCard">
     <div class="label"><i class="fas fa-wallet"></i> Your Balance</div>
     <div class="balance" id="walletBalance">$0.00</div>
@@ -627,14 +653,12 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
     </div>
   </div>
 
-  <!-- Actions (own profile only) -->
   <div class="profile-actions" id="profileActions">
     <button onclick="openEdit()"><i class="fas fa-pen"></i> Edit Profile</button>
     <button onclick="openStory()"><i class="fas fa-circle-plus"></i> Add Story</button>
     <a href="Post.html"><i class="fas fa-plus-circle"></i> New Post</a>
   </div>
 
-  <!-- Tabs -->
   <div class="profile-tabs">
     <button class="tab active" onclick="switchTab('posts', this)"><i class="fas fa-th"></i></button>
     <button class="tab" onclick="switchTab('reels', this)"><i class="fas fa-video"></i></button>
@@ -688,27 +712,26 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 
 <!-- ==================== AVATAR MODAL ==================== -->
 <div class="modal-backdrop" id="avatarModal">
-  <div class="modal-content">
+  <div class="modal-content avatar-modal-content">
     <div class="handle"></div>
-    <h3 id="avatarModalTitle">Change Profile Photo</h3>
+    <h3 id="avatarModalTitle">Profile Photo</h3>
 
-    <div style="text-align:center;margin-bottom:20px;">
-      <div class="profile-avatar" id="avatarPreview" style="margin:0 auto 12px;width:120px;height:120px;">U</div>
-      <div id="avatarFileName" style="font-size:12px;color:var(--az-text-secondary);margin-bottom:12px;min-height:16px;"></div>
-    </div>
+    <div class="avatar-preview-box" id="avatarPreview">U</div>
+    <div class="avatar-filename" id="avatarFileName"></div>
 
-    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:16px;">
-      <button onclick="document.getElementById('avatarInput').click()"
-        style="padding:10px 16px;border-radius:20px;background:rgba(255,107,53,.15);border:1px solid var(--az-primary);color:var(--az-accent);font-weight:600;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;">
+    <div class="avatar-btn-row">
+      <button class="avatar-btn choose" onclick="document.getElementById('avatarInput').click()">
         <i class="fas fa-image"></i> Choose Photo
       </button>
-      <button id="avatarRemoveBtn" onclick="removeAvatar()"
-        style="padding:10px 16px;border-radius:20px;background:transparent;border:1px solid rgba(255,118,117,.5);color:var(--az-danger);font-weight:600;font-size:13px;cursor:pointer;display:none;align-items:center;gap:6px;">
+      <button class="avatar-btn remove" id="avatarRemoveBtn" onclick="removeAvatar()" style="display:none;">
         <i class="fas fa-trash"></i> Remove
       </button>
     </div>
 
-    <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="onAvatarPicked(event)">
+    <!-- File input — MUST be visible enough to be clickable by all browsers -->
+    <input type="file" id="avatarInput" accept="image/*"
+           style="position:absolute; left:-9999px; width:1px; height:1px; opacity:0;"
+           onchange="onAvatarPicked(event)">
 
     <div class="modal-actions">
       <button class="cancel" onclick="closeAvatar()">Cancel</button>
@@ -797,6 +820,7 @@ let userPosts = [];
 let viewedUserId = null;
 let isOwnProfile = false;
 let pendingAvatarFile = null;
+let pendingAvatarPreviewUrl = null;
 let likedPosts = new Set();
 let currentTab = 'posts';
 let followersData = { followers: [], following: [] };
@@ -807,9 +831,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof authReady !== 'undefined' && authReady) {
       clearInterval(check);
       initProfile();
+      setupAvatarInput();
     }
   }, 100);
 });
+
+/* ==================== SETUP AVATAR INPUT (fired once) ==================== */
+function setupAvatarInput() {
+  const input = document.getElementById('avatarInput');
+  if (!input || input.dataset.bound === '1') return;
+  input.dataset.bound = '1';
+  input.addEventListener('change', onAvatarPicked);
+  console.log('[Avatar] File input listener attached ✅');
+}
 
 async function initProfile() {
   const params = new URLSearchParams(window.location.search);
@@ -984,7 +1018,7 @@ function switchTab(tab, el) {
   renderGrid();
 }
 
-/* ==================== POST DETAIL MODAL ==================== */
+/* ==================== POST DETAIL ==================== */
 async function openPostDetail(postId) {
   const post = userPosts.find(p => p.id === postId);
   if (!post) return;
@@ -1084,7 +1118,6 @@ async function openPostDetail(postId) {
 
   modal.classList.add('active');
 
-  // Log view
   try {
     await supabaseClient.rpc('log_post_view', { p_post_id: postId });
     await new Promise(r => setTimeout(r, 150));
@@ -1129,8 +1162,7 @@ async function toggleLikeDetail(postId, btn) {
 
     await new Promise(r => setTimeout(r, 150));
     const { data } = await supabaseClient.from('posts')
-      .select('likes_count, comments_count, shares_count, views_count')
-      .eq('id', postId).single();
+      .select('likes_count').eq('id', postId).single();
     if (data) {
       const el = document.getElementById('pdLikes');
       if (el) el.textContent = data.likes_count || 0;
@@ -1159,9 +1191,7 @@ async function submitDetailComment(postId) {
 
   try {
     await supabaseClient.from('comments').insert({
-      user_id: currentUser.id,
-      post_id: postId,
-      content: text
+      user_id: currentUser.id, post_id: postId, content: text
     });
     input.value = '';
 
@@ -1201,7 +1231,7 @@ async function submitDetailComment(postId) {
   } catch (err) { showToast(err.message, 'error'); }
 }
 
-/* ==================== FOLLOWERS / FOLLOWING ==================== */
+/* ==================== FOLLOWERS ==================== */
 async function loadFollowersData() {
   try {
     const [followersRes, followingRes] = await Promise.all([
@@ -1359,26 +1389,32 @@ async function saveProfile() {
   }
 }
 
-/* ==================== AVATAR (FIXED) ==================== */
+/* ==================== AVATAR (REBUILT) ==================== */
 function pickAvatar() {
   if (!isOwnProfile) return;
-  pendingAvatarFile = null;
-  document.getElementById('avatarInput').value = '';
 
+  pendingAvatarFile = null;
+  pendingAvatarPreviewUrl = null;
+
+  // Reset file input
+  const input = document.getElementById('avatarInput');
+  input.value = '';
+
+  // Show current avatar in preview
   const preview = document.getElementById('avatarPreview');
   const currentAvatar = currentProfile?.avatar_url;
   const initial = (currentProfile?.username || 'U').charAt(0).toUpperCase();
 
   if (currentAvatar) {
-    preview.innerHTML = `<img src="${escapeHtml(currentAvatar)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-    document.getElementById('avatarRemoveBtn').style.display = 'flex';
-    document.getElementById('avatarRemoveBtn').disabled = false;
+    preview.innerHTML = `<img src="${escapeHtml(currentAvatar)}" alt="">`;
+    document.getElementById('avatarRemoveBtn').style.display = 'inline-flex';
+    document.getElementById('avatarModalTitle').textContent = 'Change Profile Photo';
   } else {
     preview.textContent = initial;
     document.getElementById('avatarRemoveBtn').style.display = 'none';
+    document.getElementById('avatarModalTitle').textContent = 'Add Profile Photo';
   }
 
-  document.getElementById('avatarModalTitle').textContent = currentAvatar ? 'Change Profile Photo' : 'Add Profile Photo';
   document.getElementById('avatarFileName').textContent = '';
   document.getElementById('avatarSaveBtn').disabled = true;
   document.getElementById('avatarSaveBtn').innerHTML = '<i class="fas fa-upload"></i> Upload';
@@ -1389,38 +1425,54 @@ function pickAvatar() {
 function closeAvatar() {
   document.getElementById('avatarModal').classList.remove('active');
   pendingAvatarFile = null;
-  document.getElementById('avatarInput').value = '';
+  if (pendingAvatarPreviewUrl) {
+    URL.revokeObjectURL(pendingAvatarPreviewUrl);
+    pendingAvatarPreviewUrl = null;
+  }
   document.getElementById('avatarFileName').textContent = '';
 }
 
 function onAvatarPicked(event) {
+  console.log('[Avatar] File picked');
   const file = event.target.files[0];
-  if (!file) return;
+  if (!file) {
+    console.log('[Avatar] No file selected');
+    return;
+  }
+  console.log('[Avatar] Selected:', file.name, file.size, file.type);
 
   if (!file.type.startsWith('image/')) {
     showToast('Please choose an image file', 'error');
+    event.target.value = '';
     return;
   }
   if (file.size > 5 * 1024 * 1024) {
     showToast('Image must be under 5 MB', 'error');
+    event.target.value = '';
     return;
   }
 
   pendingAvatarFile = file;
 
+  // Show preview using FileReader (most reliable)
   const preview = document.getElementById('avatarPreview');
   const reader = new FileReader();
   reader.onload = (e) => {
-    preview.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    preview.innerHTML = `<img src="${e.target.result}" alt="">`;
+    console.log('[Avatar] Preview rendered');
   };
+  reader.onerror = () => console.error('[Avatar] FileReader error');
   reader.readAsDataURL(file);
 
+  // Show filename + size
   const sizeKB = (file.size / 1024).toFixed(0);
   document.getElementById('avatarFileName').textContent = `${file.name} · ${sizeKB} KB`;
 
+  // Enable save button
   const saveBtn = document.getElementById('avatarSaveBtn');
   saveBtn.disabled = false;
   saveBtn.innerHTML = '<i class="fas fa-upload"></i> Upload';
+  console.log('[Avatar] Upload button enabled');
 }
 
 async function saveAvatar() {
@@ -1436,12 +1488,18 @@ async function saveAvatar() {
   try {
     const ext = (pendingAvatarFile.name.split('.').pop() || 'jpg').toLowerCase();
     const path = `${currentUser.id}/avatar-${Date.now()}.${ext}`;
+    console.log('[Avatar] Uploading to:', path);
 
     const { data: uploadData, error: upErr } = await supabaseClient.storage
       .from('avatars')
       .upload(path, pendingAvatarFile, { upsert: true, cacheControl: '3600' });
 
-    if (upErr) throw upErr;
+    if (upErr) {
+      console.error('[Avatar] Upload error:', upErr);
+      throw upErr;
+    }
+
+    console.log('[Avatar] Upload success:', uploadData);
 
     const { data: urlData } = supabaseClient.storage
       .from('avatars')
@@ -1459,15 +1517,10 @@ async function saveAvatar() {
     currentProfile = { ...(currentProfile || {}), avatar_url: avatarUrl };
     fillProfile(currentProfile, currentWallet);
 
-    // Update all page avatars
-    document.querySelectorAll('.user-avatar, #uAvatar, #bnavAvatar, .avatar').forEach(el => {
-      el.innerHTML = `<img src="${escapeHtml(avatarUrl)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="">`;
-    });
-
     closeAvatar();
     showToast('Profile photo updated ✅', 'success');
   } catch (err) {
-    console.error('Avatar upload error:', err);
+    console.error('[Avatar] Save error:', err);
     showToast(err.message || 'Upload failed', 'error');
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-upload"></i> Upload';
@@ -1506,7 +1559,7 @@ async function removeAvatar() {
     closeAvatar();
     showToast('Profile photo removed', 'success');
   } catch (err) {
-    console.error('Avatar remove error:', err);
+    console.error('[Avatar] Remove error:', err);
     showToast(err.message || 'Failed to remove', 'error');
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-trash"></i> Remove';
