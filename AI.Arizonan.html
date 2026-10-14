@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AI.Arizonan — Chat with AI</title>
+
+<link rel="icon" type="image/jpeg" href="arizonan%20png%20icon.jpeg">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+
+<style>
+body {
+  background: radial-gradient(circle at 50% 0%, #0d1a2e 0%, #050a14 60%);
+  padding-top:60px; padding-bottom:0;
+  min-height:100vh;
+}
+.topbar {
+  position:fixed; top:0; left:0; right:0; height:60px;
+  background:rgba(10,20,35,.97); backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(94,184,255,.3);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 16px; z-index:1000; max-width:640px; margin:0 auto;
+}
+.topbar .back, .topbar .icon-btn {
+  color:#5eb8ff; font-size:19px;
+  width:40px; height:40px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%; text-decoration:none;
+}
+.topbar .title {
+  font-size:16px; font-weight:800;
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  display:flex; align-items:center; gap:8px;
+}
+.topbar .title img { width:24px; height:24px; border-radius:6px; }
+
+.ai-hero {
+  max-width:640px; margin:0 auto;
+  padding:30px 20px 20px;
+  text-align:center;
+}
+.ai-hero .icon {
+  width:80px; height:80px; border-radius:24px;
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
+  display:flex; align-items:center; justify-content:center;
+  font-size:38px; color:#fff;
+  margin:0 auto 16px;
+  box-shadow:0 0 40px rgba(94,184,255,.5);
+  animation: pulse 3s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow:0 0 40px rgba(94,184,255,.5); }
+  50% { box-shadow:0 0 60px rgba(124,58,237,.7); }
+}
+.ai-hero h1 {
+  font-size:26px; font-weight:800;
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  margin-bottom:8px;
+}
+.ai-hero p { color:rgba(255,255,255,.6); font-size:14px; }
+
+.quick-actions {
+  max-width:640px; margin:0 auto 16px;
+  padding:0 16px;
+  display:grid; grid-template-columns:repeat(2,1fr); gap:10px;
+}
+.quick-action {
+  background:rgba(94,184,255,.08);
+  border:1px solid rgba(94,184,255,.25);
+  border-radius:14px; padding:14px;
+  color:#5eb8ff; font-weight:600; font-size:13px;
+  cursor:pointer; text-align:left;
+  display:flex; align-items:center; gap:10px;
+  transition:all .2s;
+}
+.quick-action:hover {
+  background:rgba(94,184,255,.16);
+  border-color:#5eb8ff;
+  transform:translateY(-2px);
+}
+.quick-action i { font-size:18px; }
+
+.chat-area {
+  max-width:640px; margin:0 auto;
+  padding:0 16px 100px;
+}
+.chat-msg {
+  display:flex; gap:10px; margin-bottom:16px;
+  animation: fadeIn .3s ease;
+}
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } }
+.chat-msg.user { flex-direction:row-reverse; }
+.chat-msg .av {
+  width:34px; height:34px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:14px; color:#fff;
+}
+.chat-msg.bot .av {
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
+}
+.chat-msg.user .av {
+  background:var(--az-gradient);
+}
+.chat-msg .bubble {
+  max-width:78%;
+  padding:12px 16px;
+  border-radius:16px;
+  font-size:14px; line-height:1.5;
+  word-wrap:break-word;
+}
+.chat-msg.bot .bubble {
+  background:rgba(94,184,255,.1);
+  border:1px solid rgba(94,184,255,.25);
+  color:#e0f2ff;
+  border-bottom-left-radius:4px;
+}
+.chat-msg.user .bubble {
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.1);
+  color:#fff;
+  border-bottom-right-radius:4px;
+}
+
+.chat-input-wrap {
+  position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+  max-width:640px; width:100%;
+  background:rgba(10,20,35,.98);
+  backdrop-filter:blur(12px);
+  border-top:1px solid rgba(94,184,255,.25);
+  padding:12px 16px;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom));
+  display:flex; gap:10px;
+}
+.chat-input-wrap input {
+  flex:1;
+  padding:14px 18px;
+  background:rgba(94,184,255,.06);
+  border:1px solid rgba(94,184,255,.25);
+  border-radius:28px;
+  color:#fff; font-size:14px;
+  font-family:inherit;
+}
+.chat-input-wrap input:focus { outline:none; border-color:#5eb8ff; }
+.chat-input-wrap button {
+  width:48px; height:48px; border-radius:50%;
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
+  color:#fff; border:none; font-size:18px;
+  cursor:pointer;
+  box-shadow: 0 8px 24px rgba(94,184,255,.4);
+}
+.chat-input-wrap button:disabled { opacity:.5; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="index.html" class="back"><i class="fas fa-arrow-left"></i></a>
+  <span class="title"><img src="arizonan%20png%20icon.jpeg" alt=""> AI.Arizonan</span>
+  <a href="Post.html" class="icon-btn" title="New Post"><i class="fas fa-plus-circle"></i></a>
+</header>
+
+<div class="ai-hero">
+  <div class="icon"><i class="fas fa-robot"></i></div>
+  <h1>AI.Arizonan</h1>
+  <p>Your personal AI assistant · ask anything</p>
+</div>
+
+<div class="quick-actions">
+  <button class="quick-action" onclick="quickAsk('Give me a caption for my post')">
+    <i class="fas fa-pen-fancy"></i> Caption ideas
+  </button>
+  <button class="quick-action" onclick="quickAsk('Suggest hashtags for my post')">
+    <i class="fas fa-hashtag"></i> Hashtags
+  </button>
+  <button class="quick-action" onclick="quickAsk('How do I earn more on Arizona AI?')">
+    <i class="fas fa-dollar-sign"></i> Earn tips
+  </button>
+  <button class="quick-action" onclick="quickAsk('Write a bio for my profile')">
+    <i class="fas fa-user"></i> Bio writer
+  </button>
+</div>
+
+<div class="chat-area" id="chatArea">
+  <div class="chat-msg bot">
+    <div class="av">AI</div>
+    <div class="bubble">👋 Hi! I'm <strong>AI.Arizonan</strong>. I can help you write captions, suggest hashtags, generate content ideas, and more. What can I do for you?</div>
+  </div>
+</div>
+
+<div class="chat-input-wrap">
+  <input type="text" id="chatInput" placeholder="Ask AI.Arizonan anything…"
+         onkeydown="if(event.key==='Enter') sendMessage()">
+  <button id="sendBtn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+</div>
+
+<script src="auth.js"></script>
+<script>
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  addMessage('user', text);
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+  setTimeout(() => {
+    addMessage('bot', aiReply(text));
+    btn.disabled = false;
+  }, 500 + Math.random() * 400);
+}
+
+function quickAsk(q) {
+  document.getElementById('chatInput').value = q;
+  sendMessage();
+}
+
+function addMessage(who, text) {
+  const area = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + who;
+  const av = who === 'user'
+    ? (currentProfile?.username || currentUser?.email?.split('@')[0] || 'U').charAt(0).toUpperCase()
+    : 'AI';
+  div.innerHTML = `
+    <div class="av">${av}</div>
+    <div class="bubble">${escapeHtml(text)}</div>
+  `;
+  area.appendChild(div);
+  window.scrollTo(0, document.body.scrollHeight);
+}
+
+function aiReply(msg) {
+  const m = msg.toLowerCase();
+
+  if (m.includes('caption') || m.includes('caption for'))
+    return "Here are 3 captions:\n\n1. ✨ Just another day being awesome\n2. 🌅 Chasing sunsets and dreams\n3. 💫 Living my best life — you should too!";
+
+  if (m.includes('hashtag'))
+    return "Try these: #ArizonaAI #HuznisFamily #EarnWhileYouShare #AI #SocialMedia #ContentCreator";
+
+  if (m.includes('earn') || m.includes('money'))
+    return "💰 To earn more on Arizona AI:\n\n• Post consistently (2-3x daily)\n• Use trending sounds & hashtags\n• Engage with comments\n• Boost your best posts\n• Build your following\n\nYour wallet grows with every interaction!";
+
+  if (m.includes('bio'))
+    return "Here's a bio template for you:\n\n📍 [Your Location]\n🏜️ Arizona AI Creator\n💫 [Your Passion]\n🔗 [Your Link]\n\nShort, punchy, and shows personality!";
+
+  if (m.includes('hello') || m.includes('hi') || m.includes('hey'))
+    return "Hey there! 👋 What are we creating today?";
+
+  if (m.includes('post') || m.includes('idea'))
+    return "📸 Post ideas for you:\n\n1. Behind-the-scenes of your day\n2. A quick tip in your niche\n3. Before/after transformation\n4. Q&A with your followers\n5. Trending audio + your twist";
+
+  if (m.includes('boost'))
+    return "🚀 Boosting your post gives it extra reach. You can boost from any of your own posts by tapping the 🚀 icon. Prices start at $0.99 for 24 hours!";
+
+  return "Great question! Here's what I think: " +
+         "be authentic, post consistently, and engage with your community. " +
+         "If you want help with captions, hashtags, or content ideas — just ask! 🚀";
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+</script>
+</body>
+</html>
