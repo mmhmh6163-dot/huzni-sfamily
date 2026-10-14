@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>About Us — Arizona AI</title>
+
+<link rel="icon" type="image/jpeg" href="arizonan%20png%20icon.jpeg">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+
+<style>
+body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
+
+/* HERO */
+.about-hero {
+  max-width:640px; margin:0 auto;
+  padding:50px 20px 40px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.about-hero::before {
+  content:''; position:absolute; top:-50%; left:-50%;
+  width:200%; height:200%;
+  background:radial-gradient(circle, rgba(255,107,53,.15) 0%, transparent 60%);
+  animation: rotate 30s linear infinite; z-index:-1;
+}
+@keyframes rotate { 100% { transform:rotate(360deg); } }
+
+.about-hero .logo {
+  width:90px; height:90px; border-radius:24px;
+  object-fit:cover;
+  border:3px solid rgba(255,178,15,.5);
+  box-shadow:0 0 40px rgba(255,107,53,.5);
+  margin:0 auto 20px;
+  display:block;
+  animation: pulse 3s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow:0 0 40px rgba(255,107,53,.5); }
+  50% { box-shadow:0 0 60px rgba(255,178,15,.8); }
+}
+.about-hero h1 {
+  font-size:32px; font-weight:800;
+  background:var(--az-gradient);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  margin-bottom:12px; line-height:1.2;
+}
+.about-hero p {
+  color:var(--az-text-secondary);
+  font-size:15px; line-height:1.7;
+  max-width:500px; margin:0 auto;
+}
+
+/* SECTIONS */
+.section {
+  max-width:640px; margin:0 auto;
+  padding:30px 20px;
+}
+.section h2 {
+  font-size:24px; font-weight:800;
+  color:var(--az-text); margin-bottom:16px;
+  display:flex; align-items:center; gap:10px;
+}
+.section h2 i { color:var(--az-accent); font-size:22px; }
+.section p {
+  color:var(--az-text-secondary);
+  font-size:15px; line-height:1.75;
+  margin-bottom:14px;
+}
+
+/* MISSION CARD */
+.mission-card {
+  background:linear-gradient(135deg, rgba(255,107,53,.15), rgba(255,178,15,.08));
+  border:1px solid rgba(255,107,53,.35);
+  border-radius:20px; padding:24px;
+  margin:20px 0;
+}
+.mission-card h3 {
+  color:var(--az-accent); font-size:18px;
+  margin-bottom:10px;
+}
+.mission-card p { color:var(--az-text); margin:0; }
+
+/* STATS */
+.stats-grid {
+  display:grid; grid-template-columns:repeat(2, 1fr);
+  gap:12px; margin:24px 0;
+}
+.stat-box {
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px; padding:20px 16px;
+  text-align:center;
+}
+.stat-box .num {
+  font-size:28px; font-weight:800;
+  background:var(--az-gradient);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  line-height:1; margin-bottom:6px;
+}
+.stat-box .lbl {
+  font-size:12px; color:var(--az-text-secondary);
+  text-transform:uppercase; letter-spacing:.5px;
+}
+
+/* VALUES */
+.value-grid {
+  display:grid; grid-template-columns:1fr;
+  gap:12px; margin:20px 0;
+}
+.value-card {
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px; padding:18px;
+  display:flex; align-items:flex-start; gap:14px;
+}
+.value-icon {
+  width:44px; height:44px; border-radius:12px;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:20px; flex-shrink:0;
+}
+.value-content { flex:1; }
+.value-content h4 {
+  color:var(--az-text); font-size:15px;
+  margin-bottom:4px; font-weight:700;
+}
+.value-content p {
+  color:var(--az-text-secondary);
+  font-size:13px; line-height:1.5;
+  margin:0;
+}
+
+/* TEAM */
+.team-grid {
+  display:grid; grid-template-columns:repeat(2, 1fr);
+  gap:12px; margin:20px 0;
+}
+.team-card {
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px; padding:20px;
+  text-align:center;
+}
+.team-card .av {
+  width:70px; height:70px; border-radius:50%;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:800; color:#fff; font-size:26px;
+  margin:0 auto 12px;
+  border:2px solid rgba(255,178,15,.4);
+}
+.team-card h4 {
+  color:var(--az-text); font-size:14px;
+  margin-bottom:4px; font-weight:700;
+}
+.team-card p {
+  color:var(--az-text-secondary);
+  font-size:12px; margin:0;
+}
+
+/* CTA */
+.cta-box {
+  max-width:640px; margin:20px auto;
+  padding:30px 24px;
+  background:linear-gradient(135deg, rgba(255,107,53,.2), rgba(255,178,15,.1));
+  border:1px solid rgba(255,107,53,.4);
+  border-radius:24px; text-align:center;
+}
+.cta-box h3 {
+  color:var(--az-text); font-size:22px;
+  margin-bottom:10px;
+}
+.cta-box p {
+  color:var(--az-text-secondary);
+  font-size:14px; margin-bottom:20px;
+}
+.cta-box .buttons {
+  display:flex; gap:10px; flex-direction:column;
+}
+.cta-box a {
+  padding:14px; border-radius:14px;
+  font-weight:700; font-size:15px;
+  text-decoration:none;
+}
+.cta-box a.primary {
+  background:var(--az-gradient); color:#fff;
+  box-shadow:0 10px 30px rgba(255,107,53,.4);
+}
+.cta-box a.outline {
+  background:transparent; color:var(--az-accent);
+  border:2px solid var(--az-accent);
+}
+</style>
+</head>
+<body>
+
+<div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
+
+<div id="app-header"></div>
+
+<!-- HERO -->
+<section class="about-hero">
+  <img src="arizonan%20png%20icon.jpeg" alt="Arizona AI" class="logo">
+  <h1>About Arizona AI</h1>
+  <p>The first AI-powered social platform that <strong>pays you for your content</strong>. Built for creators, by creators — powered by Huzni's Family and TDA Developers.</p>
+</section>
+
+<!-- MISSION -->
+<section class="section">
+  <h2><i class="fas fa-bullseye"></i> Our Mission</h2>
+  <div class="mission-card">
+    <h3>🏜️ Revolutionizing Social Media</h3>
+    <p>We believe your time and creativity deserve real value. Arizona AI blends cutting-edge artificial intelligence with genuine monetary rewards — creating a new economy for content creators worldwide.</p>
+  </div>
+  <p>For too long, giant social platforms have monetized your attention without sharing the profits. We're changing that. Every post, every like, every share — you earn.</p>
+</section>
+
+<!-- STATS -->
+<section class="section">
+  <h2><i class="fas fa-chart-line"></i> By The Numbers</h2>
+  <div class="stats-grid">
+    <div class="stat-box">
+      <div class="num">$0.50</div>
+      <div class="lbl">Signup Bonus</div>
+    </div>
+    <div class="stat-box">
+      <div class="num">24/7</div>
+      <div class="lbl">AI Assistant</div>
+    </div>
+    <div class="stat-box">
+      <div class="num">100%</div>
+      <div class="lbl">Free to Join</div>
+    </div>
+    <div class="stat-box">
+      <div class="num">∞</div>
+      <div class="lbl">Earning Potential</div>
+    </div>
+  </div>
+</section>
+
+<!-- VALUES -->
+<section class="section">
+  <h2><i class="fas fa-heart"></i> Our Values</h2>
+  <div class="value-grid">
+    <div class="value-card">
+      <div class="value-icon"><i class="fas fa-users"></i></div>
+      <div class="value-content">
+        <h4>Community First</h4>
+        <p>We build features around what our users actually need — not what advertisers want.</p>
+      </div>
+    </div>
+    <div class="value-card">
+      <div class="value-icon"><i class="fas fa-shield-halved"></i></div>
+      <div class="value-content">
+        <h4>Privacy by Design</h4>
+        <p>Your data is yours. We use Row-Level Security to protect every conversation, post, and profile.</p>
+      </div>
+    </div>
+    <div class="value-card">
+      <div class="value-icon"><i class="fas fa-robot"></i></div>
+      <div class="value-content">
+        <h4>AI for Everyone</h4>
+        <p>From caption generation to content ideas — our AI helps creators at every skill level succeed.</p>
+      </div>
+    </div>
+    <div class="value-card">
+      <div class="value-icon"><i class="fas fa-coins"></i></div>
+      <div class="value-content">
+        <h4>Real Rewards</h4>
+        <p>Not points, not tokens — actual dollar value that grows as you grow your audience.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="section">
+  <h2><i class="fas fa-people-group"></i> The Team</h2>
+  <p>Built with passion by a small team dedicated to rewriting the rules of social media.</p>
+  <div class="team-grid">
+    <div class="team-card">
+      <div class="av">H</div>
+      <h4>Huzni's Family</h4>
+      <p>Founders & Vision</p>
+    </div>
+    <div class="team-card">
+      <div class="av">T</div>
+      <h4>TDA Developers</h4>
+      <p>Engineering Team</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-box">
+  <h3>Ready to join the future?</h3>
+  <p>Start earning from your content today — it takes 30 seconds.</p>
+  <div class="buttons">
+    <a href="register.html" class="primary">
+      <i class="fas fa-user-plus"></i> Create Free Account
+    </a>
+    <a href="index.html" class="outline">
+      <i class="fas fa-home"></i> Explore the Feed
+    </a>
+  </div>
+</section>
+
+<div id="app-footer"></div>
+
+<script src="auth.js"></script>
+</body>
+</html>
