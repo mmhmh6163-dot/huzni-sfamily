@@ -10,299 +10,269 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
-/* ==================== INSTAGRAM-STYLE OVERRIDES ==================== */
-body {
-  background: #0a0a0a;
-  padding-top: 60px;      /* top bar */
-  padding-bottom: 70px;   /* bottom nav */
-}
+body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 
-/* ---- TOP BAR ---- */
+/* ==================== TOP BAR ==================== */
 .ig-topbar {
-  position: fixed; top: 0; left: 0; right: 0; height: 60px;
-  background: rgba(10,10,10,0.97);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255,107,53,0.25);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 16px; z-index: 1000;
-  max-width: 640px; margin: 0 auto;
+  position:fixed; top:0; left:0; right:0; height:60px;
+  background:rgba(10,10,10,.97); backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,107,53,.25);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 16px; z-index:1000; max-width:640px; margin:0 auto;
 }
 .ig-topbar .brand {
-  font-size: 20px; font-weight: 800;
-  display: flex; align-items: center; gap: 8px;
-  text-decoration: none; color: inherit;
+  font-size:20px; font-weight:800;
+  display:flex; align-items:center; gap:8px;
+  text-decoration:none; color:inherit;
 }
-.ig-topbar .brand i { color: var(--az-accent); font-size: 22px; }
+.ig-topbar .brand i { color:var(--az-accent); font-size:22px; }
 .ig-topbar .brand span {
-  background: var(--az-gradient);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
+  background:var(--az-gradient);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
 }
-.ig-topbar .actions { display: flex; align-items: center; gap: 6px; }
+.ig-topbar .actions { display:flex; align-items:center; gap:4px; }
 .ig-icon-btn {
-  width: 40px; height: 40px; border-radius: 50%;
-  background: transparent; border: none; color: var(--az-text);
-  font-size: 20px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  position: relative; transition: background 0.2s;
+  width:40px; height:40px; border-radius:50%;
+  background:transparent; border:none; color:var(--az-text);
+  font-size:19px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  position:relative; text-decoration:none;
 }
-.ig-icon-btn:hover { background: rgba(255,255,255,0.06); }
+.ig-icon-btn:hover { background:rgba(255,255,255,.06); }
 .ig-icon-btn .dot {
-  position: absolute; top: 8px; right: 8px;
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--az-primary);
-  border: 2px solid #0a0a0a;
+  position:absolute; top:8px; right:8px;
+  width:8px; height:8px; border-radius:50%;
+  background:var(--az-primary); border:2px solid #0a0a0a;
 }
 
-/* ---- USER INFO STRIP ---- */
+/* ==================== USER STRIP (only when logged in) ==================== */
 .ig-user-strip {
-  max-width: 640px; margin: 0 auto;
-  padding: 12px 16px;
-  display: flex; align-items: center; gap: 12px;
-  background: rgba(255,255,255,0.03);
-  border-bottom: 1px solid rgba(255,107,53,0.15);
+  max-width:640px; margin:0 auto;
+  padding:12px 16px;
+  display:flex; align-items:center; gap:12px;
+  background:rgba(255,255,255,.03);
+  border-bottom:1px solid rgba(255,107,53,.15);
 }
 .ig-user-strip .avatar {
-  width: 42px; height: 42px; border-radius: 50%;
-  background: var(--az-gradient);
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700; color: #fff; font-size: 16px;
-  flex-shrink: 0;
+  width:42px; height:42px; border-radius:50%;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:#fff; font-size:16px; flex-shrink:0;
+  text-decoration:none; overflow:hidden;
 }
-.ig-user-strip .info { flex: 1; min-width: 0; }
+.ig-user-strip .info { flex:1; min-width:0; }
 .ig-user-strip .name {
-  font-weight: 700; font-size: 14px;
-  color: var(--az-text);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-weight:700; font-size:14px; color:var(--az-text);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 .ig-user-strip .balance {
-  font-size: 12px; color: var(--az-accent);
-  display: flex; align-items: center; gap: 4px;
+  font-size:12px; color:var(--az-accent);
+  display:flex; align-items:center; gap:4px;
 }
 .ig-user-strip .logout-mini {
-  background: transparent;
-  border: 1px solid rgba(255,118,117,0.5);
-  color: var(--az-danger);
-  padding: 6px 12px; border-radius: 18px;
-  font-size: 12px; cursor: pointer; font-weight: 600;
-  text-decoration: none;
+  background:transparent;
+  border:1px solid rgba(255,118,117,.5);
+  color:var(--az-danger); padding:6px 12px;
+  border-radius:18px; font-size:12px; font-weight:600;
+  cursor:pointer; text-decoration:none;
 }
-.ig-user-strip .logout-mini:hover { background: var(--az-danger); color: #fff; }
+.ig-user-strip .logout-mini:hover { background:var(--az-danger); color:#fff; }
 
-/* ---- STORIES ROW ---- */
+/* ==================== GUEST CTA (only when logged out) ==================== */
+.guest-cta {
+  max-width:640px; margin:0 auto;
+  padding:16px;
+  display:flex; align-items:center; gap:12px;
+  background:linear-gradient(135deg,rgba(255,107,53,.15),rgba(255,178,15,.08));
+  border-bottom:1px solid rgba(255,107,53,.2);
+}
+.guest-cta .text { flex:1; font-size:13px; color:var(--az-text); }
+.guest-cta .text strong { display:block; font-size:14px; margin-bottom:2px; }
+.guest-cta a {
+  padding:9px 16px; border-radius:20px;
+  background:var(--az-gradient); color:#fff;
+  font-weight:700; font-size:13px; text-decoration:none;
+  white-space:nowrap;
+}
+
+/* ==================== STORIES ==================== */
 .ig-stories {
-  max-width: 640px; margin: 0 auto;
-  display: flex; gap: 14px;
-  padding: 14px 16px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  max-width:640px; margin:0 auto;
+  display:flex; gap:14px; padding:14px 16px;
+  overflow-x:auto; scrollbar-width:none;
+  border-bottom:1px solid rgba(255,255,255,.05);
 }
-.ig-stories::-webkit-scrollbar { display: none; }
-.ig-story {
-  flex-shrink: 0; text-align: center; cursor: pointer;
-  width: 72px;
-}
+.ig-stories::-webkit-scrollbar { display:none; }
+.ig-story { flex-shrink:0; text-align:center; cursor:pointer; width:72px; }
 .ig-story-ring {
-  width: 64px; height: 64px; border-radius: 50%;
-  background: var(--az-gradient);
-  padding: 2.5px;
-  margin: 0 auto 6px;
+  width:64px; height:64px; border-radius:50%;
+  background:var(--az-gradient); padding:2.5px; margin:0 auto 6px;
 }
 .ig-story-ring .inner {
-  width: 100%; height: 100%; border-radius: 50%;
-  background: #0a0a0a;
-  border: 2px solid #0a0a0a;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700; color: #fff; font-size: 20px;
-  overflow: hidden;
+  width:100%; height:100%; border-radius:50%;
+  background:#0a0a0a; border:2px solid #0a0a0a;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:#fff; font-size:20px; overflow:hidden;
 }
-.ig-story-ring .inner img { width: 100%; height: 100%; object-fit: cover; }
-.ig-story.add .inner { background: var(--az-accent); color: #1a1a1a; }
+.ig-story.add .inner { background:var(--az-accent); color:#1a1a1a; }
 .ig-story .label {
-  font-size: 11px; color: var(--az-text-secondary);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size:11px; color:var(--az-text-secondary);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 
-/* ---- FEED ---- */
-.ig-feed { max-width: 640px; margin: 0 auto; }
-
+/* ==================== FEED ==================== */
+.ig-feed { max-width:640px; margin:0 auto; }
 .ig-post {
-  background: rgba(255,255,255,0.03);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  margin-bottom: 8px;
+  background:rgba(255,255,255,.03);
+  border-bottom:1px solid rgba(255,255,255,.06);
+  margin-bottom:8px;
 }
 .ig-post-head {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 16px;
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px;
 }
 .ig-post-head .p-avatar {
-  width: 38px; height: 38px; border-radius: 50%;
-  background: var(--az-gradient);
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700; color: #fff; font-size: 15px;
-  flex-shrink: 0;
+  width:38px; height:38px; border-radius:50%;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:#fff; font-size:15px; flex-shrink:0;
+  text-decoration:none; overflow:hidden;
 }
-.ig-post-head .meta { flex: 1; min-width: 0; }
+.ig-post-head .meta { flex:1; min-width:0; }
 .ig-post-head .meta .name {
-  font-weight: 700; font-size: 14px; color: var(--az-text);
-  display: flex; align-items: center; gap: 5px;
+  font-weight:700; font-size:14px; color:var(--az-text);
+  display:flex; align-items:center; gap:5px;
+  text-decoration:none;
 }
-.ig-post-head .meta .name .verified {
-  color: #3b82f6; font-size: 12px;
-}
+.ig-post-head .meta .name .verified { color:#3b82f6; font-size:12px; }
 .ig-post-head .meta .sub {
-  font-size: 11px; color: var(--az-text-secondary);
+  font-size:11px; color:var(--az-text-secondary);
 }
 .ig-post-head .more {
-  color: var(--az-text-secondary);
-  background: none; border: none;
-  font-size: 18px; cursor: pointer; padding: 6px;
+  color:var(--az-text-secondary);
+  background:none; border:none;
+  font-size:18px; cursor:pointer; padding:6px;
 }
 
 .ig-post-media {
-  width: 100%;
-  background: #000;
-  display: flex; align-items: center; justify-content: center;
-  max-height: 620px; overflow: hidden;
+  width:100%; background:#000;
+  display:flex; align-items:center; justify-content:center;
+  max-height:620px; overflow:hidden;
 }
 .ig-post-media img,
 .ig-post-media video {
-  width: 100%; height: auto;
-  max-height: 620px; object-fit: contain;
-  display: block;
+  width:100%; height:auto;
+  max-height:620px; object-fit:contain;
+  display:block;
 }
-.ig-post-body { padding: 10px 16px 14px; }
+.ig-post-body { padding:10px 16px 14px; }
 .ig-post-caption {
-  font-size: 14px; line-height: 1.5; color: var(--az-text);
-  margin-top: 6px;
-  word-wrap: break-word;
+  font-size:14px; line-height:1.5; color:var(--az-text);
+  margin-top:6px; word-wrap:break-word;
 }
-.ig-post-caption .cap-user { font-weight: 700; margin-right: 6px; }
+.ig-post-caption .cap-user { font-weight:700; margin-right:6px; }
 
 .ig-actions {
-  display: flex; align-items: center; gap: 16px;
-  padding: 8px 16px 6px;
+  display:flex; align-items:center; gap:16px;
+  padding:8px 16px 6px;
 }
 .ig-action {
-  background: none; border: none; color: var(--az-text);
-  font-size: 22px; cursor: pointer; padding: 4px;
-  display: flex; align-items: center;
-  transition: transform 0.15s ease;
+  background:none; border:none; color:var(--az-text);
+  font-size:22px; cursor:pointer; padding:4px;
+  display:flex; align-items:center;
+  transition:transform .15s ease;
 }
-.ig-action:hover { transform: scale(1.1); }
-.ig-action.liked { color: var(--az-primary); }
-.ig-action.save { margin-left: auto; }
+.ig-action:hover { transform:scale(1.1); }
+.ig-action.liked { color:var(--az-primary); }
+.ig-action.save { margin-left:auto; }
 
 .ig-likes {
-  padding: 2px 16px 4px;
-  font-size: 13px; font-weight: 700; color: var(--az-text);
+  padding:2px 16px 4px;
+  font-size:13px; font-weight:700; color:var(--az-text);
 }
 .ig-time {
-  padding: 4px 16px 12px;
-  font-size: 10px; color: var(--az-text-secondary);
-  text-transform: uppercase; letter-spacing: 0.5px;
+  padding:4px 16px 12px;
+  font-size:10px; color:var(--az-text-secondary);
+  text-transform:uppercase; letter-spacing:.5px;
 }
 
-/* ---- EMPTY ---- */
+/* ==================== EMPTY ==================== */
 .ig-empty {
-  text-align: center; padding: 60px 24px;
-  color: var(--az-text-secondary);
+  text-align:center; padding:60px 24px;
+  color:var(--az-text-secondary);
 }
 .ig-empty i {
-  font-size: 56px; color: var(--az-primary);
-  opacity: 0.4; margin-bottom: 16px; display: block;
+  font-size:56px; color:var(--az-primary);
+  opacity:.4; margin-bottom:16px; display:block;
 }
-.ig-empty h3 { color: var(--az-text); font-size: 17px; margin-bottom: 6px; }
-.ig-empty p { font-size: 14px; }
+.ig-empty h3 { color:var(--az-text); font-size:17px; margin-bottom:6px; }
+.ig-empty p { font-size:14px; }
 
-/* ---- BOTTOM NAV ---- */
+/* ==================== BOTTOM NAV ==================== */
 .ig-bottom-nav {
-  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-  width: 100%; max-width: 640px;
-  background: rgba(10,10,10,0.98);
-  backdrop-filter: blur(12px);
-  border-top: 1px solid rgba(255,107,53,0.25);
-  display: flex; justify-content: space-around; align-items: center;
-  padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
-  z-index: 1000;
+  position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+  width:100%; max-width:640px;
+  background:rgba(10,10,10,.98);
+  backdrop-filter:blur(12px);
+  border-top:1px solid rgba(255,107,53,.25);
+  display:flex; justify-content:space-around; align-items:center;
+  padding:8px 0 calc(8px + env(safe-area-inset-bottom));
+  z-index:1000;
 }
 .ig-bottom-nav .bnav-item {
-  background: none; border: none; color: var(--az-text-secondary);
-  display: flex; flex-direction: column; align-items: center;
-  gap: 3px; cursor: pointer; padding: 4px 12px;
-  font-size: 10px; text-decoration: none;
+  background:none; border:none; color:var(--az-text-secondary);
+  display:flex; flex-direction:column; align-items:center;
+  gap:3px; cursor:pointer; padding:4px 12px;
+  font-size:10px; text-decoration:none;
 }
-.ig-bottom-nav .bnav-item i { font-size: 22px; }
-.ig-bottom-nav .bnav-item.active { color: var(--az-text); }
+.ig-bottom-nav .bnav-item i { font-size:22px; }
+.ig-bottom-nav .bnav-item.active { color:var(--az-text); }
 .ig-bottom-nav .bnav-item.create {
-  color: #fff;
-  background: var(--az-gradient);
-  width: 44px; height: 44px; border-radius: 12px;
-  padding: 0; justify-content: center;
+  color:#fff; background:var(--az-gradient);
+  width:44px; height:44px; border-radius:12px;
+  padding:0; justify-content:center;
 }
-.ig-bottom-nav .bnav-item.create i { font-size: 20px; }
-.ig-bottom-nav .bnav-item .bnav-avatar {
-  width: 26px; height: 26px; border-radius: 50%;
-  background: var(--az-gradient);
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700; color: #fff; font-size: 11px;
+.ig-bottom-nav .bnav-item.create i { font-size:20px; }
+.ig-bottom-nav .bnav-avatar {
+  width:26px; height:26px; border-radius:50%;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:#fff; font-size:11px;
+  border:2px solid var(--az-text);
 }
-
-/* ---- LANDING (logged out) ---- */
-body.logged-out { padding-bottom: 0; }
-body.logged-out .ig-topbar { display: none; }
-body.logged-out .ig-bottom-nav { display: none; }
-body.logged-out { padding-top: 70px; }
-
-/* ---- DESKTOP ---- */
-@media (min-width: 700px) {
-  body { padding-top: 60px; }
-  .ig-topbar { max-width: 640px; }
-  .ig-bottom-nav { border-radius: 16px 16px 0 0; }
+.ig-bottom-nav .bnav-avatar.no-auth {
+  background:transparent; border:2px solid var(--az-text-secondary);
+  color:var(--az-text-secondary);
 }
 
-/* ---- RESPONSIVE ---- */
-@media (max-width: 380px) {
-  .ig-user-strip .name { font-size: 13px; }
-  .ig-story { width: 64px; }
-  .ig-story-ring { width: 56px; height: 56px; }
+/* ==================== MOBILE ==================== */
+@media (max-width:380px) {
+  .ig-user-strip .name { font-size:13px; }
+  .ig-story { width:64px; }
+  .ig-story-ring { width:56px; height:56px; }
 }
 </style>
 </head>
 <body>
 
-<!-- LOADER -->
 <div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
 
-<!-- ============ TOP BAR ============ -->
-<header class="ig-topbar" id="igTopbar" style="display:none;">
+<!-- ==================== TOP BAR ==================== -->
+<header class="ig-topbar">
   <a href="index.html" class="brand">
     <i class="fas fa-mountain-sun"></i>
     <span>Arizona AI</span>
   </a>
-  <div class="actions">
-    <a href="Friends.html" class="ig-icon-btn" title="Friends">
-      <i class="far fa-heart"></i>
-    </a>
-    <a href="chats.html" class="ig-icon-btn" title="Messages">
-      <i class="far fa-paper-plane"></i>
-      <span class="dot"></span>
-    </a>
-    <a href="notifications.html" class="ig-icon-btn" title="Notifications">
-      <i class="far fa-bell"></i>
-      <span class="dot"></span>
-    </a>
+  <div class="actions" id="topActions">
+    <!-- Filled by JS -->
   </div>
 </header>
 
-<!-- ============ USER INFO STRIP ============ -->
+<!-- ==================== USER STRIP (logged in) ==================== -->
 <div class="ig-user-strip" id="userStrip" style="display:none;">
   <a href="profile.html" class="avatar" id="uAvatar">U</a>
   <div class="info">
-    <div class="name">
-      <span id="uName">User</span>
-      <i class="fas fa-circle-check" style="color:#3b82f6; font-size:11px;"></i>
-    </div>
+    <div class="name" id="uName">User</div>
     <div class="balance">
       <i class="fas fa-wallet"></i>
       <span id="uBalance">$0.00</span>
@@ -314,167 +284,163 @@ body.logged-out { padding-top: 70px; }
   </a>
 </div>
 
-<!-- ============ STORIES ROW ============ -->
-<div class="ig-stories" id="storiesRow" style="display:none;">
-  <div class="ig-story add" onclick="openCreate()">
+<!-- ==================== GUEST CTA (logged out) ==================== -->
+<div class="guest-cta" id="guestCta" style="display:none;">
+  <div class="text">
+    <strong>🏜️ Welcome to Arizona AI</strong>
+    Sign up free — earn money for your posts!
+  </div>
+  <a href="register.html">Sign Up</a>
+</div>
+
+<!-- ==================== STORIES ==================== -->
+<div class="ig-stories" id="storiesRow">
+  <div class="ig-story add" onclick="goToPost()">
     <div class="ig-story-ring"><div class="inner"><i class="fas fa-plus"></i></div></div>
     <div class="label">Your story</div>
   </div>
-  <!-- Story placeholders — replaced with real ones later -->
 </div>
 
-<!-- ============ FEED ============ -->
-<main class="ig-feed" id="feed" style="display:none;">
+<!-- ==================== FEED ==================== -->
+<main class="ig-feed" id="feed">
   <div class="ig-empty">
     <i class="fas fa-circle-notch fa-spin"></i>
     Loading posts…
   </div>
 </main>
 
-<!-- ============ LANDING (logged out) ============ -->
-<div id="landing" style="display:none;">
-  <div id="app-header"></div>
-
-  <section class="hero">
-    <div class="hero-content">
-      <h1>🏜️ Arizona AI</h1>
-      <p>AI-powered social media that pays you for your content. Post videos, shorts, and notes — get rewarded for every interaction.</p>
-      <div class="hero-buttons">
-        <a href="register.html" class="btn-hero btn-hero-primary">
-          <i class="fas fa-user-plus"></i> Sign Up Free
-        </a>
-        <a href="login.html" class="btn-hero btn-hero-secondary">
-          <i class="fas fa-sign-in-alt"></i> Login
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <section class="features">
-    <div class="feature-card"><div class="feature-icon">🤖</div><h3>AI Integration</h3><p>AI-powered features that enhance your content and experience.</p></div>
-    <div class="feature-card"><div class="feature-icon">💰</div><h3>Earn Money</h3><p>Get paid for your posts, videos, and participation on the platform.</p></div>
-    <div class="feature-card"><div class="feature-icon">📱</div><h3>Short Videos</h3><p>Share short and long-form video content with the community.</p></div>
-    <div class="feature-card"><div class="feature-icon">💬</div><h3>Real-time Chat</h3><p>Connect with friends and community instantly.</p></div>
-    <div class="feature-card"><div class="feature-icon">📊</div><h3>Exchange Market</h3><p>Access crypto and forex markets directly from the platform.</p></div>
-    <div class="feature-card"><div class="feature-icon">🎯</div><h3>Targeted Ads</h3><p>Reach your audience with our advanced advertising system.</p></div>
-  </section>
-
-  <div id="app-footer"></div>
-</div>
-
-<!-- ============ BOTTOM NAV ============ -->
-<nav class="ig-bottom-nav" id="bottomNav" style="display:none;">
+<!-- ==================== BOTTOM NAV ==================== -->
+<nav class="ig-bottom-nav" id="bottomNav">
   <a href="index.html" class="bnav-item active">
     <i class="fas fa-home"></i><span>Home</span>
   </a>
   <a href="Friends.html" class="bnav-item">
     <i class="fas fa-search"></i><span>Search</span>
   </a>
-  <button class="bnav-item create" onclick="openCreate()">
+  <a href="Post.html" class="bnav-item create" id="createBtn">
     <i class="fas fa-plus"></i>
-  </button>
-  <a href="notifications.html" class="bnav-item">
+  </a>
+  <a href="chats.html" class="bnav-item">
     <i class="far fa-heart"></i><span>Activity</span>
   </a>
-  <a href="profile.html" class="bnav-item">
-    <div class="bnav-avatar" id="bnavAvatar">U</div>
+  <a href="profile.html" class="bnav-item" id="profileNav">
+    <div class="bnav-avatar no-auth" id="bnavAvatar"><i class="far fa-user"></i></div>
     <span>Profile</span>
   </a>
 </nav>
 
-<!-- ============ CREATE POST MODAL ============ -->
-<div id="createModal" style="
-  display:none; position:fixed; inset:0;
-  background:rgba(0,0,0,0.85); z-index:2000;
-  align-items:flex-end; justify-content:center;
-">
-  <div style="
-    background:#151515; width:100%; max-width:640px;
-    border-top-left-radius:20px; border-top-right-radius:20px;
-    padding:20px; padding-bottom:calc(20px + env(safe-area-inset-bottom));
-  ">
-    <div style="width:40px; height:4px; background:#333; border-radius:2px; margin:0 auto 16px;"></div>
-    <h3 style="text-align:center; color:var(--az-accent); margin-bottom:14px;">Create Post</h3>
-    <textarea id="postContent" placeholder="What's on your mind?" style="
-      width:100%; min-height:120px; padding:14px;
-      background:#0a0a0a; border:1px solid #333; border-radius:12px;
-      color:#fff; font-size:15px; font-family:inherit; resize:vertical;
-    "></textarea>
-    <div style="display:flex; gap:10px; margin-top:14px;">
-      <button onclick="closeCreate()" style="
-        flex:1; padding:13px; border-radius:12px;
-        background:transparent; border:1px solid #333;
-        color:#fff; font-weight:600; cursor:pointer;
-      ">Cancel</button>
-      <button onclick="submitPost()" id="postBtn" style="
-        flex:2; padding:13px; border-radius:12px;
-        background:linear-gradient(135deg,#FF6B35 0%,#FFB20F 100%);
-        border:none; color:#fff; font-weight:700; cursor:pointer;
-      "><i class="fas fa-paper-plane"></i> Post</button>
-    </div>
-  </div>
-</div>
-
-<!-- ============ SCRIPTS ============ -->
 <script src="auth.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // Wait for auth to be ready
   const check = setInterval(() => {
     if (typeof authReady !== 'undefined' && authReady) {
       clearInterval(check);
-      renderPage();
+      init();
     }
   }, 100);
 });
 
-function renderPage() {
-  if (currentUser) {
-    // Logged in → show Instagram layout
-    document.body.classList.remove('logged-out');
-    document.getElementById('igTopbar').style.display   = 'flex';
-    document.getElementById('userStrip').style.display  = 'flex';
-    document.getElementById('storiesRow').style.display = 'flex';
-    document.getElementById('feed').style.display       = 'block';
-    document.getElementById('bottomNav').style.display  = 'flex';
-    document.getElementById('landing').style.display    = 'none';
+function init() {
+  renderTopActions();
+  renderUserSection();
+  renderBottomAvatar();
+  loadFeed();
+}
 
-    // Fill user info
+/* ==================== TOP ACTIONS ==================== */
+function renderTopActions() {
+  const el = document.getElementById('topActions');
+  if (currentUser) {
+    el.innerHTML = `
+      <a href="Friends.html" class="ig-icon-btn" title="Friends">
+        <i class="far fa-heart"></i>
+      </a>
+      <a href="chats.html" class="ig-icon-btn" title="Messages">
+        <i class="far fa-paper-plane"></i>
+        <span class="dot"></span>
+      </a>
+      <a href="notifications.html" class="ig-icon-btn" title="Notifications">
+        <i class="far fa-bell"></i>
+      </a>
+    `;
+  } else {
+    el.innerHTML = `
+      <a href="login.html" class="ig-icon-btn" title="Login" style="width:auto; padding:0 12px; font-size:13px; font-weight:600;">
+        Login
+      </a>
+      <a href="register.html" class="ig-icon-btn" title="Sign Up" style="width:auto; padding:0 12px; font-size:13px; font-weight:600; background:var(--az-gradient); color:#fff;">
+        Sign Up
+      </a>
+    `;
+  }
+}
+
+/* ==================== USER SECTION ==================== */
+function renderUserSection() {
+  const strip = document.getElementById('userStrip');
+  const cta   = document.getElementById('guestCta');
+
+  if (currentUser) {
+    strip.style.display = 'flex';
+    cta.style.display   = 'none';
+
     const name = currentProfile?.username || currentUser.email?.split('@')[0] || 'User';
     const bal  = Number(currentWallet?.balance ?? 0).toFixed(2);
     const initial = name.charAt(0).toUpperCase();
 
-    document.getElementById('uName').textContent = name;
+    document.getElementById('uName').textContent    = name;
     document.getElementById('uBalance').textContent = '$' + bal;
-    document.getElementById('uAvatar').textContent = initial;
-    document.getElementById('bnavAvatar').textContent = initial;
-
-    loadFeed();
-
+    document.getElementById('uAvatar').textContent  = initial;
   } else {
-    // Logged out → show landing
-    document.body.classList.add('logged-out');
-    document.getElementById('igTopbar').style.display   = 'none';
-    document.getElementById('userStrip').style.display  = 'none';
-    document.getElementById('storiesRow').style.display = 'none';
-    document.getElementById('feed').style.display       = 'none';
-    document.getElementById('bottomNav').style.display  = 'none';
-    document.getElementById('landing').style.display    = 'block';
+    strip.style.display = 'none';
+    cta.style.display   = 'flex';
   }
 }
 
-// Re-render when auth state changes
-function onAuthChange() { renderPage(); }
+/* ==================== BOTTOM AVATAR ==================== */
+function renderBottomAvatar() {
+  const av = document.getElementById('bnavAvatar');
+  if (currentUser) {
+    const name = currentProfile?.username || currentUser.email?.split('@')[0] || 'U';
+    av.classList.remove('no-auth');
+    av.textContent = name.charAt(0).toUpperCase();
+    av.style.background = 'var(--az-gradient)';
+    av.style.color = '#fff';
+    av.style.border = '2px solid var(--az-text)';
+  } else {
+    av.classList.add('no-auth');
+    av.innerHTML = '<i class="far fa-user"></i>';
+    av.style.background = 'transparent';
+    av.style.color = 'var(--az-text-secondary)';
+    av.style.border = '2px solid var(--az-text-secondary)';
+  }
+}
 
-// ==================== FEED ====================
+/* ==================== NAV TO POST ==================== */
+function goToPost() {
+  if (!currentUser) {
+    window.location.href = 'login.html';
+  } else {
+    window.location.href = 'Post.html';
+  }
+}
+
+/* ==================== FEED ==================== */
 async function loadFeed() {
   const feed = document.getElementById('feed');
   feed.innerHTML = '<div class="ig-empty"><i class="fas fa-circle-notch fa-spin"></i>Loading posts…</div>';
 
   try {
+    // Public feed — no auth required
     const { data, error } = await supabaseClient
       .from('posts')
-      .select('*, profiles(username, avatar_url, is_verified)')
+      .select(`
+        *,
+        profiles:user_id (
+          username, display_name, avatar_url, is_verified
+        )
+      `)
+      .eq('visibility', 'public')
       .order('created_at', { ascending: false })
       .limit(50);
 
@@ -485,50 +451,54 @@ async function loadFeed() {
         <div class="ig-empty">
           <i class="far fa-newspaper"></i>
           <h3>No posts yet</h3>
-          <p>Be the first to post — tap ➕ below!</p>
+          <p>${currentUser ? 'Be the first to post — tap ➕ below!' : 'Sign up to be the first to post!'}</p>
         </div>`;
       return;
     }
 
-    feed.innerHTML = data.map(renderPost).join('');
+    feed.innerHTML = data.map(post => renderPost(post)).join('');
+
   } catch (err) {
-    console.error(err);
+    console.error('Feed error:', err);
     feed.innerHTML = `
       <div class="ig-empty">
         <i class="fas fa-exclamation-triangle"></i>
         <h3>Couldn't load feed</h3>
-        <p style="opacity:0.6; font-size:12px;">${escapeHtml(err.message)}</p>
+        <p style="opacity:.6; font-size:12px;">${escapeHtml(err.message)}</p>
       </div>`;
   }
 }
 
 function renderPost(post) {
-  const prof     = post.profiles || {};
-  const name     = prof.username || post.username || 'user';
-  const initial  = name.charAt(0).toUpperCase();
+  const prof    = post.profiles || {};
+  const name    = prof.display_name || prof.username || 'user';
+  const uname   = prof.username || 'user';
+  const initial = name.charAt(0).toUpperCase();
   const verified = prof.is_verified ? '<i class="fas fa-circle-check verified"></i>' : '';
-  const timeAgo  = formatTimeAgo(post.created_at);
+  const timeAgo = formatTimeAgo(post.created_at);
+  const avatarHtml = prof.avatar_url
+    ? `<img src="${escapeHtml(prof.avatar_url)}" alt="">`
+    : initial;
 
-  // Media
   const mediaUrls = Array.isArray(post.media_urls) ? post.media_urls : [];
   const mediaHtml = mediaUrls.map(url => {
     if (/\.(mp4|webm|ogg|mov)$/i.test(url)) {
-      return `<video src="${escapeHtml(url)}" controls playsinline></video>`;
+      return `<video src="${escapeHtml(url)}" controls playsinline preload="metadata"></video>`;
     }
     return `<img src="${escapeHtml(url)}" alt="" loading="lazy">`;
   }).join('');
 
   const caption = post.content
-    ? `<div class="ig-post-caption"><span class="cap-user">${escapeHtml(name)}</span>${escapeHtml(post.content)}</div>`
+    ? `<div class="ig-post-caption"><span class="cap-user">${escapeHtml(uname)}</span>${escapeHtml(post.content)}</div>`
     : '';
 
   return `
     <article class="ig-post" data-id="${post.id}">
       <div class="ig-post-head">
-        <div class="p-avatar">${initial}</div>
+        <a href="profile.html?user=${post.user_id}" class="p-avatar">${avatarHtml}</a>
         <div class="meta">
-          <div class="name">${escapeHtml(name)} ${verified}</div>
-          <div class="sub">Original audio · AI recommended</div>
+          <a href="profile.html?user=${post.user_id}" class="name">${escapeHtml(name)} ${verified}</a>
+          <div class="sub">@${escapeHtml(uname)} · ${timeAgo}</div>
         </div>
         <button class="more"><i class="fas fa-ellipsis-h"></i></button>
       </div>
@@ -539,27 +509,36 @@ function renderPost(post) {
         <button class="ig-action" onclick="likePost('${post.id}', this)">
           <i class="far fa-heart"></i>
         </button>
-        <button class="ig-action"><i class="far fa-comment"></i></button>
-        <button class="ig-action"><i class="far fa-paper-plane"></i></button>
-        <button class="ig-action save"><i class="far fa-bookmark"></i></button>
+        <button class="ig-action" onclick="showToast('Comments coming soon')">
+          <i class="far fa-comment"></i>
+        </button>
+        <button class="ig-action" onclick="sharePost('${post.id}')">
+          <i class="far fa-paper-plane"></i>
+        </button>
+        <button class="ig-action save" onclick="showToast('Saved to collection')">
+          <i class="far fa-bookmark"></i>
+        </button>
       </div>
 
-      <div class="ig-likes">${post.likes_count || 0} likes</div>
+      <div class="ig-likes" id="likes-${post.id}">${post.likes_count || 0} likes</div>
       ${caption}
       <div class="ig-time">${timeAgo}</div>
     </article>
   `;
 }
 
+/* ==================== LIKE ==================== */
 async function likePost(postId, btn) {
-  if (!currentUser) return showToast('Sign in to like', 'error');
+  if (!currentUser) {
+    showToast('Sign in to like posts', 'error');
+    return;
+  }
 
   const icon = btn.querySelector('i');
   const liked = btn.classList.toggle('liked');
   icon.className = liked ? 'fas fa-heart' : 'far fa-heart';
 
   try {
-    // Call the update
     const { data, error } = await supabaseClient
       .from('posts').select('likes_count').eq('id', postId).single();
     if (error) throw error;
@@ -567,59 +546,40 @@ async function likePost(postId, btn) {
     const newCount = (data.likes_count || 0) + (liked ? 1 : -1);
     await supabaseClient.from('posts').update({ likes_count: newCount }).eq('id', postId);
 
-    // Update the likes display
-    const card = btn.closest('.ig-post');
-    if (card) {
-      const likesEl = card.querySelector('.ig-likes');
-      if (likesEl) likesEl.textContent = `${newCount} likes`;
-    }
+    const likesEl = document.getElementById('likes-' + postId);
+    if (likesEl) likesEl.textContent = `${newCount} likes`;
   } catch (err) {
     console.error(err);
   }
 }
 
-// ==================== CREATE POST ====================
-function openCreate() {
-  if (!currentUser) {
-    window.location.href = 'login.html';
-    return;
+/* ==================== SHARE ==================== */
+async function sharePost(postId) {
+  const url = window.location.origin + '/huzni-sfamily/index.html?post=' + postId;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'Arizona AI',
+        text: 'Check out this post on Arizona AI!',
+        url: url
+      });
+      return;
+    } catch (e) {
+      // user cancelled → fall through
+    }
   }
-  document.getElementById('createModal').style.display = 'flex';
-}
-function closeCreate() {
-  document.getElementById('createModal').style.display = 'none';
-  document.getElementById('postContent').value = '';
-}
-async function submitPost() {
-  const content = document.getElementById('postContent').value.trim();
-  if (!content) return showToast('Write something first', 'error');
 
-  const btn = document.getElementById('postBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Posting…';
-
+  // Clipboard fallback
   try {
-    const { error } = await supabaseClient.from('posts').insert({
-      user_id: currentUser.id,
-      content,
-      likes_count: 0,
-      comments_count: 0,
-      shares_count: 0
-    });
-    if (error) throw error;
-
-    closeCreate();
-    showToast('Posted! 🎉', 'success');
-    loadFeed();
-  } catch (err) {
-    showToast(err.message, 'error');
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post';
+    await navigator.clipboard.writeText(url);
+    showToast('Link copied! 📋', 'success');
+  } catch {
+    showToast('Link: ' + url);
   }
 }
 
-// ==================== UTIL ====================
+/* ==================== HELPERS ==================== */
 function formatTimeAgo(dateStr) {
   const seconds = Math.floor((Date.now() - new Date(dateStr)) / 1000);
   if (seconds < 60) return 'Just now';
