@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Friends — Arizona AI</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+
+<style>
+body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
+
+.topbar {
+  position:fixed; top:0; left:0; right:0; height:60px;
+  background:rgba(10,10,10,.97); backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,107,53,.25);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 16px; z-index:1000; max-width:640px; margin:0 auto;
+}
+.topbar .back, .topbar .icon-btn {
+  color:var(--az-text); font-size:19px;
+  width:40px; height:40px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%; text-decoration:none;
+}
+.topbar .title { font-size:16px; font-weight:700; }
+
+.search-bar {
+  max-width:640px; margin:16px auto 8px;
+  padding:0 16px;
+}
+.search-bar .wrap {
+  display:flex; align-items:center; gap:10px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:12px; padding:12px 14px;
+}
+.search-bar i { color:var(--az-text-secondary); }
+.search-bar input {
+  flex:1; background:transparent; border:none;
+  color:var(--az-text); font-size:15px;
+  font-family:inherit;
+}
+.search-bar input:focus { outline:none; }
+.search-bar input::placeholder { color:var(--az-text-secondary); }
+
+/* Tabs */
+.tabs {
+  max-width:640px; margin:16px auto 0;
+  padding:0 16px;
+  display:flex; gap:8px;
+}
+.tabs .tab {
+  flex:1; padding:10px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;
+  color:var(--az-text-secondary);
+  font-size:13px; font-weight:600;
+  cursor:pointer;
+}
+.tabs .tab.active {
+  background:rgba(255,107,53,.15);
+  border-color:var(--az-primary);
+  color:var(--az-accent);
+}
+
+/* User list */
+.user-list {
+  max-width:640px; margin:16px auto;
+  padding:0 16px;
+}
+.user-row {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.user-row .av {
+  width:48px; height:48px; border-radius:50%;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:#fff; font-size:18px;
+  flex-shrink:0; text-decoration:none;
+  overflow:hidden;
+}
+.user-row .av img { width:100%; height:100%; object-fit:cover; }
+.user-row .info { flex:1; min-width:0; }
+.user-row .info .name {
+  font-size:14px; font-weight:700; color:var(--az-text);
+  display:flex; align-items:center; gap:5px;
+  text-decoration:none;
+}
+.user-row .info .name .v { color:#3b82f6; font-size:12px; }
+.user-row .info .sub {
+  font-size:12px; color:var(--az-text-secondary); margin-top:2px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.follow-btn {
+  padding:8px 18px; border-radius:20px;
+  background:var(--az-gradient); color:#fff;
+  border:none; font-weight:700; font-size:13px;
+  cursor:pointer; white-space:nowrap;
+}
+.follow-btn.following {
+  background:transparent;
+  border:1px solid rgba(255,255,255,.2);
+  color:var(--az-text);
+}
+.follow-btn:disabled { opacity:.6; cursor:not-allowed; }
+
+.empty {
+  text-align:center; padding:60px 20px;
+  color:var(--az-text-secondary);
+}
+.empty i {
+  font-size:44px; color:var(--az-primary);
+  opacity:.4; margin-bottom:12px; display:block;
+}
+.empty h3 { color:var(--az-text); font-size:15px; margin-bottom:6px; }
+</style>
+</head>
+<body>
+
+<div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
+
+<header class="topbar">
+  <a href="index.html" class="back"><i class="fas fa-arrow-left"></i></a>
+  <span class="title">Friends</span>
+  <a href="chats.html" class="icon-btn"><i class="far fa-paper-plane"></i></a>
+</header>
+
+<div class="search-bar">
+  <div class="wrap">
+    <i class="fas fa-search"></i>
+    <input type="text" id="searchInput" placeholder="Search users by username…" oninput="debouncedSearch()">
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('all', this)">All Users</button>
+  <button class="tab" onclick="switchTab('following', this)">Following</button>
+</div>
+
+<div class="user-list" id="userList">
+  <div class="empty"><i class="fas fa-circle-notch fa-spin"></i>Loading…</div>
+</div>
+
+<script src="auth.js"></script>
+<script>
+let currentTab = 'all';
+let searchQuery = '';
+let searchTimer = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const check = setInterval(() => {
+    if (typeof authReady !== 'undefined' && authReady) {
+      clearInterval(check);
+      loadUsers();
+    }
+  }, 100);
+});
+
+function debouncedSearch() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    searchQuery = document.getElementById('searchInput').value.trim();
+    loadUsers();
+  }, 350);
+}
+
+function switchTab(tab, el) {
+  currentTab = tab;
+  document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  loadUsers();
+}
+
+async function loadUsers() {
+  const list = document.getElementById('userList');
+  list.innerHTML = '<div class="empty"><i class="fas fa-circle-notch fa-spin"></i>Loading…</div>';
+
+  try {
+    let query = supabaseClient
+      .from('profiles')
+      .select('id, username, display_name, avatar_url, is_verified, followers_count, bio')
+      .limit(50);
+
+    if (searchQuery) {
+      query = query.ilike('username', `%${searchQuery}%`);
+    }
+
+    if (currentUser) {
+      query = query.neq('id', currentUser.id);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      list.innerHTML = `
+        <div class="empty">
+          <i class="fas fa-user-friends"></i>
+          <h3>${searchQuery ? 'No users found' : 'No users yet'}</h3>
+          <p>${searchQuery ? 'Try a different search' : 'Be the first to invite friends!'}</p>
+        </div>`;
+      return;
+    }
+
+    // Load who we follow
+    let followingIds = new Set();
+    if (currentUser) {
+      const { data: follows } = await supabaseClient
+        .from('follows')
+        .select('following_id')
+        .eq('follower_id', currentUser.id);
+      followingIds = new Set((follows || []).map(f => f.following_id));
+    }
+
+    // Filter for "following" tab
+    const filtered = currentTab === 'following'
+      ? data.filter(u => followingIds.has(u.id))
+      : data;
+
+    if (filtered.length === 0) {
+      list.innerHTML = `
+        <div class="empty">
+          <i class="fas fa-user-friends"></i>
+          <h3>${currentTab === 'following' ? 'Not following anyone yet' : 'No users found'}</h3>
+          <p>${currentTab === 'following' ? 'Search for people to follow!' : ''}</p>
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(u => renderUser(u, followingIds.has(u.id))).join('');
+
+  } catch (err) {
+    console.error(err);
+    list.innerHTML = `<div class="empty"><i class="fas fa-exclamation-triangle"></i><h3>Couldn't load</h3><p>${escapeHtml(err.message)}</p></div>`;
+  }
+}
+
+function renderUser(u, isFollowing) {
+  const name    = u.display_name || u.username || 'user';
+  const uname   = u.username || 'user';
+  const initial = name.charAt(0).toUpperCase();
+  const verified = u.is_verified ? '<i class="fas fa-circle-check v"></i>' : '';
+  const bio     = u.bio || `@${uname}`;
+  const avatar  = u.avatar_url
+    ? `<img src="${escapeHtml(u.avatar_url)}" alt="">`
+    : initial;
+
+  return `
+    <div class="user-row" data-id="${u.id}">
+      <a href="profile.html?user=${u.id}" class="av">${avatar}</a>
+      <div class="info">
+        <a href="profile.html?user=${u.id}" class="name">${escapeHtml(name)} ${verified}</a>
+        <div class="sub">${escapeHtml(bio)}</div>
+      </div>
+      <button class="follow-btn ${isFollowing ? 'following' : ''}"
+              onclick="toggleFollow('${u.id}', this)">
+        ${isFollowing ? 'Following' : 'Follow'}
+      </button>
+    </div>
+  `;
+}
+
+async function toggleFollow(targetId, btn) {
+  if (!currentUser) {
+    showToast('Sign in to follow users', 'error');
+    return;
+  }
+  btn.disabled = true;
+  const isFollowing = btn.classList.contains('following');
+
+  try {
+    if (isFollowing) {
+      const { error } = await supabaseClient
+        .from('follows')
+        .delete()
+        .eq('follower_id', currentUser.id)
+        .eq('following_id', targetId);
+      if (error) throw error;
+      btn.classList.remove('following');
+      btn.textContent = 'Follow';
+      showToast('Unfollowed', 'success');
+    } else {
+      const { error } = await supabaseClient
+        .from('follows')
+        .insert({ follower_id: currentUser.id, following_id: targetId });
+      if (error) throw error;
+      btn.classList.add('following');
+      btn.textContent = 'Following';
+      showToast('Following ✅', 'success');
+    }
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
