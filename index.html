@@ -432,7 +432,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   cursor:pointer;
 }
 
-/* Feed skeleton */
 .feed-skeleton { padding: 12px 0; }
 .feed-skeleton .sk-row {
   background: rgba(255,255,255,.03);
@@ -1005,7 +1004,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 <!-- ==================== TOP BAR ==================== -->
 <header class="ig-topbar">
   <a href="index.html" class="brand">
-    <img src="arizonan%20png%20icon.jpeg" alt="Arizonan" class="brand-logo">
+    <img src="arizonan%20png%20icon.jpeg" alt="Arizonan logo" class="brand-logo" decoding="async">
     <span>Arizona AI</span>
   </a>
   <div class="actions" id="topActions"></div>
@@ -1336,8 +1335,9 @@ let pendingNewPosts = false;
 let realtimeFeedChannel = null;
 
 let viewObserver = null;
+let videoObserver = null;
 const viewedPosts = new Set();
-const shownBoostedIds = new Set(); // prevent boosted duplicates across pages
+const shownBoostedIds = new Set();
 
 let boostStats = null;
 
@@ -1414,6 +1414,7 @@ async function init() {
   setupInfiniteScroll();
   setupPullToRefresh();
   setupViewObserver();
+  setupVideoAutopause();
 
   if (deepLinkPostId) {
     setTimeout(() => {
@@ -1491,7 +1492,7 @@ function renderUserSection() {
     document.getElementById('uName').textContent = name;
     document.getElementById('uBalance').textContent = '$' + bal;
     const uAvatarEl = document.getElementById('uAvatar');
-    if (av) uAvatarEl.innerHTML = `<img src="${escapeHtml(av)}" alt="">`;
+    if (av) uAvatarEl.innerHTML = `<img src="${escapeHtml(av)}" alt="User avatar" onerror="this.style.display='none'">`;
     else uAvatarEl.textContent = name.charAt(0).toUpperCase();
   } else {
     strip.style.display = 'none';
@@ -1504,7 +1505,7 @@ function renderBottomAvatar() {
   if (currentUser) {
     const name = currentProfile?.username || currentUser.email?.split('@')[0] || 'U';
     const img  = currentProfile?.avatar_url;
-    if (img) av.innerHTML = `<img src="${escapeHtml(img)}" alt="">`;
+    if (img) av.innerHTML = `<img src="${escapeHtml(img)}" alt="User avatar" onerror="this.style.display='none'">`;
     else av.textContent = name.charAt(0).toUpperCase();
   } else {
     av.innerHTML = '<i class="far fa-user"></i>';
@@ -1572,7 +1573,7 @@ function openBoostFromNudge() {
 }
 
 /* ============================================================
-   FEED LOADING — mode-aware with guaranteed boosted posts
+   FEED LOADING
    ============================================================ */
 async function resetAndLoadFeed() {
   feedOffset = 0;
@@ -1636,6 +1637,7 @@ async function loadMoreFeed(replace = false) {
     }
 
     observeVisiblePosts();
+    setupVideoAutopause();
   } catch (err) {
     console.error('[Feed]', err);
     const loader = document.getElementById('feedLoader');
@@ -1649,7 +1651,7 @@ async function loadMoreFeed(replace = false) {
 }
 
 /* ============================================================
-   FETCH POSTS FOR MODE — the heart of the boost logic
+   FETCH POSTS FOR MODE
    ============================================================ */
 async function fetchPostsForMode() {
   const from = feedOffset;
@@ -1657,7 +1659,7 @@ async function fetchPostsForMode() {
   const nowIso = new Date().toISOString();
   const selectFields = `*, profiles:user_id (username, display_name, avatar_url, is_verified)`;
 
-  // ---------- BOOSTED MODE ----------
+  // ---------- BOOSTED ----------
   if (currentFeedMode === 'boosted') {
     const { data, error } = await supabaseClient
       .from('posts')
@@ -1673,7 +1675,7 @@ async function fetchPostsForMode() {
     return data || [];
   }
 
-  // ---------- FOR YOU MODE ----------
+  // ---------- FOR YOU ----------
   if (currentFeedMode === 'for-you') {
     const { data: normals, error: nErr } = await supabaseClient
       .from('posts')
@@ -1684,7 +1686,6 @@ async function fetchPostsForMode() {
       .range(from, to);
     if (nErr) throw nErr;
 
-    // Fetch ALL active boosted posts on every page
     const { data: boosts, error: bErr } = await supabaseClient
       .from('posts')
       .select(selectFields)
@@ -1695,18 +1696,16 @@ async function fetchPostsForMode() {
       .limit(50);
     if (bErr) throw bErr;
 
-    // Filter out boosted posts already shown
     const freshBoosts = (boosts || []).filter(b => !shownBoostedIds.has(b.id));
     freshBoosts.forEach(b => shownBoostedIds.add(b.id));
 
-    // Track exhausted
     if ((normals || []).length < FEED_PAGE_SIZE && freshBoosts.length === 0) feedExhausted = true;
     feedOffset += (normals || []).length;
 
     return mergeBoosted(normals || [], freshBoosts);
   }
 
-  // ---------- FOLLOWING MODE ----------
+  // ---------- FOLLOWING ----------
   if (currentFeedMode === 'following') {
     const followIds = [...followingIds];
 
@@ -1723,7 +1722,6 @@ async function fetchPostsForMode() {
       normals = data || [];
     }
 
-    // Fetch ALL active boosted posts (regardless of follow)
     const { data: boosts, error: bErr } = await supabaseClient
       .from('posts')
       .select(selectFields)
@@ -1747,10 +1745,7 @@ async function fetchPostsForMode() {
 }
 
 /* ============================================================
-   MERGE BOOSTED POSTS — Top + Random Interleave
-   ------------------------------------------------------------
-   • 1st boosted → position 1 (very top)
-   • Each remaining boosted → random gap (3–6) between normals
+   MERGE BOOSTED
    ============================================================ */
 function mergeBoosted(normals, boosts) {
   const boostIds = new Set(boosts.map(b => b.id));
@@ -1759,7 +1754,6 @@ function mergeBoosted(normals, boosts) {
   if (boosts.length === 0) return cleanNormals;
   if (cleanNormals.length === 0) return boosts;
 
-  // Shuffle boosted posts so the mid-feed positions vary
   const shuffled = [...boosts];
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -1770,12 +1764,10 @@ function mergeBoosted(normals, boosts) {
   const remaining = [...shuffled];
   let normalIdx = 0;
 
-  // First boosted post always at top
   if (remaining.length > 0) result.push(remaining.shift());
 
-  // Interleave the rest
   while (normalIdx < cleanNormals.length || remaining.length > 0) {
-    const gap = 3 + Math.floor(Math.random() * 4); // 3, 4, 5, or 6
+    const gap = 3 + Math.floor(Math.random() * 4);
     for (let i = 0; i < gap && normalIdx < cleanNormals.length; i++) {
       result.push(cleanNormals[normalIdx++]);
     }
@@ -1801,14 +1793,16 @@ function renderPost(post) {
   const timeAgo = formatTimeAgo(post.created_at);
 
   const hasActiveStory = storiesByUser.some(g => g.user.id === post.user_id);
-  const avatarHtml = prof.avatar_url ? `<img src="${escapeHtml(prof.avatar_url)}" alt="">` : initial;
+  const avatarHtml = prof.avatar_url
+    ? `<img src="${escapeHtml(prof.avatar_url)}" alt="User avatar" onerror="this.style.display='none'">`
+    : initial;
 
   const mediaUrls = Array.isArray(post.media_urls) ? post.media_urls : [];
   const mediaHtml = mediaUrls.map((url, idx) => {
     if (/\.(mp4|webm|ogg|mov)$/i.test(url)) {
       return `<video src="${escapeHtml(url)}" controls playsinline preload="metadata"></video>`;
     }
-    return `<img src="${escapeHtml(url)}" alt="" loading="lazy" onclick="openFs('${post.id}', ${idx})">`;
+    return `<img src="${escapeHtml(url)}" alt="Post image" loading="lazy" decoding="async" onclick="openFs('${post.id}', ${idx})" onerror="this.style.display='none'">`;
   }).join('');
 
   const isLiked = likedPosts.has(post.id);
@@ -1862,7 +1856,7 @@ function renderPost(post) {
           ${mediaHtml}
           <div class="dbl-heart" id="dblheart-${post.id}"><i class="fas fa-heart"></i></div>
           <div class="post-watermark">
-            <img src="arizonan%20png%20icon.jpeg" alt="">
+            <img src="arizonan%20png%20icon.jpeg" alt="Arizona AI logo" decoding="async">
             Arizona AI
           </div>
         </div>` : ''}
@@ -1972,7 +1966,7 @@ async function openViewers(postId) {
       const p = v.profile || {};
       const name = p.display_name || p.username || 'User';
       const init = name.charAt(0).toUpperCase();
-      const av = p.avatar_url ? `<img src="${escapeHtml(p.avatar_url)}" alt="">` : init;
+      const av = p.avatar_url ? `<img src="${escapeHtml(p.avatar_url)}" alt="User avatar" onerror="this.style.display='none'">` : init;
       return `
         <div class="viewer-item">
           <div class="v-avatar">${av}</div>
@@ -1993,7 +1987,7 @@ function closeViewers() {
 }
 
 /* ============================================================
-   LIKE / DOUBLE-TAP
+   LIKE / DOUBLE-TAP — with rollback
    ============================================================ */
 async function toggleLike(postId, btn) {
   if (!currentUser) { showToast('Sign in to like'); return; }
@@ -2015,7 +2009,13 @@ async function toggleLike(postId, btn) {
       if (navigator.vibrate) navigator.vibrate(15);
     }
     await refreshPostCounters(postId);
-  } catch (err) { showToast(err.message); }
+  } catch (err) {
+    // Rollback UI state if request fails
+    if (isLiked) likedPosts.add(postId);
+    else likedPosts.delete(postId);
+    showToast(err.message);
+    await refreshPostCounters(postId);
+  }
 }
 
 async function doubleTapLike(postId) {
@@ -2038,7 +2038,9 @@ async function doubleTapLike(postId) {
     }
     if (navigator.vibrate) navigator.vibrate(20);
     await refreshPostCounters(postId);
-  } catch (err) {}
+  } catch (err) {
+    if (likedPosts.has(postId)) likedPosts.delete(postId);
+  }
 }
 
 /* ============================================================
@@ -2060,11 +2062,15 @@ async function toggleSave(postId, btn) {
       if (btn) { btn.classList.add('saved'); btn.querySelector('i').className = 'fas fa-bookmark'; }
       showToast('Saved ✅');
     }
-  } catch (err) { showToast(err.message); }
+  } catch (err) {
+    if (isSaved) savedPosts.add(postId);
+    else savedPosts.delete(postId);
+    showToast(err.message);
+  }
 }
 
 /* ============================================================
-   SHARE / COPY — fixed URLs
+   SHARE / COPY
    ============================================================ */
 function buildUrl(page, params) {
   const basePath = window.location.pathname.replace(/\/[^\/]*$/, '');
@@ -2167,28 +2173,57 @@ async function logPostView(postId, userId) {
 }
 
 /* ============================================================
-   INFINITE SCROLL
+   VIDEO AUTOPAUSE
+   ============================================================ */
+function setupVideoAutopause() {
+  if (!videoObserver) {
+    videoObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const video = entry.target;
+        if (!entry.isIntersecting) {
+          try { video.pause(); } catch (e) {}
+        }
+      });
+    }, { threshold: 0.3 });
+  }
+
+  document.querySelectorAll('.ig-post video').forEach(v => {
+    if (!v.dataset.observed) {
+      v.dataset.observed = '1';
+      videoObserver.observe(v);
+    }
+  });
+}
+
+/* ============================================================
+   INFINITE SCROLL — throttled
    ============================================================ */
 function setupInfiniteScroll() {
+  let scrollTimeout;
   window.addEventListener('scroll', () => {
-    if (feedLoading || feedExhausted) return;
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 600) {
-      loadMoreFeed(false);
-    }
+    if (scrollTimeout) return;
+    scrollTimeout = setTimeout(() => {
+      scrollTimeout = null;
+      if (feedLoading || feedExhausted) return;
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 600) {
+        loadMoreFeed(false);
+      }
+    }, 100);
   }, { passive: true });
 }
 
 /* ============================================================
-   PULL-TO-REFRESH
+   PULL-TO-REFRESH — direction aware
    ============================================================ */
 function setupPullToRefresh() {
-  let startY = 0;
+  let startX = 0, startY = 0;
   let pulling = false;
   const indicator = document.getElementById('ptrIndicator');
   const threshold = 70;
 
   window.addEventListener('touchstart', (e) => {
-    if (window.scrollY === 0) {
+    if (window.scrollY === 0 && e.touches.length === 1) {
+      startX = e.touches[0].clientX;
       startY = e.touches[0].clientY;
       pulling = true;
     }
@@ -2197,10 +2232,16 @@ function setupPullToRefresh() {
   window.addEventListener('touchmove', (e) => {
     if (!pulling) return;
     const y = e.touches[0].clientY;
-    const delta = y - startY;
-    if (delta > 10 && window.scrollY === 0) {
+    const x = e.touches[0].clientX;
+    const deltaY = y - startY;
+    const deltaX = x - startX;
+
+    // Only trigger if more vertical than horizontal
+    if (Math.abs(deltaY) < Math.abs(deltaX)) return;
+
+    if (deltaY > 10 && window.scrollY === 0) {
       indicator.classList.add('active');
-      if (delta > threshold) indicator.classList.add('rotate');
+      if (deltaY > threshold) indicator.classList.add('rotate');
       else indicator.classList.remove('rotate');
     }
   }, { passive: true });
@@ -2220,6 +2261,13 @@ function setupPullToRefresh() {
     } else {
       indicator.classList.remove('active', 'rotate');
     }
+  });
+
+  // Cleanup on unload
+  window.addEventListener('beforeunload', () => {
+    if (realtimeFeedChannel) supabaseClient.removeChannel(realtimeFeedChannel);
+    if (viewObserver) viewObserver.disconnect();
+    if (videoObserver) videoObserver.disconnect();
   });
 }
 
@@ -2260,7 +2308,7 @@ async function showNewPosts() {
 }
 
 /* ============================================================
-   STORIES — uses RPC that prioritizes boosted stories
+   STORIES — FIXED viewer_id
    ============================================================ */
 async function loadStories() {
   try {
@@ -2294,15 +2342,22 @@ async function loadStories() {
     map.forEach(g => g.stories.reverse());
     storiesByUser = Array.from(map.values());
 
+    // ⚠️ FIX: Uses viewer_id (not user_id)
     if (currentUser) {
-      const { data: views } = await supabaseClient
-        .from('story_views').select('story_id').eq('user_id', currentUser.id);
-      storySeenIds = new Set((views || []).map(v => v.story_id));
+      try {
+        const { data: views } = await supabaseClient
+          .from('story_views')
+          .select('story_id')
+          .eq('viewer_id', currentUser.id);
+        storySeenIds = new Set((views || []).map(v => v.story_id));
+      } catch (e) {
+        console.warn('story_views load failed:', e);
+        storySeenIds = new Set();
+      }
     }
     renderStories();
   } catch (err) {
     console.error('[Stories]', err);
-    // Fallback to direct query
     try {
       const { data } = await supabaseClient
         .from('stories')
@@ -2339,7 +2394,7 @@ function renderStories() {
     const isBoosted = firstStory.is_boosted && group.stories.some(s => s.is_boosted);
     const thumb = firstStory.media_type === 'video'
       ? `<div class="inner"><i class="fas fa-play" style="font-size:16px;"></i></div>`
-      : `<div class="inner"><img src="${escapeHtml(firstStory.media_url)}" alt=""></div>`;
+      : `<div class="inner"><img src="${escapeHtml(firstStory.media_url)}" alt="Story thumbnail" onerror="this.style.display='none'"></div>`;
     const storyEl = document.createElement('div');
     storyEl.className = 'ig-story';
     storyEl.onclick = () => openStoryViewer(p.id);
@@ -2381,7 +2436,7 @@ function showStory(groupIdx, storyIdx) {
   `).join('');
 
   const av = document.getElementById('svAvatar');
-  if (p.avatar_url) av.innerHTML = `<img src="${escapeHtml(p.avatar_url)}" alt="">`;
+  if (p.avatar_url) av.innerHTML = `<img src="${escapeHtml(p.avatar_url)}" alt="User avatar" onerror="this.style.display='none'">`;
   else av.textContent = initial;
   document.getElementById('svName').textContent = name;
   document.getElementById('svTime').textContent = formatTimeAgo(story.created_at);
@@ -2390,7 +2445,7 @@ function showStory(groupIdx, storyIdx) {
   if (story.media_type === 'video') {
     body.innerHTML = `<video id="svMedia" src="${escapeHtml(story.media_url)}" autoplay playsinline></video>`;
   } else {
-    body.innerHTML = `<img id="svMedia" src="${escapeHtml(story.media_url)}" alt="">`;
+    body.innerHTML = `<img id="svMedia" src="${escapeHtml(story.media_url)}" alt="Story image" onerror="this.style.display='none'">`;
   }
 
   const cap = document.getElementById('svCaption');
@@ -2467,10 +2522,20 @@ function closeStoryViewer() {
   renderStories();
 }
 
+// ⚠️ FIX: uses viewer_id
 async function logStoryView(storyId) {
   if (!currentUser) return;
-  try { await supabaseClient.from('story_views').insert({ story_id: storyId, user_id: currentUser.id }).select().maybeSingle(); } catch (e) {}
-  try { await supabaseClient.rpc('increment_story_views', { p_story_id: storyId }); } catch (e) {}
+  try {
+    await supabaseClient.from('story_views').insert({
+      story_id: storyId,
+      viewer_id: currentUser.id
+    }).select().maybeSingle();
+  } catch (e) {
+    // Ignore duplicates
+  }
+  try {
+    await supabaseClient.rpc('increment_story_views', { p_story_id: storyId });
+  } catch (e) {}
 }
 
 async function toggleStoryLike() {
@@ -2551,7 +2616,7 @@ function renderFs() {
   if (!item) return;
   content.innerHTML = item.isVideo
     ? `<video src="${escapeHtml(item.src)}" controls autoplay playsinline></video>`
-    : `<img src="${escapeHtml(item.src)}" alt="">`;
+    : `<img src="${escapeHtml(item.src)}" alt="Full size image">`;
   counter.textContent = `${currentMediaIndex + 1} / ${currentMediaList.length}`;
   const showNav = currentMediaList.length > 1;
   document.getElementById('fsPrev').style.display = showNav ? 'flex' : 'none';
@@ -2598,7 +2663,7 @@ async function loadComments(postId) {
       const prof = c.profiles || {};
       const name = prof.display_name || prof.username || 'user';
       const initial = name.charAt(0).toUpperCase();
-      const av = prof.avatar_url ? `<img src="${escapeHtml(prof.avatar_url)}" alt="">` : initial;
+      const av = prof.avatar_url ? `<img src="${escapeHtml(prof.avatar_url)}" alt="User avatar" onerror="this.style.display='none'">` : initial;
       return `
         <div class="comment-item">
           <div class="c-avatar">${av}</div>
