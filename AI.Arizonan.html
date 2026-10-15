@@ -66,66 +66,34 @@ body {
 .topbar .icon-btn {
   width: 40px; height: 40px;
   border-radius: 50%;
-  background: none;
-  border: none;
-  color: #5eb8ff;
-  font-size: 17px;
+  background: none; border: none;
+  color: #5eb8ff; font-size: 17px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  text-decoration: none; flex-shrink: 0;
   transition: background .15s;
 }
 .topbar .icon-btn:active { background: rgba(94,184,255,.15); }
 .topbar .title {
-  flex: 1;
-  min-width: 0;
-  font-size: 15px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  flex: 1; min-width: 0;
+  font-size: 15px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
   gap: 6px;
   background: linear-gradient(135deg,#5eb8ff,#7c3aed);
-  -webkit-background-clip: text;
-  background-clip: text;
+  -webkit-background-clip: text; background-clip: text;
   color: transparent;
 }
-.topbar .title img {
-  width: 22px; height: 22px;
-  border-radius: 5px;
-  -webkit-text-fill-color: initial;
-}
-.topbar .title span {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 150px;
-}
-
-/* User avatar in top bar */
+.topbar .title img { width: 22px; height: 22px; border-radius: 5px; -webkit-text-fill-color: initial; }
+.topbar .title span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
 .topbar .user-av {
-  width: 36px; height: 36px;
-  border-radius: 50%;
+  width: 36px; height: 36px; border-radius: 50%;
   background: linear-gradient(135deg,#FF6B35,#FFB20F);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 14px;
-  color: #fff;
-  flex-shrink: 0;
-  text-decoration: none;
-  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 14px; color: #fff;
+  flex-shrink: 0; text-decoration: none; overflow: hidden;
   border: 2px solid rgba(255,107,53,.4);
-  box-shadow: 0 0 12px rgba(255,107,53,.3);
 }
-.topbar .user-av img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-}
+.topbar .user-av img { width: 100%; height: 100%; object-fit: cover; }
 
 /* ============================================================
    QUOTA BADGE
@@ -138,8 +106,7 @@ body {
   border: 1px solid rgba(94,184,255,.35);
   border-radius: 14px;
   padding: 5px 11px;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 11px; font-weight: 700;
   color: #5eb8ff;
   z-index: 30;
   backdrop-filter: blur(8px);
@@ -148,17 +115,13 @@ body {
   gap: 5px;
 }
 .quota-badge.show { display: flex; }
-.quota-badge.empty {
-  border-color: rgba(255,118,117,.5);
-  color: #ff7675;
-}
+.quota-badge.empty { border-color: rgba(255,118,117,.5); color: #ff7675; }
 
 /* ============================================================
    MESSAGES
    ============================================================ */
 .messages {
-  flex: 1;
-  overflow-y: auto;
+  flex: 1; overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   padding: 14px 12px 20px;
@@ -168,27 +131,17 @@ body {
 .messages::-webkit-scrollbar-thumb { background: rgba(94,184,255,.3); border-radius: 2px; }
 
 .msg {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
+  display: flex; gap: 8px; margin-bottom: 16px;
   animation: slideIn .2s ease;
   align-items: flex-end;
 }
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(6px); }
-}
+@keyframes slideIn { from { opacity: 0; transform: translateY(6px); } }
 .msg.user { flex-direction: row-reverse; }
 
 .msg .av {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 13px;
-  color: #fff;
+  width: 32px; height: 32px; border-radius: 50%;
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px; color: #fff;
   box-shadow: 0 2px 8px rgba(0,0,0,.3);
   overflow: hidden;
 }
@@ -196,114 +149,50 @@ body {
 .msg.bot .av { background: linear-gradient(135deg,#5eb8ff,#7c3aed); }
 .msg.user .av img { width: 100%; height: 100%; object-fit: cover; }
 
-.msg .body {
-  max-width: 82%;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
-}
-
+.msg .body { max-width: 82%; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .msg .bubble {
   padding: 10px 14px;
   border-radius: 18px;
-  font-size: 14.5px;
-  line-height: 1.5;
-  word-wrap: break-word;
-  overflow-wrap: anywhere;
+  font-size: 14.5px; line-height: 1.5;
+  word-wrap: break-word; overflow-wrap: anywhere;
   white-space: pre-wrap;
-  position: relative;
 }
-.msg.user .bubble {
-  background: linear-gradient(135deg,#FF6B35,#FFB20F);
-  color: #fff;
-  border-bottom-right-radius: 5px;
-}
-.msg.bot .bubble {
-  background: rgba(94,184,255,.1);
-  border: 1px solid rgba(94,184,255,.22);
-  color: #e0f2ff;
-  border-bottom-left-radius: 5px;
-}
-.msg.bot .bubble.speaking {
-  border-color: #5eb8ff;
-  box-shadow: 0 0 0 3px rgba(94,184,255,.15);
-}
+.msg.user .bubble { background: linear-gradient(135deg,#FF6B35,#FFB20F); color: #fff; border-bottom-right-radius: 5px; }
+.msg.bot .bubble { background: rgba(94,184,255,.1); border: 1px solid rgba(94,184,255,.22); color: #e0f2ff; border-bottom-left-radius: 5px; }
+.msg.bot .bubble.speaking { border-color: #5eb8ff; box-shadow: 0 0 0 3px rgba(94,184,255,.15); }
 
-/* Media in bubble */
 .msg .bubble .media {
-  display: block;
-  width: 100%;
-  margin-top: 8px;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #000;
+  display: block; width: 100%;
+  margin-top: 8px; border-radius: 12px;
+  overflow: hidden; background: #000;
 }
-.msg .bubble .media img {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-height: 380px;
-  object-fit: cover;
-  cursor: zoom-in;
-}
-.msg .bubble .media video {
-  display: block;
-  width: 100%;
-  max-height: 380px;
-  background: #000;
-}
-.msg .bubble .media audio {
-  display: block;
-  width: 100%;
-  min-width: 220px;
-}
+.msg .bubble .media img { display: block; width: 100%; height: auto; max-height: 380px; object-fit: cover; cursor: zoom-in; }
+.msg .bubble .media video { display: block; width: 100%; max-height: 380px; background: #000; }
+.msg .bubble .media audio { display: block; width: 100%; min-width: 220px; }
 
-/* Media actions */
-.msg .media-actions {
-  display: flex;
-  gap: 6px;
-  margin-top: 4px;
-}
+.msg .media-actions { display: flex; gap: 6px; margin-top: 4px; }
 .msg .media-actions a {
   background: rgba(94,184,255,.15);
   border: 1px solid rgba(94,184,255,.35);
-  color: #5eb8ff;
-  border-radius: 10px;
-  padding: 5px 10px;
-  font-size: 11px;
-  font-weight: 700;
+  color: #5eb8ff; border-radius: 10px;
+  padding: 5px 10px; font-size: 11px; font-weight: 700;
   text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+  display: inline-flex; align-items: center; gap: 4px;
 }
 
-/* Powered by */
 .powered-by {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 10px;
-  color: rgba(255,255,255,.35);
-  margin-top: 2px;
-  padding-left: 2px;
-  letter-spacing: 0.3px;
+  display: flex; align-items: center; gap: 5px;
+  font-size: 10px; color: rgba(255,255,255,.35);
+  margin-top: 2px; padding-left: 2px; letter-spacing: 0.3px;
 }
-.powered-by i {
-  color: var(--az-accent, #FFB20F);
-  font-size: 10px;
-}
+.powered-by i { color: var(--az-accent, #FFB20F); font-size: 10px; }
 
 /* ============================================================
-   REPLY ACTION BUTTONS — Heart, Like, Dislike, Share, Copy, Speaker
+   REPLY ACTIONS
    ============================================================ */
 .reply-actions {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-  margin-top: 4px;
-  align-items: center;
+  display: flex; gap: 4px; flex-wrap: wrap;
+  margin-top: 4px; align-items: center;
 }
 .reply-actions button {
   background: rgba(255,255,255,.04);
@@ -311,130 +200,59 @@ body {
   color: rgba(255,255,255,.6);
   border-radius: 12px;
   padding: 6px 10px;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 12px; font-weight: 600;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+  display: inline-flex; align-items: center; gap: 4px;
   transition: all .15s;
   min-height: 30px;
 }
-.reply-actions button:active {
-  transform: scale(.94);
-  background: rgba(94,184,255,.15);
-}
-.reply-actions button .count {
-  font-size: 10px;
-  opacity: .8;
-  margin-left: 2px;
-}
+.reply-actions button:active { transform: scale(.94); background: rgba(94,184,255,.15); }
+.reply-actions button .count { font-size: 10px; opacity: .8; margin-left: 2px; }
 
-/* Specific button states */
-.reply-actions button.heart-btn.active {
-  color: #ff4757;
-  border-color: rgba(255,71,87,.5);
-  background: rgba(255,71,87,.12);
-}
-.reply-actions button.like-btn.active {
-  color: #5eb8ff;
-  border-color: rgba(94,184,255,.5);
-  background: rgba(94,184,255,.12);
-}
-.reply-actions button.dislike-btn.active {
-  color: #ff7675;
-  border-color: rgba(255,118,117,.5);
-  background: rgba(255,118,117,.12);
-}
-.reply-actions button.speak-btn.speaking {
-  color: #00b894;
-  border-color: rgba(0,184,148,.5);
-  background: rgba(0,184,148,.15);
-  animation: speakerPulse 1.2s infinite;
-}
-@keyframes speakerPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(0,184,148,.4); }
-  50% { box-shadow: 0 0 0 6px rgba(0,184,148,0); }
-}
+.reply-actions button.heart-btn.active { color: #ff4757; border-color: rgba(255,71,87,.5); background: rgba(255,71,87,.12); }
+.reply-actions button.like-btn.active { color: #5eb8ff; border-color: rgba(94,184,255,.5); background: rgba(94,184,255,.12); }
+.reply-actions button.dislike-btn.active { color: #ff7675; border-color: rgba(255,118,117,.5); background: rgba(255,118,117,.12); }
+.reply-actions button.speak-btn.speaking { color: #00b894; border-color: rgba(0,184,148,.5); background: rgba(0,184,148,.15); animation: speakerPulse 1.2s infinite; }
+@keyframes speakerPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(0,184,148,.4); } 50% { box-shadow: 0 0 0 6px rgba(0,184,148,0); } }
 
 /* ============================================================
    WELCOME
    ============================================================ */
-.welcome {
-  padding: 30px 16px 20px;
-  text-align: center;
-}
+.welcome { padding: 30px 16px 20px; text-align: center; }
 .welcome .icon {
-  width: 72px; height: 72px;
-  border-radius: 22px;
+  width: 72px; height: 72px; border-radius: 22px;
   background: linear-gradient(135deg,#5eb8ff,#7c3aed);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; color: #fff;
   margin: 0 auto 16px;
   box-shadow: 0 0 50px rgba(94,184,255,.4);
   animation: pulse 3s ease-in-out infinite;
 }
-@keyframes pulse {
-  0%,100% { box-shadow: 0 0 50px rgba(94,184,255,.4); }
-  50% { box-shadow: 0 0 70px rgba(124,58,237,.6); }
-}
+@keyframes pulse { 0%,100% { box-shadow: 0 0 50px rgba(94,184,255,.4); } 50% { box-shadow: 0 0 70px rgba(124,58,237,.6); } }
 .welcome h1 {
-  font-size: 21px;
-  font-weight: 800;
-  margin: 0 0 6px;
+  font-size: 21px; font-weight: 800; margin: 0 0 6px;
   background: linear-gradient(135deg,#5eb8ff,#7c3aed);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
 }
-.welcome p {
-  color: rgba(255,255,255,.55);
-  font-size: 13px;
-  margin: 0 0 22px;
-  line-height: 1.5;
-}
+.welcome p { color: rgba(255,255,255,.55); font-size: 13px; margin: 0 0 22px; line-height: 1.5; }
 .welcome .quota-info {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  display: inline-flex; align-items: center; gap: 6px;
   background: rgba(94,184,255,.1);
   border: 1px solid rgba(94,184,255,.25);
-  border-radius: 20px;
-  padding: 6px 14px;
-  margin-bottom: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #5eb8ff;
+  border-radius: 20px; padding: 6px 14px; margin-bottom: 20px;
+  font-size: 12px; font-weight: 600; color: #5eb8ff;
 }
-.welcome .chips {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-width: 320px;
-  margin: 0 auto;
-}
+.welcome .chips { display: flex; flex-direction: column; gap: 8px; max-width: 320px; margin: 0 auto; }
 .chip {
   background: rgba(94,184,255,.06);
   border: 1px solid rgba(94,184,255,.22);
-  border-radius: 14px;
-  padding: 12px 14px;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 600;
+  border-radius: 14px; padding: 12px 14px;
+  color: #fff; font-size: 13px; font-weight: 600;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-align: left;
-  transition: all .15s;
+  display: flex; align-items: center; gap: 10px;
+  text-align: left; transition: all .15s;
 }
-.chip:active {
-  background: rgba(94,184,255,.18);
-  transform: scale(.98);
-}
+.chip:active { background: rgba(94,184,255,.18); transform: scale(.98); }
 .chip i { color: #5eb8ff; font-size: 14px; width: 18px; text-align: center; }
 
 /* ============================================================
@@ -442,77 +260,41 @@ body {
    ============================================================ */
 .typing { display: flex; gap: 4px; padding: 3px 0; }
 .typing span {
-  width: 6px; height: 6px;
-  border-radius: 50%;
+  width: 6px; height: 6px; border-radius: 50%;
   background: #5eb8ff;
   animation: bounce 1.4s infinite;
 }
 .typing span:nth-child(2) { animation-delay: .2s; }
 .typing span:nth-child(3) { animation-delay: .4s; }
-@keyframes bounce {
-  0%, 60%, 100% { transform: translateY(0); opacity: .4; }
-  30% { transform: translateY(-5px); opacity: 1; }
-}
+@keyframes bounce { 0%, 60%, 100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-5px); opacity: 1; } }
 
 /* ============================================================
-   ATTACHMENT PREVIEW
+   ATTACHMENT
    ============================================================ */
 .attach-preview {
   display: none;
   padding: 8px 12px;
   background: rgba(94,184,255,.06);
   border-top: 1px solid rgba(94,184,255,.2);
-  gap: 10px;
-  align-items: center;
+  gap: 10px; align-items: center;
   flex-shrink: 0;
 }
 .attach-preview.active { display: flex; }
 .attach-preview .thumb {
-  width: 44px; height: 44px;
-  border-radius: 10px;
-  background: #000;
-  overflow: hidden;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #5eb8ff;
-  font-size: 18px;
+  width: 44px; height: 44px; border-radius: 10px;
+  background: #000; overflow: hidden; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: #5eb8ff; font-size: 18px;
 }
 .attach-preview .thumb img,
-.attach-preview .thumb video {
-  width: 100%; height: 100%;
-  object-fit: cover;
-}
-.attach-preview .info {
-  flex: 1;
-  min-width: 0;
-  font-size: 12px;
-  color: rgba(255,255,255,.75);
-}
-.attach-preview .info .name {
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.attach-preview .info .meta {
-  font-size: 11px;
-  color: rgba(255,255,255,.45);
-  margin-top: 2px;
-}
-.attach-preview .remove {
-  background: transparent;
-  border: none;
-  color: #ff7675;
-  font-size: 18px;
-  cursor: pointer;
-  padding: 6px 8px;
-  flex-shrink: 0;
-}
+.attach-preview .thumb video { width: 100%; height: 100%; object-fit: cover; }
+.attach-preview .info { flex: 1; min-width: 0; font-size: 12px; color: rgba(255,255,255,.75); }
+.attach-preview .info .name { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.attach-preview .info .meta { font-size: 11px; color: rgba(255,255,255,.45); margin-top: 2px; }
+.attach-preview .remove { background: transparent; border: none; color: #ff7675; font-size: 18px; cursor: pointer; padding: 6px 8px; flex-shrink: 0; }
 
 /* ============================================================
-   INPUT
+   INPUT BAR
    ============================================================ */
 .input-wrap {
   flex-shrink: 0;
@@ -524,30 +306,20 @@ body {
   padding-bottom: calc(8px + env(safe-area-inset-bottom));
 }
 .input-inner {
-  display: flex;
-  align-items: flex-end;
-  gap: 4px;
+  display: flex; align-items: flex-end; gap: 4px;
   background: rgba(94,184,255,.06);
   border: 1px solid rgba(94,184,255,.22);
   border-radius: 24px;
   padding: 3px 3px 3px 6px;
   transition: border-color .15s, box-shadow .15s;
 }
-.input-inner:focus-within {
-  border-color: #5eb8ff;
-  box-shadow: 0 0 0 3px rgba(94,184,255,.12);
-}
+.input-inner:focus-within { border-color: #5eb8ff; box-shadow: 0 0 0 3px rgba(94,184,255,.12); }
 .input-inner .icon-inline {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: transparent;
-  border: none;
-  color: #5eb8ff;
-  font-size: 15px;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: transparent; border: none;
+  color: #5eb8ff; font-size: 15px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
   transition: background .15s;
 }
@@ -557,121 +329,106 @@ body {
   color: #ff7675;
   animation: recPulse 1s infinite;
 }
-@keyframes recPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.12); }
+@keyframes recPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+.input-inner .icon-inline.mic-listening {
+  background: rgba(255,71,87,.25);
+  color: #ff4757;
+  animation: recPulse 1s infinite;
 }
 .input-inner textarea {
   flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: #fff;
-  font-size: 15px;
-  font-family: inherit;
-  resize: none;
-  max-height: 120px;
-  min-height: 22px;
-  line-height: 1.4;
-  padding: 8px 4px;
+  background: transparent; border: none; outline: none;
+  color: #fff; font-size: 15px; font-family: inherit;
+  resize: none; max-height: 120px; min-height: 22px;
+  line-height: 1.4; padding: 8px 4px;
 }
 .input-inner textarea::placeholder { color: rgba(255,255,255,.4); }
 .input-inner .send-btn {
-  width: 38px; height: 38px;
-  border-radius: 50%;
+  width: 38px; height: 38px; border-radius: 50%;
   background: linear-gradient(135deg,#5eb8ff,#7c3aed);
-  color: #fff;
-  border: none;
-  font-size: 15px;
-  cursor: pointer;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: #fff; border: none; font-size: 15px;
+  cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
   transition: transform .12s;
 }
 .input-inner .send-btn:active { transform: scale(.92); }
 .input-inner .send-btn:disabled { opacity: .35; cursor: not-allowed; }
 
 /* ============================================================
-   DRAWER
+   DRAWER (chat history)
    ============================================================ */
 .drawer-overlay {
-  position: fixed;
-  inset: 0;
+  position: fixed; inset: 0;
   background: rgba(0,0,0,.6);
   z-index: 90;
-  display: none;
-  opacity: 0;
+  display: none; opacity: 0;
   transition: opacity .2s;
 }
 .drawer-overlay.active { display: block; opacity: 1; }
 .drawer {
-  position: fixed;
-  top: 0; left: 0; bottom: 0;
-  width: 82%;
-  max-width: 320px;
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: 82%; max-width: 320px;
   background: #0a1220;
   border-right: 1px solid rgba(94,184,255,.15);
   z-index: 100;
   transform: translateX(-100%);
   transition: transform .25s ease;
-  display: flex;
-  flex-direction: column;
+  display: flex; flex-direction: column;
 }
 .drawer.open { transform: translateX(0); }
 .drawer-head {
   padding: 14px;
   padding-top: calc(14px + env(safe-area-inset-top));
   border-bottom: 1px solid rgba(94,184,255,.15);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: flex; flex-direction: column; gap: 10px;
 }
 .drawer-head .brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 800;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 800;
   background: linear-gradient(135deg,#5eb8ff,#7c3aed);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
 }
-.drawer-head .brand img {
-  width: 26px; height: 26px;
-  border-radius: 6px;
-  -webkit-text-fill-color: initial;
-}
+.drawer-head .brand img { width: 26px; height: 26px; border-radius: 6px; -webkit-text-fill-color: initial; }
 .drawer-head .new-btn {
   padding: 11px 14px;
   background: linear-gradient(135deg,#5eb8ff,#7c3aed);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 700;
+  color: #fff; border: none; border-radius: 10px;
+  font-size: 13px; font-weight: 700;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
 }
-.drawer-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: 8px;
+
+/* Search in drawer */
+.drawer-search {
+  padding: 8px 14px;
+  border-bottom: 1px solid rgba(94,184,255,.1);
 }
+.drawer-search input {
+  width: 100%;
+  padding: 9px 14px 9px 34px;
+  background: rgba(94,184,255,.06);
+  border: 1px solid rgba(94,184,255,.15);
+  border-radius: 20px;
+  color: #fff; font-size: 13px; font-family: inherit;
+}
+.drawer-search input:focus { outline: none; border-color: #5eb8ff; }
+.drawer-search { position: relative; }
+.drawer-search i {
+  position: absolute; left: 26px; top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,.4); font-size: 12px;
+  pointer-events: none;
+}
+
+.drawer-list { flex: 1; overflow-y: auto; padding: 8px; }
+.drawer-list::-webkit-scrollbar { width: 3px; }
+.drawer-list::-webkit-scrollbar-thumb { background: rgba(94,184,255,.3); border-radius: 2px; }
+
 .chat-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 11px 12px;
-  border-radius: 10px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 12px; border-radius: 10px;
   cursor: pointer;
-  font-size: 13px;
-  color: rgba(255,255,255,.75);
+  font-size: 13px; color: rgba(255,255,255,.75);
   margin-bottom: 2px;
   transition: background .15s;
 }
@@ -679,28 +436,24 @@ body {
 .chat-item.active { background: rgba(94,184,255,.15); color: #5eb8ff; }
 .chat-item i { color: rgba(255,255,255,.4); font-size: 13px; flex-shrink: 0; }
 .chat-item.active i { color: #5eb8ff; }
-.chat-item .title {
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.chat-item .del {
-  background: none;
-  border: none;
-  color: rgba(255,255,255,.3);
-  cursor: pointer;
-  padding: 4px;
-  font-size: 12px;
-  flex-shrink: 0;
-}
+.chat-item .title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat-item .del { background: none; border: none; color: rgba(255,255,255,.3); cursor: pointer; padding: 4px; font-size: 12px; flex-shrink: 0; }
 .chat-item .del:active { color: #ff7675; }
+
+/* Group by date */
+.chat-group-label {
+  padding: 10px 14px 4px;
+  font-size: 10px; font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: rgba(255,255,255,.35);
+}
+
 .drawer-foot {
   padding: 12px;
   padding-bottom: calc(12px + env(safe-area-inset-bottom));
   border-top: 1px solid rgba(94,184,255,.15);
-  font-size: 11px;
-  color: rgba(255,255,255,.4);
+  font-size: 11px; color: rgba(255,255,255,.4);
   text-align: center;
 }
 
@@ -708,65 +461,42 @@ body {
    IMAGE VIEWER
    ============================================================ */
 .image-viewer {
-  position: fixed;
-  inset: 0;
+  position: fixed; inset: 0;
   background: rgba(0,0,0,.96);
   z-index: 500;
   display: none;
-  align-items: center;
-  justify-content: center;
+  align-items: center; justify-content: center;
   padding: 20px;
 }
 .image-viewer.active { display: flex; }
-.image-viewer img {
-  max-width: 100%;
-  max-height: 100%;
-  border-radius: 14px;
-  object-fit: contain;
-}
+.image-viewer img { max-width: 100%; max-height: 100%; border-radius: 14px; object-fit: contain; }
 .image-viewer .close {
   position: absolute;
   top: calc(16px + env(safe-area-inset-top));
   right: 16px;
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.12);
-  color: #fff;
-  border: none;
-  font-size: 18px;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255,255,255,.12); color: #fff;
+  border: none; font-size: 18px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
 }
 
 /* ============================================================
    TOAST
    ============================================================ */
 .toast-mini {
-  position: fixed;
-  bottom: 100px;
-  left: 50%;
+  position: fixed; bottom: 100px; left: 50%;
   transform: translateX(-50%) translateY(20px);
   background: rgba(10,20,35,.98);
   border: 1px solid rgba(94,184,255,.4);
-  color: #fff;
-  padding: 10px 18px;
-  border-radius: 22px;
-  font-size: 13px;
-  font-weight: 600;
-  z-index: 999;
-  opacity: 0;
-  pointer-events: none;
+  color: #fff; padding: 10px 18px;
+  border-radius: 22px; font-size: 13px; font-weight: 600;
+  z-index: 999; opacity: 0; pointer-events: none;
   transition: all .25s ease;
-  max-width: 90%;
-  text-align: center;
+  max-width: 90%; text-align: center;
   box-shadow: 0 10px 40px rgba(0,0,0,.5);
 }
-.toast-mini.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
+.toast-mini.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ============================================================
    AUTH WALL
@@ -781,57 +511,90 @@ body {
   text-align: center;
 }
 .auth-wall .icon {
-  width: 90px; height: 90px;
-  border-radius: 26px;
+  width: 90px; height: 90px; border-radius: 26px;
   background: linear-gradient(135deg,#5eb8ff,#7c3aed);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 40px;
-  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px; color: #fff;
   margin-bottom: 20px;
   box-shadow: 0 0 60px rgba(94,184,255,.4);
 }
 .auth-wall h2 {
-  font-size: 22px;
-  font-weight: 800;
-  margin: 0 0 8px;
+  font-size: 22px; font-weight: 800; margin: 0 0 8px;
   background: linear-gradient(135deg,#5eb8ff,#7c3aed);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
 }
-.auth-wall p {
-  color: rgba(255,255,255,.6);
-  font-size: 14px;
-  line-height: 1.6;
-  margin: 0 0 24px;
-  max-width: 320px;
-}
+.auth-wall p { color: rgba(255,255,255,.6); font-size: 14px; line-height: 1.6; margin: 0 0 24px; max-width: 320px; }
 .auth-wall a {
-  display: flex;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; max-width: 300px;
+  padding: 14px 20px; border-radius: 14px;
+  font-weight: 700; font-size: 15px;
+  text-decoration: none; margin-bottom: 10px;
+}
+.auth-wall a.primary { background: linear-gradient(135deg,#5eb8ff,#7c3aed); color: #fff; box-shadow: 0 10px 30px rgba(94,184,255,.4); }
+.auth-wall a.outline { background: transparent; border: 1.5px solid rgba(94,184,255,.5); color: #5eb8ff; }
+
+/* ============================================================
+   LISTENING OVERLAY (voice input)
+   ============================================================ */
+.listening-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5,10,20,.94);
+  backdrop-filter: blur(10px);
+  z-index: 600;
+  display: none;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  width: 100%;
-  max-width: 300px;
-  padding: 14px 20px;
-  border-radius: 14px;
-  font-weight: 700;
-  font-size: 15px;
-  text-decoration: none;
-  margin-bottom: 10px;
+  padding: 30px;
+  text-align: center;
 }
-.auth-wall a.primary {
+.listening-overlay.active { display: flex; }
+.listening-overlay .mic-circle {
+  width: 120px; height: 120px; border-radius: 50%;
   background: linear-gradient(135deg,#5eb8ff,#7c3aed);
-  color: #fff;
-  box-shadow: 0 10px 30px rgba(94,184,255,.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px; color: #fff;
+  animation: listenPulse 1.5s infinite;
+  margin-bottom: 24px;
 }
-.auth-wall a.outline {
-  background: transparent;
-  border: 1.5px solid rgba(94,184,255,.5);
+@keyframes listenPulse {
+  0% { box-shadow: 0 0 0 0 rgba(94,184,255,.5); }
+  70% { box-shadow: 0 0 0 40px rgba(94,184,255,0); }
+  100% { box-shadow: 0 0 0 0 rgba(94,184,255,0); }
+}
+.listening-overlay h3 {
+  font-size: 20px; font-weight: 800; margin: 0 0 8px;
   color: #5eb8ff;
 }
+.listening-overlay p {
+  color: rgba(255,255,255,.6); font-size: 14px;
+  margin: 0 0 30px; max-width: 300px;
+}
+.listening-overlay .transcript {
+  background: rgba(94,184,255,.1);
+  border: 1px solid rgba(94,184,255,.3);
+  border-radius: 16px;
+  padding: 16px 20px;
+  min-height: 60px;
+  max-width: 340px;
+  width: 100%;
+  font-size: 15px;
+  color: #fff;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+.listening-overlay .stop-btn {
+  padding: 14px 36px;
+  background: linear-gradient(135deg,#FF6B35,#FFB20F);
+  color: #fff; border: none;
+  border-radius: 30px;
+  font-weight: 800; font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(255,107,53,.4);
+}
+.listening-overlay .stop-btn:active { transform: scale(.96); }
 </style>
 </head>
 <body>
@@ -840,13 +603,19 @@ body {
 
   <!-- TOP BAR -->
   <header class="topbar">
-    <a href="index.html" class="icon-btn" aria-label="Back to feed" title="Back to Home">
+    <a href="index.html" class="icon-btn" aria-label="Back" title="Back to Home">
       <i class="fas fa-arrow-left"></i>
     </a>
+    <button class="icon-btn" onclick="openDrawer()" aria-label="History" title="Chat History">
+      <i class="fas fa-bars"></i>
+    </button>
     <div class="title">
       <img src="arizonan%20png%20icon.jpeg" alt="">
       <span id="chatTitle">AI.Arizonan</span>
     </div>
+    <button class="icon-btn" onclick="startNewChat()" aria-label="New chat" title="New Chat">
+      <i class="fas fa-plus"></i>
+    </button>
     <a href="profile.html" class="user-av" id="topUserAv" title="My Profile">
       <i class="fas fa-user"></i>
     </a>
@@ -876,13 +645,13 @@ body {
   <!-- INPUT -->
   <div class="input-wrap">
     <div class="input-inner">
-      <button class="icon-inline" onclick="pickFile()" aria-label="Attach">
+      <button class="icon-inline" onclick="pickFile()" aria-label="Attach" title="Attach image/video">
         <i class="fas fa-paperclip"></i>
       </button>
       <textarea id="chatInput" rows="1" placeholder="Message AI.Arizonan…"
                 oninput="autoResize(this)"
                 onkeydown="handleKey(event)"></textarea>
-      <button class="icon-inline" id="micBtn" onclick="toggleRecording()" aria-label="Voice">
+      <button class="icon-inline" id="voiceBtn" onclick="startVoiceInput()" aria-label="Voice input" title="Speak">
         <i class="fas fa-microphone"></i>
       </button>
       <button class="send-btn" id="sendBtn" onclick="sendMessage()" aria-label="Send">
@@ -898,7 +667,7 @@ body {
 <div class="auth-wall" id="authWall" style="display:none;">
   <div class="icon"><i class="fas fa-robot"></i></div>
   <h2>Sign in to chat with AI.Arizonan</h2>
-  <p>Only Arizona AI members can use the AI assistant. Sign in or create a free account — you'll get 4 free image generations per day.</p>
+  <p>Only Arizona AI members can use the AI assistant. You'll get 4 free image generations per day.</p>
   <a href="login.html" class="primary"><i class="fas fa-sign-in-alt"></i> Sign In</a>
   <a href="register.html" class="outline"><i class="fas fa-user-plus"></i> Create Free Account</a>
 </div>
@@ -915,6 +684,10 @@ body {
       <i class="fas fa-plus"></i> New Chat
     </button>
   </div>
+  <div class="drawer-search">
+    <i class="fas fa-search"></i>
+    <input type="text" id="chatSearch" placeholder="Search chats…" oninput="renderDrawerList()">
+  </div>
   <div class="drawer-list" id="drawerList"></div>
   <div class="drawer-foot">
     <i class="fas fa-shield-halved"></i> Powered by Huzni's Family
@@ -925,6 +698,17 @@ body {
 <div class="image-viewer" id="imageViewer" onclick="closeImageViewer()">
   <button class="close"><i class="fas fa-times"></i></button>
   <img id="imageViewerImg" src="" alt="">
+</div>
+
+<!-- LISTENING OVERLAY -->
+<div class="listening-overlay" id="listeningOverlay">
+  <div class="mic-circle"><i class="fas fa-microphone"></i></div>
+  <h3>Listening…</h3>
+  <p>Speak your message. Tap Stop when done.</p>
+  <div class="transcript" id="voiceTranscript">Start speaking…</div>
+  <button class="stop-btn" onclick="stopVoiceInput()">
+    <i class="fas fa-stop"></i> Stop
+  </button>
 </div>
 
 <!-- TOAST -->
@@ -942,13 +726,18 @@ let allChats         = [];
 let isSending        = false;
 let pendingFile      = null;
 let pendingFileUrl   = null;
-let mediaRecorder    = null;
-let audioChunks      = [];
-let isRecording      = false;
 let imagesUsedToday  = 0;
+let reactions        = {}; // key = `${chatId}_${msgIndex}_${type}`, value = true
+const DAILY_IMAGE_LIMIT = 4;
+
+// Voice input
+let recognition      = null;
+let isListening      = false;
+let voiceTranscript  = '';
+
+// Speech output
 let currentUtterance = null;
 let currentSpeakingBtn = null;
-const DAILY_IMAGE_LIMIT = 4;
 
 /* ============================================================
    INIT
@@ -986,6 +775,7 @@ async function initChat() {
   }
 
   await loadImageQuota();
+  await loadReactionsFromDB();
   await loadChatsList();
   await startNewChat();
   setTimeout(() => document.getElementById('chatInput').focus(), 300);
@@ -1010,10 +800,8 @@ function updateQuotaBadge() {
   const badge = document.getElementById('quotaBadge');
   const text = document.getElementById('quotaText');
   const remaining = Math.max(0, DAILY_IMAGE_LIMIT - imagesUsedToday);
-
   badge.classList.add('show');
   text.textContent = `${remaining}/${DAILY_IMAGE_LIMIT} images`;
-
   if (remaining === 0) badge.classList.add('empty');
   else badge.classList.remove('empty');
 }
@@ -1023,7 +811,8 @@ async function registerImageUse(prompt) {
   try {
     await supabaseClient.from('ai_image_usage').insert({
       user_id: currentUser.id,
-      prompt: prompt.slice(0, 200)
+      prompt: prompt.slice(0, 200),
+      kind: 'generate'
     });
     imagesUsedToday++;
     updateQuotaBadge();
@@ -1036,6 +825,7 @@ async function registerImageUse(prompt) {
 function openDrawer() {
   document.getElementById('drawer').classList.add('open');
   document.getElementById('drawerOverlay').classList.add('active');
+  renderDrawerList();
 }
 function closeDrawer() {
   document.getElementById('drawer').classList.remove('open');
@@ -1043,44 +833,78 @@ function closeDrawer() {
 }
 
 /* ============================================================
-   CHATS
+   CHATS LIST (grouped by day)
    ============================================================ */
 async function loadChatsList() {
   if (!currentUser) return;
   try {
     const { data, error } = await supabaseClient
       .from('ai_chats')
-      .select('id, title, updated_at')
+      .select('id, title, updated_at, created_at')
       .eq('user_id', currentUser.id)
       .order('updated_at', { ascending: false })
-      .limit(50);
+      .limit(100);
     if (error) throw error;
     allChats = data || [];
-    renderDrawerList();
   } catch (e) { console.warn('[AI] load chats failed:', e); }
 }
 
 function renderDrawerList() {
   const list = document.getElementById('drawerList');
-  if (allChats.length === 0) {
+  const search = (document.getElementById('chatSearch')?.value || '').toLowerCase();
+
+  let filtered = allChats;
+  if (search) {
+    filtered = allChats.filter(c => (c.title || '').toLowerCase().includes(search));
+  }
+
+  if (filtered.length === 0) {
     list.innerHTML = `
       <div style="text-align:center;padding:30px 12px;font-size:12px;color:rgba(255,255,255,.3);">
         <i class="far fa-comments" style="font-size:22px;display:block;margin-bottom:8px;"></i>
-        No chats yet
+        ${search ? 'No matches' : 'No chats yet'}
       </div>`;
     return;
   }
-  list.innerHTML = allChats.map(c => `
+
+  // Group by day
+  const groups = { today: [], yesterday: [], week: [], older: [] };
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterdayStart = new Date(todayStart.getTime() - 86400000);
+  const weekStart = new Date(todayStart.getTime() - 7 * 86400000);
+
+  filtered.forEach(c => {
+    const d = new Date(c.updated_at || c.created_at);
+    if (d >= todayStart) groups.today.push(c);
+    else if (d >= yesterdayStart) groups.yesterday.push(c);
+    else if (d >= weekStart) groups.week.push(c);
+    else groups.older.push(c);
+  });
+
+  let html = '';
+  if (groups.today.length)     html += `<div class="chat-group-label">Today</div>`     + groups.today.map(renderChatItem).join('');
+  if (groups.yesterday.length) html += `<div class="chat-group-label">Yesterday</div>` + groups.yesterday.map(renderChatItem).join('');
+  if (groups.week.length)      html += `<div class="chat-group-label">This Week</div>` + groups.week.map(renderChatItem).join('');
+  if (groups.older.length)     html += `<div class="chat-group-label">Earlier</div>`   + groups.older.map(renderChatItem).join('');
+
+  list.innerHTML = html;
+}
+
+function renderChatItem(c) {
+  return `
     <div class="chat-item ${c.id === currentChatId ? 'active' : ''}" onclick="openChat('${c.id}')">
       <i class="far fa-comment"></i>
       <span class="title">${escapeHtml(c.title || 'New chat')}</span>
       <button class="del" onclick="event.stopPropagation(); deleteChat('${c.id}')">
         <i class="fas fa-trash"></i>
       </button>
-    </div>
-  `).join('');
+    </div>`;
 }
 
+/* ============================================================
+   CHAT OPS
+   ============================================================ */
 async function startNewChat() {
   messages = [];
   currentChatId = null;
@@ -1113,6 +937,9 @@ async function openChat(chatId) {
       media_type: m.media_type || null
     }));
 
+    // Load reactions for this chat
+    await loadReactionsFromDB();
+
     renderMessages();
     closeDrawer();
     renderDrawerList();
@@ -1120,7 +947,7 @@ async function openChat(chatId) {
 }
 
 async function deleteChat(chatId) {
-  if (!confirm('Delete this chat?')) return;
+  if (!confirm('Delete this chat permanently?')) return;
   try {
     await supabaseClient.from('ai_chats').delete().eq('id', chatId).eq('user_id', currentUser.id);
     allChats = allChats.filter(c => c.id !== chatId);
@@ -1145,6 +972,46 @@ async function createChatIfNeeded(firstMessage) {
 }
 
 /* ============================================================
+   REACTIONS (persistent)
+   ============================================================ */
+async function loadReactionsFromDB() {
+  if (!currentUser || !currentChatId) return;
+  try {
+    const { data } = await supabaseClient
+      .from('ai_message_reactions')
+      .select('msg_index, reaction')
+      .eq('user_id', currentUser.id)
+      .eq('chat_id', currentChatId);
+
+    reactions = {};
+    (data || []).forEach(r => {
+      reactions[`${currentChatId}_${r.msg_index}_${r.reaction}`] = true;
+    });
+  } catch (e) { /* table may not exist yet */ }
+}
+
+async function saveReactionToDB(msgIndex, reaction, active) {
+  if (!currentUser || !currentChatId) return;
+  try {
+    if (active) {
+      await supabaseClient.from('ai_message_reactions').insert({
+        user_id: currentUser.id,
+        chat_id: currentChatId,
+        msg_index: msgIndex,
+        reaction
+      });
+    } else {
+      await supabaseClient.from('ai_message_reactions')
+        .delete()
+        .eq('user_id', currentUser.id)
+        .eq('chat_id', currentChatId)
+        .eq('msg_index', msgIndex)
+        .eq('reaction', reaction);
+    }
+  } catch (e) { /* silent */ }
+}
+
+/* ============================================================
    RENDER
    ============================================================ */
 function renderWelcome() {
@@ -1155,7 +1022,7 @@ function renderWelcome() {
     <div class="welcome">
       <div class="icon"><i class="fas fa-robot"></i></div>
       <h1>Hi ${escapeHtml(name)}, I'm AI.Arizonan</h1>
-      <p>Your AI assistant. I can chat, draw images, and help with content ideas.</p>
+      <p>Your AI assistant. Chat, generate images, analyze photos, and more.</p>
       <div class="quota-info">
         <i class="fas fa-image"></i>
         ${remaining} of ${DAILY_IMAGE_LIMIT} free images remaining today
@@ -1174,8 +1041,7 @@ function renderWelcome() {
           <i class="fas fa-dollar-sign"></i> Earn tips
         </button>
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
 function renderMessages() {
@@ -1191,7 +1057,6 @@ function createMessageEl(msg, index) {
   const div = document.createElement('div');
   div.className = 'msg ' + (isUser ? 'user' : 'bot');
 
-  // Avatar
   let avHtml;
   if (isUser) {
     const avatarUrl = currentProfile?.avatar_url;
@@ -1226,20 +1091,21 @@ function createMessageEl(msg, index) {
       Powered by Huzni's Family
     </div>` : '';
 
-  // Reply action buttons (only for bot)
+  // Check reaction states from DB
+  const heartActive = currentChatId && reactions[`${currentChatId}_${index}_heart`];
+  const likeActive  = currentChatId && reactions[`${currentChatId}_${index}_like`];
+  const dislikeActive = currentChatId && reactions[`${currentChatId}_${index}_dislike`];
+
   const replyActions = !isUser ? `
     <div class="reply-actions" data-index="${index}">
-      <button class="heart-btn" onclick="reactToMessage(${index}, 'heart', this)" title="Love it">
-        <i class="far fa-heart"></i>
-        <span class="count" data-count="heart">0</span>
+      <button class="heart-btn ${heartActive ? 'active' : ''}" onclick="reactToMessage(${index}, 'heart', this)" title="Love it">
+        <i class="${heartActive ? 'fas' : 'far'} fa-heart"></i>
       </button>
-      <button class="like-btn" onclick="reactToMessage(${index}, 'like', this)" title="Helpful">
-        <i class="far fa-thumbs-up"></i>
-        <span class="count" data-count="like">0</span>
+      <button class="like-btn ${likeActive ? 'active' : ''}" onclick="reactToMessage(${index}, 'like', this)" title="Helpful">
+        <i class="${likeActive ? 'fas' : 'far'} fa-thumbs-up"></i>
       </button>
-      <button class="dislike-btn" onclick="reactToMessage(${index}, 'dislike', this)" title="Not helpful">
-        <i class="far fa-thumbs-down"></i>
-        <span class="count" data-count="dislike">0</span>
+      <button class="dislike-btn ${dislikeActive ? 'active' : ''}" onclick="reactToMessage(${index}, 'dislike', this)" title="Not helpful">
+        <i class="${dislikeActive ? 'fas' : 'far'} fa-thumbs-down"></i>
       </button>
       <button onclick="shareMessage(${index})" title="Share">
         <i class="far fa-paper-plane"></i>
@@ -1259,28 +1125,37 @@ function createMessageEl(msg, index) {
       ${mediaActions}
       ${poweredBy}
       ${replyActions}
-    </div>
-  `;
+    </div>`;
   return div;
 }
 
 /* ============================================================
-   REPLY ACTIONS
+   REACTIONS
    ============================================================ */
-function reactToMessage(index, type, btn) {
-  // Use localStorage to persist reactions per message index (per session)
-  const key = `ai_react_${currentChatId || 'new'}_${index}_${type}`;
-  const wasActive = btn.classList.contains('active');
+async function reactToMessage(index, type, btn) {
+  if (!currentChatId) { toast('Save this chat first'); return; }
 
-  // Clear opposite reactions
+  const wasActive = btn.classList.contains('active');
   const parent = btn.parentElement;
+
+  // Clear opposite
   if (type === 'like') {
-    const dis = parent.querySelector('.dislike-btn');
-    if (dis) dis.classList.remove('active');
+    const d = parent.querySelector('.dislike-btn');
+    if (d && d.classList.contains('active')) {
+      d.classList.remove('active');
+      d.querySelector('i').className = 'far fa-thumbs-down';
+      delete reactions[`${currentChatId}_${index}_dislike`];
+      await saveReactionToDB(index, 'dislike', false);
+    }
   }
   if (type === 'dislike') {
-    const like = parent.querySelector('.like-btn');
-    if (like) like.classList.remove('active');
+    const l = parent.querySelector('.like-btn');
+    if (l && l.classList.contains('active')) {
+      l.classList.remove('active');
+      l.querySelector('i').className = 'far fa-thumbs-up';
+      delete reactions[`${currentChatId}_${index}_like`];
+      await saveReactionToDB(index, 'like', false);
+    }
   }
 
   if (wasActive) {
@@ -1288,14 +1163,16 @@ function reactToMessage(index, type, btn) {
     btn.querySelector('i').className = type === 'heart' ? 'far fa-heart'
                                       : type === 'like' ? 'far fa-thumbs-up'
                                       : 'far fa-thumbs-down';
-    localStorage.removeItem(key);
+    delete reactions[`${currentChatId}_${index}_${type}`];
+    await saveReactionToDB(index, type, false);
     toast('Removed');
   } else {
     btn.classList.add('active');
     btn.querySelector('i').className = type === 'heart' ? 'fas fa-heart'
                                       : type === 'like' ? 'fas fa-thumbs-up'
                                       : 'fas fa-thumbs-down';
-    localStorage.setItem(key, '1');
+    reactions[`${currentChatId}_${index}_${type}`] = true;
+    await saveReactionToDB(index, type, true);
     const labels = { heart: '❤️ Loved it!', like: '👍 Marked helpful', dislike: '👎 Feedback noted' };
     toast(labels[type]);
   }
@@ -1307,18 +1184,12 @@ async function shareMessage(index) {
   const text = msg.content || '';
 
   if (navigator.share) {
-    try {
-      await navigator.share({ title: 'AI.Arizonan', text });
-      return;
-    } catch (e) { /* cancelled */ }
+    try { await navigator.share({ title: 'AI.Arizonan', text }); return; } catch (e) {}
   }
-
   try {
     await navigator.clipboard.writeText(text);
     toast('Copied to share 📋');
-  } catch {
-    toast('Share not available');
-  }
+  } catch { toast('Share not available'); }
 }
 
 function copyMessage(index) {
@@ -1328,13 +1199,12 @@ function copyMessage(index) {
 }
 
 /* ============================================================
-   SPEAK — Text-to-speech
+   SPEAK (text-to-speech)
    ============================================================ */
 function speakMessage(index, btn) {
   const msg = messages[index];
   if (!msg || !msg.content) { toast('Nothing to read'); return; }
 
-  // If already speaking this message, stop
   if (currentSpeakingBtn === btn && window.speechSynthesis.speaking) {
     window.speechSynthesis.cancel();
     btn.classList.remove('speaking');
@@ -1344,7 +1214,6 @@ function speakMessage(index, btn) {
     return;
   }
 
-  // Stop any current speech
   if (window.speechSynthesis.speaking) {
     window.speechSynthesis.cancel();
     if (currentSpeakingBtn) {
@@ -1353,7 +1222,6 @@ function speakMessage(index, btn) {
     }
   }
 
-  // Clean the text (remove HTML, emojis for smoother speech)
   const cleanText = msg.content
     .replace(/\n+/g, '. ')
     .replace(/[🖼🎨🎥🎵🔊🎉👍❤️👎✅📋💡🔔💰🤖👋✨🚀😊]/g, '')
@@ -1364,21 +1232,13 @@ function speakMessage(index, btn) {
   utterance.pitch = 1;
   utterance.lang = 'en-US';
 
-  // Prefer a nice voice
   const voices = window.speechSynthesis.getVoices();
   const preferred = voices.find(v => v.name.includes('Google') && v.lang.startsWith('en'))
                  || voices.find(v => v.lang.startsWith('en-US'))
                  || voices[0];
   if (preferred) utterance.voice = preferred;
 
-  utterance.onend = () => {
-    btn.classList.remove('speaking');
-    btn.querySelector('i').className = 'fas fa-volume-up';
-    currentSpeakingBtn = null;
-    currentUtterance = null;
-  };
-
-  utterance.onerror = () => {
+  utterance.onend = utterance.onerror = () => {
     btn.classList.remove('speaking');
     btn.querySelector('i').className = 'fas fa-volume-up';
     currentSpeakingBtn = null;
@@ -1392,6 +1252,85 @@ function speakMessage(index, btn) {
 
   window.speechSynthesis.speak(utterance);
   toast('🔊 Reading aloud…');
+}
+
+/* ============================================================
+   VOICE INPUT (speech-to-text)
+   ============================================================ */
+function startVoiceInput() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    toast('Voice input not supported in this browser');
+    return;
+  }
+
+  // If already listening, stop
+  if (isListening) { stopVoiceInput(); return; }
+
+  recognition = new SR();
+  recognition.lang = 'en-US';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+
+  voiceTranscript = '';
+
+  recognition.onstart = () => {
+    isListening = true;
+    document.getElementById('listeningOverlay').classList.add('active');
+    document.getElementById('voiceTranscript').textContent = 'Start speaking…';
+    document.getElementById('voiceBtn').classList.add('mic-listening');
+  };
+
+  recognition.onresult = (event) => {
+    let interim = '';
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const transcript = event.results[i][0].transcript;
+      if (event.results[i].isFinal) {
+        voiceTranscript += transcript + ' ';
+      } else {
+        interim += transcript;
+      }
+    }
+    document.getElementById('voiceTranscript').textContent =
+      (voiceTranscript + interim).trim() || 'Start speaking…';
+  };
+
+  recognition.onerror = (e) => {
+    console.error('[Voice]', e.error);
+    toast('Voice error: ' + e.error);
+    stopVoiceInput();
+  };
+
+  recognition.onend = () => {
+    if (isListening) stopVoiceInput();
+  };
+
+  try {
+    recognition.start();
+  } catch (e) {
+    console.error(e);
+    toast('Could not start voice input');
+  }
+}
+
+function stopVoiceInput() {
+  if (recognition) {
+    try { recognition.stop(); } catch (e) {}
+  }
+  isListening = false;
+  document.getElementById('listeningOverlay').classList.remove('active');
+  document.getElementById('voiceBtn').classList.remove('mic-listening');
+
+  const finalText = voiceTranscript.trim();
+  if (finalText) {
+    const input = document.getElementById('chatInput');
+    input.value = (input.value + ' ' + finalText).trim();
+    autoResize(input);
+    input.focus();
+    toast('Voice captured ✅');
+  }
+  voiceTranscript = '';
 }
 
 /* ============================================================
@@ -1444,51 +1383,6 @@ function clearAttachment() {
   pendingFile = null;
   if (pendingFileUrl) { URL.revokeObjectURL(pendingFileUrl); pendingFileUrl = null; }
   document.getElementById('attachPreview').classList.remove('active');
-}
-
-/* ============================================================
-   VOICE RECORDING
-   ============================================================ */
-async function toggleRecording() {
-  const btn = document.getElementById('micBtn');
-
-  if (isRecording) {
-    if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
-    isRecording = false;
-    btn.classList.remove('recording');
-    btn.innerHTML = '<i class="fas fa-microphone"></i>';
-    return;
-  }
-
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream);
-    audioChunks = [];
-
-    mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunks.push(e.data); };
-
-    mediaRecorder.onstop = () => {
-      const blob = new Blob(audioChunks, { type: 'audio/webm' });
-      const file = new File([blob], `voice-${Date.now()}.webm`, { type: 'audio/webm' });
-      pendingFile = file;
-      pendingFileUrl = URL.createObjectURL(file);
-
-      document.getElementById('attachThumb').innerHTML = '<i class="fas fa-music"></i>';
-      document.getElementById('attachName').textContent = file.name;
-      document.getElementById('attachSize').textContent = `audio · ${(file.size / 1024).toFixed(0)} KB`;
-      document.getElementById('attachPreview').classList.add('active');
-      stream.getTracks().forEach(t => t.stop());
-    };
-
-    mediaRecorder.start();
-    isRecording = true;
-    btn.classList.add('recording');
-    btn.innerHTML = '<i class="fas fa-stop"></i>';
-    toast('Recording… tap again to stop');
-  } catch (e) {
-    console.error('[Voice] Error:', e);
-    toast('Microphone access denied');
-  }
 }
 
 /* ============================================================
@@ -1574,8 +1468,7 @@ async function sendMessage() {
   typingEl.className = 'msg bot';
   typingEl.innerHTML = `
     <div class="av">AI</div>
-    <div class="body"><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div></div>
-  `;
+    <div class="body"><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div></div>`;
   container.appendChild(typingEl);
   container.scrollTop = container.scrollHeight;
 
@@ -1584,8 +1477,15 @@ async function sendMessage() {
 
   try {
     const payloadMessages = messages.map(m => ({ role: m.role, content: m.content || '' }));
+    const payload = { messages: payloadMessages };
+
+    // If user attached an image, tell the Edge Function to analyze it
+    if (mediaUrl && mediaType === 'image') {
+      payload.image_url = mediaUrl;
+    }
+
     const { data, error } = await supabaseClient.functions.invoke('ai-chat', {
-      body: { messages: payloadMessages }
+      body: payload
     });
 
     typingEl.remove();
@@ -1628,19 +1528,6 @@ async function sendMessage() {
     document.getElementById('sendBtn').disabled = false;
     document.getElementById('chatInput').focus();
     container.scrollTop = container.scrollHeight;
-  }
-}
-
-async function regenerate(index) {
-  messages = messages.slice(0, index);
-  renderMessages();
-  const lastUser = [...messages].reverse().find(m => m.role === 'user');
-  if (lastUser) {
-    const idx = messages.indexOf(lastUser);
-    messages = messages.slice(0, idx);
-    renderMessages();
-    document.getElementById('chatInput').value = lastUser.content || '';
-    await sendMessage();
   }
 }
 
@@ -1694,9 +1581,9 @@ function escapeHtml(s) {
     ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-/* Load voices early */
+/* Preload voices */
 if (typeof window !== 'undefined' && window.speechSynthesis) {
-  window.speechSynthesis.onvoiceschanged = () => { /* preload voices */ };
+  window.speechSynthesis.onvoiceschanged = () => {};
 }
 </script>
 </body>
