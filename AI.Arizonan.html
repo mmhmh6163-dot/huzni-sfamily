@@ -14,29 +14,21 @@
 <style>
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; padding: 0; }
-
 body {
   background: #050a14;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: #fff;
-  height: 100vh;
-  height: 100dvh;
+  height: 100vh; height: 100dvh;
   overflow: hidden;
   overscroll-behavior: none;
 }
-
 .app {
   position: relative;
-  max-width: 480px;
-  margin: 0 auto;
-  height: 100vh;
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  background: #050a14;
-  overflow: hidden;
+  max-width: 480px; margin: 0 auto;
+  height: 100vh; height: 100dvh;
+  display: flex; flex-direction: column;
+  background: #050a14; overflow: hidden;
 }
-
 @media (min-width: 500px) {
   body { background: #01030a; }
   .app {
@@ -46,9 +38,7 @@ body {
   }
 }
 
-/* ============================================================
-   TOP BAR
-   ============================================================ */
+/* ==================== TOP BAR ==================== */
 .topbar {
   flex-shrink: 0;
   padding: 0 8px;
@@ -58,14 +48,11 @@ body {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(94,184,255,.15);
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  display: flex; align-items: center; gap: 4px;
   z-index: 20;
 }
 .topbar .icon-btn {
-  width: 40px; height: 40px;
-  border-radius: 50%;
+  width: 40px; height: 40px; border-radius: 50%;
   background: none; border: none;
   color: #5eb8ff; font-size: 17px;
   cursor: pointer;
@@ -79,12 +66,30 @@ body {
   font-size: 15px; font-weight: 800;
   display: flex; align-items: center; justify-content: center;
   gap: 6px;
-  background: linear-gradient(135deg,#5eb8ff,#7c3aed);
-  -webkit-background-clip: text; background-clip: text;
-  color: transparent;
 }
-.topbar .title img { width: 22px; height: 22px; border-radius: 5px; -webkit-text-fill-color: initial; }
-.topbar .title span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
+.topbar .title img {
+  width: 22px; height: 22px; border-radius: 5px;
+}
+.topbar .title span {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 120px;
+  background: linear-gradient(135deg,#5eb8ff,#7c3aed);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.topbar .model-btn {
+  background: rgba(94,184,255,.12);
+  border: 1px solid rgba(94,184,255,.35);
+  color: #5eb8ff;
+  border-radius: 14px;
+  padding: 5px 10px;
+  font-size: 11px; font-weight: 800;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 4px;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+.topbar .model-btn:active { transform: scale(.95); }
+
 .topbar .user-av {
   width: 36px; height: 36px; border-radius: 50%;
   background: linear-gradient(135deg,#FF6B35,#FFB20F);
@@ -95,31 +100,34 @@ body {
 }
 .topbar .user-av img { width: 100%; height: 100%; object-fit: cover; }
 
-/* ============================================================
-   QUOTA BADGE
-   ============================================================ */
-.quota-badge {
-  position: fixed;
-  top: calc(64px + env(safe-area-inset-top));
-  right: 12px;
-  background: rgba(10,20,35,.95);
-  border: 1px solid rgba(94,184,255,.35);
-  border-radius: 14px;
-  padding: 5px 11px;
-  font-size: 11px; font-weight: 700;
-  color: #5eb8ff;
-  z-index: 30;
-  backdrop-filter: blur(8px);
-  display: none;
-  align-items: center;
-  gap: 5px;
+/* ==================== STATUS BAR ==================== */
+.status-bar {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  background: rgba(5,10,20,.98);
+  border-bottom: 1px solid rgba(94,184,255,.1);
+  display: flex; gap: 14px; align-items: center;
+  font-size: 11px; color: rgba(255,255,255,.5);
+  overflow-x: auto;
+  scrollbar-width: none;
 }
-.quota-badge.show { display: flex; }
-.quota-badge.empty { border-color: rgba(255,118,117,.5); color: #ff7675; }
+.status-bar::-webkit-scrollbar { display: none; }
+.status-bar .pill {
+  display: flex; align-items: center; gap: 4px;
+  white-space: nowrap;
+}
+.status-bar .pill i { color: #5eb8ff; font-size: 11px; }
+.status-bar .pill.on i { color: #00b894; }
+.status-bar .pill.warn i { color: #FFB20F; }
+.status-bar .pill.off i { color: #ff7675; }
+.status-bar .toggle {
+  background: none; border: none;
+  color: inherit; font: inherit;
+  cursor: pointer; padding: 0;
+  display: flex; align-items: center; gap: 4px;
+}
 
-/* ============================================================
-   MESSAGES
-   ============================================================ */
+/* ==================== MESSAGES ==================== */
 .messages {
   flex: 1; overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -158,15 +166,33 @@ body {
   white-space: pre-wrap;
 }
 .msg.user .bubble { background: linear-gradient(135deg,#FF6B35,#FFB20F); color: #fff; border-bottom-right-radius: 5px; }
-.msg.bot .bubble { background: rgba(94,184,255,.1); border: 1px solid rgba(94,184,255,.22); color: #e0f2ff; border-bottom-left-radius: 5px; }
+.msg.bot .bubble {
+  background: rgba(94,184,255,.1);
+  border: 1px solid rgba(94,184,255,.22);
+  color: #e0f2ff;
+  border-bottom-left-radius: 5px;
+}
 .msg.bot .bubble.speaking { border-color: #5eb8ff; box-shadow: 0 0 0 3px rgba(94,184,255,.15); }
+.msg.bot .bubble.streaming::after {
+  content: '▊';
+  color: #5eb8ff;
+  animation: cursorBlink .8s infinite;
+  margin-left: 2px;
+}
+@keyframes cursorBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
 
 .msg .bubble .media {
   display: block; width: 100%;
   margin-top: 8px; border-radius: 12px;
   overflow: hidden; background: #000;
 }
-.msg .bubble .media img { display: block; width: 100%; height: auto; max-height: 380px; object-fit: cover; cursor: zoom-in; }
+.msg .bubble .media img {
+  display: block; width: 100%; height: auto;
+  max-height: 380px; object-fit: cover; cursor: zoom-in;
+}
 .msg .bubble .media video { display: block; width: 100%; max-height: 380px; background: #000; }
 .msg .bubble .media audio { display: block; width: 100%; min-width: 220px; }
 
@@ -185,11 +211,9 @@ body {
   font-size: 10px; color: rgba(255,255,255,.35);
   margin-top: 2px; padding-left: 2px; letter-spacing: 0.3px;
 }
-.powered-by i { color: var(--az-accent, #FFB20F); font-size: 10px; }
+.powered-by i { color: #FFB20F; font-size: 10px; }
 
-/* ============================================================
-   REPLY ACTIONS
-   ============================================================ */
+/* ==================== REPLY ACTIONS ==================== */
 .reply-actions {
   display: flex; gap: 4px; flex-wrap: wrap;
   margin-top: 4px; align-items: center;
@@ -205,20 +229,25 @@ body {
   display: inline-flex; align-items: center; gap: 4px;
   transition: all .15s;
   min-height: 30px;
+  font-family: inherit;
 }
 .reply-actions button:active { transform: scale(.94); background: rgba(94,184,255,.15); }
-.reply-actions button .count { font-size: 10px; opacity: .8; margin-left: 2px; }
 
 .reply-actions button.heart-btn.active { color: #ff4757; border-color: rgba(255,71,87,.5); background: rgba(255,71,87,.12); }
 .reply-actions button.like-btn.active { color: #5eb8ff; border-color: rgba(94,184,255,.5); background: rgba(94,184,255,.12); }
 .reply-actions button.dislike-btn.active { color: #ff7675; border-color: rgba(255,118,117,.5); background: rgba(255,118,117,.12); }
-.reply-actions button.speak-btn.speaking { color: #00b894; border-color: rgba(0,184,148,.5); background: rgba(0,184,148,.15); animation: speakerPulse 1.2s infinite; }
-@keyframes speakerPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(0,184,148,.4); } 50% { box-shadow: 0 0 0 6px rgba(0,184,148,0); } }
+.reply-actions button.speak-btn.speaking {
+  color: #00b894; border-color: rgba(0,184,148,.5);
+  background: rgba(0,184,148,.15);
+  animation: speakerPulse 1.2s infinite;
+}
+@keyframes speakerPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,184,148,.4); }
+  50% { box-shadow: 0 0 0 6px rgba(0,184,148,0); }
+}
 
-/* ============================================================
-   WELCOME
-   ============================================================ */
-.welcome { padding: 30px 16px 20px; text-align: center; }
+/* ==================== WELCOME ==================== */
+.welcome { padding: 24px 16px 20px; text-align: center; }
 .welcome .icon {
   width: 72px; height: 72px; border-radius: 22px;
   background: linear-gradient(135deg,#5eb8ff,#7c3aed);
@@ -228,36 +257,50 @@ body {
   box-shadow: 0 0 50px rgba(94,184,255,.4);
   animation: pulse 3s ease-in-out infinite;
 }
-@keyframes pulse { 0%,100% { box-shadow: 0 0 50px rgba(94,184,255,.4); } 50% { box-shadow: 0 0 70px rgba(124,58,237,.6); } }
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 50px rgba(94,184,255,.4); }
+  50% { box-shadow: 0 0 70px rgba(124,58,237,.6); }
+}
 .welcome h1 {
   font-size: 21px; font-weight: 800; margin: 0 0 6px;
   background: linear-gradient(135deg,#5eb8ff,#7c3aed);
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
-.welcome p { color: rgba(255,255,255,.55); font-size: 13px; margin: 0 0 22px; line-height: 1.5; }
-.welcome .quota-info {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(94,184,255,.1);
-  border: 1px solid rgba(94,184,255,.25);
-  border-radius: 20px; padding: 6px 14px; margin-bottom: 20px;
-  font-size: 12px; font-weight: 600; color: #5eb8ff;
+.welcome p { color: rgba(255,255,255,.55); font-size: 13px; margin: 0 0 20px; line-height: 1.5; }
+
+.welcome .prompts-section {
+  margin-top: 18px; text-align: left;
 }
-.welcome .chips { display: flex; flex-direction: column; gap: 8px; max-width: 320px; margin: 0 auto; }
+.welcome .prompts-section h3 {
+  font-size: 11px; font-weight: 800;
+  color: rgba(255,255,255,.4);
+  text-transform: uppercase; letter-spacing: 1.2px;
+  margin: 18px 8px 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.welcome .prompts-section h3 i { color: #5eb8ff; }
+.welcome .prompt-chips {
+  display: flex; flex-direction: column; gap: 6px;
+}
 .chip {
   background: rgba(94,184,255,.06);
   border: 1px solid rgba(94,184,255,.22);
-  border-radius: 14px; padding: 12px 14px;
+  border-radius: 12px; padding: 11px 14px;
   color: #fff; font-size: 13px; font-weight: 600;
   cursor: pointer;
   display: flex; align-items: center; gap: 10px;
   text-align: left; transition: all .15s;
+  font-family: inherit;
 }
 .chip:active { background: rgba(94,184,255,.18); transform: scale(.98); }
 .chip i { color: #5eb8ff; font-size: 14px; width: 18px; text-align: center; }
+.chip .sub {
+  display: block; font-size: 10px;
+  color: rgba(255,255,255,.4); font-weight: 500;
+  margin-top: 2px;
+}
 
-/* ============================================================
-   TYPING
-   ============================================================ */
+/* ==================== TYPING ==================== */
 .typing { display: flex; gap: 4px; padding: 3px 0; }
 .typing span {
   width: 6px; height: 6px; border-radius: 50%;
@@ -266,11 +309,12 @@ body {
 }
 .typing span:nth-child(2) { animation-delay: .2s; }
 .typing span:nth-child(3) { animation-delay: .4s; }
-@keyframes bounce { 0%, 60%, 100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-5px); opacity: 1; } }
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: .4; }
+  30% { transform: translateY(-5px); opacity: 1; }
+}
 
-/* ============================================================
-   ATTACHMENT
-   ============================================================ */
+/* ==================== ATTACHMENT ==================== */
 .attach-preview {
   display: none;
   padding: 8px 12px;
@@ -291,11 +335,13 @@ body {
 .attach-preview .info { flex: 1; min-width: 0; font-size: 12px; color: rgba(255,255,255,.75); }
 .attach-preview .info .name { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .attach-preview .info .meta { font-size: 11px; color: rgba(255,255,255,.45); margin-top: 2px; }
-.attach-preview .remove { background: transparent; border: none; color: #ff7675; font-size: 18px; cursor: pointer; padding: 6px 8px; flex-shrink: 0; }
+.attach-preview .remove {
+  background: transparent; border: none;
+  color: #ff7675; font-size: 18px; cursor: pointer;
+  padding: 6px 8px; flex-shrink: 0;
+}
 
-/* ============================================================
-   INPUT BAR
-   ============================================================ */
+/* ==================== INPUT BAR ==================== */
 .input-wrap {
   flex-shrink: 0;
   background: rgba(10,20,35,.98);
@@ -324,16 +370,15 @@ body {
   transition: background .15s;
 }
 .input-inner .icon-inline:active { background: rgba(94,184,255,.15); }
-.input-inner .icon-inline.recording {
-  background: rgba(255,118,117,.2);
-  color: #ff7675;
-  animation: recPulse 1s infinite;
-}
-@keyframes recPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+.input-inner .icon-inline.recording,
 .input-inner .icon-inline.mic-listening {
   background: rgba(255,71,87,.25);
   color: #ff4757;
   animation: recPulse 1s infinite;
+}
+@keyframes recPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
 }
 .input-inner textarea {
   flex: 1;
@@ -354,9 +399,7 @@ body {
 .input-inner .send-btn:active { transform: scale(.92); }
 .input-inner .send-btn:disabled { opacity: .35; cursor: not-allowed; }
 
-/* ============================================================
-   DRAWER (chat history)
-   ============================================================ */
+/* ==================== DRAWER ==================== */
 .drawer-overlay {
   position: fixed; inset: 0;
   background: rgba(0,0,0,.6);
@@ -388,7 +431,7 @@ body {
   background: linear-gradient(135deg,#5eb8ff,#7c3aed);
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
-.drawer-head .brand img { width: 26px; height: 26px; border-radius: 6px; -webkit-text-fill-color: initial; }
+.drawer-head .brand img { width: 26px; height: 26px; border-radius: 6px; }
 .drawer-head .new-btn {
   padding: 11px 14px;
   background: linear-gradient(135deg,#5eb8ff,#7c3aed);
@@ -396,12 +439,13 @@ body {
   font-size: 13px; font-weight: 700;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-family: inherit;
 }
 
-/* Search in drawer */
 .drawer-search {
   padding: 8px 14px;
   border-bottom: 1px solid rgba(94,184,255,.1);
+  position: relative;
 }
 .drawer-search input {
   width: 100%;
@@ -412,7 +456,6 @@ body {
   color: #fff; font-size: 13px; font-family: inherit;
 }
 .drawer-search input:focus { outline: none; border-color: #5eb8ff; }
-.drawer-search { position: relative; }
 .drawer-search i {
   position: absolute; left: 26px; top: 50%;
   transform: translateY(-50%);
@@ -437,15 +480,16 @@ body {
 .chat-item i { color: rgba(255,255,255,.4); font-size: 13px; flex-shrink: 0; }
 .chat-item.active i { color: #5eb8ff; }
 .chat-item .title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.chat-item .del { background: none; border: none; color: rgba(255,255,255,.3); cursor: pointer; padding: 4px; font-size: 12px; flex-shrink: 0; }
+.chat-item .del {
+  background: none; border: none; color: rgba(255,255,255,.3);
+  cursor: pointer; padding: 4px; font-size: 12px; flex-shrink: 0;
+}
 .chat-item .del:active { color: #ff7675; }
 
-/* Group by date */
 .chat-group-label {
   padding: 10px 14px 4px;
   font-size: 10px; font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
+  text-transform: uppercase; letter-spacing: 1.2px;
   color: rgba(255,255,255,.35);
 }
 
@@ -457,9 +501,76 @@ body {
   text-align: center;
 }
 
-/* ============================================================
-   IMAGE VIEWER
-   ============================================================ */
+/* ==================== MODEL PICKER ==================== */
+.model-picker {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.85);
+  backdrop-filter: blur(6px);
+  z-index: 200;
+  display: none;
+  align-items: flex-end; justify-content: center;
+}
+.model-picker.active { display: flex; }
+.model-sheet {
+  background: #0f1525;
+  width: 100%; max-width: 480px;
+  border-top-left-radius: 20px; border-top-right-radius: 20px;
+  padding: 20px;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  border: 1px solid rgba(94,184,255,.2);
+  border-bottom: none;
+  animation: slideUp .25s ease;
+}
+@keyframes slideUp { from { transform: translateY(100%); } }
+.model-sheet .handle {
+  width: 40px; height: 4px; background: rgba(94,184,255,.3);
+  border-radius: 2px; margin: 0 auto 14px;
+}
+.model-sheet h3 {
+  text-align: center; font-size: 16px;
+  background: linear-gradient(135deg,#5eb8ff,#7c3aed);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  margin: 0 0 16px;
+}
+.model-opt {
+  background: rgba(94,184,255,.06);
+  border: 1px solid rgba(94,184,255,.2);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 12px;
+  transition: all .15s;
+}
+.model-opt:active { transform: scale(.98); }
+.model-opt.selected {
+  background: rgba(94,184,255,.15);
+  border-color: #5eb8ff;
+  box-shadow: 0 0 20px rgba(94,184,255,.2);
+}
+.model-opt .m-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: #fff; flex-shrink: 0;
+}
+.model-opt .m-icon.fast   { background: linear-gradient(135deg,#5eb8ff,#7c3aed); }
+.model-opt .m-icon.vision { background: linear-gradient(135deg,#00b894,#00cec9); }
+.model-opt .m-icon.smart  { background: linear-gradient(135deg,#7c3aed,#a855f7); }
+.model-opt .m-icon.image  { background: linear-gradient(135deg,#FF6B35,#FFB20F); }
+.model-opt .m-info { flex: 1; min-width: 0; }
+.model-opt .m-name { font-size: 14px; font-weight: 800; color: #fff; }
+.model-opt .m-desc { font-size: 11px; color: rgba(255,255,255,.55); margin-top: 3px; }
+.model-opt .m-check {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: #fff; flex-shrink: 0;
+}
+.model-opt.selected .m-check {
+  background: #5eb8ff; border-color: #5eb8ff;
+}
+
+/* ==================== IMAGE VIEWER ==================== */
 .image-viewer {
   position: fixed; inset: 0;
   background: rgba(0,0,0,.96);
@@ -476,14 +587,11 @@ body {
   right: 16px;
   width: 40px; height: 40px; border-radius: 50%;
   background: rgba(255,255,255,.12); color: #fff;
-  border: none; font-size: 18px;
-  cursor: pointer;
+  border: none; font-size: 18px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
 }
 
-/* ============================================================
-   TOAST
-   ============================================================ */
+/* ==================== TOAST ==================== */
 .toast-mini {
   position: fixed; bottom: 100px; left: 50%;
   transform: translateX(-50%) translateY(20px);
@@ -498,17 +606,12 @@ body {
 }
 .toast-mini.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* ============================================================
-   AUTH WALL
-   ============================================================ */
+/* ==================== AUTH WALL ==================== */
 .auth-wall {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 24px;
-  text-align: center;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px 24px; text-align: center;
 }
 .auth-wall .icon {
   width: 90px; height: 90px; border-radius: 26px;
@@ -523,7 +626,10 @@ body {
   background: linear-gradient(135deg,#5eb8ff,#7c3aed);
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
-.auth-wall p { color: rgba(255,255,255,.6); font-size: 14px; line-height: 1.6; margin: 0 0 24px; max-width: 320px; }
+.auth-wall p {
+  color: rgba(255,255,255,.6); font-size: 14px; line-height: 1.6;
+  margin: 0 0 24px; max-width: 320px;
+}
 .auth-wall a {
   display: flex; align-items: center; justify-content: center; gap: 8px;
   width: 100%; max-width: 300px;
@@ -531,24 +637,22 @@ body {
   font-weight: 700; font-size: 15px;
   text-decoration: none; margin-bottom: 10px;
 }
-.auth-wall a.primary { background: linear-gradient(135deg,#5eb8ff,#7c3aed); color: #fff; box-shadow: 0 10px 30px rgba(94,184,255,.4); }
+.auth-wall a.primary {
+  background: linear-gradient(135deg,#5eb8ff,#7c3aed);
+  color: #fff; box-shadow: 0 10px 30px rgba(94,184,255,.4);
+}
 .auth-wall a.outline { background: transparent; border: 1.5px solid rgba(94,184,255,.5); color: #5eb8ff; }
 
-/* ============================================================
-   LISTENING OVERLAY (voice input)
-   ============================================================ */
+/* ==================== LISTENING OVERLAY ==================== */
 .listening-overlay {
-  position: fixed;
-  inset: 0;
+  position: fixed; inset: 0;
   background: rgba(5,10,20,.94);
   backdrop-filter: blur(10px);
   z-index: 600;
   display: none;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 30px;
-  text-align: center;
+  align-items: center; justify-content: center;
+  padding: 30px; text-align: center;
 }
 .listening-overlay.active { display: flex; }
 .listening-overlay .mic-circle {
@@ -578,12 +682,9 @@ body {
   border-radius: 16px;
   padding: 16px 20px;
   min-height: 60px;
-  max-width: 340px;
-  width: 100%;
-  font-size: 15px;
-  color: #fff;
-  line-height: 1.5;
-  margin-bottom: 24px;
+  max-width: 340px; width: 100%;
+  font-size: 15px; color: #fff;
+  line-height: 1.5; margin-bottom: 24px;
 }
 .listening-overlay .stop-btn {
   padding: 14px 36px;
@@ -601,7 +702,7 @@ body {
 
 <div class="app" id="appShell" style="display:none;">
 
-  <!-- TOP BAR -->
+  <!-- ==================== TOP BAR ==================== -->
   <header class="topbar">
     <a href="index.html" class="icon-btn" aria-label="Back" title="Back to Home">
       <i class="fas fa-arrow-left"></i>
@@ -613,6 +714,11 @@ body {
       <img src="arizonan%20png%20icon.jpeg" alt="">
       <span id="chatTitle">AI.Arizonan</span>
     </div>
+    <button class="model-btn" id="modelBtn" onclick="openModelPicker()">
+      <i class="fas fa-bolt"></i>
+      <span id="modelLabel">Fast</span>
+      <i class="fas fa-chevron-down" style="font-size:9px;"></i>
+    </button>
     <button class="icon-btn" onclick="startNewChat()" aria-label="New chat" title="New Chat">
       <i class="fas fa-plus"></i>
     </button>
@@ -621,16 +727,28 @@ body {
     </a>
   </header>
 
-  <!-- QUOTA BADGE -->
-  <div class="quota-badge" id="quotaBadge">
-    <i class="fas fa-image"></i>
-    <span id="quotaText">4/4</span>
+  <!-- ==================== STATUS BAR ==================== -->
+  <div class="status-bar">
+    <div class="pill" id="quotaPill">
+      <i class="fas fa-image"></i>
+      <span id="quotaText">4/4 images</span>
+    </div>
+    <button class="toggle" id="voiceToggle" onclick="toggleAutoVoice()">
+      <div class="pill" id="voicePill">
+        <i class="fas fa-volume-up"></i>
+        <span id="voiceLabel">Voice ON</span>
+      </div>
+    </button>
+    <div class="pill on" id="streamPill">
+      <i class="fas fa-bolt"></i>
+      <span>Streaming</span>
+    </div>
   </div>
 
-  <!-- MESSAGES -->
+  <!-- ==================== MESSAGES ==================== -->
   <div class="messages" id="messages"></div>
 
-  <!-- ATTACHMENT PREVIEW -->
+  <!-- ==================== ATTACHMENT PREVIEW ==================== -->
   <div class="attach-preview" id="attachPreview">
     <div class="thumb" id="attachThumb"></div>
     <div class="info">
@@ -642,10 +760,10 @@ body {
     </button>
   </div>
 
-  <!-- INPUT -->
+  <!-- ==================== INPUT ==================== -->
   <div class="input-wrap">
     <div class="input-inner">
-      <button class="icon-inline" onclick="pickFile()" aria-label="Attach" title="Attach image/video">
+      <button class="icon-inline" onclick="pickFile()" aria-label="Attach" title="Attach image">
         <i class="fas fa-paperclip"></i>
       </button>
       <textarea id="chatInput" rows="1" placeholder="Message AI.Arizonan…"
@@ -660,19 +778,19 @@ body {
     </div>
   </div>
 
-  <input type="file" id="fileInput" accept="image/*,video/*,audio/*" style="display:none;">
+  <input type="file" id="fileInput" accept="image/*" style="display:none;">
 </div>
 
-<!-- AUTH WALL -->
+<!-- ==================== AUTH WALL ==================== -->
 <div class="auth-wall" id="authWall" style="display:none;">
   <div class="icon"><i class="fas fa-robot"></i></div>
   <h2>Sign in to chat with AI.Arizonan</h2>
-  <p>Only Arizona AI members can use the AI assistant. You'll get 4 free image generations per day.</p>
+  <p>Only Arizona AI members can use the AI assistant. You get 4 free image generations daily.</p>
   <a href="login.html" class="primary"><i class="fas fa-sign-in-alt"></i> Sign In</a>
   <a href="register.html" class="outline"><i class="fas fa-user-plus"></i> Create Free Account</a>
 </div>
 
-<!-- DRAWER -->
+<!-- ==================== DRAWER ==================== -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 <aside class="drawer" id="drawer">
   <div class="drawer-head">
@@ -694,13 +812,57 @@ body {
   </div>
 </aside>
 
-<!-- IMAGE VIEWER -->
+<!-- ==================== MODEL PICKER ==================== -->
+<div class="model-picker" id="modelPicker" onclick="closeModelPicker(event)">
+  <div class="model-sheet" onclick="event.stopPropagation()">
+    <div class="handle"></div>
+    <h3>Choose AI Model</h3>
+
+    <div class="model-opt selected" data-model="fast" onclick="selectModel('fast', this)">
+      <div class="m-icon fast"><i class="fas fa-bolt"></i></div>
+      <div class="m-info">
+        <div class="m-name">⚡ Fast</div>
+        <div class="m-desc">GPT-4o Mini · Quick answers, everyday use</div>
+      </div>
+      <div class="m-check"><i class="fas fa-check"></i></div>
+    </div>
+
+    <div class="model-opt" data-model="vision" onclick="selectModel('vision', this)">
+      <div class="m-icon vision"><i class="fas fa-eye"></i></div>
+      <div class="m-info">
+        <div class="m-name">🎨 Vision</div>
+        <div class="m-desc">Gemini 2.0 Flash · Image analysis, free</div>
+      </div>
+      <div class="m-check"><i class="fas fa-check"></i></div>
+    </div>
+
+    <div class="model-opt" data-model="smart" onclick="selectModel('smart', this)">
+      <div class="m-icon smart"><i class="fas fa-brain"></i></div>
+      <div class="m-info">
+        <div class="m-name">🧠 Smart</div>
+        <div class="m-desc">Claude 3.5 Sonnet · Deep reasoning, writing</div>
+      </div>
+      <div class="m-check"><i class="fas fa-check"></i></div>
+    </div>
+
+    <div class="model-opt" data-model="image" onclick="selectModel('image', this)">
+      <div class="m-icon image"><i class="fas fa-image"></i></div>
+      <div class="m-info">
+        <div class="m-name">🖼️ Image Generator</div>
+        <div class="m-desc">Gemini 2.5 Flash Image · Creates artwork</div>
+      </div>
+      <div class="m-check"><i class="fas fa-check"></i></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== IMAGE VIEWER ==================== -->
 <div class="image-viewer" id="imageViewer" onclick="closeImageViewer()">
   <button class="close"><i class="fas fa-times"></i></button>
   <img id="imageViewerImg" src="" alt="">
 </div>
 
-<!-- LISTENING OVERLAY -->
+<!-- ==================== LISTENING OVERLAY ==================== -->
 <div class="listening-overlay" id="listeningOverlay">
   <div class="mic-circle"><i class="fas fa-microphone"></i></div>
   <h3>Listening…</h3>
@@ -711,7 +873,7 @@ body {
   </button>
 </div>
 
-<!-- TOAST -->
+<!-- ==================== TOAST ==================== -->
 <div class="toast-mini" id="toastMini"></div>
 
 <script src="auth.js"></script>
@@ -719,25 +881,33 @@ body {
 /* ============================================================
    STATE
    ============================================================ */
-let currentChatId    = null;
+let currentChatId = null;
 let currentChatTitle = 'AI.Arizonan';
-let messages         = [];
-let allChats         = [];
-let isSending        = false;
-let pendingFile      = null;
-let pendingFileUrl   = null;
-let imagesUsedToday  = 0;
-let reactions        = {}; // key = `${chatId}_${msgIndex}_${type}`, value = true
+let messages = [];
+let allChats = [];
+let isSending = false;
+let pendingFile = null;
+let pendingFileUrl = null;
+let imagesUsedToday = 0;
+let reactions = {};
 const DAILY_IMAGE_LIMIT = 4;
 
+// Model
+let currentModel = 'fast';
+const MODEL_LABELS = { fast: 'Fast', vision: 'Vision', smart: 'Smart', image: 'Image' };
+
 // Voice input
-let recognition      = null;
-let isListening      = false;
-let voiceTranscript  = '';
+let recognition = null;
+let isListening = false;
+let voiceTranscript = '';
 
 // Speech output
+let autoVoice = localStorage.getItem('az_auto_voice') !== 'off';
 let currentUtterance = null;
 let currentSpeakingBtn = null;
+
+// Streaming
+let currentStreamAbort = null;
 
 /* ============================================================
    INIT
@@ -752,6 +922,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const fileInput = document.getElementById('fileInput');
   if (fileInput) fileInput.addEventListener('change', onFilePicked);
+
+  updateVoiceToggleUI();
 });
 
 async function initChat() {
@@ -764,7 +936,7 @@ async function initChat() {
   document.getElementById('appShell').style.display = 'flex';
   document.getElementById('authWall').style.display = 'none';
 
-  // Update top avatar
+  // Top avatar
   const avEl = document.getElementById('topUserAv');
   const avatarUrl = currentProfile?.avatar_url;
   if (avatarUrl) {
@@ -775,35 +947,45 @@ async function initChat() {
   }
 
   await loadImageQuota();
-  await loadReactionsFromDB();
   await loadChatsList();
   await startNewChat();
   setTimeout(() => document.getElementById('chatInput').focus(), 300);
 }
 
 /* ============================================================
-   IMAGE QUOTA
+   QUOTA
    ============================================================ */
 async function loadImageQuota() {
   if (!currentUser) return;
   try {
     const { data, error } = await supabaseClient.rpc('images_used_last_24h', {
-      p_user_id: currentUser.id
+      user_id: currentUser.id
     });
     if (error) throw error;
     imagesUsedToday = data || 0;
     updateQuotaBadge();
-  } catch (e) { console.warn('[Quota] load failed:', e); }
+  } catch (e) {
+    // fallback: count from table
+    try {
+      const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
+      const { count } = await supabaseClient
+        .from('ai_image_usage')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', currentUser.id)
+        .gte('created_at', since);
+      imagesUsedToday = count || 0;
+      updateQuotaBadge();
+    } catch (e2) {}
+  }
 }
 
 function updateQuotaBadge() {
-  const badge = document.getElementById('quotaBadge');
-  const text = document.getElementById('quotaText');
   const remaining = Math.max(0, DAILY_IMAGE_LIMIT - imagesUsedToday);
-  badge.classList.add('show');
+  const text = document.getElementById('quotaText');
+  const pill = document.getElementById('quotaPill');
   text.textContent = `${remaining}/${DAILY_IMAGE_LIMIT} images`;
-  if (remaining === 0) badge.classList.add('empty');
-  else badge.classList.remove('empty');
+  if (remaining === 0) pill.classList.add('warn');
+  else pill.classList.remove('warn');
 }
 
 async function registerImageUse(prompt) {
@@ -816,7 +998,50 @@ async function registerImageUse(prompt) {
     });
     imagesUsedToday++;
     updateQuotaBadge();
-  } catch (e) { console.warn('[Quota] register failed:', e); }
+  } catch (e) {}
+}
+
+/* ============================================================
+   MODEL PICKER
+   ============================================================ */
+function openModelPicker() {
+  document.getElementById('modelPicker').classList.add('active');
+  document.querySelectorAll('.model-opt').forEach(o => {
+    o.classList.toggle('selected', o.dataset.model === currentModel);
+  });
+}
+function closeModelPicker(e) {
+  if (e && e.target && e.target.id !== 'modelPicker') return;
+  document.getElementById('modelPicker').classList.remove('active');
+}
+function selectModel(model, el) {
+  currentModel = model;
+  document.getElementById('modelLabel').textContent = MODEL_LABELS[model] || 'Fast';
+  document.querySelectorAll('.model-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  setTimeout(() => document.getElementById('modelPicker').classList.remove('active'), 200);
+  toast(`Switched to ${MODEL_LABELS[model]}`);
+}
+
+/* ============================================================
+   VOICE OUTPUT TOGGLE
+   ============================================================ */
+function toggleAutoVoice() {
+  autoVoice = !autoVoice;
+  localStorage.setItem('az_auto_voice', autoVoice ? 'on' : 'off');
+  updateVoiceToggleUI();
+  toast(autoVoice ? '🔊 Voice ON' : '🔇 Voice OFF');
+}
+function updateVoiceToggleUI() {
+  const pill = document.getElementById('voicePill');
+  const label = document.getElementById('voiceLabel');
+  if (autoVoice) {
+    pill.classList.add('on');
+    label.textContent = 'Voice ON';
+  } else {
+    pill.classList.remove('on');
+    label.textContent = 'Voice OFF';
+  }
 }
 
 /* ============================================================
@@ -833,7 +1058,7 @@ function closeDrawer() {
 }
 
 /* ============================================================
-   CHATS LIST (grouped by day)
+   CHATS LIST
    ============================================================ */
 async function loadChatsList() {
   if (!currentUser) return;
@@ -846,11 +1071,15 @@ async function loadChatsList() {
       .limit(100);
     if (error) throw error;
     allChats = data || [];
-  } catch (e) { console.warn('[AI] load chats failed:', e); }
+  } catch (e) {
+    console.warn('[AI] load chats failed:', e);
+    allChats = [];
+  }
 }
 
 function renderDrawerList() {
   const list = document.getElementById('drawerList');
+  if (!list) return;
   const search = (document.getElementById('chatSearch')?.value || '').toLowerCase();
 
   let filtered = allChats;
@@ -867,7 +1096,6 @@ function renderDrawerList() {
     return;
   }
 
-  // Group by day
   const groups = { today: [], yesterday: [], week: [], older: [] };
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -937,9 +1165,7 @@ async function openChat(chatId) {
       media_type: m.media_type || null
     }));
 
-    // Load reactions for this chat
     await loadReactionsFromDB();
-
     renderMessages();
     closeDrawer();
     renderDrawerList();
@@ -972,7 +1198,7 @@ async function createChatIfNeeded(firstMessage) {
 }
 
 /* ============================================================
-   REACTIONS (persistent)
+   REACTIONS
    ============================================================ */
 async function loadReactionsFromDB() {
   if (!currentUser || !currentChatId) return;
@@ -987,7 +1213,7 @@ async function loadReactionsFromDB() {
     (data || []).forEach(r => {
       reactions[`${currentChatId}_${r.msg_index}_${r.reaction}`] = true;
     });
-  } catch (e) { /* table may not exist yet */ }
+  } catch (e) {}
 }
 
 async function saveReactionToDB(msgIndex, reaction, active) {
@@ -1008,7 +1234,7 @@ async function saveReactionToDB(msgIndex, reaction, active) {
         .eq('msg_index', msgIndex)
         .eq('reaction', reaction);
     }
-  } catch (e) { /* silent */ }
+  } catch (e) {}
 }
 
 /* ============================================================
@@ -1023,23 +1249,63 @@ function renderWelcome() {
       <div class="icon"><i class="fas fa-robot"></i></div>
       <h1>Hi ${escapeHtml(name)}, I'm AI.Arizonan</h1>
       <p>Your AI assistant. Chat, generate images, analyze photos, and more.</p>
-      <div class="quota-info">
-        <i class="fas fa-image"></i>
-        ${remaining} of ${DAILY_IMAGE_LIMIT} free images remaining today
-      </div>
-      <div class="chips">
-        <button class="chip" onclick="quickAsk('Draw a sunset over a desert with a tall cactus')">
-          <i class="fas fa-image"></i> Draw an image
-        </button>
-        <button class="chip" onclick="quickAsk('Write a caption for my post')">
-          <i class="fas fa-pen-fancy"></i> Write a caption
-        </button>
-        <button class="chip" onclick="quickAsk('Suggest hashtags for a post')">
-          <i class="fas fa-hashtag"></i> Suggest hashtags
-        </button>
-        <button class="chip" onclick="quickAsk('How do I earn on Arizona AI?')">
-          <i class="fas fa-dollar-sign"></i> Earn tips
-        </button>
+
+      <div class="prompts-section">
+        <h3><i class="fas fa-sparkles"></i> Try these</h3>
+        <div class="prompt-chips">
+          <button class="chip" onclick="quickAsk('Draw a sunset over a desert with a tall cactus')">
+            <i class="fas fa-image"></i>
+            <div>Draw an image
+              <span class="sub">Creates artwork from your prompt</span>
+            </div>
+          </button>
+          <button class="chip" onclick="quickAsk('Write a caption for my post')">
+            <i class="fas fa-pen-fancy"></i>
+            <div>Write a caption
+              <span class="sub">For your social post</span>
+            </div>
+          </button>
+          <button class="chip" onclick="quickAsk('Suggest 5 hashtags for a travel post')">
+            <i class="fas fa-hashtag"></i>
+            <div>Suggest hashtags
+              <span class="sub">Relevant tags for reach</span>
+            </div>
+          </button>
+          <button class="chip" onclick="quickAsk('How do I earn money on Arizona AI?')">
+            <i class="fas fa-dollar-sign"></i>
+            <div>Earning tips
+              <span class="sub">Learn the money system</span>
+            </div>
+          </button>
+        </div>
+
+        <h3><i class="fas fa-lightbulb"></i> More ideas</h3>
+        <div class="prompt-chips">
+          <button class="chip" onclick="quickAsk('Summarize this in 3 bullet points: ')">
+            <i class="fas fa-list"></i>
+            <div>Summarize text
+              <span class="sub">Paste content after this prompt</span>
+            </div>
+          </button>
+          <button class="chip" onclick="quickAsk('Translate to Arabic: ')">
+            <i class="fas fa-language"></i>
+            <div>Translate
+              <span class="sub">Any language, any text</span>
+            </div>
+          </button>
+          <button class="chip" onclick="quickAsk('Write a Python function that ')">
+            <i class="fas fa-code"></i>
+            <div>Write code
+              <span class="sub">Python, JS, HTML, and more</span>
+            </div>
+          </button>
+          <button class="chip" onclick="pickFile()">
+            <i class="fas fa-camera"></i>
+            <div>Analyze a photo
+              <span class="sub">Upload an image, ask anything</span>
+            </div>
+          </button>
+        </div>
       </div>
     </div>`;
 }
@@ -1075,10 +1341,8 @@ function createMessageEl(msg, index) {
       mediaActions = `<div class="media-actions"><a href="${url}" download="arizona-ai-image.png" target="_blank" rel="noopener"><i class="fas fa-download"></i> Download</a></div>`;
     } else if (msg.media_type === 'video') {
       mediaHtml = `<div class="media"><video src="${url}" controls playsinline preload="metadata"></video></div>`;
-      mediaActions = `<div class="media-actions"><a href="${url}" download="arizona-ai-video.mp4" target="_blank" rel="noopener"><i class="fas fa-download"></i> Download</a></div>`;
     } else if (msg.media_type === 'audio') {
       mediaHtml = `<div class="media"><audio src="${url}" controls preload="metadata"></audio></div>`;
-      mediaActions = `<div class="media-actions"><a href="${url}" download="arizona-ai-audio.mp3" target="_blank" rel="noopener"><i class="fas fa-download"></i> Download</a></div>`;
     }
   }
 
@@ -1091,7 +1355,6 @@ function createMessageEl(msg, index) {
       Powered by Huzni's Family
     </div>` : '';
 
-  // Check reaction states from DB
   const heartActive = currentChatId && reactions[`${currentChatId}_${index}_heart`];
   const likeActive  = currentChatId && reactions[`${currentChatId}_${index}_like`];
   const dislikeActive = currentChatId && reactions[`${currentChatId}_${index}_dislike`];
@@ -1138,7 +1401,6 @@ async function reactToMessage(index, type, btn) {
   const wasActive = btn.classList.contains('active');
   const parent = btn.parentElement;
 
-  // Clear opposite
   if (type === 'like') {
     const d = parent.querySelector('.dislike-btn');
     if (d && d.classList.contains('active')) {
@@ -1182,7 +1444,6 @@ async function shareMessage(index) {
   const msg = messages[index];
   if (!msg) return;
   const text = msg.content || '';
-
   if (navigator.share) {
     try { await navigator.share({ title: 'AI.Arizonan', text }); return; } catch (e) {}
   }
@@ -1199,7 +1460,7 @@ function copyMessage(index) {
 }
 
 /* ============================================================
-   SPEAK (text-to-speech)
+   SPEAK (TTS)
    ============================================================ */
 function speakMessage(index, btn) {
   const msg = messages[index];
@@ -1251,11 +1512,25 @@ function speakMessage(index, btn) {
   btn.querySelector('i').className = 'fas fa-volume-high';
 
   window.speechSynthesis.speak(utterance);
-  toast('🔊 Reading aloud…');
+}
+
+// Auto-speak helper for last bot message
+function autoSpeakLast() {
+  if (!autoVoice) return;
+  const lastIndex = messages.length - 1;
+  if (lastIndex < 0) return;
+  const msg = messages[lastIndex];
+  if (!msg || msg.role !== 'assistant' || !msg.content) return;
+  // Give the DOM a moment
+  setTimeout(() => {
+    const buttons = document.querySelectorAll('.reply-actions .speak-btn');
+    const btn = buttons[buttons.length - 1];
+    if (btn) speakMessage(lastIndex, btn);
+  }, 200);
 }
 
 /* ============================================================
-   VOICE INPUT (speech-to-text)
+   VOICE INPUT (STT)
    ============================================================ */
 function startVoiceInput() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1264,7 +1539,6 @@ function startVoiceInput() {
     return;
   }
 
-  // If already listening, stop
   if (isListening) { stopVoiceInput(); return; }
 
   recognition = new SR();
@@ -1344,9 +1618,14 @@ function onFilePicked(event) {
   const file = event.target.files[0];
   if (!file) return;
 
-  const maxMB = 25;
+  const maxMB = 10;
   if (file.size > maxMB * 1024 * 1024) {
-    toast(`File must be under ${maxMB} MB`);
+    toast(`Image must be under ${maxMB} MB`);
+    event.target.value = '';
+    return;
+  }
+  if (!file.type.startsWith('image/')) {
+    toast('Only images are supported for AI analysis');
     event.target.value = '';
     return;
   }
@@ -1359,22 +1638,9 @@ function onFilePicked(event) {
   const nameEl = document.getElementById('attachName');
   const sizeEl = document.getElementById('attachSize');
 
-  let type = 'file';
-  let icon = '<i class="fas fa-file"></i>';
-  if (file.type.startsWith('image/')) {
-    type = 'image';
-    icon = `<img src="${pendingFileUrl}" alt="">`;
-  } else if (file.type.startsWith('video/')) {
-    type = 'video';
-    icon = `<video src="${pendingFileUrl}" muted></video>`;
-  } else if (file.type.startsWith('audio/')) {
-    type = 'audio';
-    icon = '<i class="fas fa-music"></i>';
-  }
-
-  thumb.innerHTML = icon;
+  thumb.innerHTML = `<img src="${pendingFileUrl}" alt="">`;
   nameEl.textContent = file.name;
-  sizeEl.textContent = `${type} · ${(file.size / 1024).toFixed(0)} KB`;
+  sizeEl.textContent = `image · ${(file.size / 1024).toFixed(0)} KB`;
   preview.classList.add('active');
   document.getElementById('fileInput').value = '';
 }
@@ -1389,7 +1655,7 @@ function clearAttachment() {
    IMAGE INTENT
    ============================================================ */
 function wantsImage(text) {
-  const t = text.toLowerCase();
+  const t = (text || '').toLowerCase();
   return ["draw", "create an image", "generate an image", "make an image",
           "paint", "illustrate", "picture of", "image of", "photo of",
           "design a logo", "make a logo", "create a logo",
@@ -1397,7 +1663,7 @@ function wantsImage(text) {
 }
 
 /* ============================================================
-   SEND MESSAGE
+   SEND MESSAGE — streaming
    ============================================================ */
 async function sendMessage() {
   if (isSending) return;
@@ -1407,35 +1673,27 @@ async function sendMessage() {
   const text = input.value.trim();
   if (!text && !pendingFile) return;
 
-  const isImageRequest = wantsImage(text);
-  if (isImageRequest && imagesUsedToday >= DAILY_IMAGE_LIMIT) {
-    toast(`You've used all ${DAILY_IMAGE_LIMIT} free images today. Try again tomorrow!`);
+  // Image quota check for image requests
+  const imageIntent = wantsImage(text) || currentModel === 'image';
+  if (imageIntent && imagesUsedToday >= DAILY_IMAGE_LIMIT) {
+    toast(`Daily image limit reached (${DAILY_IMAGE_LIMIT}). Try tomorrow!`);
     return;
   }
 
   let mediaUrl = null;
   let mediaType = null;
 
-  if (pendingFile && pendingFile instanceof File) {
+  if (pendingFile instanceof File) {
     try {
-      const ext = (pendingFile.name.split('.').pop() || 'bin').toLowerCase();
+      const ext = (pendingFile.name.split('.').pop() || 'jpg').toLowerCase();
       const path = `${currentUser.id}/ai-${Date.now()}.${ext}`;
-
       const { data: upload, error: upErr } = await supabaseClient.storage
         .from('ai_uploads')
         .upload(path, pendingFile, { cacheControl: '3600' });
-
       if (upErr) throw upErr;
-
-      const { data: urlData } = supabaseClient.storage
-        .from('ai_uploads')
-        .getPublicUrl(upload.path);
-
+      const { data: urlData } = supabaseClient.storage.from('ai_uploads').getPublicUrl(upload.path);
       mediaUrl = urlData.publicUrl;
-      mediaType = pendingFile.type.startsWith('image/') ? 'image'
-                : pendingFile.type.startsWith('video/') ? 'video'
-                : pendingFile.type.startsWith('audio/') ? 'audio'
-                : null;
+      mediaType = 'image';
     } catch (e) {
       console.error('[Upload] Error:', e);
       toast('Upload failed');
@@ -1451,7 +1709,7 @@ async function sendMessage() {
   clearAttachment();
 
   try {
-    await createChatIfNeeded(text || `[${mediaType || 'file'}]`);
+    await createChatIfNeeded(text || '[image]');
     await supabaseClient.from('ai_messages').insert({
       chat_id: currentChatId,
       role: 'user',
@@ -1463,12 +1721,17 @@ async function sendMessage() {
 
   renderMessages();
 
+  // Add empty assistant bubble for streaming
   const container = document.getElementById('messages');
   const typingEl = document.createElement('div');
   typingEl.className = 'msg bot';
   typingEl.innerHTML = `
     <div class="av">AI</div>
-    <div class="body"><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div></div>`;
+    <div class="body">
+      <div class="bubble" id="streamBubble">
+        <div class="typing"><span></span><span></span><span></span></div>
+      </div>
+    </div>`;
   container.appendChild(typingEl);
   container.scrollTop = container.scrollHeight;
 
@@ -1477,51 +1740,156 @@ async function sendMessage() {
 
   try {
     const payloadMessages = messages.map(m => ({ role: m.role, content: m.content || '' }));
-    const payload = { messages: payloadMessages };
+    const payload = {
+      messages: payloadMessages,
+      model: imageIntent ? 'image' : currentModel,
+      stream: !imageIntent,       // image requests don't stream
+      image_url: mediaUrl && mediaType === 'image' ? mediaUrl : undefined,
+    };
 
-    // If user attached an image, tell the Edge Function to analyze it
-    if (mediaUrl && mediaType === 'image') {
-      payload.image_url = mediaUrl;
-    }
+    const functionUrl = `${SUPABASE_URL}/functions/v1/ai-chat`;
 
-    const { data, error } = await supabaseClient.functions.invoke('ai-chat', {
-      body: payload
-    });
+    // ============ Image generation (non-streaming) ============
+    if (imageIntent) {
+      const { data, error } = await supabaseClient.functions.invoke('ai-chat', { body: payload });
+      typingEl.remove();
+      if (error) throw error;
 
-    typingEl.remove();
+      if (data?.image_url) await registerImageUse(text || 'image');
 
-    if (error || (!data?.reply && !data?.image_url)) {
-      console.error('[AI] Error:', error, data);
-      messages.push({ role: 'assistant', content: '⚠️ Something went wrong. Please try again.' });
+      const assistantMsg = {
+        role: 'assistant',
+        content: data.reply || 'Here is your image 🎨',
+        media_url: data.image_url,
+        media_type: 'image'
+      };
+      messages.push(assistantMsg);
+
+      try {
+        await supabaseClient.from('ai_messages').insert({
+          chat_id: currentChatId,
+          role: 'assistant',
+          content: assistantMsg.content,
+          media_url: assistantMsg.media_url,
+          media_type: assistantMsg.media_type
+        });
+      } catch (e) {}
+
       renderMessages();
+      autoSpeakLast();
       return;
     }
 
-    if (isImageRequest && data.image_url) await registerImageUse(text);
+    // ============ Streaming chat ============
+    const session = await supabaseClient.auth.getSession();
+    const accessToken = session?.data?.session?.access_token || SUPABASE_ANON_KEY;
 
-    const assistantMsg = {
-      role: 'assistant',
-      content: data.reply || '',
-      media_url: data.image_url || null,
-      media_type: data.media_type || (data.image_url ? 'image' : null)
-    };
+    const response = await fetch(functionUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    // Check if it's actually streaming
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('text/event-stream')) {
+      // Fallback: JSON response
+      const data = await response.json();
+      typingEl.remove();
+      const assistantMsg = {
+        role: 'assistant',
+        content: data.reply || 'No response.',
+        media_url: data.image_url || null,
+        media_type: data.media_type || (data.image_url ? 'image' : null)
+      };
+      messages.push(assistantMsg);
+      try {
+        await supabaseClient.from('ai_messages').insert({
+          chat_id: currentChatId,
+          role: 'assistant',
+          content: assistantMsg.content,
+          media_url: assistantMsg.media_url,
+          media_type: assistantMsg.media_type
+        });
+      } catch (e) {}
+      renderMessages();
+      autoSpeakLast();
+      return;
+    }
+
+    // ============ Parse SSE stream ============
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder('utf-8');
+    let buffer = '';
+    let fullText = '';
+    const bubbleEl = document.getElementById('streamBubble');
+    if (bubbleEl) {
+      bubbleEl.classList.add('streaming');
+      bubbleEl.innerHTML = '';
+    }
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+
+      // SSE events separated by \n\n
+      const events = buffer.split('\n\n');
+      buffer = events.pop(); // keep last incomplete
+
+      for (const evt of events) {
+        const lines = evt.split('\n');
+        for (const line of lines) {
+          if (!line.startsWith('data:')) continue;
+          const data = line.slice(5).trim();
+          if (!data || data === '[DONE]') continue;
+          try {
+            const parsed = JSON.parse(data);
+            const delta = parsed?.choices?.[0]?.delta?.content;
+            if (delta) {
+              fullText += delta;
+              if (bubbleEl) {
+                bubbleEl.innerHTML =
+                  escapeHtml(fullText).replace(/\n/g, '<br>');
+                container.scrollTop = container.scrollHeight;
+              }
+            }
+          } catch (e) { /* partial json */ }
+        }
+      }
+    }
+
+    if (bubbleEl) bubbleEl.classList.remove('streaming');
+
+    // Save final message
+    const assistantMsg = { role: 'assistant', content: fullText };
     messages.push(assistantMsg);
 
     try {
       await supabaseClient.from('ai_messages').insert({
         chat_id: currentChatId,
         role: 'assistant',
-        content: data.reply || '',
-        media_url: data.image_url || null,
-        media_type: data.media_type || (data.image_url ? 'image' : null)
+        content: fullText,
+        media_url: null,
+        media_type: null
       });
-    } catch (e) { console.warn('[AI] save assistant msg failed:', e); }
+    } catch (e) {}
 
     renderMessages();
+    autoSpeakLast();
+
   } catch (e) {
-    typingEl.remove();
     console.error(e);
-    messages.push({ role: 'assistant', content: '⚠️ Network error. Please try again.' });
+    const t = document.getElementById('streamBubble');
+    if (t) t.parentElement.parentElement.remove();
+    messages.push({ role: 'assistant', content: '⚠️ Connection error. Please try again.' });
     renderMessages();
   } finally {
     isSending = false;
@@ -1581,7 +1949,6 @@ function escapeHtml(s) {
     ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-/* Preload voices */
 if (typeof window !== 'undefined' && window.speechSynthesis) {
   window.speechSynthesis.onvoiceschanged = () => {};
 }
