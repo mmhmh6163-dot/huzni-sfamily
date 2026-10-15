@@ -31,9 +31,19 @@ body { background: #0a0a0a; padding-top: 60px; padding-bottom: 70px; font-family
   border-radius: 50%; text-decoration: none; cursor: pointer;
   background: none; border: none;
   transition: background .15s;
+  position: relative;
 }
 .topbar .icon-btn:hover { background: rgba(255,255,255,.06); }
 .topbar .title { font-size: 16px; font-weight: 700; color: var(--az-text); flex: 1; text-align: center; }
+.topbar .icon-btn .badge {
+  position: absolute; top: 2px; right: 2px;
+  background: var(--az-primary); color: #fff;
+  font-size: 9px; font-weight: 800;
+  padding: 2px 5px; border-radius: 10px;
+  min-width: 16px; text-align: center;
+  display: none;
+}
+.topbar .icon-btn .badge.show { display: block; }
 
 /* ==================== SEARCH ==================== */
 .search-bar {
@@ -45,13 +55,26 @@ body { background: #0a0a0a; padding-top: 60px; padding-bottom: 70px; font-family
   background: rgba(255,255,255,.06);
   border: 1px solid rgba(255,255,255,.1);
   border-radius: 12px; padding: 12px 14px;
+  position: relative;
 }
 .search-bar i { color: var(--az-text-secondary); }
+.search-bar i.searching {
+  animation: searchSpin 1s linear infinite;
+}
+@keyframes searchSpin { to { transform: rotate(360deg); } }
 .search-bar input {
   flex: 1; background: transparent; border: none;
   color: var(--az-text); font-size: 15px; font-family: inherit;
 }
 .search-bar input:focus { outline: none; }
+.search-bar .clear-btn {
+  background: none; border: none;
+  color: var(--az-text-secondary);
+  font-size: 14px; cursor: pointer;
+  padding: 4px;
+  display: none;
+}
+.search-bar .clear-btn.show { display: block; }
 
 /* ==================== QUICK ACTIONS ==================== */
 .quick-actions {
@@ -68,6 +91,8 @@ body { background: #0a0a0a; padding-top: 60px; padding-bottom: 70px; font-family
   cursor: pointer;
   display: flex; align-items: center; justify-content: center; gap: 6px;
   transition: all .15s;
+  font-family: inherit;
+  position: relative;
 }
 .quick-actions .qa-btn:active { transform: scale(.97); }
 .quick-actions .qa-btn i { color: var(--az-accent); font-size: 14px; }
@@ -76,6 +101,15 @@ body { background: #0a0a0a; padding-top: 60px; padding-bottom: 70px; font-family
   border-color: rgba(124,58,237,.4);
 }
 .quick-actions .qa-btn.tribes i { color: #5eb8ff; }
+.quick-actions .qa-btn .badge {
+  position: absolute; top: -4px; right: -4px;
+  background: var(--az-primary); color: #fff;
+  font-size: 9px; font-weight: 800;
+  padding: 2px 6px; border-radius: 10px;
+  min-width: 16px; text-align: center;
+  display: none;
+}
+.quick-actions .qa-btn .badge.show { display: block; }
 
 /* ==================== TABS ==================== */
 .tabs {
@@ -97,6 +131,7 @@ body { background: #0a0a0a; padding-top: 60px; padding-bottom: 70px; font-family
   white-space: nowrap;
   display: flex; align-items: center; gap: 5px;
   transition: all .15s;
+  font-family: inherit;
 }
 .tabs .tab.active {
   background: rgba(255,107,53,.15);
@@ -135,10 +170,11 @@ body { background: #0a0a0a; padding-top: 60px; padding-bottom: 70px; font-family
 .user-row .av img { width: 100%; height: 100%; object-fit: cover; }
 .user-row .av .online-dot {
   position: absolute; bottom: 2px; right: 2px;
-  width: 12px; height: 12px; border-radius: 50%;
+  width: 14px; height: 14px; border-radius: 50%;
   background: #00b894;
-  border: 2px solid #0a0a0a;
+  border: 2.5px solid #0a0a0a;
   display: none;
+  box-shadow: 0 0 8px rgba(0,184,148,.6);
 }
 .user-row .av .online-dot.show { display: block; }
 
@@ -163,6 +199,9 @@ body { background: #0a0a0a; padding-top: 60px; padding-bottom: 70px; font-family
   border-radius: 8px;
   font-weight: 700;
 }
+.user-row .info .sub .online-text {
+  color: #00b894; font-weight: 700; font-size: 11px;
+}
 
 /* ==================== ACTION BUTTONS ==================== */
 .action-group {
@@ -176,12 +215,14 @@ body { background: #0a0a0a; padding-top: 60px; padding-bottom: 70px; font-family
   display: flex; align-items: center; gap: 6px;
   font-family: inherit;
   transition: transform .12s;
+  flex-shrink: 0;
 }
 .action-btn:active { transform: scale(.95); }
 .action-btn.following {
   background: transparent;
   border: 1px solid rgba(255,255,255,.2);
   color: var(--az-text);
+  padding: 8px 10px;
 }
 .action-btn.requested {
   background: rgba(94,184,255,.15);
@@ -193,6 +234,17 @@ body { background: #0a0a0a; padding-top: 60px; padding-bottom: 70px; font-family
   border: 1px solid var(--az-primary);
   color: var(--az-primary);
   padding: 8px 10px;
+}
+.action-btn.call {
+  background: rgba(94,184,255,.12);
+  border: 1px solid rgba(94,184,255,.35);
+  color: #5eb8ff;
+  padding: 8px 10px;
+}
+.action-btn.call.video {
+  background: rgba(0,184,148,.12);
+  border-color: rgba(0,184,148,.35);
+  color: #00b894;
 }
 .action-btn.more {
   background: rgba(255,255,255,.06);
@@ -358,7 +410,7 @@ body { background: #0a0a0a; padding-top: 60px; padding-bottom: 70px; font-family
   border-color: var(--az-primary);
 }
 
-/* Avatar upload preview */
+/* ==================== AVATAR PICK ==================== */
 .avatar-pick {
   display: flex; flex-direction: column;
   align-items: center; margin-bottom: 18px;
@@ -397,7 +449,7 @@ body { background: #0a0a0a; padding-top: 60px; padding-bottom: 70px; font-family
 }
 .toast-mini.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* ==================== INLINE SPINNER ==================== */
+/* ==================== SPINNER ==================== */
 .spinner {
   display: inline-block;
   width: 14px; height: 14px;
@@ -423,8 +475,13 @@ body { background: #0a0a0a; padding-top: 60px; padding-bottom: 70px; font-family
 
 <div class="search-bar">
   <div class="wrap">
-    <i class="fas fa-search"></i>
-    <input type="text" id="searchInput" placeholder="Search users by username…" oninput="debouncedSearch()">
+    <i class="fas fa-search" id="searchIcon"></i>
+    <input type="text" id="searchInput"
+           placeholder="Search users by username…"
+           oninput="debouncedSearch()">
+    <button class="clear-btn" id="clearSearchBtn" onclick="clearSearch()">
+      <i class="fas fa-times-circle"></i>
+    </button>
   </div>
 </div>
 
@@ -432,8 +489,9 @@ body { background: #0a0a0a; padding-top: 60px; padding-bottom: 70px; font-family
   <button class="qa-btn" onclick="openCreateTribe()">
     <i class="fas fa-plus-circle"></i> Create Tribe
   </button>
-  <button class="qa-btn tribes" onclick="window.location.href='chats.html'">
-    <i class="fas fa-users"></i> My Tribes
+  <button class="qa-btn tribes" onclick="openTribeInvites()">
+    <i class="fas fa-envelope-open-text"></i> Invites
+    <span class="badge" id="invitesBadge">0</span>
   </button>
 </div>
 
@@ -442,13 +500,13 @@ body { background: #0a0a0a; padding-top: 60px; padding-bottom: 70px; font-family
   <button class="tab" onclick="switchTab('following', this)">Following</button>
   <button class="tab" onclick="switchTab('followers', this)">Followers</button>
   <button class="tab" onclick="switchTab('tribes', this)" id="tribesTabBtn">
-    <i class="fas fa-users"></i> Tribes
+    <i class="fas fa-users"></i> My Tribes
     <span class="badge" id="tribesBadge" style="display:none;">0</span>
   </button>
 </div>
 
 <div class="user-list" id="userList">
-  <div class="empty"><i class="fas fa-circle-notch fa-spin"></i>Loading…</div>
+  <div class="empty"><i class="fas fa-circle-notch fa-spin"></i> Loading…</div>
 </div>
 
 <!-- ==================== FRIEND MENU MODAL ==================== -->
@@ -572,11 +630,11 @@ let followingIds = new Set();
 let followerIds  = new Set();
 let requestedIds = new Set();
 
-let myTribes       = [];         // tribes I'm in
-let tribeInvites   = [];         // pending invites to me
-let selectedUserId = null;       // when opening friend menu
+let myTribes       = [];
+let tribeInvites   = [];
+let selectedUserId = null;
 let selectedUser   = null;
-let selectedTribeIds = new Set(); // for invite
+let selectedTribeIds = new Set();
 let newTribeAvatarFile = null;
 
 /* ============================================================
@@ -614,11 +672,30 @@ async function init() {
    SEARCH
    ============================================================ */
 function debouncedSearch() {
+  const input = document.getElementById('searchInput');
+  const clearBtn = document.getElementById('clearSearchBtn');
+  const icon = document.getElementById('searchIcon');
+
+  // Toggle clear button
+  clearBtn.classList.toggle('show', input.value.length > 0);
+
+  // Show spinner on the icon
+  icon.classList.add('searching');
+
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => {
-    searchQuery = document.getElementById('searchInput').value.trim();
-    loadUsers();
+    searchQuery = input.value.trim();
+    loadUsers().then(() => {
+      icon.classList.remove('searching');
+    });
   }, 350);
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('clearSearchBtn').classList.remove('show');
+  searchQuery = '';
+  loadUsers();
 }
 
 function switchTab(tab, el) {
@@ -638,7 +715,7 @@ async function loadUsers() {
   try {
     let query = supabaseClient
       .from('profiles')
-      .select('id, username, display_name, avatar_url, is_verified, followers_count, bio, is_private')
+      .select('id, username, display_name, avatar_url, is_verified, followers_count, bio, is_private, last_seen')
       .order('followers_count', { ascending: false })
       .limit(150);
 
@@ -671,6 +748,26 @@ async function loadUsers() {
 }
 
 /* ============================================================
+   ONLINE STATUS HELPER
+   ============================================================ */
+function isOnline(lastSeen) {
+  if (!lastSeen) return false;
+  const then = new Date(lastSeen).getTime();
+  const now = Date.now();
+  return (now - then) < 5 * 60 * 1000; // 5 minutes
+}
+
+function onlineLabel(lastSeen) {
+  if (!lastSeen) return null;
+  const then = new Date(lastSeen).getTime();
+  const s = Math.floor((Date.now() - then) / 1000);
+  if (s < 60) return 'Online now';
+  if (s < 3600) return `${Math.floor(s/60)}m ago`;
+  if (s < 86400) return `${Math.floor(s/3600)}h ago`;
+  return `${Math.floor(s/86400)}d ago`;
+}
+
+/* ============================================================
    RENDER USER ROW
    ============================================================ */
 function renderUser(u) {
@@ -678,7 +775,12 @@ function renderUser(u) {
   const initial = name.charAt(0).toUpperCase();
   const verified = u.is_verified ? '<i class="fas fa-circle-check v"></i>' : '';
   const bio = u.bio || `@${u.username || 'user'}`;
-  const avatar = u.avatar_url ? `<img src="${escapeHtml(u.avatar_url)}" alt="">` : initial;
+  const avatar = u.avatar_url
+    ? `<img src="${escapeHtml(u.avatar_url)}" alt="${escapeHtml(name)}'s avatar" onerror="this.style.display='none'">`
+    : initial;
+
+  const online = isOnline(u.last_seen);
+  const lastSeenLabel = !online ? onlineLabel(u.last_seen) : null;
 
   const isFollowing = followingIds.has(u.id);
   const isRequested = requestedIds.has(u.id);
@@ -689,11 +791,17 @@ function renderUser(u) {
   } else if (isFollowing) {
     actionHtml = `
       <div class="action-group">
-        <button class="action-btn following" onclick="toggleFollow('${u.id}', this)">
+        <button class="action-btn following" onclick="toggleFollow('${u.id}', this)" title="Unfollow">
           <i class="fas fa-check"></i>
         </button>
         <button class="action-btn chat" onclick="startChat('${u.id}')" title="Message">
           <i class="far fa-comment"></i>
+        </button>
+        <button class="action-btn call" onclick="startCall('${u.id}', 'voice')" title="Voice call">
+          <i class="fas fa-phone"></i>
+        </button>
+        <button class="action-btn call video" onclick="startCall('${u.id}', 'video')" title="Video call">
+          <i class="fas fa-video"></i>
         </button>
         <button class="action-btn more" onclick="openFriendMenu('${u.id}')" title="More">
           <i class="fas fa-ellipsis-v"></i>
@@ -711,12 +819,21 @@ function renderUser(u) {
       </div>`;
   }
 
+  const subContent = online
+    ? `<span class="online-text"><i class="fas fa-circle" style="font-size:8px;"></i> Online now</span>`
+    : (lastSeenLabel
+        ? `<span>${escapeHtml(lastSeenLabel)}</span>`
+        : escapeHtml(bio).slice(0, 60));
+
   return `
     <div class="user-row">
-      <a href="profile.html?user=${u.id}" class="av">${avatar}</a>
+      <a href="profile.html?user=${u.id}" class="av">
+        ${avatar}
+        <div class="online-dot ${online ? 'show' : ''}"></div>
+      </a>
       <div class="info">
         <a href="profile.html?user=${u.id}" class="name">${escapeHtml(name)} ${verified}</a>
-        <div class="sub">${escapeHtml(bio).slice(0, 60)}</div>
+        <div class="sub">${subContent}</div>
       </div>
       ${actionHtml}
     </div>
@@ -724,7 +841,7 @@ function renderUser(u) {
 }
 
 /* ============================================================
-   RENDER TRIBE ROW (in Tribes tab)
+   RENDER TRIBE ROW
    ============================================================ */
 function renderTribesTab(list) {
   const allTribes = myTribes;
@@ -743,7 +860,9 @@ function renderTribesTab(list) {
 
   list.innerHTML = allTribes.map(t => {
     const initial = (t.name || 'T').charAt(0).toUpperCase();
-    const avatar = t.avatar_url ? `<img src="${escapeHtml(t.avatar_url)}" alt="">` : initial;
+    const avatar = t.avatar_url
+      ? `<img src="${escapeHtml(t.avatar_url)}" alt="${escapeHtml(t.name)}'s avatar" onerror="this.style.display='none'">`
+      : initial;
     const role = t.role || 'member';
     const roleBadge = role === 'owner' ? '👑 Owner'
                     : role === 'admin' ? '🛡️ Admin'
@@ -769,18 +888,25 @@ function renderTribesTab(list) {
 }
 
 /* ============================================================
-   TOGGLE FOLLOW (unchanged logic, better button state)
+   TOGGLE FOLLOW (optimistic)
    ============================================================ */
 async function toggleFollow(targetId, btn) {
   if (!currentUser) { toast('Sign in to follow users'); return; }
+
+  const wasFollowing = followingIds.has(targetId);
   btn.disabled = true;
-  const isFollowing = followingIds.has(targetId);
+
+  // Optimistic UI update
+  if (wasFollowing) {
+    followingIds.delete(targetId);
+  } else {
+    followingIds.add(targetId);
+  }
 
   try {
-    if (isFollowing) {
+    if (wasFollowing) {
       await supabaseClient.from('follows').delete()
         .eq('follower_id', currentUser.id).eq('following_id', targetId);
-      followingIds.delete(targetId);
       btn.classList.remove('following');
       btn.innerHTML = 'Follow';
       toast('Unfollowed');
@@ -802,7 +928,6 @@ async function toggleFollow(targetId, btn) {
         const { error } = await supabaseClient.from('follows')
           .insert({ follower_id: currentUser.id, following_id: targetId });
         if (error) throw error;
-        followingIds.add(targetId);
         btn.classList.add('following');
         btn.innerHTML = '<i class="fas fa-check"></i>';
         toast('Following ✅');
@@ -810,6 +935,9 @@ async function toggleFollow(targetId, btn) {
       }
     }
   } catch (err) {
+    // Rollback
+    if (wasFollowing) followingIds.add(targetId);
+    else followingIds.delete(targetId);
     toast(err.message);
   } finally {
     btn.disabled = false;
@@ -824,13 +952,21 @@ function startChat(userId) {
 }
 
 /* ============================================================
+   START CALL
+   ============================================================ */
+function startCall(userId, type) {
+  // Navigate to chats.html with auto-call trigger
+  window.location.href = `chats.html?user=${userId}&call=${type}`;
+}
+
+/* ============================================================
    FRIEND MENU
    ============================================================ */
 async function openFriendMenu(userId) {
   selectedUserId = userId;
   const { data: u } = await supabaseClient
     .from('profiles')
-    .select('id, username, display_name, avatar_url, is_verified, is_private')
+    .select('id, username, display_name, avatar_url, is_verified, is_private, last_seen')
     .eq('id', userId).maybeSingle();
 
   if (!u) { toast('User not found'); return; }
@@ -838,14 +974,19 @@ async function openFriendMenu(userId) {
 
   const name = u.display_name || u.username || 'user';
   const initial = name.charAt(0).toUpperCase();
-  const avatar = u.avatar_url ? `<img src="${escapeHtml(u.avatar_url)}" alt="">` : initial;
+  const avatar = u.avatar_url
+    ? `<img src="${escapeHtml(u.avatar_url)}" alt="${escapeHtml(name)}'s avatar" onerror="this.style.display='none'">`
+    : initial;
+
+  const online = isOnline(u.last_seen);
+  const statusText = online ? '🟢 Online now' : (onlineLabel(u.last_seen) ? `Last seen ${onlineLabel(u.last_seen)}` : '');
 
   const html = `
     <div class="friend-menu-header">
       <div class="av">${avatar}</div>
       <div class="info">
         <div class="name">${escapeHtml(name)} ${u.is_verified ? '<i class="fas fa-circle-check" style="color:#3b82f6;font-size:12px;"></i>' : ''}</div>
-        <div class="uname">@${escapeHtml(u.username || 'user')}</div>
+        <div class="uname">@${escapeHtml(u.username || 'user')}${statusText ? ' · ' + statusText : ''}</div>
       </div>
     </div>
 
@@ -854,6 +995,22 @@ async function openFriendMenu(userId) {
       <div>
         <div>Send Message</div>
         <div class="subtext">Open a private chat</div>
+      </div>
+    </button>
+
+    <button class="friend-menu-item" onclick="startCall('${u.id}', 'voice')">
+      <i class="fas fa-phone"></i>
+      <div>
+        <div>Voice Call</div>
+        <div class="subtext">Call over the internet — free</div>
+      </div>
+    </button>
+
+    <button class="friend-menu-item" onclick="startCall('${u.id}', 'video')">
+      <i class="fas fa-video"></i>
+      <div>
+        <div>Video Call</div>
+        <div class="subtext">See each other face to face</div>
       </div>
     </button>
 
@@ -900,10 +1057,14 @@ function closeFriendMenu(e) {
 }
 
 function copyProfileLink(userId) {
-  const url = window.location.origin + '/huzni-sfamily/profile.html?user=' + userId;
+  // Fixed: use current directory, not hardcoded /huzni-sfamily/
+  const basePath = window.location.pathname.replace(/\/[^\/]*$/, '');
+  const url = window.location.origin + basePath + '/profile.html?user=' + userId;
   navigator.clipboard.writeText(url).then(() => {
     toast('Link copied 📋');
     closeFriendMenu();
+  }).catch(() => {
+    toast('Link: ' + url);
   });
 }
 
@@ -932,6 +1093,7 @@ function openCreateTribe() {
   document.getElementById('tribePrivacy').value = 'private';
   document.getElementById('tribeLimit').value = '50';
   document.getElementById('createTribeModal').classList.add('active');
+  setTimeout(() => document.getElementById('tribeName').focus(), 300);
 }
 
 function closeCreateTribe(e) {
@@ -949,7 +1111,7 @@ function onTribeAvatarPicked(e) {
   const reader = new FileReader();
   reader.onload = ev => {
     document.getElementById('tribeAvatarPreview').innerHTML =
-      `<img src="${ev.target.result}" alt="">`;
+      `<img src="${ev.target.result}" alt="Tribe avatar preview">`;
   };
   reader.readAsDataURL(file);
   e.target.value = '';
@@ -963,6 +1125,8 @@ async function submitCreateTribe() {
   const limit = parseInt(document.getElementById('tribeLimit').value, 10);
 
   if (name.length < 2) { toast('Name must be at least 2 characters'); return; }
+  if (name.length > 50) { toast('Name is too long'); return; }
+  if (desc.length > 300) { toast('Description too long'); return; }
 
   const btn = document.getElementById('createTribeBtn');
   btn.disabled = true;
@@ -977,7 +1141,12 @@ async function submitCreateTribe() {
       const { data: up, error: upErr } = await supabaseClient.storage
         .from('chat_media')
         .upload(path, newTribeAvatarFile, { cacheControl: '3600' });
-      if (upErr) throw upErr;
+      if (upErr) {
+        if (upErr.message && upErr.message.includes('size')) {
+          throw new Error('Image is too large — max 5 MB');
+        }
+        throw new Error('Failed to upload image: ' + upErr.message);
+      }
       const { data: urlData } = supabaseClient.storage.from('chat_media').getPublicUrl(up.path);
       avatarUrl = urlData.publicUrl;
     }
@@ -1002,10 +1171,9 @@ async function submitCreateTribe() {
     toast('🎉 Tribe created!');
     closeCreateTribe();
 
-    // Reload tribes + switch to Tribes tab
     await loadMyTribes();
     updateTribesBadge();
-    switchTab('tribes', document.querySelector('[onclick*="switchTab(\'tribes\'"]'));
+    switchTab('tribes', document.getElementById('tribesTabBtn'));
 
   } catch (err) {
     console.error(err);
@@ -1026,7 +1194,9 @@ async function openInviteTribe(userId) {
   const u = selectedUser || {};
   const name = u.display_name || u.username || 'user';
   const initial = name.charAt(0).toUpperCase();
-  const avatar = u.avatar_url ? `<img src="${escapeHtml(u.avatar_url)}" alt="">` : initial;
+  const avatar = u.avatar_url
+    ? `<img src="${escapeHtml(u.avatar_url)}" alt="User avatar" onerror="this.style.display='none'">`
+    : initial;
 
   document.getElementById('inviteUserHeader').innerHTML = `
     <div class="av">${avatar}</div>
@@ -1069,7 +1239,9 @@ function renderInviteTribeList() {
 
   list.innerHTML = myTribes.map(t => {
     const initial = (t.name || 'T').charAt(0).toUpperCase();
-    const avatar = t.avatar_url ? `<img src="${escapeHtml(t.avatar_url)}" alt="">` : initial;
+    const avatar = t.avatar_url
+      ? `<img src="${escapeHtml(t.avatar_url)}" alt="Tribe avatar" onerror="this.style.display='none'">`
+      : initial;
     const sel = selectedTribeIds.has(t.id);
     return `
       <div class="tribe-pick-item ${sel ? 'selected' : ''}" onclick="toggleTribeSelect('${t.id}')">
@@ -1110,7 +1282,7 @@ async function sendInvites() {
         status:     'pending'
       });
       if (error) {
-        if (error.code === '23505') { success++; continue; } // already invited
+        if (error.code === '23505') { success++; continue; }
         throw error;
       }
       success++;
@@ -1149,7 +1321,7 @@ async function loadMyTribes() {
 }
 
 /* ============================================================
-   LOAD TRIBE INVITES (for me)
+   LOAD TRIBE INVITES
    ============================================================ */
 async function loadTribeInvites() {
   if (!currentUser) return;
@@ -1174,10 +1346,17 @@ async function loadTribeInvites() {
 
 function updateTribesBadge() {
   const badge = document.getElementById('tribesBadge');
-  if (!badge) return;
+  const invitesBadge = document.getElementById('invitesBadge');
   const n = tribeInvites.length;
-  badge.textContent = n;
-  badge.style.display = n > 0 ? 'inline-block' : 'none';
+
+  if (badge) {
+    badge.textContent = n;
+    badge.style.display = n > 0 ? 'inline-block' : 'none';
+  }
+  if (invitesBadge) {
+    invitesBadge.textContent = n;
+    invitesBadge.classList.toggle('show', n > 0);
+  }
 }
 
 /* ============================================================
@@ -1198,7 +1377,9 @@ async function openTribeInvites() {
     list.innerHTML = tribeInvites.map(inv => {
       const t = inv.tribe || {};
       const initial = (t.name || 'T').charAt(0).toUpperCase();
-      const avatar = t.avatar_url ? `<img src="${escapeHtml(t.avatar_url)}" alt="">` : initial;
+      const avatar = t.avatar_url
+        ? `<img src="${escapeHtml(t.avatar_url)}" alt="Tribe avatar" onerror="this.style.display='none'">`
+        : initial;
       const inviterName = inv.inviter?.display_name || inv.inviter?.username || 'Someone';
 
       return `
@@ -1231,7 +1412,6 @@ function closeTribeInvites(e) {
 async function respondTribeInvite(inviteId, status, btn) {
   btn.disabled = true;
   try {
-    // 1. Update invite
     const { data: inv } = await supabaseClient
       .from('tribe_invites')
       .select('tribe_id, inviter_id')
@@ -1242,7 +1422,6 @@ async function respondTribeInvite(inviteId, status, btn) {
       .update({ status, responded_at: new Date().toISOString() })
       .eq('id', inviteId);
 
-    // 2. If accepted → add me as member
     if (status === 'accepted' && inv) {
       await supabaseClient.from('tribe_members').insert({
         tribe_id: inv.tribe_id,
@@ -1255,7 +1434,7 @@ async function respondTribeInvite(inviteId, status, btn) {
     await loadTribeInvites();
     await loadMyTribes();
     updateTribesBadge();
-    openTribeInvites(); // refresh list
+    openTribeInvites();
   } catch (err) {
     console.error(err);
     toast(err.message);
@@ -1279,27 +1458,32 @@ function toast(msg) {
   window._toastT = setTimeout(() => el.classList.remove('show'), 2200);
 }
 
-// Add invite badge to Tribes tab in header on load
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    const tabBtn = document.getElementById('tribesTabBtn');
-    if (tabBtn && !tabBtn.querySelector('.invite-dot')) {
-      // Add pending invites icon-click
-      tabBtn.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-        openTribeInvites();
-      });
-    }
-  }, 1000);
-});
-
-// ESC closes modals
+/* ============================================================
+   FOCUS TRAP FOR MODALS
+   ============================================================ */
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     document.getElementById('friendMenuModal').classList.remove('active');
     document.getElementById('createTribeModal').classList.remove('active');
     document.getElementById('inviteTribeModal').classList.remove('active');
     document.getElementById('tribeInvitesModal').classList.remove('active');
+  }
+
+  // Focus trap for createTribeModal
+  if (e.key === 'Tab') {
+    const modal = document.querySelector('.modal-backdrop.active');
+    if (!modal) return;
+    const focusable = modal.querySelectorAll('input, button, select, textarea, a[href]');
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
   }
 });
 </script>
