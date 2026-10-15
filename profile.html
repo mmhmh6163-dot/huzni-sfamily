@@ -47,6 +47,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   box-shadow:0 0 0 3px var(--az-primary);
   overflow:hidden;
   transition: transform .2s;
+  position:relative; z-index:1;
 }
 .profile-avatar:active { transform:scale(.95); }
 .profile-avatar img { width:100%; height:100%; object-fit:cover; }
@@ -65,6 +66,16 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   animation: storyRingSpin 4s linear infinite;
 }
 @keyframes storyRingSpin { to { transform: rotate(360deg); } }
+
+/* Boosted story ring (gold pulse) */
+.profile-avatar-wrap.has-boosted-story::before {
+  background: conic-gradient(from 0deg, #FFB20F, #7c3aed, #5eb8ff, #FFB20F);
+  animation: storyRingSpin 2s linear infinite, boostGlow 2s ease-in-out infinite;
+}
+@keyframes boostGlow {
+  0%,100% { filter: drop-shadow(0 0 6px rgba(255,178,15,.7)); }
+  50% { filter: drop-shadow(0 0 16px rgba(124,58,237,.9)); }
+}
 
 .profile-avatar-wrap .camera {
   position:absolute; bottom:2px; right:2px;
@@ -166,6 +177,10 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 .story-tile img, .story-tile video {
   width:100%; height:100%; object-fit:cover;
 }
+.story-tile.boosted {
+  border-color: rgba(94,184,255,.8);
+  box-shadow: 0 0 12px rgba(94,184,255,.4);
+}
 .story-tile .expiry {
   position:absolute; top:4px; left:4px;
   background:rgba(0,0,0,.7);
@@ -190,9 +205,31 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   cursor:pointer; display:flex;
   align-items:center; justify-content:center;
   opacity:0; transition:opacity .15s;
+  z-index:3;
 }
-.story-tile:hover .delete-btn { opacity:1; }
+.story-tile .boost-btn {
+  position:absolute; top:4px; right:28px;
+  width:22px; height:22px; border-radius:50%;
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed); color:#fff;
+  border:none; font-size:10px;
+  cursor:pointer; display:flex;
+  align-items:center; justify-content:center;
+  opacity:0; transition:opacity .15s;
+  z-index:3;
+}
+.story-tile:hover .delete-btn,
+.story-tile:hover .boost-btn { opacity:1; }
 .story-tile .delete-btn:active { background:#ff4757; }
+.story-tile .boost-btn:active { transform:scale(.9); }
+
+.story-tile .boosted-badge {
+  position:absolute; bottom:22px; left:4px;
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
+  color:#fff; font-size:8px; font-weight:800;
+  padding:2px 6px; border-radius:6px;
+  z-index:2;
+  display:flex; align-items:center; gap:3px;
+}
 
 .my-stories .add-tile {
   width:80px; height:110px;
@@ -362,7 +399,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 .grid-item:hover .overlay { display:flex; }
 .grid-item .overlay span { display:flex; align-items:center; gap:5px; }
 
-/* Post delete button on grid */
 .grid-item .del-post {
   position:absolute; top:6px; right:6px;
   width:28px; height:28px; border-radius:50%;
@@ -442,6 +478,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 
 #avatarModal { z-index: 3000 !important; }
 #storyViewer { z-index: 3500 !important; }
+#boostStoryModal { z-index: 3600 !important; }
 
 /* ==================== AVATAR VIEWER ==================== */
 .avatar-viewer {
@@ -479,19 +516,17 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 }
 .story-viewer .sv-progress {
   position:absolute; top:0; left:0; right:0;
-  height:3px; background:rgba(255,255,255,.2);
   z-index:20;
-  display:flex; gap:3px; padding:0 6px;
-  padding-top:env(safe-area-inset-top);
+  display:flex; gap:3px; padding:8px 6px;
+  padding-top:calc(8px + env(safe-area-inset-top));
 }
 .story-viewer .sv-segment {
-  flex:1; background:rgba(255,255,255,.15); border-radius:2px; overflow:hidden;
+  flex:1; height:3px; background:rgba(255,255,255,.25);
+  border-radius:2px; overflow:hidden;
 }
-.story-viewer .sv-segment .fill {
-  height:100%; background:#fff; width:0%;
-  transition: width .1s linear;
-}
+.story-viewer .sv-segment .fill { height:100%; background:#fff; width:0%; }
 .story-viewer .sv-segment.done .fill { width:100%; }
+
 .story-viewer .sv-header {
   position:absolute; top:20px; left:0; right:0;
   padding: 12px 14px;
@@ -517,6 +552,13 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 .story-viewer .sv-info .time {
   font-size:10px; color:rgba(255,255,255,.7);
   margin-top:1px;
+}
+.story-viewer .sv-info .boost-badge {
+  display:inline-flex; align-items:center; gap:3px;
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
+  color:#fff; font-size:9px; font-weight:800;
+  padding:2px 7px; border-radius:8px;
+  margin-left:6px; vertical-align:middle;
 }
 .story-viewer .sv-close {
   width:34px; height:34px; border-radius:50%;
@@ -599,7 +641,8 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 }
 .story-viewer .sv-action-btn.boosted {
   color: var(--az-accent);
-  background: rgba(255,178,15,.25);
+  background: linear-gradient(135deg, rgba(94,184,255,.3), rgba(124,58,237,.3));
+  box-shadow: 0 0 12px rgba(94,184,255,.5);
 }
 .story-viewer .sv-stats {
   position:absolute; top: 80px; right:14px;
@@ -769,7 +812,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 .settings-close { width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.06); border:none; color:var(--az-text); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 .settings-section { margin-bottom:24px; }
 .settings-section-title { font-size:11px; font-weight:800; color:var(--az-text-secondary); text-transform:uppercase; letter-spacing:1.2px; margin-bottom:8px; padding-left:12px; }
-.settings-item { display:flex; align-items:center; gap:14px; padding:13px 14px; border-radius:12px; color:var(--az-text); text-decoration:none; font-size:14px; font-weight:500; transition:all .15s; margin-bottom:2px; }
+.settings-item { display:flex; align-items:center; gap:14px; padding:13px 14px; border-radius:12px; color:var(--az-text); text-decoration:none; font-size:14px; font-weight:500; transition:all .15s; margin-bottom:2px; background:none; border:none; width:100%; text-align:left; font-family:inherit; cursor:pointer; }
 .settings-item:hover { background:rgba(255,107,53,.1); transform:translateX(3px); }
 .settings-item i { width:24px; text-align:center; color:var(--az-accent); font-size:16px; }
 .settings-item.danger { color:var(--az-danger); margin-top:8px; border-top:1px solid rgba(255,255,255,.08); padding-top:14px; }
@@ -852,6 +895,13 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 }
 .boost-opt .price { font-size: 18px; font-weight: 800; color: var(--az-accent); }
 .boost-opt .dur { font-size: 11px; color: var(--az-text-secondary); margin-top: 4px; }
+.boost-opt .best {
+  display: inline-block;
+  background: linear-gradient(135deg,#5eb8ff,#7c3aed);
+  color: #fff; font-size: 8px; font-weight: 800;
+  padding: 2px 6px; border-radius: 6px;
+  margin-top: 4px; letter-spacing: .5px;
+}
 
 .spinner {
   display: inline-block;
@@ -864,6 +914,18 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   vertical-align: middle;
 }
 @keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* Boost story specific panel */
+.boost-story-info {
+  background: linear-gradient(135deg, rgba(94,184,255,.1), rgba(124,58,237,.08));
+  border: 1px solid rgba(94,184,255,.3);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  display: flex; gap: 10px; align-items: center;
+  font-size: 12px; color: var(--az-text);
+}
+.boost-story-info i { color: #5eb8ff; font-size: 18px; }
 </style>
 </head>
 <body>
@@ -1017,7 +1079,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
     <div class="sv-stats" id="svStats" style="display:none;">
       <div class="sv-stat"><i class="fas fa-eye"></i> <span class="num" id="svViews">0</span></div>
       <div class="sv-stat"><i class="fas fa-heart" style="color:#ff4757;"></i> <span class="num" id="svLikes">0</span></div>
-      <div class="sv-stat"><i class="fas fa-bolt" style="color:#FFB20F;"></i> <span class="num" id="svBoosts">0</span></div>
+      <div class="sv-stat" id="svBoostStat" style="display:none;"><i class="fas fa-bolt" style="color:#FFB20F;"></i> <span class="num" id="svBoosts">0</span></div>
     </div>
 
     <div class="sv-caption" id="svCaption"></div>
@@ -1031,10 +1093,13 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
       <button class="sv-action-btn" id="svLikeBtn" onclick="toggleStoryLike()">
         <i class="far fa-heart"></i>
       </button>
+      <button class="sv-action-btn" id="svBoostBtn" onclick="boostCurrentStory()" style="display:none;" title="Boost story">
+        <i class="fas fa-rocket"></i>
+      </button>
       <button class="sv-action-btn" onclick="shareStory()">
         <i class="far fa-paper-plane"></i>
       </button>
-      <button class="sv-action-btn" id="svMoreBtn" onclick="openStoryOptions()">
+      <button class="sv-action-btn" id="svMoreBtn" onclick="openStoryOptions()" style="display:none;">
         <i class="fas fa-ellipsis-h"></i>
       </button>
     </div>
@@ -1194,7 +1259,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
     </button>
 
     <button class="settings-item" onclick="openBoostStory()">
-      <i class="fas fa-bolt" style="color:var(--az-accent);"></i> Boost this Story
+      <i class="fas fa-rocket" style="color:#5eb8ff;"></i> Boost this Story
     </button>
 
     <button class="settings-item" onclick="copyStoryLink()">
@@ -1211,11 +1276,11 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   </div>
 </div>
 
-<!-- ==================== BOOST MODAL ==================== -->
+<!-- ==================== BOOST MODAL (posts) ==================== -->
 <div class="modal-backdrop" id="boostModal">
   <div class="modal-content">
     <div class="handle"></div>
-    <h3>⚡ Boost</h3>
+    <h3>⚡ Boost Post</h3>
 
     <p style="color:var(--az-text-secondary);font-size:13px;text-align:center;margin-bottom:16px;">
       Boosted content is shown to more people, appears higher in feeds, and gets a special tag.
@@ -1250,6 +1315,53 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
       <button class="cancel" onclick="closeBoostModal()">Cancel</button>
       <button class="primary" id="boostConfirmBtn" onclick="confirmBoost()">
         <i class="fas fa-bolt"></i> Boost Now
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== BOOST STORY MODAL ==================== -->
+<div class="modal-backdrop" id="boostStoryModal">
+  <div class="modal-content">
+    <div class="handle"></div>
+    <h3>🚀 Boost This Story</h3>
+
+    <div class="boost-story-info">
+      <i class="fas fa-info-circle"></i>
+      <div>Boosted stories appear <b>first</b> in the stories strip for everyone.</div>
+    </div>
+
+    <div class="field">
+      <label>Choose Duration</label>
+      <div class="boost-grid">
+        <div class="boost-opt selected" data-dur="6h" data-price="0.29" onclick="selectStoryBoost(this)">
+          <div class="price">$0.29</div>
+          <div class="dur">6 hours</div>
+        </div>
+        <div class="boost-opt" data-dur="12h" data-price="0.49" onclick="selectStoryBoost(this)">
+          <div class="price">$0.49</div>
+          <div class="dur">12 hours</div>
+          <div class="best">POPULAR</div>
+        </div>
+        <div class="boost-opt" data-dur="24h" data-price="0.79" onclick="selectStoryBoost(this)">
+          <div class="price">$0.79</div>
+          <div class="dur">24 hours</div>
+          <div class="best">BEST</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Your Balance</label>
+      <div style="font-size:20px;font-weight:800;color:var(--az-accent);">
+        $<span id="boostStoryBalance">0.00</span>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeBoostStoryModal()">Cancel</button>
+      <button class="primary" id="boostStoryConfirmBtn" onclick="confirmBoostStory()">
+        <i class="fas fa-rocket"></i> Boost Story
       </button>
     </div>
   </div>
@@ -1338,14 +1450,16 @@ let myLikedStories = new Set();
 // Tribes
 let myTribes = [];
 
-// Boost
+// Boost (posts)
 let boostContext = { type: null, id: null, price: 1.00, hours: 24 };
+
+// Boost (stories)
+let boostStoryContext = { id: null, duration: '6h', price: 0.29 };
 
 /* ============================================================
    INIT
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
-  // Bind file inputs immediately
   const avInput = document.getElementById('avatarInput');
   if (avInput) {
     avInput.addEventListener('change', handleAvatarPicked);
@@ -1476,7 +1590,6 @@ function triggerAvatarPick(e) {
 
 function handleAvatarPicked(event) {
   const file = event.target.files[0];
-  console.log('[Avatar] File picked:', file?.name, file?.size);
   if (!file) return;
 
   if (!file.type.startsWith('image/')) { toast('Please choose an image file'); event.target.value = ''; return; }
@@ -1845,7 +1958,7 @@ async function toggleLikeDetail(postId, btn) {
 }
 
 async function sharePostDetail(postId) {
-  const url = window.location.origin + '/huzni-sfamily/index.html?post=' + postId;
+  const url = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '') + '/index.html?post=' + postId;
   if (currentUser) { try { await supabaseClient.from('shares').insert({ user_id: currentUser.id, post_id: postId }); } catch(e){} }
   if (navigator.share) { try { await navigator.share({ title:'Arizona AI', text:'Check out this post!', url }); return; } catch(e){} }
   try { await navigator.clipboard.writeText(url); toast('Link copied! 📋'); } catch { toast('Link: '+url); }
@@ -1928,9 +2041,16 @@ async function loadMyLikedStories() {
 function updateStoryRing() {
   const wrap = document.getElementById('avatarWrap');
   if (!wrap) return;
+
+  const hasBoosted = myStories.some(s =>
+    s.is_boosted && (!s.boost_expires_at || new Date(s.boost_expires_at) > new Date())
+  );
+
   if (myStories.length > 0) {
     wrap.classList.add('has-story');
-    // Add add-story button
+    if (hasBoosted) wrap.classList.add('has-boosted-story');
+    else wrap.classList.remove('has-boosted-story');
+
     let addBtn = wrap.querySelector('.add-story-btn');
     if (!addBtn && isOwnProfile) {
       addBtn = document.createElement('button');
@@ -1942,13 +2062,14 @@ function updateStoryRing() {
     }
   } else {
     wrap.classList.remove('has-story');
+    wrap.classList.remove('has-boosted-story');
     const addBtn = wrap.querySelector('.add-story-btn');
     if (addBtn) addBtn.remove();
   }
 }
 
 /* ============================================================
-   STORIES — RENDER MY STORIES ROW
+   STORIES — RENDER MY STORIES ROW (with boost button)
    ============================================================ */
 function renderMyStories() {
   const row = document.getElementById('myStoriesRow');
@@ -1975,14 +2096,26 @@ function renderMyStories() {
       const mediaHtml = isVideo
         ? `<video src="${escapeHtml(first)}" muted></video>`
         : `<img src="${escapeHtml(first)}" alt="">`;
+
+      const now = Date.now();
+      const isBoosted = s.is_boosted && (!s.boost_expires_at || new Date(s.boost_expires_at) > now);
+      const hoursLeft = isBoosted ? Math.floor((new Date(s.boost_expires_at).getTime() - now) / 3600000) : 0;
+      const boostLabel = isBoosted
+        ? (hoursLeft < 1 ? '<1h' : (hoursLeft < 24 ? `${hoursLeft}h` : `${Math.floor(hoursLeft/24)}d`))
+        : '';
+
       return `
-        <div class="story-tile" onclick="openStoryViewer(${i}, true)">
+        <div class="story-tile ${isBoosted ? 'boosted' : ''}" onclick="openStoryViewer(${i}, true)">
           ${mediaHtml}
           <div class="expiry">${expiresIn}h</div>
+          ${isBoosted ? `<div class="boosted-badge"><i class="fas fa-rocket"></i> ${boostLabel}</div>` : ''}
           <div class="stats">
             <span><i class="fas fa-eye"></i> ${s.views_count || 0}</span>
             <span><i class="fas fa-heart"></i> ${s.likes_count || 0}</span>
           </div>
+          <button class="boost-btn" onclick="event.stopPropagation(); openBoostStoryById('${s.id}')" title="Boost">
+            <i class="fas fa-rocket"></i>
+          </button>
           <button class="delete-btn" onclick="event.stopPropagation(); deleteStory('${s.id}')" title="Delete">
             <i class="fas fa-times"></i>
           </button>
@@ -2106,7 +2239,7 @@ function showStory(index) {
   currentStoryIndex = index;
   const s = currentStoryList[index];
 
-  // Build progress bar
+  // Progress bar
   const prog = document.getElementById('svProgress');
   prog.innerHTML = currentStoryList.map((_, i) => `
     <div class="sv-segment ${i < index ? 'done' : ''}">
@@ -2122,7 +2255,12 @@ function showStory(index) {
   } else {
     avatarEl.textContent = initial;
   }
-  document.getElementById('svName').textContent = currentProfile?.display_name || currentProfile?.username || 'You';
+  const now = Date.now();
+  const isBoosted = s.is_boosted && (!s.boost_expires_at || new Date(s.boost_expires_at) > now);
+
+  document.getElementById('svName').innerHTML =
+    (currentProfile?.display_name || currentProfile?.username || 'You') +
+    (isBoosted ? '<span class="boost-badge"><i class="fas fa-rocket"></i> Boosted</span>' : '');
   document.getElementById('svTime').textContent = formatTimeAgo(s.created_at);
 
   // Media
@@ -2145,9 +2283,19 @@ function showStory(index) {
     document.getElementById('svViews').textContent = s.views_count || 0;
     document.getElementById('svLikes').textContent = s.likes_count || 0;
     document.getElementById('svBoosts').textContent = s.boosts_count || 0;
+    document.getElementById('svBoostStat').style.display = (s.boosts_count > 0) ? 'flex' : 'none';
+    document.getElementById('svBoostBtn').style.display = 'flex';
+    document.getElementById('svMoreBtn').style.display = 'flex';
   } else {
     stats.style.display = 'none';
+    document.getElementById('svBoostBtn').style.display = 'none';
+    document.getElementById('svMoreBtn').style.display = 'none';
   }
+
+  // Boost button active state
+  const boostBtn = document.getElementById('svBoostBtn');
+  if (isBoosted) boostBtn.classList.add('boosted');
+  else boostBtn.classList.remove('boosted');
 
   // Like state
   const likeBtn = document.getElementById('svLikeBtn');
@@ -2159,14 +2307,11 @@ function showStory(index) {
     likeBtn.innerHTML = '<i class="far fa-heart"></i>';
   }
 
-  // Save ID to body for later actions
   body.dataset.storyId = s.id;
 
-  // Auto-advance
   clearTimers();
   startStoryProgress();
 
-  // Log view
   logStoryView(s.id);
   storyViewStartTime = Date.now();
 }
@@ -2175,7 +2320,7 @@ function startStoryProgress() {
   const fill = document.getElementById('seg-' + currentStoryIndex);
   if (!fill) return;
   let progress = 0;
-  const duration = 5000; // 5 seconds per story
+  const duration = 5000;
   const step = 50;
 
   storyProgressTimer = setInterval(() => {
@@ -2213,14 +2358,12 @@ function closeStoryViewer() {
 async function logStoryView(storyId) {
   if (!currentUser) return;
   try {
-    // Add to story_views (ignore if exists)
     await supabaseClient.from('story_views').insert({
       story_id: storyId,
       user_id: currentUser.id
     }).select().maybeSingle();
-  } catch (e) { /* ignore duplicates */ }
+  } catch (e) {}
 
-  // Increment counter via RPC (safe)
   try {
     await supabaseClient.rpc('increment_story_views', { p_story_id: storyId });
   } catch (e) {}
@@ -2248,7 +2391,6 @@ async function toggleStoryLike() {
       btn.innerHTML = '<i class="fas fa-heart"></i>';
       await supabaseClient.rpc('increment_story_likes', { p_story_id: s.id });
     }
-    // Refresh owner stats
     const freshStat = document.getElementById('svLikes');
     if (freshStat && isOwnProfile) {
       const { data } = await supabaseClient.from('stories').select('likes_count').eq('id', s.id).single();
@@ -2280,7 +2422,7 @@ async function sendStoryReply() {
 async function shareStory() {
   const s = currentStoryList[currentStoryIndex];
   if (!s) return;
-  const url = window.location.origin + '/huzni-sfamily/profile.html?story=' + s.id;
+  const url = window.location.origin + window.location.pathname.replace(/\/[^$]*$/, '') + '/profile.html?story=' + s.id;
   if (navigator.share) {
     try { await navigator.share({ title: 'Arizona AI Story', text: s.caption || 'Check this out!', url }); return; } catch(e){}
   }
@@ -2377,7 +2519,7 @@ async function deleteStory(storyId) {
 function copyStoryLink() {
   const s = currentStoryList[currentStoryIndex];
   if (!s) return;
-  const url = window.location.origin + '/huzni-sfamily/profile.html?story=' + s.id;
+  const url = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '') + '/profile.html?story=' + s.id;
   navigator.clipboard.writeText(url).then(() => {
     toast('Link copied 📋');
     closeStoryOptions();
@@ -2385,16 +2527,99 @@ function copyStoryLink() {
 }
 
 /* ============================================================
-   STORIES — BOOST
+   STORIES — BOOST (NEW)
    ============================================================ */
+function boostCurrentStory() {
+  const s = currentStoryList[currentStoryIndex];
+  if (!s) return;
+  openBoostStoryById(s.id);
+}
+
 function openBoostStory() {
   const s = currentStoryList[currentStoryIndex];
   if (!s) return;
-  boostContext = { type: 'story', id: s.id, price: 1.00, hours: 24 };
   closeStoryOptions();
-  openBoostModal();
+  openBoostStoryById(s.id);
 }
 
+function openBoostStoryById(storyId) {
+  if (!currentUser) { toast('Sign in first'); return; }
+  boostStoryContext = { id: storyId, duration: '6h', price: 0.29 };
+
+  document.querySelectorAll('#boostStoryModal .boost-opt').forEach(o => o.classList.remove('selected'));
+  document.querySelector('#boostStoryModal .boost-opt[data-dur="6h"]').classList.add('selected');
+
+  const bal = parseFloat(currentWallet?.balance || 0);
+  document.getElementById('boostStoryBalance').textContent = bal.toFixed(2);
+
+  document.getElementById('boostStoryModal').classList.add('active');
+}
+
+function closeBoostStoryModal() {
+  document.getElementById('boostStoryModal').classList.remove('active');
+}
+
+function selectStoryBoost(el) {
+  document.querySelectorAll('#boostStoryModal .boost-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  boostStoryContext.duration = el.dataset.dur;
+  boostStoryContext.price = parseFloat(el.dataset.price);
+}
+
+async function confirmBoostStory() {
+  if (!currentUser || !boostStoryContext.id) return;
+
+  const balance = parseFloat(currentWallet?.balance || 0);
+  if (balance < boostStoryContext.price) {
+    toast(`Insufficient balance (need $${boostStoryContext.price.toFixed(2)})`);
+    return;
+  }
+
+  const btn = document.getElementById('boostStoryConfirmBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Boosting…';
+
+  try {
+    const { data, error } = await supabaseClient.rpc('boost_story', {
+      p_story_id: boostStoryContext.id,
+      p_user_id: currentUser.id,
+      p_duration: boostStoryContext.duration,
+      p_price: boostStoryContext.price
+    });
+    if (error) throw error;
+    if (!data || data.ok === false) throw new Error(data?.error || 'Boost failed');
+
+    // Update local wallet
+    currentWallet.balance = data.new_balance;
+    currentWallet.total_spent = parseFloat(currentWallet.total_spent || 0) + boostStoryContext.price;
+
+    document.getElementById('walletBalance').textContent = '$' + currentWallet.balance.toFixed(2);
+    document.getElementById('walletSpent').textContent = '$' + currentWallet.total_spent.toFixed(2);
+
+    // Refresh stories
+    await loadMyStories();
+    renderMyStories();
+
+    // If viewer is open, refresh the current one
+    if (document.getElementById('storyViewer').classList.contains('active')) {
+      const s = currentStoryList[currentStoryIndex];
+      if (s && s.id === boostStoryContext.id) showStory(currentStoryIndex);
+    }
+
+    closeBoostStoryModal();
+    toast(`🚀 Story boosted for ${boostStoryContext.duration}!`);
+  } catch (err) {
+    console.error(err);
+    toast(err.message || 'Boost failed');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-rocket"></i> Boost Story';
+  }
+}
+
+/* ============================================================
+   POST BOOST (existing flow, kept)
+   ============================================================ */
 function openBoostPost(postId) {
   boostContext = { type: 'post', id: postId, price: 1.00, hours: 24 };
   openBoostModal();
@@ -2403,7 +2628,7 @@ function openBoostPost(postId) {
 function openBoostModal() {
   const balance = parseFloat(currentWallet?.balance || 0);
   document.getElementById('boostBalance').textContent = balance.toFixed(2);
-  document.querySelectorAll('.boost-opt').forEach(el => {
+  document.querySelectorAll('#boostModal .boost-opt').forEach(el => {
     el.classList.toggle('selected', parseFloat(el.dataset.price) === boostContext.price);
   });
   document.getElementById('boostModal').classList.add('active');
@@ -2414,7 +2639,7 @@ function closeBoostModal() {
 }
 
 function selectBoost(el) {
-  document.querySelectorAll('.boost-opt').forEach(o => o.classList.remove('selected'));
+  document.querySelectorAll('#boostModal .boost-opt').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
   boostContext.price = parseFloat(el.dataset.price);
   boostContext.hours = parseInt(el.dataset.hours);
@@ -2439,21 +2664,13 @@ async function confirmBoost() {
         is_boosted: true,
         boost_expires_at: expiresAt
       }).eq('id', boostContext.id).eq('user_id', currentUser.id);
-    } else if (boostContext.type === 'story') {
-      await supabaseClient.from('stories').update({
-        is_boosted: true,
-        boost_expires_at: expiresAt,
-        boosts_count: (await supabaseClient.from('stories').select('boosts_count').eq('id', boostContext.id).single()).data?.boosts_count + 1 || 1
-      }).eq('id', boostContext.id).eq('user_id', currentUser.id);
     }
 
-    // Deduct from wallet
     await supabaseClient.from('wallets').update({
       balance: balance - boostContext.price,
       total_spent: (parseFloat(currentWallet?.total_spent || 0) + boostContext.price)
     }).eq('user_id', currentUser.id);
 
-    // Log transaction
     try {
       await supabaseClient.from('wallet_transactions').insert({
         user_id: currentUser.id,
@@ -2461,6 +2678,16 @@ async function confirmBoost() {
         type: 'spend',
         source: 'boost',
         note: `Boosted ${boostContext.type} for ${boostContext.hours}h`
+      });
+    } catch (e) {}
+
+    try {
+      await supabaseClient.rpc('log_boost', {
+        p_post_id: boostContext.id,
+        p_user_id: currentUser.id,
+        p_duration: boostContext.hours + 'h',
+        p_price: boostContext.price,
+        p_expires_at: expiresAt
       });
     } catch (e) {}
 
@@ -2476,9 +2703,6 @@ async function confirmBoost() {
     if (boostContext.type === 'post') {
       userPosts.forEach(p => { if (p.id === boostContext.id) { p.is_boosted = true; p.boost_expires_at = expiresAt; } });
       renderGrid();
-    } else {
-      await loadMyStories();
-      renderMyStories();
     }
   } catch (err) {
     console.error(err);
@@ -2705,12 +2929,17 @@ function setProfileLang(lang) {
    HELPERS
    ============================================================ */
 function formatTimeAgo(dateStr) {
-  const s = Math.floor((Date.now() - new Date(dateStr)) / 1000);
-  if (s < 60) return 'Just now';
+  if (!dateStr) return 'Just now';
+  const dateStr2 = String(dateStr).includes('Z') || String(dateStr).includes('+') ? dateStr : dateStr + 'Z';
+  const then = new Date(dateStr2).getTime();
+  const now = Date.now();
+  const s = Math.floor((now - then) / 1000);
+  if (s < 5) return 'Just now';
+  if (s < 60) return `${s}s ago`;
   const m = Math.floor(s / 60); if (m < 60) return `${m}m ago`;
   const h = Math.floor(m / 60); if (h < 24) return `${h}h ago`;
   const d = Math.floor(h / 24); if (d < 7) return `${d}d ago`;
-  return new Date(dateStr).toLocaleDateString();
+  return new Date(dateStr2).toLocaleDateString();
 }
 
 function escapeHtml(s) {
@@ -2734,6 +2963,7 @@ document.addEventListener('keydown', e => {
     closeStoryUploadModal();
     closeStoryOptions();
     closeBoostModal();
+    closeBoostStoryModal();
     document.getElementById('followersModal').classList.remove('active');
     closeAvatar();
   }
