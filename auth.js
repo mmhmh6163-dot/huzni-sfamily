@@ -16,7 +16,12 @@ let currentProfile = null;
 let currentWallet  = null;
 let authReady      = false;
 
-/* ---------------- INIT ---------------- */
+/* ---------------- HEARTBEAT STATE ---------------- */
+let heartbeatInterval = null;
+
+/* ============================================================
+   INIT
+   ============================================================ */
 document.addEventListener('DOMContentLoaded', async () => {
   applyLanguage(localStorage.getItem('az_lang') || 'en');
 
@@ -29,6 +34,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderFooter();
   updateAuthUI();
 
+  // Start heartbeat for online indicators
+  startHeartbeat();
+
   // Fire event so notification system and page scripts can init
   document.dispatchEvent(new CustomEvent('auth-ready'));
 
@@ -39,10 +47,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       await loadUserData();
       refreshNotifCount();
       setupNotifRealtime();
+      startHeartbeat();
     } else {
       currentProfile = null;
       currentWallet  = null;
       notifListenerSetup = false;
+      stopHeartbeat();
     }
     updateAuthUI();
     if (typeof onAuthChange === 'function') onAuthChange();
@@ -50,6 +60,58 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const loader = document.getElementById('loadingOverlay');
   if (loader) setTimeout(() => loader.classList.add('hidden'), 500);
+});
+
+/* ============================================================
+   HEARTBEAT — update last_seen every 60 seconds
+   ============================================================ */
+function startHeartbeat() {
+  if (!currentUser) return;
+  // Clear any existing interval
+  if (heartbeatInterval) clearInterval(heartbeatInterval);
+
+  const updateLastSeen = async () => {
+    if (!currentUser) return;
+    try {
+      await supabaseClient
+        .from('profiles')
+        .update({ last_seen: new Date().toISOString() })
+        .eq('id', currentUser.id);
+    } catch (e) {
+      // Silent — heartbeat failure should never break the app
+      console.debug('[Heartbeat] failed:', e);
+    }
+  };
+
+  // Fire immediately
+  updateLastSeen();
+  // Then every 60 seconds
+  heartbeatInterval = setInterval(updateLastSeen, 60000);
+
+  // Update on visibility change (user comes back to tab)
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && currentUser) updateLastSeen();
+  });
+}
+
+function stopHeartbeat() {
+  if (heartbeatInterval) {
+    clearInterval(heartbeatInterval);
+    heartbeatInterval = null;
+  }
+}
+
+// Fire one last heartbeat before leaving
+window.addEventListener('beforeunload', () => {
+  if (currentUser) {
+    // Fire-and-forget (browser won't wait)
+    supabaseClient
+      .from('profiles')
+      .update({ last_seen: new Date().toISOString() })
+      .eq('id', currentUser.id)
+      .then(() => {})
+      .catch(() => {});
+  }
 });
 
 /* ---------------- LOAD PROFILE + WALLET ---------------- */
@@ -67,7 +129,9 @@ async function loadUserData() {
   }
 }
 
-/* ---------------- UI BUILDERS ---------------- */
+/* ============================================================
+   UI BUILDERS
+   ============================================================ */
 
 function renderHeader() {
   const mount = document.getElementById('app-header');
@@ -212,7 +276,9 @@ function renderFooter() {
   `;
 }
 
-/* ---------------- UI STATE ---------------- */
+/* ============================================================
+   UI STATE
+   ============================================================ */
 function updateAuthUI() {
   const authBtns = document.getElementById('authButtons');
   const userMenu = document.getElementById('userMenu');
@@ -230,7 +296,7 @@ function updateAuthUI() {
 
     const avatarEl = document.getElementById('userAvatar');
     if (avatar) {
-      avatarEl.innerHTML = `<img src="${avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+      avatarEl.innerHTML = `<img src="${avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="User avatar" onerror="this.style.display='none';">`;
     } else {
       avatarEl.textContent = name.charAt(0).toUpperCase();
     }
@@ -244,7 +310,9 @@ function updateAuthUI() {
   }
 }
 
-/* ---------------- NAV HELPERS ---------------- */
+/* ============================================================
+   NAV HELPERS
+   ============================================================ */
 function toggleMobileNav() {
   document.getElementById('mobileNav')?.classList.toggle('active');
 }
@@ -259,16 +327,23 @@ document.addEventListener('click', (e) => {
   if (!e.target.closest('.nav-more')) {
     document.getElementById('moreDropdown')?.classList.remove('active');
   }
+  if (!e.target.closest('.language-toggle')) {
+    document.getElementById('languageDropdown')?.classList.remove('active');
+  }
 });
 
-/* ---------------- AUTH HELPERS ---------------- */
+/* ============================================================
+   AUTH HELPERS
+   ============================================================ */
 async function signOutUser() {
   await supabaseClient.auth.signOut();
   localStorage.removeItem('az_lang');
   window.location.href = 'index.html';
 }
 
-/* ---------------- TOAST ---------------- */
+/* ============================================================
+   TOAST
+   ============================================================ */
 function showToast(message, type = 'info') {
   let container = document.getElementById('toastContainer');
   if (!container) {
@@ -284,7 +359,9 @@ function showToast(message, type = 'info') {
   setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3500);
 }
 
-/* ---------------- LANGUAGE ---------------- */
+/* ============================================================
+   LANGUAGE
+   ============================================================ */
 const AZ_TRANSLATIONS = {
   en: { home:'Home', ai:'AI', posts:'Posts', chat:'Chat', friends:'Friends',
         login:'Login', signup:'Sign Up', logout:'Logout', profile:'Profile' },
@@ -313,9 +390,19 @@ function changeLanguage(lang, flag, name, event) {
 function applyLanguage(lang) {
   document.documentElement.lang = lang;
   document.documentElement.dir = (lang === 'ar' || lang === 'fa') ? 'rtl' : 'ltr';
+
+  // Update the flag/text in the header if it exists
+  const flags = { en:'🇬🇧', ar:'🇸🇦', ku:'🏴', fa:'🇮🇷' };
+  const names = { en:'English', ar:'العربية', ku:'کوردی', fa:'فارسی' };
+  const flagEl = document.getElementById('currentLanguageFlag');
+  const textEl = document.getElementById('currentLanguageText');
+  if (flagEl) flagEl.textContent = flags[lang] || '🇬🇧';
+  if (textEl) textEl.textContent = names[lang] || 'English';
 }
 
-/* ---------------- UTILITIES ---------------- */
+/* ============================================================
+   UTILITIES
+   ============================================================ */
 function escapeHtml(s) {
   return String(s ?? '').replace(/[&<>"']/g, c =>
     ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -425,7 +512,8 @@ async function showNotifToast(n) {
     message: `📩 ${actorName} sent you a message`,
     mention: `@ ${actorName} mentioned you`,
     tip:     `💰 ${actorName} sent you a tip`,
-    request: `📨 ${actorName} requested to follow you`
+    request: `📨 ${actorName} requested to follow you`,
+    tribe_invite: `👥 ${actorName} invited you to a tribe`
   };
   const msg = msgMap[n.type] || '🔔 New notification';
 
@@ -461,7 +549,7 @@ async function showNotifToast(n) {
 
   toast.innerHTML = `
     ${actorAvatar
-      ? `<img src="${actorAvatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;">`
+      ? `<img src="${actorAvatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="User avatar" onerror="this.style.display='none';">`
       : `<div style="width:36px;height:36px;border-radius:50%;background:var(--az-gradient);display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">${actorName.charAt(0).toUpperCase()}</div>`}
     <div style="flex:1;line-height:1.4;">${msg}</div>
     <i class="fas fa-chevron-right" style="opacity:.5;font-size:12px;"></i>
@@ -489,10 +577,13 @@ async function showNotifToast(n) {
   }
 }
 
-/* ---------------- AUTO INIT ---------------- */
+/* ============================================================
+   AUTO INIT
+   ============================================================ */
 document.addEventListener('auth-ready', () => {
   refreshNotifCount();
   setupNotifRealtime();
+  startHeartbeat();
 });
 
 // Fallback safety net
@@ -500,5 +591,8 @@ setInterval(() => {
   if (currentUser && !notifListenerSetup) {
     setupNotifRealtime();
     refreshNotifCount();
+  }
+  if (currentUser && !heartbeatInterval) {
+    startHeartbeat();
   }
 }, 3000);
