@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Friends — Arizona AI</title>
 
 <link rel="icon" type="image/jpeg" href="arizonan%20png%20icon.jpeg">
@@ -11,123 +11,404 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
-body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; }
+body { background: #0a0a0a; padding-top: 60px; padding-bottom: 70px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
 
+/* ==================== TOP BAR ==================== */
 .topbar {
-  position:fixed; top:0; left:0; right:0; height:60px;
-  background:rgba(10,10,10,.97); backdrop-filter:blur(12px);
-  border-bottom:1px solid rgba(255,107,53,.25);
-  display:flex; align-items:center; justify-content:space-between;
-  padding:0 16px; z-index:1000; max-width:640px; margin:0 auto;
+  position: fixed; top: 0; left: 0; right: 0; height: 60px;
+  background: rgba(10,10,10,.97); backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,107,53,.25);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 12px; z-index: 1000;
+  max-width: 640px; margin: 0 auto;
 }
 .topbar .back, .topbar .icon-btn {
-  color:var(--az-text); font-size:19px;
-  width:40px; height:40px;
-  display:flex; align-items:center; justify-content:center;
-  border-radius:50%; text-decoration:none;
+  color: var(--az-text); font-size: 19px;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; text-decoration: none; cursor: pointer;
+  background: none; border: none;
+  transition: background .15s;
 }
-.topbar .title { font-size:16px; font-weight:700; color:var(--az-text); }
+.topbar .icon-btn:hover { background: rgba(255,255,255,.06); }
+.topbar .title { font-size: 16px; font-weight: 700; color: var(--az-text); flex: 1; text-align: center; }
 
+/* ==================== SEARCH ==================== */
 .search-bar {
-  max-width:640px; margin:16px auto 8px;
-  padding:0 16px;
+  max-width: 640px; margin: 16px auto 8px;
+  padding: 0 16px;
 }
 .search-bar .wrap {
-  display:flex; align-items:center; gap:10px;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:12px; padding:12px 14px;
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px; padding: 12px 14px;
 }
-.search-bar i { color:var(--az-text-secondary); }
+.search-bar i { color: var(--az-text-secondary); }
 .search-bar input {
-  flex:1; background:transparent; border:none;
-  color:var(--az-text); font-size:15px;
-  font-family:inherit;
+  flex: 1; background: transparent; border: none;
+  color: var(--az-text); font-size: 15px; font-family: inherit;
 }
-.search-bar input:focus { outline:none; }
-.search-bar input::placeholder { color:var(--az-text-secondary); }
+.search-bar input:focus { outline: none; }
 
-.tabs {
-  max-width:640px; margin:16px auto 0;
-  padding:0 16px;
-  display:flex; gap:8px;
+/* ==================== QUICK ACTIONS ==================== */
+.quick-actions {
+  max-width: 640px; margin: 4px auto 8px;
+  padding: 0 16px;
+  display: flex; gap: 8px;
 }
+.quick-actions .qa-btn {
+  flex: 1; padding: 12px 10px;
+  background: linear-gradient(135deg, rgba(255,107,53,.15), rgba(255,178,15,.08));
+  border: 1px solid rgba(255,107,53,.35);
+  border-radius: 12px;
+  color: var(--az-text); font-size: 12.5px; font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  transition: all .15s;
+}
+.quick-actions .qa-btn:active { transform: scale(.97); }
+.quick-actions .qa-btn i { color: var(--az-accent); font-size: 14px; }
+.quick-actions .qa-btn.tribes {
+  background: linear-gradient(135deg, rgba(124,58,237,.15), rgba(94,184,255,.08));
+  border-color: rgba(124,58,237,.4);
+}
+.quick-actions .qa-btn.tribes i { color: #5eb8ff; }
+
+/* ==================== TABS ==================== */
+.tabs {
+  max-width: 640px; margin: 12px auto 0;
+  padding: 0 16px;
+  display: flex; gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
 .tabs .tab {
-  flex:1; padding:10px;
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:10px;
-  color:var(--az-text-secondary);
-  font-size:13px; font-weight:600;
-  cursor:pointer;
+  padding: 10px 14px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px;
+  color: var(--az-text-secondary);
+  font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 5px;
+  transition: all .15s;
 }
 .tabs .tab.active {
-  background:rgba(255,107,53,.15);
-  border-color:var(--az-primary);
-  color:var(--az-accent);
+  background: rgba(255,107,53,.15);
+  border-color: var(--az-primary);
+  color: var(--az-accent);
+}
+.tabs .tab .badge {
+  background: var(--az-primary); color: #fff;
+  font-size: 9px; font-weight: 800;
+  padding: 1px 6px; border-radius: 10px;
+  min-width: 16px; text-align: center;
 }
 
+/* ==================== USER LIST ==================== */
 .user-list {
-  max-width:640px; margin:16px auto;
-  padding:0 16px;
+  max-width: 640px; margin: 16px auto;
+  padding: 0 16px;
 }
 .user-row {
-  display:flex; align-items:center; gap:12px;
-  padding:12px 8px;
-  border-bottom:1px solid rgba(255,255,255,.05);
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 8px;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  animation: fadeIn .2s ease;
 }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } }
+
 .user-row .av {
-  width:52px; height:52px; border-radius:50%;
-  background:var(--az-gradient);
-  display:flex; align-items:center; justify-content:center;
-  font-weight:700; color:#fff; font-size:20px;
-  flex-shrink:0; overflow:hidden;
-  text-decoration:none;
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--az-gradient);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: #fff; font-size: 20px;
+  flex-shrink: 0; overflow: hidden;
+  text-decoration: none;
+  position: relative;
 }
-.user-row .av img { width:100%; height:100%; object-fit:cover; }
-.user-row .info { flex:1; min-width:0; }
+.user-row .av img { width: 100%; height: 100%; object-fit: cover; }
+.user-row .av .online-dot {
+  position: absolute; bottom: 2px; right: 2px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: #00b894;
+  border: 2px solid #0a0a0a;
+  display: none;
+}
+.user-row .av .online-dot.show { display: block; }
+
+.user-row .info { flex: 1; min-width: 0; }
 .user-row .info .name {
-  font-size:14px; font-weight:700; color:var(--az-text);
-  display:flex; align-items:center; gap:5px; text-decoration:none;
+  font-size: 14px; font-weight: 700; color: var(--az-text);
+  display: flex; align-items: center; gap: 5px;
+  text-decoration: none;
 }
-.user-row .info .name .v { color:#3b82f6; font-size:12px; }
+.user-row .info .name .v { color: #3b82f6; font-size: 12px; }
 .user-row .info .sub {
-  font-size:12px; color:var(--az-text-secondary); margin-top:2px;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  font-size: 12px; color: var(--az-text-secondary);
+  margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  display: flex; align-items: center; gap: 5px;
+}
+.user-row .info .sub .p-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  background: rgba(94,184,255,.15);
+  color: #5eb8ff;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+/* ==================== ACTION BUTTONS ==================== */
+.action-group {
+  display: flex; gap: 6px; align-items: center;
 }
 .action-btn {
-  padding:8px 16px; border-radius:20px;
-  background:var(--az-gradient); color:#fff;
-  border:none; font-weight:700; font-size:12px;
-  cursor:pointer; white-space:nowrap;
-  display:flex; align-items:center; gap:6px;
+  padding: 8px 14px; border-radius: 20px;
+  background: var(--az-gradient); color: #fff;
+  border: none; font-weight: 700; font-size: 12px;
+  cursor: pointer; white-space: nowrap;
+  display: flex; align-items: center; gap: 6px;
+  font-family: inherit;
+  transition: transform .12s;
 }
+.action-btn:active { transform: scale(.95); }
 .action-btn.following {
-  background:transparent;
-  border:1px solid rgba(255,255,255,.2);
-  color:var(--az-text);
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.2);
+  color: var(--az-text);
 }
 .action-btn.requested {
-  background:rgba(94,184,255,.15);
-  border:1px solid rgba(94,184,255,.5);
-  color:#5eb8ff;
+  background: rgba(94,184,255,.15);
+  border: 1px solid rgba(94,184,255,.5);
+  color: #5eb8ff;
 }
 .action-btn.chat {
-  background:transparent;
-  border:1px solid var(--az-primary);
-  color:var(--az-primary);
+  background: transparent;
+  border: 1px solid var(--az-primary);
+  color: var(--az-primary);
+  padding: 8px 10px;
 }
-.action-btn:disabled { opacity:.6; cursor:not-allowed; }
+.action-btn.more {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+  color: var(--az-text);
+  padding: 8px 10px;
+}
+.action-btn:disabled { opacity: .6; cursor: not-allowed; }
 
+/* ==================== EMPTY ==================== */
 .empty {
-  text-align:center; padding:60px 20px;
-  color:var(--az-text-secondary);
+  text-align: center; padding: 60px 20px;
+  color: var(--az-text-secondary);
 }
-.empty i {
-  font-size:44px; color:var(--az-primary);
-  opacity:.4; margin-bottom:12px; display:block;
+.empty i { font-size: 44px; color: var(--az-primary); opacity: .4; margin-bottom: 12px; display: block; }
+.empty h3 { color: var(--az-text); font-size: 15px; margin-bottom: 6px; }
+
+/* ==================== MODAL BASE ==================== */
+.modal-backdrop {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.85);
+  backdrop-filter: blur(6px);
+  z-index: 2000;
+  align-items: flex-end; justify-content: center;
 }
-.empty h3 { color:var(--az-text); font-size:15px; margin-bottom:6px; }
+.modal-backdrop.active { display: flex; }
+.modal-content {
+  background: #151515;
+  width: 100%; max-width: 640px;
+  border-top-left-radius: 20px; border-top-right-radius: 20px;
+  padding: 20px;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  max-height: 90vh; overflow-y: auto;
+  animation: slideUp .25s ease;
+}
+@keyframes slideUp { from { transform: translateY(100%); } }
+.modal-content .handle {
+  width: 40px; height: 4px; background: #333; border-radius: 2px; margin: 0 auto 16px;
+}
+.modal-content h3 {
+  text-align: center; color: var(--az-accent);
+  margin-bottom: 18px; font-size: 17px; font-weight: 800;
+}
+
+.modal-content .field { margin-bottom: 14px; }
+.modal-content label {
+  display: block; font-size: 12px; color: var(--az-text-secondary);
+  margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px;
+  font-weight: 700;
+}
+.modal-content input[type=text],
+.modal-content input[type=email],
+.modal-content textarea,
+.modal-content select {
+  width: 100%; padding: 12px 14px;
+  background: #0a0a0a; border: 1px solid #333;
+  border-radius: 10px; color: #fff;
+  font-size: 14px; font-family: inherit;
+}
+.modal-content textarea { min-height: 80px; resize: vertical; }
+.modal-content input:focus,
+.modal-content textarea:focus,
+.modal-content select:focus {
+  outline: none; border-color: var(--az-primary);
+}
+.modal-content select { cursor: pointer; }
+
+.modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+.modal-actions button {
+  flex: 1; padding: 13px; border-radius: 12px;
+  font-weight: 700; font-size: 14px; cursor: pointer;
+  font-family: inherit;
+  transition: transform .12s;
+}
+.modal-actions button:active { transform: scale(.97); }
+.modal-actions .cancel { background: transparent; border: 1px solid #333; color: #fff; }
+.modal-actions .primary { background: var(--az-gradient); border: none; color: #fff; }
+.modal-actions button:disabled { opacity: .6; cursor: not-allowed; }
+
+/* ==================== FRIEND MENU ==================== */
+.friend-menu-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px;
+  background: none; border: none; width: 100%;
+  text-align: left; cursor: pointer;
+  color: var(--az-text); font-size: 15px;
+  font-family: inherit;
+  border-radius: 12px;
+  transition: background .15s;
+}
+.friend-menu-item:active { background: rgba(255,255,255,.05); }
+.friend-menu-item i {
+  width: 24px; text-align: center;
+  color: var(--az-accent); font-size: 17px;
+}
+.friend-menu-item.danger { color: #ff7675; }
+.friend-menu-item.danger i { color: #ff7675; }
+.friend-menu-item .subtext {
+  font-size: 11px; color: var(--az-text-secondary);
+  margin-top: 2px;
+}
+.friend-menu-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 8px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  margin-bottom: 8px;
+}
+.friend-menu-header .av {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--az-gradient);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: #fff; font-size: 22px;
+  overflow: hidden; flex-shrink: 0;
+}
+.friend-menu-header .av img { width: 100%; height: 100%; object-fit: cover; }
+.friend-menu-header .info { flex: 1; min-width: 0; }
+.friend-menu-header .info .name {
+  font-size: 15px; font-weight: 800; color: var(--az-text);
+}
+.friend-menu-header .info .uname {
+  font-size: 12px; color: var(--az-text-secondary); margin-top: 2px;
+}
+
+/* ==================== TRIBE LIST IN PICKER ==================== */
+.tribe-pick-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background .15s;
+  border: 1px solid transparent;
+}
+.tribe-pick-item:active { background: rgba(255,107,53,.08); }
+.tribe-pick-item.selected {
+  background: rgba(255,107,53,.12);
+  border-color: var(--az-primary);
+}
+.tribe-pick-item .tav {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: linear-gradient(135deg,#7c3aed,#5eb8ff);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: #fff; font-size: 17px;
+  flex-shrink: 0; overflow: hidden;
+}
+.tribe-pick-item .tav img { width: 100%; height: 100%; object-fit: cover; }
+.tribe-pick-item .tinfo { flex: 1; min-width: 0; }
+.tribe-pick-item .tinfo .tname {
+  font-size: 14px; font-weight: 700; color: var(--az-text);
+}
+.tribe-pick-item .tinfo .tsub {
+  font-size: 11px; color: var(--az-text-secondary); margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.tribe-pick-item .check {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: #fff;
+  flex-shrink: 0;
+}
+.tribe-pick-item.selected .check {
+  background: var(--az-primary);
+  border-color: var(--az-primary);
+}
+
+/* Avatar upload preview */
+.avatar-pick {
+  display: flex; flex-direction: column;
+  align-items: center; margin-bottom: 18px;
+}
+.avatar-pick .preview {
+  width: 100px; height: 100px; border-radius: 50%;
+  background: linear-gradient(135deg,#7c3aed,#5eb8ff);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px; font-weight: 800; color: #fff;
+  overflow: hidden; cursor: pointer;
+  border: 3px solid var(--az-primary);
+  margin-bottom: 10px;
+}
+.avatar-pick .preview img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-pick .upload-btn {
+  padding: 8px 16px; border-radius: 20px;
+  background: rgba(255,107,53,.15);
+  border: 1px solid var(--az-primary);
+  color: var(--az-accent);
+  font-size: 12px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+}
+
+/* ==================== TOAST ==================== */
+.toast-mini {
+  position: fixed; bottom: 100px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(10,10,10,.98);
+  border: 1px solid rgba(255,107,53,.4);
+  color: #fff; padding: 10px 18px;
+  border-radius: 22px; font-size: 13px; font-weight: 600;
+  z-index: 9999; opacity: 0; pointer-events: none;
+  transition: all .25s ease;
+  max-width: 90%; text-align: center;
+  box-shadow: 0 10px 40px rgba(0,0,0,.5);
+}
+.toast-mini.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ==================== INLINE SPINNER ==================== */
+.spinner {
+  display: inline-block;
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin .7s linear infinite;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+@keyframes spin { 100% { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -137,7 +418,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 <header class="topbar">
   <a href="index.html" class="back"><i class="fas fa-arrow-left"></i></a>
   <span class="title">Friends</span>
-  <a href="chats.html" class="icon-btn"><i class="far fa-paper-plane"></i></a>
+  <a href="chats.html" class="icon-btn" title="Messages"><i class="far fa-paper-plane"></i></a>
 </header>
 
 <div class="search-bar">
@@ -147,25 +428,160 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   </div>
 </div>
 
+<div class="quick-actions">
+  <button class="qa-btn" onclick="openCreateTribe()">
+    <i class="fas fa-plus-circle"></i> Create Tribe
+  </button>
+  <button class="qa-btn tribes" onclick="window.location.href='chats.html'">
+    <i class="fas fa-users"></i> My Tribes
+  </button>
+</div>
+
 <div class="tabs">
   <button class="tab active" onclick="switchTab('all', this)">All Users</button>
   <button class="tab" onclick="switchTab('following', this)">Following</button>
   <button class="tab" onclick="switchTab('followers', this)">Followers</button>
+  <button class="tab" onclick="switchTab('tribes', this)" id="tribesTabBtn">
+    <i class="fas fa-users"></i> Tribes
+    <span class="badge" id="tribesBadge" style="display:none;">0</span>
+  </button>
 </div>
 
 <div class="user-list" id="userList">
   <div class="empty"><i class="fas fa-circle-notch fa-spin"></i>Loading…</div>
 </div>
 
+<!-- ==================== FRIEND MENU MODAL ==================== -->
+<div class="modal-backdrop" id="friendMenuModal" onclick="closeFriendMenu(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div class="handle"></div>
+    <div id="friendMenuContent"></div>
+  </div>
+</div>
+
+<!-- ==================== CREATE TRIBE MODAL ==================== -->
+<div class="modal-backdrop" id="createTribeModal" onclick="closeCreateTribe(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div class="handle"></div>
+    <h3>🏜️ Create a Tribe</h3>
+
+    <div class="avatar-pick">
+      <div class="preview" id="tribeAvatarPreview" onclick="document.getElementById('tribeAvatarInput').click()">T</div>
+      <button class="upload-btn" onclick="document.getElementById('tribeAvatarInput').click()">
+        <i class="fas fa-image"></i> Choose Photo
+      </button>
+      <input type="file" id="tribeAvatarInput" accept="image/*" style="display:none;">
+    </div>
+
+    <div class="field">
+      <label>Tribe Name *</label>
+      <input type="text" id="tribeName" placeholder="e.g., Huzni Family" maxlength="50">
+    </div>
+
+    <div class="field">
+      <label>Description</label>
+      <textarea id="tribeDesc" placeholder="What is this tribe about?" maxlength="300"></textarea>
+    </div>
+
+    <div class="field">
+      <label>Category</label>
+      <select id="tribeCategory">
+        <option value="family">👨‍👩‍👧 Family</option>
+        <option value="friends">👥 Friends</option>
+        <option value="work">💼 Work</option>
+        <option value="school">🎓 School</option>
+        <option value="hobby" selected>🎨 Hobby</option>
+        <option value="sports">⚽ Sports</option>
+        <option value="community">🏘️ Community</option>
+        <option value="other">✨ Other</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Privacy</label>
+      <select id="tribePrivacy">
+        <option value="private" selected>🔒 Private (invite only)</option>
+        <option value="public">🌐 Public (anyone can join)</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Member Limit</label>
+      <select id="tribeLimit">
+        <option value="10">10 members</option>
+        <option value="25">25 members</option>
+        <option value="50" selected>50 members</option>
+        <option value="100">100 members</option>
+        <option value="500">500 members</option>
+      </select>
+    </div>
+
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeCreateTribe()">Cancel</button>
+      <button class="primary" id="createTribeBtn" onclick="submitCreateTribe()">
+        <i class="fas fa-check"></i> Create Tribe
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== INVITE TO TRIBE MODAL ==================== -->
+<div class="modal-backdrop" id="inviteTribeModal" onclick="closeInviteTribe(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div class="handle"></div>
+    <h3>👥 Invite to Tribe</h3>
+
+    <div class="friend-menu-header" id="inviteUserHeader"></div>
+
+    <div id="inviteTribeList">
+      <div class="empty"><i class="fas fa-circle-notch fa-spin"></i></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeInviteTribe()">Cancel</button>
+      <button class="primary" id="sendInviteBtn" onclick="sendInvites()" disabled>
+        <i class="fas fa-paper-plane"></i> Send Invite
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TRIBE INVITES MODAL ==================== -->
+<div class="modal-backdrop" id="tribeInvitesModal" onclick="closeTribeInvites(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div class="handle"></div>
+    <h3>📨 Tribe Invites</h3>
+    <div id="tribeInvitesList">
+      <div class="empty"><i class="fas fa-circle-notch fa-spin"></i></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TOAST ==================== -->
+<div class="toast-mini" id="toastMini"></div>
+
 <script src="auth.js"></script>
 <script>
-let currentTab = 'all';
-let searchQuery = '';
-let searchTimer = null;
+/* ============================================================
+   STATE
+   ============================================================ */
+let currentTab   = 'all';
+let searchQuery  = '';
+let searchTimer  = null;
 let followingIds = new Set();
 let followerIds  = new Set();
 let requestedIds = new Set();
 
+let myTribes       = [];         // tribes I'm in
+let tribeInvites   = [];         // pending invites to me
+let selectedUserId = null;       // when opening friend menu
+let selectedUser   = null;
+let selectedTribeIds = new Set(); // for invite
+let newTribeAvatarFile = null;
+
+/* ============================================================
+   INIT
+   ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
   const check = setInterval(() => {
     if (typeof authReady !== 'undefined' && authReady) {
@@ -173,11 +589,12 @@ document.addEventListener('DOMContentLoaded', () => {
       init();
     }
   }, 100);
+
+  document.getElementById('tribeAvatarInput')?.addEventListener('change', onTribeAvatarPicked);
 });
 
 async function init() {
   if (currentUser) {
-    // load follows + requests in parallel
     const [f, r, fr] = await Promise.all([
       supabaseClient.from('follows').select('following_id').eq('follower_id', currentUser.id),
       supabaseClient.from('follows').select('follower_id').eq('following_id', currentUser.id),
@@ -186,10 +603,16 @@ async function init() {
     followingIds = new Set((f.data || []).map(x => x.following_id));
     followerIds  = new Set((r.data || []).map(x => x.follower_id));
     requestedIds = new Set((fr.data || []).map(x => x.target_id));
+
+    await Promise.all([loadMyTribes(), loadTribeInvites()]);
+    updateTribesBadge();
   }
   loadUsers();
 }
 
+/* ============================================================
+   SEARCH
+   ============================================================ */
 function debouncedSearch() {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => {
@@ -205,6 +628,9 @@ function switchTab(tab, el) {
   loadUsers();
 }
 
+/* ============================================================
+   LOAD USERS
+   ============================================================ */
 async function loadUsers() {
   const list = document.getElementById('userList');
   list.innerHTML = '<div class="empty"><i class="fas fa-circle-notch fa-spin"></i>Loading…</div>';
@@ -214,7 +640,7 @@ async function loadUsers() {
       .from('profiles')
       .select('id, username, display_name, avatar_url, is_verified, followers_count, bio, is_private')
       .order('followers_count', { ascending: false })
-      .limit(100);
+      .limit(150);
 
     if (searchQuery) query = query.ilike('username', `%${searchQuery}%`);
     if (currentUser)  query = query.neq('id', currentUser.id);
@@ -225,6 +651,7 @@ async function loadUsers() {
     let filtered = data || [];
     if (currentTab === 'following') filtered = filtered.filter(u => followingIds.has(u.id));
     if (currentTab === 'followers') filtered = filtered.filter(u => followerIds.has(u.id));
+    if (currentTab === 'tribes')    { renderTribesTab(list); return; }
 
     if (filtered.length === 0) {
       list.innerHTML = `
@@ -243,6 +670,9 @@ async function loadUsers() {
   }
 }
 
+/* ============================================================
+   RENDER USER ROW
+   ============================================================ */
 function renderUser(u) {
   const name = u.display_name || u.username || 'user';
   const initial = name.charAt(0).toUpperCase();
@@ -252,27 +682,33 @@ function renderUser(u) {
 
   const isFollowing = followingIds.has(u.id);
   const isRequested = requestedIds.has(u.id);
-  const isSelf      = currentUser && currentUser.id === u.id;
 
   let actionHtml = '';
-  if (isSelf) {
-    actionHtml = `<a href="profile.html" class="action-btn chat"><i class="fas fa-user"></i> You</a>`;
-  } else if (!currentUser) {
+  if (!currentUser) {
     actionHtml = `<button class="action-btn" onclick="window.location.href='login.html'">Follow</button>`;
   } else if (isFollowing) {
     actionHtml = `
-      <div style="display:flex; gap:6px;">
+      <div class="action-group">
         <button class="action-btn following" onclick="toggleFollow('${u.id}', this)">
-          <i class="fas fa-check"></i> Following
+          <i class="fas fa-check"></i>
         </button>
         <button class="action-btn chat" onclick="startChat('${u.id}')" title="Message">
           <i class="far fa-comment"></i>
+        </button>
+        <button class="action-btn more" onclick="openFriendMenu('${u.id}')" title="More">
+          <i class="fas fa-ellipsis-v"></i>
         </button>
       </div>`;
   } else if (isRequested) {
     actionHtml = `<button class="action-btn requested" disabled><i class="fas fa-clock"></i> Requested</button>`;
   } else {
-    actionHtml = `<button class="action-btn" onclick="toggleFollow('${u.id}', this)">Follow</button>`;
+    actionHtml = `
+      <div class="action-group">
+        <button class="action-btn" onclick="toggleFollow('${u.id}', this)">Follow</button>
+        <button class="action-btn more" onclick="openFriendMenu('${u.id}')" title="More">
+          <i class="fas fa-ellipsis-v"></i>
+        </button>
+      </div>`;
   }
 
   return `
@@ -287,8 +723,56 @@ function renderUser(u) {
   `;
 }
 
+/* ============================================================
+   RENDER TRIBE ROW (in Tribes tab)
+   ============================================================ */
+function renderTribesTab(list) {
+  const allTribes = myTribes;
+  if (allTribes.length === 0) {
+    list.innerHTML = `
+      <div class="empty">
+        <i class="fas fa-users"></i>
+        <h3>You're not in any tribes</h3>
+        <p>Create your first tribe or ask a friend to invite you.</p>
+        <button class="action-btn" onclick="openCreateTribe()" style="margin-top:10px;padding:11px 22px;">
+          <i class="fas fa-plus-circle"></i> Create Tribe
+        </button>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = allTribes.map(t => {
+    const initial = (t.name || 'T').charAt(0).toUpperCase();
+    const avatar = t.avatar_url ? `<img src="${escapeHtml(t.avatar_url)}" alt="">` : initial;
+    const role = t.role || 'member';
+    const roleBadge = role === 'owner' ? '👑 Owner'
+                    : role === 'admin' ? '🛡️ Admin'
+                    : role === 'moderator' ? '⭐ Mod'
+                    : 'Member';
+
+    return `
+      <div class="user-row" style="cursor:pointer;" onclick="window.location.href='chats.html?tribe=${t.id}'">
+        <div class="av" style="background:linear-gradient(135deg,#7c3aed,#5eb8ff);">${avatar}</div>
+        <div class="info">
+          <div class="name">${escapeHtml(t.name)}</div>
+          <div class="sub">
+            <span class="p-badge">${roleBadge}</span>
+            ${t.member_count || 0} members · ${t.post_count || 0} posts
+          </div>
+        </div>
+        <button class="action-btn chat" onclick="event.stopPropagation(); window.location.href='chats.html?tribe=${t.id}'">
+          <i class="fas fa-comments"></i>
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ============================================================
+   TOGGLE FOLLOW (unchanged logic, better button state)
+   ============================================================ */
 async function toggleFollow(targetId, btn) {
-  if (!currentUser) { showToast('Sign in to follow users', 'error'); return; }
+  if (!currentUser) { toast('Sign in to follow users'); return; }
   btn.disabled = true;
   const isFollowing = followingIds.has(targetId);
 
@@ -299,9 +783,8 @@ async function toggleFollow(targetId, btn) {
       followingIds.delete(targetId);
       btn.classList.remove('following');
       btn.innerHTML = 'Follow';
-      showToast('Unfollowed');
+      toast('Unfollowed');
     } else {
-      // Check if target is private
       const { data: target } = await supabaseClient
         .from('profiles').select('is_private').eq('id', targetId).maybeSingle();
 
@@ -313,7 +796,7 @@ async function toggleFollow(targetId, btn) {
         btn.classList.add('requested');
         btn.innerHTML = '<i class="fas fa-clock"></i> Requested';
         btn.disabled = true;
-        showToast('Follow request sent 📨', 'success');
+        toast('Follow request sent 📨');
         return;
       } else {
         const { error } = await supabaseClient.from('follows')
@@ -321,20 +804,504 @@ async function toggleFollow(targetId, btn) {
         if (error) throw error;
         followingIds.add(targetId);
         btn.classList.add('following');
-        btn.innerHTML = '<i class="fas fa-check"></i> Following';
-        showToast('Following ✅', 'success');
+        btn.innerHTML = '<i class="fas fa-check"></i>';
+        toast('Following ✅');
+        loadUsers();
       }
     }
   } catch (err) {
-    showToast(err.message, 'error');
+    toast(err.message);
   } finally {
     btn.disabled = false;
   }
 }
 
+/* ============================================================
+   START CHAT
+   ============================================================ */
 function startChat(userId) {
   window.location.href = 'chats.html?user=' + userId;
 }
+
+/* ============================================================
+   FRIEND MENU
+   ============================================================ */
+async function openFriendMenu(userId) {
+  selectedUserId = userId;
+  const { data: u } = await supabaseClient
+    .from('profiles')
+    .select('id, username, display_name, avatar_url, is_verified, is_private')
+    .eq('id', userId).maybeSingle();
+
+  if (!u) { toast('User not found'); return; }
+  selectedUser = u;
+
+  const name = u.display_name || u.username || 'user';
+  const initial = name.charAt(0).toUpperCase();
+  const avatar = u.avatar_url ? `<img src="${escapeHtml(u.avatar_url)}" alt="">` : initial;
+
+  const html = `
+    <div class="friend-menu-header">
+      <div class="av">${avatar}</div>
+      <div class="info">
+        <div class="name">${escapeHtml(name)} ${u.is_verified ? '<i class="fas fa-circle-check" style="color:#3b82f6;font-size:12px;"></i>' : ''}</div>
+        <div class="uname">@${escapeHtml(u.username || 'user')}</div>
+      </div>
+    </div>
+
+    <button class="friend-menu-item" onclick="startChat('${u.id}')">
+      <i class="far fa-comment"></i>
+      <div>
+        <div>Send Message</div>
+        <div class="subtext">Open a private chat</div>
+      </div>
+    </button>
+
+    <button class="friend-menu-item" onclick="openInviteTribe('${u.id}')">
+      <i class="fas fa-user-plus"></i>
+      <div>
+        <div>Invite to Tribe</div>
+        <div class="subtext">Add them to one of your tribes</div>
+      </div>
+    </button>
+
+    <button class="friend-menu-item" onclick="window.location.href='profile.html?user=${u.id}'">
+      <i class="fas fa-user"></i>
+      <div>
+        <div>View Profile</div>
+        <div class="subtext">See their posts and bio</div>
+      </div>
+    </button>
+
+    <button class="friend-menu-item" onclick="copyProfileLink('${u.id}')">
+      <i class="fas fa-link"></i>
+      <div>
+        <div>Copy Profile Link</div>
+        <div class="subtext">Share @${escapeHtml(u.username || 'user')} with others</div>
+      </div>
+    </button>
+
+    <button class="friend-menu-item danger" onclick="unfollowFromMenu('${u.id}')">
+      <i class="fas fa-user-minus"></i>
+      <div>
+        <div>Unfollow</div>
+        <div class="subtext">Stop following this person</div>
+      </div>
+    </button>
+  `;
+
+  document.getElementById('friendMenuContent').innerHTML = html;
+  document.getElementById('friendMenuModal').classList.add('active');
+}
+
+function closeFriendMenu(e) {
+  if (e && e.target && e.target.id !== 'friendMenuModal') return;
+  document.getElementById('friendMenuModal').classList.remove('active');
+}
+
+function copyProfileLink(userId) {
+  const url = window.location.origin + '/huzni-sfamily/profile.html?user=' + userId;
+  navigator.clipboard.writeText(url).then(() => {
+    toast('Link copied 📋');
+    closeFriendMenu();
+  });
+}
+
+async function unfollowFromMenu(userId) {
+  if (!confirm('Unfollow this user?')) return;
+  try {
+    await supabaseClient.from('follows').delete()
+      .eq('follower_id', currentUser.id).eq('following_id', userId);
+    followingIds.delete(userId);
+    toast('Unfollowed');
+    closeFriendMenu();
+    loadUsers();
+  } catch (err) { toast(err.message); }
+}
+
+/* ============================================================
+   CREATE TRIBE
+   ============================================================ */
+function openCreateTribe() {
+  if (!currentUser) { toast('Sign in first'); return; }
+  newTribeAvatarFile = null;
+  document.getElementById('tribeName').value = '';
+  document.getElementById('tribeDesc').value = '';
+  document.getElementById('tribeAvatarPreview').innerHTML = 'T';
+  document.getElementById('tribeCategory').value = 'hobby';
+  document.getElementById('tribePrivacy').value = 'private';
+  document.getElementById('tribeLimit').value = '50';
+  document.getElementById('createTribeModal').classList.add('active');
+}
+
+function closeCreateTribe(e) {
+  if (e && e.target && e.target.id !== 'createTribeModal') return;
+  document.getElementById('createTribeModal').classList.remove('active');
+}
+
+function onTribeAvatarPicked(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { toast('Please choose an image'); return; }
+  if (file.size > 5 * 1024 * 1024) { toast('Max 5 MB'); return; }
+
+  newTribeAvatarFile = file;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('tribeAvatarPreview').innerHTML =
+      `<img src="${ev.target.result}" alt="">`;
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+async function submitCreateTribe() {
+  const name = document.getElementById('tribeName').value.trim();
+  const desc = document.getElementById('tribeDesc').value.trim();
+  const category = document.getElementById('tribeCategory').value;
+  const privacy = document.getElementById('tribePrivacy').value;
+  const limit = parseInt(document.getElementById('tribeLimit').value, 10);
+
+  if (name.length < 2) { toast('Name must be at least 2 characters'); return; }
+
+  const btn = document.getElementById('createTribeBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Creating…';
+
+  try {
+    // 1. Upload avatar if picked
+    let avatarUrl = null;
+    if (newTribeAvatarFile) {
+      const ext = (newTribeAvatarFile.name.split('.').pop() || 'jpg').toLowerCase();
+      const path = `tribe_avatars/${currentUser.id}/${Date.now()}.${ext}`;
+      const { data: up, error: upErr } = await supabaseClient.storage
+        .from('chat_media')
+        .upload(path, newTribeAvatarFile, { cacheControl: '3600' });
+      if (upErr) throw upErr;
+      const { data: urlData } = supabaseClient.storage.from('chat_media').getPublicUrl(up.path);
+      avatarUrl = urlData.publicUrl;
+    }
+
+    // 2. Create tribe
+    const { data: tribe, error } = await supabaseClient
+      .from('tribes')
+      .insert({
+        owner_id: currentUser.id,
+        name: name,
+        description: desc || null,
+        avatar_url: avatarUrl,
+        category: category,
+        is_private: privacy === 'private',
+        member_limit: limit
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    toast('🎉 Tribe created!');
+    closeCreateTribe();
+
+    // Reload tribes + switch to Tribes tab
+    await loadMyTribes();
+    updateTribesBadge();
+    switchTab('tribes', document.querySelector('[onclick*="switchTab(\'tribes\'"]'));
+
+  } catch (err) {
+    console.error(err);
+    toast(err.message || 'Failed to create tribe');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-check"></i> Create Tribe';
+  }
+}
+
+/* ============================================================
+   INVITE TO TRIBE
+   ============================================================ */
+async function openInviteTribe(userId) {
+  closeFriendMenu();
+  selectedUserId = userId;
+
+  const u = selectedUser || {};
+  const name = u.display_name || u.username || 'user';
+  const initial = name.charAt(0).toUpperCase();
+  const avatar = u.avatar_url ? `<img src="${escapeHtml(u.avatar_url)}" alt="">` : initial;
+
+  document.getElementById('inviteUserHeader').innerHTML = `
+    <div class="av">${avatar}</div>
+    <div class="info">
+      <div class="name">Invite ${escapeHtml(name)}</div>
+      <div class="uname">Select the tribes to invite them to</div>
+    </div>
+  `;
+
+  await loadMyTribes();
+  selectedTribeIds.clear();
+  renderInviteTribeList();
+
+  document.getElementById('inviteTribeModal').classList.add('active');
+}
+
+function closeInviteTribe(e) {
+  if (e && e.target && e.target.id !== 'inviteTribeModal') return;
+  document.getElementById('inviteTribeModal').classList.remove('active');
+  selectedTribeIds.clear();
+}
+
+function renderInviteTribeList() {
+  const list = document.getElementById('inviteTribeList');
+  const btn = document.getElementById('sendInviteBtn');
+
+  if (myTribes.length === 0) {
+    list.innerHTML = `
+      <div class="empty">
+        <i class="fas fa-users"></i>
+        <h3>You have no tribes</h3>
+        <p>Create one first, then invite friends.</p>
+        <button class="action-btn" onclick="closeInviteTribe(); openCreateTribe()" style="margin-top:10px;">
+          <i class="fas fa-plus-circle"></i> Create Tribe
+        </button>
+      </div>`;
+    btn.disabled = true;
+    return;
+  }
+
+  list.innerHTML = myTribes.map(t => {
+    const initial = (t.name || 'T').charAt(0).toUpperCase();
+    const avatar = t.avatar_url ? `<img src="${escapeHtml(t.avatar_url)}" alt="">` : initial;
+    const sel = selectedTribeIds.has(t.id);
+    return `
+      <div class="tribe-pick-item ${sel ? 'selected' : ''}" onclick="toggleTribeSelect('${t.id}')">
+        <div class="tav">${avatar}</div>
+        <div class="tinfo">
+          <div class="tname">${escapeHtml(t.name)}</div>
+          <div class="tsub">${t.member_count || 0} members</div>
+        </div>
+        <div class="check">${sel ? '<i class="fas fa-check"></i>' : ''}</div>
+      </div>
+    `;
+  }).join('');
+
+  btn.disabled = selectedTribeIds.size === 0;
+}
+
+function toggleTribeSelect(tribeId) {
+  if (selectedTribeIds.has(tribeId)) selectedTribeIds.delete(tribeId);
+  else selectedTribeIds.add(tribeId);
+  renderInviteTribeList();
+}
+
+async function sendInvites() {
+  if (selectedTribeIds.size === 0) return;
+  const btn = document.getElementById('sendInviteBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Sending…';
+
+  let success = 0;
+  let failed = 0;
+
+  for (const tribeId of selectedTribeIds) {
+    try {
+      const { error } = await supabaseClient.from('tribe_invites').insert({
+        tribe_id:   tribeId,
+        inviter_id: currentUser.id,
+        invitee_id: selectedUserId,
+        status:     'pending'
+      });
+      if (error) {
+        if (error.code === '23505') { success++; continue; } // already invited
+        throw error;
+      }
+      success++;
+    } catch (e) {
+      console.error(e);
+      failed++;
+    }
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Invite';
+
+  if (success > 0) {
+    toast(`✅ Invited to ${success} tribe${success > 1 ? 's' : ''}`);
+    closeInviteTribe();
+  } else if (failed > 0) {
+    toast('Failed to invite');
+  }
+}
+
+/* ============================================================
+   LOAD MY TRIBES
+   ============================================================ */
+async function loadMyTribes() {
+  if (!currentUser) return;
+  try {
+    const { data, error } = await supabaseClient.rpc('get_my_tribes', {
+      p_user_id: currentUser.id
+    });
+    if (error) throw error;
+    myTribes = data || [];
+  } catch (err) {
+    console.warn('loadMyTribes:', err);
+    myTribes = [];
+  }
+}
+
+/* ============================================================
+   LOAD TRIBE INVITES (for me)
+   ============================================================ */
+async function loadTribeInvites() {
+  if (!currentUser) return;
+  try {
+    const { data, error } = await supabaseClient
+      .from('tribe_invites')
+      .select(`
+        id, status, created_at, tribe_id, inviter_id,
+        tribe:tribes!tribe_invites_tribe_id_fkey(id, name, avatar_url, member_count),
+        inviter:profiles!tribe_invites_inviter_id_fkey(id, username, display_name, avatar_url)
+      `)
+      .eq('invitee_id', currentUser.id)
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    tribeInvites = data || [];
+  } catch (err) {
+    console.warn('loadTribeInvites:', err);
+    tribeInvites = [];
+  }
+}
+
+function updateTribesBadge() {
+  const badge = document.getElementById('tribesBadge');
+  if (!badge) return;
+  const n = tribeInvites.length;
+  badge.textContent = n;
+  badge.style.display = n > 0 ? 'inline-block' : 'none';
+}
+
+/* ============================================================
+   TRIBE INVITES INBOX
+   ============================================================ */
+async function openTribeInvites() {
+  await loadTribeInvites();
+  const list = document.getElementById('tribeInvitesList');
+
+  if (tribeInvites.length === 0) {
+    list.innerHTML = `
+      <div class="empty">
+        <i class="far fa-envelope"></i>
+        <h3>No pending invites</h3>
+        <p>When someone invites you to a tribe, it will appear here.</p>
+      </div>`;
+  } else {
+    list.innerHTML = tribeInvites.map(inv => {
+      const t = inv.tribe || {};
+      const initial = (t.name || 'T').charAt(0).toUpperCase();
+      const avatar = t.avatar_url ? `<img src="${escapeHtml(t.avatar_url)}" alt="">` : initial;
+      const inviterName = inv.inviter?.display_name || inv.inviter?.username || 'Someone';
+
+      return `
+        <div class="user-row">
+          <div class="av" style="background:linear-gradient(135deg,#7c3aed,#5eb8ff);">${avatar}</div>
+          <div class="info">
+            <div class="name">${escapeHtml(t.name || 'Tribe')}</div>
+            <div class="sub">Invited by ${escapeHtml(inviterName)} · ${t.member_count || 0} members</div>
+          </div>
+          <div class="action-group">
+            <button class="action-btn" onclick="respondTribeInvite('${inv.id}', 'accepted', this)">
+              <i class="fas fa-check"></i>
+            </button>
+            <button class="action-btn chat" onclick="respondTribeInvite('${inv.id}', 'rejected', this)">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+  document.getElementById('tribeInvitesModal').classList.add('active');
+}
+
+function closeTribeInvites(e) {
+  if (e && e.target && e.target.id !== 'tribeInvitesModal') return;
+  document.getElementById('tribeInvitesModal').classList.remove('active');
+}
+
+async function respondTribeInvite(inviteId, status, btn) {
+  btn.disabled = true;
+  try {
+    // 1. Update invite
+    const { data: inv } = await supabaseClient
+      .from('tribe_invites')
+      .select('tribe_id, inviter_id')
+      .eq('id', inviteId)
+      .single();
+
+    await supabaseClient.from('tribe_invites')
+      .update({ status, responded_at: new Date().toISOString() })
+      .eq('id', inviteId);
+
+    // 2. If accepted → add me as member
+    if (status === 'accepted' && inv) {
+      await supabaseClient.from('tribe_members').insert({
+        tribe_id: inv.tribe_id,
+        user_id:  currentUser.id,
+        role:     'member'
+      });
+    }
+
+    toast(status === 'accepted' ? '✅ Joined tribe!' : 'Declined');
+    await loadTribeInvites();
+    await loadMyTribes();
+    updateTribesBadge();
+    openTribeInvites(); // refresh list
+  } catch (err) {
+    console.error(err);
+    toast(err.message);
+    btn.disabled = false;
+  }
+}
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function toast(msg) {
+  const el = document.getElementById('toastMini');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(window._toastT);
+  window._toastT = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// Add invite badge to Tribes tab in header on load
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    const tabBtn = document.getElementById('tribesTabBtn');
+    if (tabBtn && !tabBtn.querySelector('.invite-dot')) {
+      // Add pending invites icon-click
+      tabBtn.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        openTribeInvites();
+      });
+    }
+  }, 1000);
+});
+
+// ESC closes modals
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('friendMenuModal').classList.remove('active');
+    document.getElementById('createTribeModal').classList.remove('active');
+    document.getElementById('inviteTribeModal').classList.remove('active');
+    document.getElementById('tribeInvitesModal').classList.remove('active');
+  }
+});
 </script>
 </body>
 </html>
