@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Arizona AI — Earn While You Share</title>
 
 <link rel="icon" type="image/jpeg" href="arizonan%20png%20icon.jpeg">
@@ -11,7 +11,9 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
-body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; }
+body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
 
 /* ==================== TOP BAR ==================== */
 .ig-topbar {
@@ -124,24 +126,33 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   cursor:pointer; white-space:nowrap;
 }
 
-/* ==================== STORIES ==================== */
-.ig-stories {
+/* ==================== STORIES ROW ==================== */
+.ig-stories-wrap {
   max-width:640px; margin:0 auto;
-  display:flex; gap:14px; padding:14px 16px;
-  overflow-x:auto; scrollbar-width:none;
+  padding:14px 0;
   border-bottom:1px solid rgba(255,255,255,.05);
+  position:relative;
+}
+.ig-stories {
+  display:flex; gap:14px;
+  padding:0 16px;
+  overflow-x:auto; scrollbar-width:none;
 }
 .ig-stories::-webkit-scrollbar { display:none; }
-.ig-story { flex-shrink:0; text-align:center; cursor:pointer; width:72px; }
+
+.ig-story { flex-shrink:0; text-align:center; cursor:pointer; width:72px; position:relative; }
 .ig-story-ring {
   width:64px; height:64px; border-radius:50%;
   padding:2.5px; margin:0 auto 6px;
   transition:background .3s;
+  position:relative;
 }
 .ig-story-ring.unseen {
-  background:linear-gradient(135deg, #FF6B35 0%, #FFB20F 100%);
+  background:conic-gradient(from 180deg, #FF6B35, #FFB20F, #7c3aed, #FF6B35);
   box-shadow:0 0 12px rgba(255,107,53,.5);
+  animation:ringSpin 4s linear infinite;
 }
+@keyframes ringSpin { to { transform: rotate(360deg); } }
 .ig-story-ring.seen { background:#3a3a3a; }
 .ig-story-ring .inner {
   width:100%; height:100%; border-radius:50%;
@@ -153,7 +164,11 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 .ig-story-ring .inner img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
 .ig-story.add .ig-story-ring { background:#2a2a2a; }
 .ig-story.add .inner { background:var(--az-accent); color:#1a1a1a; }
-.ig-story .label { font-size:11px; color:var(--az-text-secondary); }
+.ig-story .label {
+  font-size:11px; color:var(--az-text-secondary);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  padding:0 2px;
+}
 
 /* ==================== FEED ==================== */
 .ig-feed { max-width:640px; margin:0 auto; }
@@ -194,8 +209,15 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   display:flex; align-items:center; justify-content:center;
   font-weight:700; color:#fff; font-size:15px; flex-shrink:0;
   text-decoration:none; overflow:hidden;
+  position:relative;
 }
 .ig-post-head .p-avatar img { width:100%; height:100%; object-fit:cover; }
+.ig-post-head .p-avatar.has-story::before {
+  content:''; position:absolute; inset:-3px;
+  border-radius:50%;
+  background:conic-gradient(from 0deg,#FF6B35,#FFB20F,#7c3aed,#FF6B35);
+  z-index:-1;
+}
 .ig-post-head .meta { flex:1; min-width:0; }
 .ig-post-head .meta .name {
   font-weight:700; font-size:14px; color:var(--az-text);
@@ -203,6 +225,10 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 }
 .ig-post-head .meta .name .verified { color:#3b82f6; font-size:12px; }
 .ig-post-head .meta .sub { font-size:11px; color:var(--az-text-secondary); }
+.ig-post-head .post-menu {
+  background:none; border:none; color:var(--az-text-secondary);
+  font-size:18px; cursor:pointer; padding:4px 8px;
+}
 
 .ig-post-media {
   width:100%; background:#000;
@@ -251,6 +277,12 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 .ig-action.liked { color:var(--az-primary); }
 .ig-action.save { margin-left:auto; }
 .ig-action.boost-btn { color:#5eb8ff; font-size:18px; }
+.ig-action.like-anim { animation:likePop .35s ease; }
+@keyframes likePop {
+  0% { transform:scale(1); }
+  50% { transform:scale(1.35); }
+  100% { transform:scale(1); }
+}
 
 .ig-likes {
   padding:2px 16px 4px;
@@ -271,6 +303,40 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   padding:0 16px 12px;
   font-size:13px; color:var(--az-text-secondary);
   cursor:pointer;
+}
+
+/* Skeleton shimmer for feed loading */
+.feed-skeleton { padding: 12px 0; }
+.feed-skeleton .sk-row {
+  background: rgba(255,255,255,.03);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  padding: 14px 16px;
+  margin-bottom: 8px;
+}
+.feed-skeleton .sk-head { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+.feed-skeleton .sk-av {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+.feed-skeleton .sk-line {
+  height: 12px; border-radius: 6px; margin-bottom: 6px;
+  background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+.feed-skeleton .sk-line.short { width: 40%; }
+.feed-skeleton .sk-media {
+  width: 100%; aspect-ratio: 1/1;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* ==================== EMPTY ==================== */
@@ -336,6 +402,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   border:none; font-size:22px; cursor:pointer;
   display:flex; align-items:center; justify-content:center;
   backdrop-filter:blur(8px);
+  z-index:10;
 }
 .fs-viewer .nav-btn {
   position:absolute; top:50%; transform:translateY(-50%);
@@ -344,6 +411,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   border:none; font-size:22px; cursor:pointer;
   display:flex; align-items:center; justify-content:center;
   backdrop-filter:blur(8px);
+  z-index:10;
 }
 .fs-viewer .nav-btn.prev { left:16px; }
 .fs-viewer .nav-btn.next { right:16px; }
@@ -353,6 +421,154 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   background:rgba(255,255,255,.12);
   padding:6px 14px; border-radius:20px;
   backdrop-filter:blur(8px);
+  z-index:10;
+}
+
+/* ==================== STORY VIEWER ==================== */
+.story-viewer {
+  display:none; position:fixed; inset:0;
+  background:#000; z-index:3400;
+}
+.story-viewer.active { display:block; }
+.story-viewer .sv-inner {
+  position:relative;
+  width:100%; height:100%;
+  max-width:640px; margin:0 auto;
+}
+.story-viewer .sv-progress {
+  position:absolute; top:0; left:0; right:0;
+  padding:8px 6px;
+  padding-top:calc(8px + env(safe-area-inset-top));
+  display:flex; gap:3px;
+  z-index:20;
+}
+.story-viewer .sv-segment {
+  flex:1; height:3px;
+  background:rgba(255,255,255,.25);
+  border-radius:2px; overflow:hidden;
+}
+.story-viewer .sv-segment .fill {
+  height:100%; background:#fff; width:0%;
+}
+.story-viewer .sv-segment.done .fill { width:100%; }
+
+.story-viewer .sv-header {
+  position:absolute; top:20px; left:0; right:0;
+  padding:12px 14px;
+  padding-top:calc(12px + env(safe-area-inset-top));
+  display:flex; align-items:center; gap:10px;
+  z-index:15;
+  background:linear-gradient(rgba(0,0,0,.75), transparent);
+}
+.story-viewer .sv-av {
+  width:38px; height:38px; border-radius:50%;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:#fff; font-size:14px;
+  overflow:hidden; flex-shrink:0;
+  border:2px solid rgba(255,255,255,.5);
+}
+.story-viewer .sv-av img { width:100%; height:100%; object-fit:cover; }
+.story-viewer .sv-info { flex:1; min-width:0; }
+.story-viewer .sv-info .name {
+  font-size:13px; font-weight:700; color:#fff;
+  display:flex; align-items:center; gap:5px;
+}
+.story-viewer .sv-info .time {
+  font-size:10px; color:rgba(255,255,255,.7);
+  margin-top:1px;
+}
+.story-viewer .sv-close {
+  width:34px; height:34px; border-radius:50%;
+  background:rgba(0,0,0,.5); color:#fff;
+  border:none; font-size:16px;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  backdrop-filter:blur(8px);
+}
+.story-viewer .sv-body {
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  background:#000;
+}
+.story-viewer .sv-body img,
+.story-viewer .sv-body video {
+  max-width:100%; max-height:100%;
+  object-fit:contain;
+}
+.story-viewer .sv-tap-left,
+.story-viewer .sv-tap-right {
+  position:absolute; top:80px; bottom:110px;
+  width:35%; cursor:pointer; z-index:10;
+}
+.story-viewer .sv-tap-left { left:0; }
+.story-viewer .sv-tap-right { right:0; }
+
+.story-viewer .sv-caption {
+  position:absolute;
+  bottom:130px; left:20px; right:20px;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(10px);
+  padding:12px 16px;
+  border-radius:14px;
+  color:#fff; font-size:14px; line-height:1.45;
+  text-align:center; z-index:15;
+  display:none;
+}
+.story-viewer .sv-caption.show { display:block; }
+
+.story-viewer .sv-actions {
+  position:absolute;
+  bottom:30px; left:20px; right:20px;
+  padding-bottom:env(safe-area-inset-bottom);
+  display:flex; align-items:center; gap:8px;
+  z-index:15;
+}
+.story-viewer .sv-input {
+  flex:1; display:flex;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:24px;
+  padding:4px 4px 4px 16px;
+  backdrop-filter:blur(8px);
+}
+.story-viewer .sv-input input {
+  flex:1; background:transparent; border:none;
+  color:#fff; font-size:14px; font-family:inherit;
+  outline:none; padding:8px 0;
+}
+.story-viewer .sv-input input::placeholder { color:rgba(255,255,255,.6); }
+.story-viewer .sv-input button {
+  width:34px; height:34px; border-radius:50%;
+  background:var(--az-gradient); color:#fff;
+  border:none; font-size:14px; cursor:pointer;
+}
+.story-viewer .sv-action-btn {
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(255,255,255,.12);
+  color:#fff; border:none;
+  font-size:18px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  backdrop-filter:blur(8px);
+  transition: transform .12s, background .15s;
+}
+.story-viewer .sv-action-btn:active { transform:scale(.9); }
+.story-viewer .sv-action-btn.liked {
+  color: #ff4757;
+  background: rgba(255,71,87,.25);
+}
+.story-viewer .sv-stats {
+  position:absolute; top: 80px; right:14px;
+  display:flex; flex-direction:column; gap:8px;
+  z-index:15;
+}
+.story-viewer .sv-stat {
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(10px);
+  border-radius:12px;
+  padding:6px 10px;
+  color:#fff; font-size:11px; font-weight:700;
+  display:flex; align-items:center; gap:5px;
 }
 
 /* ==================== COMMENTS MODAL ==================== */
@@ -421,6 +637,37 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   font-weight:700; font-size:14px; cursor:pointer;
 }
 .comments-send:disabled { opacity:.5; cursor:not-allowed; }
+
+/* ==================== POST OPTIONS MODAL ==================== */
+.post-options-modal {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.7); z-index:2200;
+  align-items:flex-end; justify-content:center;
+}
+.post-options-modal.active { display:flex; }
+.post-options-panel {
+  background:#151515;
+  width:100%; max-width:640px;
+  border-top-left-radius:20px; border-top-right-radius:20px;
+  padding:12px 0;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom));
+  animation:slideUp .25s ease;
+}
+.post-options-panel .handle {
+  width:40px; height:4px; background:#333; border-radius:2px;
+  margin:0 auto 12px;
+}
+.post-opt-item {
+  display:flex; align-items:center; gap:14px;
+  padding:14px 22px;
+  background:none; border:none; width:100%;
+  text-align:left; cursor:pointer;
+  color:var(--az-text); font-size:15px; font-family:inherit;
+}
+.post-opt-item:active { background:rgba(255,255,255,.05); }
+.post-opt-item i { width:22px; text-align:center; color:var(--az-accent); font-size:16px; }
+.post-opt-item.danger { color:#ff7675; }
+.post-opt-item.danger i { color:#ff7675; }
 
 /* ==================== LANGUAGE MENU ==================== */
 .lang-menu {
@@ -518,7 +765,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
 .boost-actions button {
   flex:1; padding:14px; border-radius:12px;
   font-weight:700; cursor:pointer; font-size:15px;
-  border:none;
+  border:none; font-family:inherit;
 }
 .boost-actions .cancel {
   background:transparent; border:1px solid #333; color:#fff;
@@ -607,6 +854,30 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   text-align:center; color:var(--az-text-secondary);
   font-size:11px; padding:20px 0 30px; opacity:.5;
 }
+
+/* ==================== TOAST ==================== */
+.toast-mini {
+  position:fixed; bottom:100px; left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:rgba(10,10,10,.98);
+  border:1px solid rgba(255,107,53,.4);
+  color:#fff; padding:10px 18px;
+  border-radius:22px; font-size:13px; font-weight:600;
+  z-index:9999; opacity:0; pointer-events:none;
+  transition:all .25s ease;
+  max-width:90%; text-align:center;
+  box-shadow:0 10px 40px rgba(0,0,0,.5);
+}
+.toast-mini.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+.spinner {
+  display:inline-block; width:14px; height:14px;
+  border:2px solid rgba(255,255,255,.3);
+  border-radius:50%; border-top-color:#fff;
+  animation:spin .7s linear infinite;
+  margin-right:6px; vertical-align:middle;
+}
+@keyframes spin { 100% { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -661,17 +932,34 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   <button onclick="dismissDeepLink()">×</button>
 </div>
 
-<!-- ==================== STORIES ==================== -->
-<div class="ig-stories" id="storiesRow">
-  <div class="ig-story add" onclick="goToPost()">
-    <div class="ig-story-ring"><div class="inner"><i class="fas fa-plus"></i></div></div>
-    <div class="label" data-i18n="your-story">Your story</div>
+<!-- ==================== STORIES ROW ==================== -->
+<div class="ig-stories-wrap">
+  <div class="ig-stories" id="storiesRow">
+    <div class="ig-story add" onclick="goToStory()">
+      <div class="ig-story-ring"><div class="inner"><i class="fas fa-plus"></i></div></div>
+      <div class="label" data-i18n="your-story">Your story</div>
+    </div>
   </div>
 </div>
 
 <!-- ==================== FEED ==================== -->
 <main class="ig-feed" id="feed">
-  <div class="ig-empty"><i class="fas fa-circle-notch fa-spin"></i>Loading…</div>
+  <div class="feed-skeleton">
+    <div class="sk-row">
+      <div class="sk-head">
+        <div class="sk-av"></div>
+        <div style="flex:1;"><div class="sk-line"></div><div class="sk-line short"></div></div>
+      </div>
+      <div class="sk-media"></div>
+    </div>
+    <div class="sk-row">
+      <div class="sk-head">
+        <div class="sk-av"></div>
+        <div style="flex:1;"><div class="sk-line"></div><div class="sk-line short"></div></div>
+      </div>
+      <div class="sk-media"></div>
+    </div>
+  </div>
 </main>
 
 <!-- ==================== BOTTOM NAV ==================== -->
@@ -697,6 +985,45 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   <div class="counter" id="fsCounter">1 / 1</div>
 </div>
 
+<!-- ==================== STORY VIEWER ==================== -->
+<div class="story-viewer" id="storyViewer">
+  <div class="sv-inner">
+    <div class="sv-progress" id="svProgress"></div>
+    <div class="sv-header">
+      <div class="sv-av" id="svAvatar">U</div>
+      <div class="sv-info">
+        <div class="name" id="svName">User</div>
+        <div class="time" id="svTime">Just now</div>
+      </div>
+      <button class="sv-close" onclick="closeStoryViewer()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="sv-body" id="svBody"></div>
+    <div class="sv-tap-left" onclick="storyNav(-1)"></div>
+    <div class="sv-tap-right" onclick="storyNav(1)"></div>
+
+    <div class="sv-stats" id="svStats" style="display:none;">
+      <div class="sv-stat"><i class="fas fa-eye"></i> <span id="svViews">0</span></div>
+      <div class="sv-stat"><i class="fas fa-heart" style="color:#ff4757;"></i> <span id="svLikes">0</span></div>
+    </div>
+
+    <div class="sv-caption" id="svCaption"></div>
+
+    <div class="sv-actions">
+      <div class="sv-input">
+        <input type="text" id="svReplyInput" placeholder="Send a message…"
+               onkeydown="if(event.key==='Enter') sendStoryReply()">
+        <button onclick="sendStoryReply()"><i class="fas fa-paper-plane"></i></button>
+      </div>
+      <button class="sv-action-btn" id="svLikeBtn" onclick="toggleStoryLike()">
+        <i class="far fa-heart"></i>
+      </button>
+      <button class="sv-action-btn" onclick="shareCurrentStory()">
+        <i class="fas fa-share-alt"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- ==================== COMMENTS MODAL ==================== -->
 <div class="comments-modal" id="commentsModal">
   <div class="comments-panel">
@@ -711,6 +1038,31 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
              onkeydown="if(event.key==='Enter') submitComment()">
       <button class="comments-send" id="commentSendBtn" onclick="submitComment()" data-i18n="post">Post</button>
     </div>
+  </div>
+</div>
+
+<!-- ==================== POST OPTIONS MODAL ==================== -->
+<div class="post-options-modal" id="postOptionsModal" onclick="closePostOptions(event)">
+  <div class="post-options-panel" onclick="event.stopPropagation()">
+    <div class="handle"></div>
+    <button class="post-opt-item" onclick="postOptAction('copy')">
+      <i class="fas fa-link"></i> Copy link
+    </button>
+    <button class="post-opt-item" onclick="postOptAction('share')">
+      <i class="fas fa-share-alt"></i> Share post
+    </button>
+    <button class="post-opt-item" onclick="postOptAction('save')">
+      <i class="far fa-bookmark"></i> Save post
+    </button>
+    <button class="post-opt-item" onclick="postOptAction('boost')" id="postOptBoost">
+      <i class="fas fa-rocket" style="color:#5eb8ff;"></i> Boost this post
+    </button>
+    <button class="post-opt-item danger" onclick="postOptAction('delete')" id="postOptDelete" style="display:none;">
+      <i class="fas fa-trash"></i> Delete post
+    </button>
+    <button class="post-opt-item" onclick="closePostOptions()">
+      <i class="fas fa-times"></i> Cancel
+    </button>
   </div>
 </div>
 
@@ -783,7 +1135,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
       <div class="settings-section-title">Account</div>
       <a href="profile.html" class="settings-item"><i class="fas fa-user"></i> My Profile</a>
       <a href="wallets.html" class="settings-item"><i class="fas fa-wallet"></i> My Wallet</a>
-      <a href="notifications.html" class="settings-item" data-notif-bell style="position:relative;"><i class="far fa-bell"></i> Notifications</a>
+      <a href="notifications.html" class="settings-item"><i class="far fa-bell"></i> Notifications</a>
       <a href="offers.html" class="settings-item"><i class="fas fa-gift"></i> Offers & Rewards</a>
     </div>
 
@@ -824,19 +1176,35 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; }
   </div>
 </div>
 
+<!-- ==================== TOAST ==================== -->
+<div class="toast-mini" id="toastMini"></div>
+
 <script src="auth.js"></script>
 <script>
+/* ============================================================
+   STATE
+   ============================================================ */
 let currentPostId = null;
 let currentMediaList = [];
 let currentMediaIndex = 0;
 let likedPosts = new Set();
 let storiesByUser = [];
+let storySeenIds = new Set();
+let myLikedStories = new Set();
+let currentStoryUserIndex = 0;
+let currentStoryIndex = 0;
+let storyProgressTimer = null;
+let storyUserStoryIds = []; // flat list of stories in current user's group
+
 let currentLang = localStorage.getItem('az_lang') || 'en';
 let selectedBoost = { duration:'3d', price:2.49 };
 let boostingPostId = null;
 let deepLinkPostId = null;
+let postOptionsTargetId = null;
 
-/* ==================== TRANSLATIONS ==================== */
+/* ============================================================
+   TRANSLATIONS
+   ============================================================ */
 const TRANSLATIONS = {
   en: {
     'home':'Home','search':'Search','activity':'Activity','profile':'Profile',
@@ -871,7 +1239,9 @@ function setLang(lang, el) {
   document.getElementById('langMenu').classList.remove('active');
 }
 
-/* ==================== INIT ==================== */
+/* ============================================================
+   INIT
+   ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
   const check = setInterval(() => {
     if (typeof authReady !== 'undefined' && authReady) {
@@ -892,7 +1262,8 @@ async function init() {
 
   await loadLikedPosts();
   await loadFeed();
-  loadStories();
+  await loadStories();
+  await loadMyLikedStories();
 
   if (deepLinkPostId) {
     setTimeout(() => {
@@ -917,7 +1288,9 @@ function dismissDeepLink() {
   deepLinkPostId = null;
 }
 
-/* ==================== TOP ACTIONS ==================== */
+/* ============================================================
+   TOP ACTIONS
+   ============================================================ */
 function renderTopActions() {
   const el = document.getElementById('topActions');
   if (currentUser) {
@@ -925,7 +1298,7 @@ function renderTopActions() {
       <a href="AI.Arizonan.html" class="ig-icon-btn ai-btn" title="AI"><i class="fas fa-robot"></i></a>
       <a href="Friends.html" class="ig-icon-btn"><i class="far fa-heart"></i></a>
       <a href="chats.html" class="ig-icon-btn"><i class="far fa-paper-plane"></i><span class="dot"></span></a>
-      <a href="notifications.html" class="ig-icon-btn" data-notif-bell style="position:relative;"><i class="far fa-bell"></i></a>
+      <a href="notifications.html" class="ig-icon-btn" style="position:relative;"><i class="far fa-bell"></i></a>
       <button class="ig-icon-btn" onclick="toggleLangMenu()"><i class="fas fa-globe"></i></button>
     `;
   } else {
@@ -945,7 +1318,9 @@ document.addEventListener('click', e => {
   }
 });
 
-/* ==================== USER STRIP ==================== */
+/* ============================================================
+   USER STRIP
+   ============================================================ */
 function renderUserSection() {
   const strip = document.getElementById('userStrip');
   const cta   = document.getElementById('guestCta');
@@ -979,8 +1354,14 @@ function renderBottomAvatar() {
 }
 
 function goToPost() { window.location.href = currentUser ? 'Post.html' : 'login.html'; }
+function goToStory() {
+  if (!currentUser) { window.location.href = 'login.html'; return; }
+  window.location.href = 'profile.html';
+}
 
-/* ==================== LIKED ==================== */
+/* ============================================================
+   LIKED POSTS
+   ============================================================ */
 async function loadLikedPosts() {
   if (!currentUser) return;
   try {
@@ -989,25 +1370,38 @@ async function loadLikedPosts() {
   } catch (e) {}
 }
 
-/* ==================== FEED ==================== */
+async function loadMyLikedStories() {
+  if (!currentUser) return;
+  try {
+    const { data } = await supabaseClient.from('story_likes').select('story_id').eq('user_id', currentUser.id);
+    myLikedStories = new Set((data || []).map(r => r.story_id));
+  } catch (e) {}
+}
+
+/* ============================================================
+   FEED
+   ============================================================ */
 async function loadFeed() {
   const feed = document.getElementById('feed');
-  feed.innerHTML = '<div class="ig-empty"><i class="fas fa-circle-notch fa-spin"></i></div>';
+  feed.innerHTML = `
+    <div class="feed-skeleton">
+      <div class="sk-row">
+        <div class="sk-head"><div class="sk-av"></div><div style="flex:1;"><div class="sk-line"></div><div class="sk-line short"></div></div></div>
+        <div class="sk-media"></div>
+      </div>
+    </div>`;
 
   try {
     let posts = [];
 
     if (deepLinkPostId) {
-      // Fetch the deep-linked post first
       const { data: targetPost } = await supabaseClient
         .from('posts')
         .select(`*, profiles:user_id (username, display_name, avatar_url, is_verified)`)
         .eq('id', deepLinkPostId)
         .maybeSingle();
-
       if (targetPost) posts.push(targetPost);
 
-      // Fetch the rest of the feed
       const { data: restPosts, error: restErr } = await supabaseClient
         .from('posts')
         .select(`*, profiles:user_id (username, display_name, avatar_url, is_verified)`)
@@ -1016,19 +1410,16 @@ async function loadFeed() {
         .order('is_boosted', { ascending: false, nullsFirst: false })
         .order('created_at', { ascending: false })
         .limit(40);
-
       if (restErr) throw restErr;
       if (restPosts) posts = posts.concat(restPosts);
-
     } else {
-      // Standard feed — try the RPC first
+      // Try the interleaving RPC (if it exists)
       const { data: rpcData, error: rpcErr } = await supabaseClient.rpc('get_feed_posts', {
         p_limit: 50,
         p_offset: 0
       });
 
       if (!rpcErr && rpcData) {
-        // Reshape RPC rows into the post + profiles structure
         posts = rpcData.map(row => ({
           id: row.id,
           user_id: row.user_id,
@@ -1052,7 +1443,7 @@ async function loadFeed() {
           }
         }));
       } else {
-        // Fallback: simple query
+        // Fallback
         const { data: fallbackData, error: fbErr } = await supabaseClient
           .from('posts')
           .select(`*, profiles:user_id (username, display_name, avatar_url, is_verified)`)
@@ -1060,7 +1451,6 @@ async function loadFeed() {
           .order('is_boosted', { ascending: false, nullsFirst: false })
           .order('created_at', { ascending: false })
           .limit(50);
-
         if (fbErr) throw fbErr;
         posts = fallbackData || [];
       }
@@ -1086,6 +1476,9 @@ function renderPost(post) {
   const verified = prof.is_verified ? '<i class="fas fa-circle-check verified"></i>' : '';
   const timeAgo = formatTimeAgo(post.created_at);
 
+  // Check if this user has an active story → add ring
+  const hasActiveStory = storiesByUser.some(g => g.user.id === post.user_id);
+
   const avatarHtml = prof.avatar_url
     ? `<img src="${escapeHtml(prof.avatar_url)}" alt="">`
     : initial;
@@ -1109,11 +1502,14 @@ function renderPost(post) {
   return `
     <article class="ig-post ${isBoosted ? 'boosted' : ''}" data-id="${post.id}">
       <div class="ig-post-head">
-        <a href="profile.html?user=${post.user_id}" class="p-avatar">${avatarHtml}</a>
+        <a href="profile.html?user=${post.user_id}" class="p-avatar ${hasActiveStory ? 'has-story' : ''}">${avatarHtml}</a>
         <div class="meta">
           <a href="profile.html?user=${post.user_id}" class="name">${escapeHtml(name)} ${verified}</a>
           <div class="sub">@${escapeHtml(uname)} · ${timeAgo}</div>
         </div>
+        <button class="post-menu" onclick="openPostOptions('${post.id}', ${isOwnPost})">
+          <i class="fas fa-ellipsis-v"></i>
+        </button>
       </div>
 
       ${mediaHtml ? `
@@ -1153,9 +1549,48 @@ function renderPost(post) {
   `;
 }
 
-/* ==================== LIKE ==================== */
+/* ============================================================
+   POST OPTIONS MENU
+   ============================================================ */
+function openPostOptions(postId, isOwnPost) {
+  postOptionsTargetId = postId;
+  document.getElementById('postOptDelete').style.display = isOwnPost ? 'flex' : 'none';
+  document.getElementById('postOptionsModal').classList.add('active');
+}
+
+function closePostOptions(e) {
+  if (e && e.target && e.target.id !== 'postOptionsModal') return;
+  document.getElementById('postOptionsModal').classList.remove('active');
+}
+
+async function postOptAction(action) {
+  const postId = postOptionsTargetId;
+  document.getElementById('postOptionsModal').classList.remove('active');
+  if (!postId) return;
+
+  if (action === 'copy') {
+    copyPostUrl(postId);
+  } else if (action === 'share') {
+    sharePost(postId);
+  } else if (action === 'save') {
+    showToast('Post saved ✅');
+  } else if (action === 'boost') {
+    openBoost(postId);
+  } else if (action === 'delete') {
+    if (!confirm('Delete this post permanently?')) return;
+    try {
+      await supabaseClient.from('posts').delete().eq('id', postId).eq('user_id', currentUser.id);
+      showToast('Post deleted 🗑️');
+      loadFeed();
+    } catch (err) { showToast(err.message); }
+  }
+}
+
+/* ============================================================
+   LIKE
+   ============================================================ */
 async function toggleLike(postId, btn) {
-  if (!currentUser) { showToast('Sign in to like', 'error'); return; }
+  if (!currentUser) { showToast('Sign in to like'); return; }
   const icon = btn.querySelector('i');
   const isLiked = likedPosts.has(postId);
   try {
@@ -1168,13 +1603,17 @@ async function toggleLike(postId, btn) {
       await supabaseClient.from('likes').insert({ user_id: currentUser.id, post_id: postId });
       likedPosts.add(postId);
       btn.classList.add('liked');
+      btn.classList.add('like-anim');
       icon.className = 'fas fa-heart';
+      setTimeout(() => btn.classList.remove('like-anim'), 400);
     }
     await refreshPostCounters(postId);
-  } catch (err) { showToast(err.message, 'error'); }
+  } catch (err) { showToast(err.message); }
 }
 
-/* ==================== SHARE ==================== */
+/* ============================================================
+   SHARE / COPY
+   ============================================================ */
 async function sharePost(postId) {
   const url = window.location.origin + '/huzni-sfamily/index.html?post=' + postId;
 
@@ -1192,22 +1631,23 @@ async function sharePost(postId) {
   if (navigator.share) {
     try { await navigator.share({ title:'Arizona AI', text:'Check out this post!', url }); return; } catch(e){}
   }
-  try { await navigator.clipboard.writeText(url); showToast('Link copied! 📋','success'); }
+  try { await navigator.clipboard.writeText(url); showToast('Link copied! 📋'); }
   catch { showToast('Link: ' + url); }
 }
 
-/* ==================== COPY URL ==================== */
 async function copyPostUrl(postId) {
   const url = window.location.origin + '/huzni-sfamily/index.html?post=' + postId;
   try {
     await navigator.clipboard.writeText(url);
-    showToast('Post link copied! 📋', 'success');
+    showToast('Post link copied! 📋');
   } catch {
     showToast('Link: ' + url);
   }
 }
 
-/* ==================== REFRESH COUNTERS ==================== */
+/* ============================================================
+   REFRESH COUNTERS
+   ============================================================ */
 async function refreshPostCounters(postId) {
   await new Promise(r => setTimeout(r, 200));
   try {
@@ -1231,15 +1671,19 @@ async function refreshPostCounters(postId) {
   } catch (e) {}
 }
 
-/* ==================== STORIES ==================== */
+/* ============================================================
+   STORIES
+   ============================================================ */
 async function loadStories() {
   try {
     const { data, error } = await supabaseClient
       .from('stories')
-      .select(`id, media_url, media_type, caption, created_at, expires_at, profiles:user_id (id, username, display_name, avatar_url, is_verified)`)
+      .select(`id, media_url, media_type, caption, created_at, expires_at, views_count, likes_count, user_id, profiles:user_id (id, username, display_name, avatar_url, is_verified)`)
       .gt('expires_at', new Date().toISOString())
       .order('created_at', { ascending: false });
     if (error) throw error;
+
+    // Group by user
     const map = new Map();
     (data || []).forEach(s => {
       const p = s.profiles;
@@ -1247,63 +1691,255 @@ async function loadStories() {
       if (!map.has(p.id)) map.set(p.id, { user: p, stories: [] });
       map.get(p.id).stories.push(s);
     });
+    // Reverse stories so oldest first inside each group (viewer plays them in order)
+    map.forEach(g => g.stories.reverse());
     storiesByUser = Array.from(map.values());
 
-    let seenIds = new Set();
+    // Seen IDs
     if (currentUser) {
       const { data: views } = await supabaseClient
-        .from('story_views').select('story_id').eq('viewer_id', currentUser.id);
-      seenIds = new Set((views || []).map(v => v.story_id));
+        .from('story_views').select('story_id').eq('user_id', currentUser.id);
+      storySeenIds = new Set((views || []).map(v => v.story_id));
     }
-    renderStories(seenIds);
-  } catch (err) { console.error(err); }
+    renderStories();
+  } catch (err) {
+    console.error('[Stories]', err);
+  }
 }
 
-function renderStories(seenIds) {
+function renderStories() {
   const row = document.getElementById('storiesRow');
   if (!row) return;
+
+  // Save the "add" tile
   const addTile = row.querySelector('.ig-story.add');
   row.innerHTML = '';
   if (addTile) row.appendChild(addTile);
+
   storiesByUser.forEach(group => {
     const p = group.user;
     const name = p.display_name || p.username || 'user';
-    const hasUnseen = group.stories.some(s => !seenIds.has(s.id));
+    const hasUnseen = group.stories.some(s => !storySeenIds.has(s.id));
     const ringClass = hasUnseen ? 'unseen' : 'seen';
     const firstStory = group.stories[0];
+
     const thumb = firstStory.media_type === 'video'
       ? `<div class="inner"><i class="fas fa-play" style="font-size:16px;"></i></div>`
       : `<div class="inner"><img src="${escapeHtml(firstStory.media_url)}" alt=""></div>`;
+
     const storyEl = document.createElement('div');
     storyEl.className = 'ig-story';
     storyEl.onclick = () => openStoryViewer(p.id);
-    storyEl.innerHTML = `<div class="ig-story-ring ${ringClass}">${thumb}</div><div class="label">${escapeHtml(name)}</div>`;
+    storyEl.innerHTML = `
+      <div class="ig-story-ring ${ringClass}">${thumb}</div>
+      <div class="label">${escapeHtml(name)}</div>
+    `;
     row.appendChild(storyEl);
   });
 }
 
-function openStoryViewer(userId) {
-  const group = storiesByUser.find(g => g.user.id === userId);
-  if (!group) return;
-  currentMediaList = group.stories.map(s => ({ src: s.media_url, isVideo: s.media_type === 'video', storyId: s.id }));
-  currentMediaIndex = 0;
-  renderFs();
-  document.getElementById('fsViewer').classList.add('active');
-  markStoriesViewed(group.stories);
+/* ============================================================
+   STORY VIEWER
+   ============================================================ */
+async function openStoryViewer(userId) {
+  const groupIdx = storiesByUser.findIndex(g => g.user.id === userId);
+  if (groupIdx < 0) return;
+
+  currentStoryUserIndex = groupIdx;
+  currentStoryIndex = 0;
+  showStory(currentStoryUserIndex, 0);
+  document.getElementById('storyViewer').classList.add('active');
 }
 
-async function markStoriesViewed(stories) {
-  if (!currentUser) return;
-  for (const s of stories) {
-    try { await supabaseClient.from('story_views').insert({ story_id: s.id, viewer_id: currentUser.id }); } catch(e){}
+function showStory(groupIdx, storyIdx) {
+  const group = storiesByUser[groupIdx];
+  if (!group) { closeStoryViewer(); return; }
+  const story = group.stories[storyIdx];
+  if (!story) { closeStoryViewer(); return; }
+
+  currentStoryUserIndex = groupIdx;
+  currentStoryIndex = storyIdx;
+
+  const p = group.user;
+  const name = p.display_name || p.username || 'user';
+  const initial = name.charAt(0).toUpperCase();
+
+  // Progress bar
+  const prog = document.getElementById('svProgress');
+  prog.innerHTML = group.stories.map((_, i) => `
+    <div class="sv-segment ${i < storyIdx ? 'done' : ''}">
+      <div class="fill" id="svSeg-${i}" style="${i < storyIdx ? 'width:100%' : 'width:0%'}"></div>
+    </div>
+  `).join('');
+
+  // Header
+  const av = document.getElementById('svAvatar');
+  if (p.avatar_url) av.innerHTML = `<img src="${escapeHtml(p.avatar_url)}" alt="">`;
+  else av.textContent = initial;
+  document.getElementById('svName').textContent = name;
+  document.getElementById('svTime').textContent = formatTimeAgo(story.created_at);
+
+  // Media
+  const body = document.getElementById('svBody');
+  if (story.media_type === 'video') {
+    body.innerHTML = `<video id="svMedia" src="${escapeHtml(story.media_url)}" autoplay playsinline></video>`;
+  } else {
+    body.innerHTML = `<img id="svMedia" src="${escapeHtml(story.media_url)}" alt="">`;
   }
-  const { data: views } = await supabaseClient
-    .from('story_views').select('story_id').eq('viewer_id', currentUser.id);
-  const seenIds = new Set((views || []).map(v => v.story_id));
-  renderStories(seenIds);
+
+  // Caption
+  const cap = document.getElementById('svCaption');
+  if (story.caption) { cap.textContent = story.caption; cap.classList.add('show'); }
+  else cap.classList.remove('show');
+
+  // Stats — show only for own stories
+  const stats = document.getElementById('svStats');
+  if (currentUser && p.id === currentUser.id) {
+    stats.style.display = 'flex';
+    document.getElementById('svViews').textContent = story.views_count || 0;
+    document.getElementById('svLikes').textContent = story.likes_count || 0;
+  } else {
+    stats.style.display = 'none';
+  }
+
+  // Like state
+  const likeBtn = document.getElementById('svLikeBtn');
+  if (myLikedStories.has(story.id)) {
+    likeBtn.classList.add('liked');
+    likeBtn.innerHTML = '<i class="fas fa-heart"></i>';
+  } else {
+    likeBtn.classList.remove('liked');
+    likeBtn.innerHTML = '<i class="far fa-heart"></i>';
+  }
+
+  // Log view
+  logStoryView(story.id);
+
+  // Auto-advance
+  clearStoryTimer();
+  startStoryProgress(storyIdx);
 }
 
-/* ==================== FULLSCREEN ==================== */
+function startStoryProgress(storyIdx) {
+  const fill = document.getElementById('svSeg-' + storyIdx);
+  if (!fill) return;
+  let progress = 0;
+  const duration = 5000;
+  const step = 50;
+  storyProgressTimer = setInterval(() => {
+    progress += (step / duration) * 100;
+    if (progress >= 100) {
+      fill.style.width = '100%';
+      clearInterval(storyProgressTimer);
+      setTimeout(() => storyNav(1), 150);
+    } else {
+      fill.style.width = progress + '%';
+    }
+  }, step);
+}
+
+function clearStoryTimer() {
+  if (storyProgressTimer) { clearInterval(storyProgressTimer); storyProgressTimer = null; }
+}
+
+function storyNav(dir) {
+  const group = storiesByUser[currentStoryUserIndex];
+  if (!group) { closeStoryViewer(); return; }
+  const nextStory = currentStoryIndex + dir;
+  if (nextStory < 0) {
+    // Go to previous user's last story
+    const prevUser = currentStoryUserIndex - 1;
+    if (prevUser < 0) { showStory(currentStoryUserIndex, 0); return; }
+    const prevGroup = storiesByUser[prevUser];
+    showStory(prevUser, prevGroup.stories.length - 1);
+  } else if (nextStory >= group.stories.length) {
+    // Go to next user's first story
+    const nextUser = currentStoryUserIndex + 1;
+    if (nextUser >= storiesByUser.length) { closeStoryViewer(); return; }
+    showStory(nextUser, 0);
+  } else {
+    showStory(currentStoryUserIndex, nextStory);
+  }
+}
+
+function closeStoryViewer() {
+  clearStoryTimer();
+  document.getElementById('storyViewer').classList.remove('active');
+  document.getElementById('svBody').innerHTML = '';
+  renderStories();
+}
+
+async function logStoryView(storyId) {
+  if (!currentUser) return;
+  try {
+    await supabaseClient.from('story_views').insert({ story_id: storyId, user_id: currentUser.id }).select().maybeSingle();
+  } catch (e) {}
+  try {
+    await supabaseClient.rpc('increment_story_views', { p_story_id: storyId });
+  } catch (e) {}
+}
+
+async function toggleStoryLike() {
+  const group = storiesByUser[currentStoryUserIndex];
+  if (!group) return;
+  const story = group.stories[currentStoryIndex];
+  if (!story || !currentUser) return;
+  const btn = document.getElementById('svLikeBtn');
+
+  try {
+    if (myLikedStories.has(story.id)) {
+      await supabaseClient.from('story_likes').delete().eq('story_id', story.id).eq('user_id', currentUser.id);
+      myLikedStories.delete(story.id);
+      btn.classList.remove('liked');
+      btn.innerHTML = '<i class="far fa-heart"></i>';
+      try { await supabaseClient.rpc('decrement_story_likes', { p_story_id: story.id }); } catch(e){}
+    } else {
+      await supabaseClient.from('story_likes').insert({ story_id: story.id, user_id: currentUser.id });
+      myLikedStories.add(story.id);
+      btn.classList.add('liked');
+      btn.innerHTML = '<i class="fas fa-heart"></i>';
+      try { await supabaseClient.rpc('increment_story_likes', { p_story_id: story.id }); } catch(e){}
+    }
+  } catch (err) { showToast(err.message); }
+}
+
+async function sendStoryReply() {
+  const input = document.getElementById('svReplyInput');
+  const text = input.value.trim();
+  if (!text) return;
+  const group = storiesByUser[currentStoryUserIndex];
+  if (!group) return;
+  const story = group.stories[currentStoryIndex];
+  if (!currentUser) { showToast('Sign in to reply'); return; }
+
+  try {
+    await supabaseClient.from('messages').insert({
+      sender_id: currentUser.id,
+      receiver_id: story.user_id,
+      content: `💬 Replied to your story: ${text}`,
+      media_type: 'story_reply',
+      media_url: story.media_url
+    });
+    input.value = '';
+    showToast('Reply sent ✅');
+  } catch (err) { showToast(err.message); }
+}
+
+async function shareCurrentStory() {
+  const group = storiesByUser[currentStoryUserIndex];
+  if (!group) return;
+  const story = group.stories[currentStoryIndex];
+  if (!story) return;
+  const url = window.location.origin + '/huzni-sfamily/profile.html?story=' + story.id;
+  if (navigator.share) {
+    try { await navigator.share({ title: 'Arizona AI Story', text: story.caption || 'Check this out!', url }); return; } catch(e){}
+  }
+  try { await navigator.clipboard.writeText(url); showToast('Link copied 📋'); } catch {}
+}
+
+/* ============================================================
+   FULLSCREEN MEDIA VIEWER (posts)
+   ============================================================ */
 function openFs(postId, idx) {
   const postEl = document.querySelector(`article[data-id="${postId}"]`);
   if (!postEl) return;
@@ -1313,6 +1949,7 @@ function openFs(postId, idx) {
   renderFs();
   document.getElementById('fsViewer').classList.add('active');
 }
+
 function renderFs() {
   const content = document.getElementById('fsContent');
   const counter = document.getElementById('fsCounter');
@@ -1326,32 +1963,31 @@ function renderFs() {
   document.getElementById('fsPrev').style.display = showNav ? 'flex' : 'none';
   document.getElementById('fsNext').style.display = showNav ? 'flex' : 'none';
 }
+
 function fsNav(dir) {
   currentMediaIndex = (currentMediaIndex + dir + currentMediaList.length) % currentMediaList.length;
   renderFs();
 }
+
 function closeFs() {
   document.getElementById('fsViewer').classList.remove('active');
   document.getElementById('fsContent').innerHTML = '';
 }
-document.addEventListener('keydown', e => {
-  const v = document.getElementById('fsViewer');
-  if (!v.classList.contains('active')) return;
-  if (e.key === 'Escape') closeFs();
-  if (e.key === 'ArrowLeft') fsNav(-1);
-  if (e.key === 'ArrowRight') fsNav(1);
-});
 
-/* ==================== COMMENTS ==================== */
+/* ============================================================
+   COMMENTS
+   ============================================================ */
 async function openComments(postId) {
   currentPostId = postId;
   document.getElementById('commentsModal').classList.add('active');
   await loadComments(postId);
 }
+
 function closeComments() {
   document.getElementById('commentsModal').classList.remove('active');
   currentPostId = null;
 }
+
 async function loadComments(postId) {
   const list = document.getElementById('commentsList');
   list.innerHTML = '<div class="comments-empty"><i class="fas fa-circle-notch fa-spin"></i></div>';
@@ -1383,11 +2019,12 @@ async function loadComments(postId) {
     list.innerHTML = `<div class="comments-empty" style="color:var(--az-danger);">${escapeHtml(err.message)}</div>`;
   }
 }
+
 async function submitComment() {
   const input = document.getElementById('commentInput');
   const text = input.value.trim();
   if (!text) return;
-  if (!currentUser) { showToast('Sign in to comment', 'error'); return; }
+  if (!currentUser) { showToast('Sign in to comment'); return; }
   const btn = document.getElementById('commentSendBtn');
   btn.disabled = true;
   try {
@@ -1395,13 +2032,15 @@ async function submitComment() {
     input.value = '';
     await loadComments(currentPostId);
     await refreshPostCounters(currentPostId);
-  } catch (err) { showToast(err.message, 'error'); }
+  } catch (err) { showToast(err.message); }
   finally { btn.disabled = false; }
 }
 
-/* ==================== BOOST ==================== */
+/* ============================================================
+   BOOST
+   ============================================================ */
 function openBoost(postId) {
-  if (!currentUser) { showToast('Sign in first', 'error'); return; }
+  if (!currentUser) { showToast('Sign in first'); return; }
   boostingPostId = postId;
   selectedBoost = { duration:'3d', price:2.49 };
   document.querySelectorAll('.boost-option').forEach(o => o.classList.remove('selected'));
@@ -1409,16 +2048,19 @@ function openBoost(postId) {
   updateBoostSummary();
   document.getElementById('boostModal').classList.add('active');
 }
+
 function closeBoost() {
   document.getElementById('boostModal').classList.remove('active');
   boostingPostId = null;
 }
+
 function selectBoost(el) {
   document.querySelectorAll('.boost-option').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
   selectedBoost = { duration: el.dataset.boost, price: parseFloat(el.dataset.price) };
   updateBoostSummary();
 }
+
 function updateBoostSummary() {
   const summary = document.getElementById('boostSummary');
   const balance = Number(currentWallet?.balance ?? 0);
@@ -1430,16 +2072,17 @@ function updateBoostSummary() {
   afterEl.textContent = '$' + after.toFixed(2);
   afterEl.style.color = after < 0 ? '#ff7675' : '#5eb8ff';
 }
+
 async function confirmBoost() {
   if (!currentUser || !boostingPostId) return;
   const balance = Number(currentWallet?.balance ?? 0);
   if (balance < selectedBoost.price) {
-    showToast('Insufficient balance', 'error');
+    showToast('Insufficient balance');
     return;
   }
   const btn = document.getElementById('boostConfirmBtn');
   btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Boosting…';
+  btn.innerHTML = '<span class="spinner"></span> Boosting…';
   try {
     const durationMs = {
       '24h': 24 * 3600 * 1000,
@@ -1456,43 +2099,86 @@ async function confirmBoost() {
 
     await supabaseClient.from('wallets').update({ balance: newBal, total_spent: newSpent }).eq('user_id', currentUser.id);
 
-    await supabaseClient.from('wallet_transactions').insert({
-      user_id: currentUser.id,
-      amount: -selectedBoost.price,
-      type: 'spend',
-      source: 'boost',
-      note: `Boosted post for ${selectedBoost.duration}`
-    });
+    try {
+      await supabaseClient.from('wallet_transactions').insert({
+        user_id: currentUser.id,
+        amount: -selectedBoost.price,
+        type: 'spend',
+        source: 'boost',
+        note: `Boosted post for ${selectedBoost.duration}`
+      });
+    } catch (e) {}
 
-    await loadUserData();
+    if (typeof loadUserData === 'function') await loadUserData();
+    currentWallet.balance = newBal;
+    currentWallet.total_spent = newSpent;
     renderUserSection();
     closeBoost();
-    showToast('🚀 Post boosted!', 'success');
+    showToast('🚀 Post boosted!');
     loadFeed();
   } catch (err) {
-    showToast(err.message, 'error');
+    showToast(err.message);
   } finally {
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-rocket"></i> Boost Now';
   }
 }
 
-/* ==================== SETTINGS ==================== */
+/* ============================================================
+   SETTINGS
+   ============================================================ */
 function openSettings() { document.getElementById('settingsOverlay').classList.add('active'); }
 function closeSettings(e) {
   if (e && e.target && e.target.id !== 'settingsOverlay' && !e.target.closest('.settings-close')) return;
   document.getElementById('settingsOverlay').classList.remove('active');
 }
 
-/* ==================== HELPERS ==================== */
+/* ============================================================
+   HELPERS
+   ============================================================ */
 function formatTimeAgo(dateStr) {
-  const s = Math.floor((Date.now() - new Date(dateStr)) / 1000);
-  if (s < 60) return 'Just now';
+  if (!dateStr) return 'Just now';
+  const dateStr2 = String(dateStr).includes('Z') || String(dateStr).includes('+')
+    ? dateStr : dateStr + 'Z';
+  const then = new Date(dateStr2).getTime();
+  const now = Date.now();
+  const s = Math.floor((now - then) / 1000);
+  if (s < 5) return 'Just now';
+  if (s < 60) return `${s}s ago`;
   const m = Math.floor(s / 60); if (m < 60) return `${m}m ago`;
   const h = Math.floor(m / 60); if (h < 24) return `${h}h ago`;
   const d = Math.floor(h / 24); if (d < 7) return `${d}d ago`;
-  return new Date(dateStr).toLocaleDateString();
+  return new Date(dateStr2).toLocaleDateString();
 }
+
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function showToast(msg, type) {
+  const el = document.getElementById('toastMini');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(window._toastT);
+  window._toastT = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+/* Keyboard shortcuts */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (document.getElementById('fsViewer').classList.contains('active')) closeFs();
+    if (document.getElementById('storyViewer').classList.contains('active')) closeStoryViewer();
+    if (document.getElementById('commentsModal').classList.contains('active')) closeComments();
+    if (document.getElementById('boostModal').classList.contains('active')) closeBoost();
+    if (document.getElementById('postOptionsModal').classList.contains('active')) closePostOptions();
+  }
+  const v = document.getElementById('fsViewer');
+  if (v && v.classList.contains('active')) {
+    if (e.key === 'ArrowLeft') fsNav(-1);
+    if (e.key === 'ArrowRight') fsNav(1);
+  }
+});
 </script>
 </body>
 </html>
