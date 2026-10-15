@@ -16,8 +16,7 @@ html, body { margin: 0; padding: 0; }
 body {
   background: #0a0a0a;
   padding-top: 60px;
-  height: 100vh;
-  height: 100dvh;
+  height: 100vh; height: 100dvh;
   overflow: hidden;
   overscroll-behavior: none;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -79,6 +78,7 @@ body {
   cursor: pointer; position: relative;
   display: flex; align-items: center; justify-content: center; gap: 5px;
   transition: all .15s;
+  font-family: inherit;
 }
 .msg-tabs .tab.active {
   background: rgba(255,107,53,.15);
@@ -107,7 +107,6 @@ body {
 .msg-list-wrap::-webkit-scrollbar { width: 4px; }
 .msg-list-wrap::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
 
-/* Skeleton */
 .skeleton {
   display: flex; align-items: center; gap: 12px;
   padding: 12px 8px;
@@ -132,7 +131,6 @@ body {
   100% { background-position: -200% 0; }
 }
 
-/* Chat row */
 .chat-row {
   display: flex; align-items: center; gap: 12px;
   padding: 12px 8px;
@@ -186,7 +184,6 @@ body {
   margin-top: 6px;
 }
 
-/* Empty */
 .empty {
   text-align: center; padding: 60px 20px;
   color: var(--az-text-secondary);
@@ -211,7 +208,7 @@ body {
 .chat-view.active { display: flex; }
 
 .chat-view-header {
-  display: flex; align-items: center; gap: 12px;
+  display: flex; align-items: center; gap: 8px;
   padding: 12px 16px;
   border-bottom: 1px solid rgba(255,255,255,.08);
   background: rgba(10,10,10,.98);
@@ -236,6 +233,25 @@ body {
 .chat-view-header .info .name { font-size: 14px; font-weight: 700; color: var(--az-text); }
 .chat-view-header .info .status { font-size: 11px; color: var(--az-text-secondary); }
 
+/* Call buttons in header */
+.chat-view-header .call-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(94,184,255,.12);
+  border: 1px solid rgba(94,184,255,.3);
+  color: #5eb8ff; font-size: 15px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+  flex-shrink: 0;
+}
+.chat-view-header .call-btn:active { transform: scale(.92); background: rgba(94,184,255,.22); }
+.chat-view-header .call-btn.video {
+  background: rgba(0,184,148,.12);
+  border-color: rgba(0,184,148,.3);
+  color: #00b894;
+}
+.chat-view-header .call-btn.video:active { background: rgba(0,184,148,.22); }
+
 /* ==================== MESSAGES AREA ==================== */
 .chat-messages {
   flex: 1; overflow-y: auto;
@@ -246,7 +262,34 @@ body {
 .chat-messages::-webkit-scrollbar { width: 4px; }
 .chat-messages::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
 
-/* Reply quote inside bubble */
+/* Call log entry */
+.call-log {
+  align-self: center;
+  background: rgba(94,184,255,.08);
+  border: 1px solid rgba(94,184,255,.25);
+  border-radius: 14px;
+  padding: 8px 14px;
+  font-size: 12px; color: var(--az-text-secondary);
+  display: flex; align-items: center; gap: 8px;
+  margin: 6px 0;
+  max-width: 90%;
+}
+.call-log i { color: #5eb8ff; font-size: 14px; }
+.call-log.missed i { color: #ff7675; }
+.call-log.declined i { color: #FFB20F; }
+.call-log .call-info { flex: 1; }
+.call-log .call-info strong { color: var(--az-text); display: block; margin-bottom: 2px; font-weight: 700; }
+.call-log .call-recall {
+  background: rgba(94,184,255,.15);
+  border: none; color: #5eb8ff;
+  width: 32px; height: 32px; border-radius: 50%;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+}
+.call-log .call-recall:active { transform: scale(.92); }
+
+/* Reply quote */
 .reply-quote {
   background: rgba(0,0,0,.25);
   border-left: 3px solid var(--az-accent);
@@ -259,7 +302,6 @@ body {
   margin-bottom: 2px;
 }
 
-/* Bubble */
 .bubble {
   max-width: 78%;
   padding: 9px 14px;
@@ -282,12 +324,8 @@ body {
   align-self: flex-start;
   border-bottom-left-radius: 4px;
 }
-.bubble.pinned {
-  border: 1.5px solid var(--az-accent);
-}
-.bubble.deleted {
-  font-style: italic; opacity: .55;
-}
+.bubble.pinned { border: 1.5px solid var(--az-accent); }
+.bubble.deleted { font-style: italic; opacity: .55; }
 .bubble .time {
   display: block;
   font-size: 10px; opacity: .7;
@@ -301,8 +339,6 @@ body {
   display: flex; align-items: center; justify-content: center;
   font-size: 9px;
 }
-
-/* Media inside bubble */
 .bubble .media {
   display: block; width: 100%;
   max-width: 260px;
@@ -311,8 +347,7 @@ body {
   background: #000;
   cursor: pointer;
 }
-.bubble .media img,
-.bubble .media video {
+.bubble .media img, .bubble .media video {
   display: block; width: 100%;
   max-height: 320px; object-fit: cover;
 }
@@ -324,7 +359,6 @@ body {
   display: block; width: 240px; max-width: 100%;
 }
 
-/* Date divider */
 .date-divider {
   align-self: center;
   font-size: 11px;
@@ -335,7 +369,6 @@ body {
   margin: 10px 0;
 }
 
-/* Typing indicator */
 .typing-bubble {
   align-self: flex-start;
   background: rgba(255,255,255,.08);
@@ -343,9 +376,7 @@ body {
   border-radius: 18px;
   border-bottom-left-radius: 4px;
 }
-.typing-bubble .dots {
-  display: flex; gap: 4px;
-}
+.typing-bubble .dots { display: flex; gap: 4px; }
 .typing-bubble .dots span {
   width: 6px; height: 6px; border-radius: 50%;
   background: var(--az-accent);
@@ -365,7 +396,6 @@ body {
   flex-shrink: 0;
 }
 
-/* Reply preview bar */
 .reply-preview {
   display: none; align-items: center; gap: 10px;
   padding: 8px 12px;
@@ -380,15 +410,12 @@ body {
   color: var(--az-text-secondary);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.reply-preview .rp-body strong {
-  color: var(--az-accent); font-weight: 700;
-}
+.reply-preview .rp-body strong { color: var(--az-accent); font-weight: 700; }
 .reply-preview .rp-close {
   background: none; border: none; color: var(--az-text-secondary);
   font-size: 16px; cursor: pointer; padding: 4px;
 }
 
-/* Input pill */
 .input-pill {
   flex: 1;
   display: flex; align-items: flex-end; gap: 4px;
@@ -493,6 +520,53 @@ body {
 .lp-item.danger { color: #ff7675; }
 .lp-item.danger i { color: #ff7675; }
 
+/* ==================== MODAL BASE ==================== */
+.modal-backdrop {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.85); z-index: 2000;
+  align-items: flex-end; justify-content: center;
+}
+.modal-backdrop.active { display: flex; }
+.modal-content {
+  background: #151515; width: 100%; max-width: 640px;
+  border-top-left-radius: 20px; border-top-right-radius: 20px;
+  padding: 20px;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  max-height: 90vh; overflow-y: auto;
+  animation: slideUp .25s ease;
+}
+.modal-content .handle {
+  width: 40px; height: 4px; background: #333; border-radius: 2px;
+  margin: 0 auto 16px;
+}
+.modal-content h3 {
+  text-align: center; color: var(--az-accent);
+  margin-bottom: 18px; font-size: 17px;
+}
+.modal-content .field { margin-bottom: 14px; }
+.modal-content label {
+  display: block; font-size: 12px;
+  color: var(--az-text-secondary);
+  margin-bottom: 6px; text-transform: uppercase;
+  letter-spacing: .5px; font-weight: 700;
+}
+.modal-content input {
+  width: 100%; padding: 12px 14px;
+  background: #0a0a0a; border: 1px solid #333;
+  border-radius: 10px; color: #fff;
+  font-size: 14px; font-family: inherit;
+}
+.modal-content input:focus { outline: none; border-color: var(--az-primary); }
+.modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+.modal-actions button {
+  flex: 1; padding: 13px; border-radius: 12px;
+  font-weight: 700; cursor: pointer; font-size: 14px;
+  font-family: inherit;
+}
+.modal-actions .cancel { background: transparent; border: 1px solid #333; color: #fff; }
+.modal-actions .primary { background: var(--az-gradient); border: none; color: #fff; }
+.modal-actions button:disabled { opacity: .6; cursor: not-allowed; }
+
 /* ==================== VOICE RECORDING OVERLAY ==================== */
 .rec-overlay {
   position: fixed; inset: 0;
@@ -529,9 +603,7 @@ body {
   font-variant-numeric: tabular-nums;
   margin-bottom: 30px;
 }
-.rec-overlay .actions {
-  display: flex; gap: 20px;
-}
+.rec-overlay .actions { display: flex; gap: 20px; }
 .rec-overlay .actions button {
   width: 66px; height: 66px; border-radius: 50%;
   border: none; font-size: 22px;
@@ -569,6 +641,216 @@ body {
   background: rgba(255,255,255,.12); color: #fff;
   border: none; font-size: 20px;
   cursor: pointer;
+}
+
+/* ==================== CALL SCREEN ==================== */
+.call-screen {
+  position: fixed; inset: 0;
+  background: #050510;
+  z-index: 5000;
+  display: none;
+  flex-direction: column;
+}
+.call-screen.active { display: flex; }
+
+.call-screen .call-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at center, #1a1a3a 0%, #050510 70%);
+  z-index: 0;
+}
+
+.call-screen .remote-video {
+  position: absolute; inset: 0;
+  background: #000;
+  object-fit: cover;
+  z-index: 1;
+}
+.call-screen .local-video {
+  position: absolute;
+  top: calc(80px + env(safe-area-inset-top));
+  right: 16px;
+  width: 120px;
+  height: 160px;
+  border-radius: 16px;
+  background: #000;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,.2);
+  z-index: 3;
+  box-shadow: 0 8px 30px rgba(0,0,0,.6);
+}
+
+/* Call header */
+.call-screen .call-header {
+  position: relative;
+  z-index: 4;
+  padding-top: calc(16px + env(safe-area-inset-top));
+  padding-left: 20px; padding-right: 20px;
+  display: flex; justify-content: space-between; align-items: center;
+  color: #fff;
+}
+.call-screen .call-header .name {
+  font-size: 15px; font-weight: 700;
+}
+.call-screen .call-header .timer {
+  font-size: 13px; opacity: .8;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Caller info (center) */
+.call-screen .caller-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-align: center;
+  z-index: 2;
+  position: relative;
+}
+.call-screen .caller-info .call-avatar {
+  width: 140px; height: 140px; border-radius: 50%;
+  background: var(--az-gradient);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 56px; font-weight: 800;
+  margin-bottom: 24px;
+  border: 4px solid rgba(255,255,255,.15);
+  box-shadow: 0 0 60px rgba(94,184,255,.5);
+  overflow: hidden;
+  animation: callAvatarPulse 2s ease-in-out infinite;
+}
+.call-screen .caller-info .call-avatar img { width: 100%; height: 100%; object-fit: cover; }
+@keyframes callAvatarPulse {
+  0%,100% { transform: scale(1); box-shadow: 0 0 60px rgba(94,184,255,.5); }
+  50% { transform: scale(1.05); box-shadow: 0 0 80px rgba(124,58,237,.7); }
+}
+.call-screen .caller-info .call-name {
+  font-size: 24px; font-weight: 800;
+  margin-bottom: 8px;
+}
+.call-screen .caller-info .call-status {
+  font-size: 14px; opacity: .7;
+  margin-bottom: 40px;
+}
+.call-screen .caller-info .call-status.ringing {
+  animation: ringingBlink 1.2s infinite;
+}
+@keyframes ringingBlink {
+  0%,100% { opacity: .5; }
+  50% { opacity: 1; }
+}
+
+/* Call actions */
+.call-screen .call-actions {
+  position: relative;
+  z-index: 4;
+  padding-bottom: calc(40px + env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+.call-screen .call-btn-round {
+  width: 66px; height: 66px; border-radius: 50%;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  transition: transform .12s;
+}
+.call-screen .call-btn-round:active { transform: scale(.92); }
+.call-screen .call-btn-round.accept {
+  background: #00b894;
+  box-shadow: 0 10px 30px rgba(0,184,148,.5);
+}
+.call-screen .call-btn-round.decline {
+  background: #ff4757;
+  box-shadow: 0 10px 30px rgba(255,71,87,.5);
+}
+.call-screen .call-btn-round.mute {
+  background: rgba(255,255,255,.12);
+  backdrop-filter: blur(8px);
+}
+.call-screen .call-btn-round.mute.muted {
+  background: #ff4757;
+  color: #fff;
+}
+.call-screen .call-btn-round.video-toggle.off {
+  background: rgba(255,71,87,.3);
+  color: #fff;
+}
+.call-screen .call-btn-round.speaker.on {
+  background: rgba(94,184,255,.3);
+}
+.call-screen .call-btn-round.small {
+  width: 56px; height: 56px;
+  font-size: 20px;
+}
+
+/* ==================== CALL RINGING OVERLAY (receiver) ==================== */
+.incoming-call-modal {
+  position: fixed; inset: 0;
+  background: rgba(5,5,16,.95);
+  backdrop-filter: blur(16px);
+  z-index: 4800;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  text-align: center;
+  color: #fff;
+}
+.incoming-call-modal.active { display: flex; }
+.incoming-call-modal .inc-avatar {
+  width: 140px; height: 140px; border-radius: 50%;
+  background: var(--az-gradient);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 56px; font-weight: 800;
+  margin-bottom: 24px;
+  border: 4px solid rgba(255,255,255,.15);
+  animation: incomingPulse 1.5s ease-in-out infinite;
+  overflow: hidden;
+}
+.incoming-call-modal .inc-avatar img { width: 100%; height: 100%; object-fit: cover; }
+@keyframes incomingPulse {
+  0%,100% { box-shadow: 0 0 60px rgba(94,184,255,.5); transform: scale(1); }
+  50% { box-shadow: 0 0 90px rgba(94,184,255,.8); transform: scale(1.05); }
+}
+.incoming-call-modal .inc-name {
+  font-size: 26px; font-weight: 800;
+  margin-bottom: 8px;
+}
+.incoming-call-modal .inc-type {
+  font-size: 15px; opacity: .7;
+  margin-bottom: 50px;
+}
+.incoming-call-modal .inc-actions {
+  display: flex;
+  gap: 40px;
+}
+.incoming-call-modal .inc-actions button {
+  width: 76px; height: 76px; border-radius: 50%;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .12s;
+}
+.incoming-call-modal .inc-actions button:active { transform: scale(.92); }
+.incoming-call-modal .inc-actions .decline {
+  background: #ff4757;
+  box-shadow: 0 10px 30px rgba(255,71,87,.5);
+}
+.incoming-call-modal .inc-actions .accept {
+  background: #00b894;
+  box-shadow: 0 10px 30px rgba(0,184,148,.5);
+  animation: acceptPulse 1.5s infinite;
+}
+@keyframes acceptPulse {
+  0%,100% { box-shadow: 0 10px 30px rgba(0,184,148,.5); }
+  50% { box-shadow: 0 10px 40px rgba(0,184,148,.9); }
 }
 
 /* ==================== TOAST ==================== */
@@ -631,8 +913,14 @@ body {
     <div class="av" id="cvAvatar">U</div>
     <div class="info">
       <div class="name" id="cvName">User</div>
-      <div class="status" id="cvStatus">Tap to view profile</div>
+      <div class="status" id="cvStatus">@user</div>
     </div>
+    <button class="call-btn" onclick="startCall('voice')" title="Voice call">
+      <i class="fas fa-phone"></i>
+    </button>
+    <button class="call-btn video" onclick="startCall('video')" title="Video call">
+      <i class="fas fa-video"></i>
+    </button>
     <button class="back" onclick="viewProfile()"><i class="fas fa-info-circle"></i></button>
   </div>
   <div class="chat-messages" id="chatMessages"></div>
@@ -673,6 +961,9 @@ body {
       <div class="name" id="tvName">Tribe</div>
       <div class="status" id="tvStatus">0 members</div>
     </div>
+    <button class="back" onclick="openTribeInviteSheet()" title="Invite friends" style="color:#5eb8ff;">
+      <i class="fas fa-user-plus"></i>
+    </button>
     <button class="back" onclick="viewTribeInfo()"><i class="fas fa-info-circle"></i></button>
   </div>
   <div class="chat-messages" id="tribeMessages"></div>
@@ -704,6 +995,35 @@ body {
   </div>
 </div>
 
+<!-- ==================== TRIBE INVITE SHEET ==================== -->
+<div class="modal-backdrop" id="tribeInviteModal" onclick="closeTribeInviteSheet(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div class="handle"></div>
+    <h3>Invite Friends to Tribe</h3>
+
+    <div class="field">
+      <label>Search friends</label>
+      <input type="text" id="tribeInviteSearch" placeholder="Search by username…" oninput="filterInviteFriends()">
+    </div>
+
+    <div class="field">
+      <label>Select who to invite</label>
+      <div id="inviteFriendsList" style="max-height:340px; overflow-y:auto;">
+        <div style="text-align:center;padding:20px;color:var(--az-text-secondary);">
+          <i class="fas fa-circle-notch fa-spin"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeTribeInviteSheet()">Cancel</button>
+      <button class="primary" id="sendTribeInvitesBtn" onclick="sendTribeInvites()">
+        <i class="fas fa-paper-plane"></i> Send Invites
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- File inputs -->
 <input type="file" id="fileInput" accept="image/*,video/*,audio/*" style="display:none;">
 <input type="file" id="tribeFileInput" accept="image/*,video/*,audio/*" style="display:none;">
@@ -730,6 +1050,44 @@ body {
   <img id="imgViewerSrc" src="" alt="">
 </div>
 
+<!-- ==================== INCOMING CALL MODAL ==================== -->
+<div class="incoming-call-modal" id="incomingCallModal">
+  <div class="inc-avatar" id="incAvatar">U</div>
+  <div class="inc-name" id="incName">User</div>
+  <div class="inc-type" id="incType">Incoming call…</div>
+  <div class="inc-actions">
+    <button class="decline" onclick="declineIncomingCall()">
+      <i class="fas fa-phone-slash"></i>
+    </button>
+    <button class="accept" onclick="acceptIncomingCall()">
+      <i class="fas fa-phone"></i>
+    </button>
+  </div>
+</div>
+
+<!-- ==================== CALL SCREEN ==================== -->
+<div class="call-screen" id="callScreen">
+  <div class="call-bg"></div>
+
+  <video id="remoteVideo" class="remote-video" autoplay playsinline style="display:none;"></video>
+  <video id="localVideo" class="local-video" autoplay playsinline muted style="display:none;"></video>
+
+  <div class="call-header">
+    <div class="name" id="callRemoteName">User</div>
+    <div class="timer" id="callTimer">00:00</div>
+  </div>
+
+  <div class="caller-info" id="callerInfo">
+    <div class="call-avatar" id="callAvatar">U</div>
+    <div class="call-name" id="callName">User</div>
+    <div class="call-status ringing" id="callStatus">Ringing…</div>
+  </div>
+
+  <div class="call-actions" id="callActions">
+    <!-- Will be dynamically filled -->
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast-mini" id="toastMini"></div>
 
@@ -747,6 +1105,8 @@ let activeTribe   = null;
 let searchQuery   = '';
 let realtimeDM    = null;
 let realtimeTribe = null;
+let realtimeCalls = null;
+let realtimeSignals = null;
 let profileCache  = new Map();
 let tribeMessageCache = new Map();
 
@@ -763,7 +1123,7 @@ let tribePendingFileUrl  = null;
 let dmReplyTo    = null;
 let tribeReplyTo = null;
 
-// Long press context
+// Long press
 let lpContext = { type: null, msg: null };
 
 // Recording
@@ -772,10 +1132,31 @@ let tribeRecorder = null;
 let recChunks = [];
 let recTimerInterval = null;
 let recSeconds = 0;
-let recTarget = null; // 'dm' | 'tribe'
+let recTarget = null;
 
-// Unread tribe count (computed on load)
 let tribeUnreadTotal = 0;
+
+// ============================================================
+// CALL STATE
+// ============================================================
+let currentCall = null;         // { id, type, role: 'caller'|'receiver', partner }
+let peerConnection = null;
+let localStream = null;
+let remoteStream = null;
+let callTimerInterval = null;
+let callSeconds = 0;
+let callState = 'idle';         // idle | outgoing | incoming | active
+let pendingIceCandidates = [];
+let incomingCallData = null;
+let callSignalChannel = null;
+
+const ICE_SERVERS = {
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:global.stun.twilio.com:3478' }
+  ]
+};
 
 /* ============================================================
    INIT
@@ -809,6 +1190,7 @@ async function init() {
   renderList();
   setupRealtimeDM();
   setupRealtimeTribe();
+  setupCallListeners();
 
   const params = new URLSearchParams(window.location.search);
   const autoUser  = params.get('user');
@@ -818,7 +1200,7 @@ async function init() {
 }
 
 /* ============================================================
-   LOADERS
+   LOADERS (same as before + unified requests)
    ============================================================ */
 async function loadChats() {
   try {
@@ -826,7 +1208,6 @@ async function loadChats() {
     const { data, error } = await supabaseClient.rpc('get_conversations', {
       viewer_id: currentUser.id
     });
-
     if (!error && data) {
       rows = data.map(r => ({
         partnerId: r.partner_id,
@@ -839,7 +1220,6 @@ async function loadChats() {
         unread: r.unread_count || 0
       }));
     } else {
-      // Fallback: group locally
       const { data: fb, error: fbErr } = await supabaseClient
         .from('messages')
         .select('id, content, media_type, media_url, created_at, is_read, sender_id, receiver_id')
@@ -847,7 +1227,6 @@ async function loadChats() {
         .order('created_at', { ascending: false })
         .limit(120);
       if (fbErr) throw fbErr;
-
       const map = new Map();
       (fb || []).forEach(m => {
         const partnerId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
@@ -858,7 +1237,6 @@ async function loadChats() {
       rows = Array.from(map.values());
     }
 
-    // Fetch partner profiles
     const ids = [...new Set(rows.map(c => c.partnerId))];
     if (ids.length > 0) {
       const { data: profiles } = await supabaseClient
@@ -870,7 +1248,6 @@ async function loadChats() {
         c.partner = profileCache.get(c.partnerId) || { id: c.partnerId, username: 'user' };
       });
     }
-
     rows.sort((a,b) => new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at));
     conversations = rows;
   } catch (err) {
@@ -881,13 +1258,25 @@ async function loadChats() {
 
 async function loadRequests() {
   try {
+    // Try unified view first
     const { data, error } = await supabaseClient
-      .from('follow_requests')
-      .select('id, status, created_at, requester_id, target_id')
+      .from('all_requests')
+      .select('*')
       .eq('target_id', currentUser.id)
+      .eq('status', 'pending')
       .order('created_at', { ascending: false });
-    if (error) throw error;
-    requests = data || [];
+
+    if (!error && data) {
+      requests = data;
+    } else {
+      // Fallback: follow requests only
+      const { data: fb } = await supabaseClient
+        .from('follow_requests')
+        .select('id, status, created_at, requester_id, target_id')
+        .eq('target_id', currentUser.id)
+        .order('created_at', { ascending: false });
+      requests = (fb || []).map(r => ({ ...r, kind: 'follow' }));
+    }
 
     const ids = [...new Set(requests.map(r => r.requester_id))];
     if (ids.length > 0) {
@@ -896,7 +1285,9 @@ async function loadRequests() {
         .select('id, username, display_name, avatar_url, is_verified')
         .in('id', ids);
       (profiles || []).forEach(p => profileCache.set(p.id, p));
-      requests.forEach(r => { r.requester = profileCache.get(r.requester_id) || { id: r.requester_id }; });
+      requests.forEach(r => {
+        r.requester = profileCache.get(r.requester_id) || { id: r.requester_id };
+      });
     }
   } catch (err) {
     console.error('loadRequests:', err);
@@ -923,7 +1314,6 @@ async function loadTribes() {
       } : null,
       unread: row.unread_count || 0
     }));
-
     tribeUnreadTotal = tribes.reduce((sum, t) => sum + (t.unread || 0), 0);
   } catch (err) {
     console.warn('loadTribes:', err);
@@ -943,7 +1333,7 @@ function updateBadges() {
 }
 
 /* ============================================================
-   RENDER
+   RENDER LIST
    ============================================================ */
 function renderList() {
   const wrap = document.getElementById('listWrap');
@@ -984,7 +1374,6 @@ function renderChatsList(wrap) {
     const preview = buildPreview(c.lastMessage, 'dm');
     const time = formatTimeAgo(c.lastMessage.created_at);
     const unread = c.unread > 0 ? `<div class="unread-dot">${c.unread}</div>` : '';
-
     return `
       <div class="chat-row" onclick="openChat('${p.id}')">
         <div class="av">${avatar}</div>
@@ -1024,7 +1413,6 @@ function renderTribesList(wrap) {
     const preview = t.lastMessage ? buildPreview(t.lastMessage, 'tribe', t) : '<i>No messages yet</i>';
     const time = t.lastMessage ? formatTimeAgo(t.lastMessage.created_at) : '';
     const unread = t.unread > 0 ? `<div class="unread-dot">${t.unread}</div>` : '';
-
     return `
       <div class="chat-row" onclick="openTribe('${t.id}')">
         <div class="av">
@@ -1050,7 +1438,7 @@ function renderRequestsList(wrap) {
       <div class="empty">
         <i class="fas fa-user-check"></i>
         <h3>No requests</h3>
-        <p>Follow requests will appear here.</p>
+        <p>Follow requests and tribe invites will appear here.</p>
       </div>`;
     return;
   }
@@ -1061,6 +1449,36 @@ function renderRequestsList(wrap) {
     const initial = name.charAt(0).toUpperCase();
     const avatar = p.avatar_url ? `<img src="${escapeHtml(p.avatar_url)}" alt="" loading="lazy">` : initial;
 
+    // ============ TRIBE INVITE ROW ============
+    if (r.kind === 'tribe') {
+      const tInitial = (r.tribe_name || 'T').charAt(0).toUpperCase();
+      const tAvatar = r.tribe_avatar
+        ? `<img src="${escapeHtml(r.tribe_avatar)}" alt="">`
+        : tInitial;
+
+      return `
+        <div class="chat-row" style="cursor:default;">
+          <div class="av" style="background:linear-gradient(135deg,#7c3aed,#5eb8ff);">
+            ${tAvatar}
+            <div class="type-badge"><i class="fas fa-users"></i></div>
+          </div>
+          <div class="info">
+            <div class="name">${escapeHtml(r.tribe_name || 'Tribe')}</div>
+            <div class="preview">
+              <i class="fas fa-user-plus"></i>
+              ${escapeHtml(name)} invited you · ${r.tribe_member_count || 0} members
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button onclick="respondTribeInvite('${r.id}', 'accepted', this)"
+              style="padding:8px 14px; border-radius:20px; background:var(--az-gradient); border:none; color:#fff; font-weight:700; font-size:12px; cursor:pointer;">Join</button>
+            <button onclick="respondTribeInvite('${r.id}', 'rejected', this)"
+              style="padding:8px 14px; border-radius:20px; background:transparent; border:1px solid rgba(255,255,255,.2); color:#fff; font-weight:700; font-size:12px; cursor:pointer;">Decline</button>
+          </div>
+        </div>`;
+    }
+
+    // ============ FOLLOW REQUEST ROW ============
     if (r.status === 'pending') {
       return `
         <div class="chat-row" style="cursor:default;">
@@ -1091,11 +1509,10 @@ function renderRequestsList(wrap) {
 function buildPreview(msg, kind, tribe) {
   if (!msg) return '<i>No messages yet</i>';
   const prefix = kind === 'dm' && msg.sender_id === currentUser.id ? 'You: ' : '';
-
   if (msg.media_type === 'image') return `${prefix}<i class="fas fa-image"></i> Photo`;
   if (msg.media_type === 'video') return `${prefix}<i class="fas fa-video"></i> Video`;
   if (msg.media_type === 'audio') return `${prefix}<i class="fas fa-microphone"></i> Voice message`;
-
+  if (msg.media_type === 'call')   return `${prefix}<i class="fas fa-phone"></i> Call`;
   const content = (msg.content || '📎').slice(0, 60);
   return escapeHtml(prefix + content);
 }
@@ -1113,14 +1530,13 @@ function switchTab(tab, el) {
 }
 
 /* ============================================================
-   RESPOND REQUEST
+   RESPOND REQUEST (follow)
    ============================================================ */
 async function respondRequest(reqId, status, btn) {
   btn.disabled = true;
   try {
     const { data: req } = await supabaseClient.from('follow_requests').select('*').eq('id', reqId).single();
     await supabaseClient.from('follow_requests').update({ status }).eq('id', reqId);
-
     if (status === 'accepted' && req) {
       await supabaseClient.from('follows').insert({ follower_id: req.requester_id, following_id: req.target_id });
       toast('Request accepted ✅');
@@ -1133,6 +1549,183 @@ async function respondRequest(reqId, status, btn) {
   } catch (err) {
     toast(err.message);
     btn.disabled = false;
+  }
+}
+
+/* ============================================================
+   RESPOND TRIBE INVITE
+   ============================================================ */
+async function respondTribeInvite(inviteId, status, btn) {
+  btn.disabled = true;
+  try {
+    const { data: inv } = await supabaseClient
+      .from('tribe_invites')
+      .select('tribe_id')
+      .eq('id', inviteId)
+      .single();
+
+    await supabaseClient.from('tribe_invites')
+      .update({ status, responded_at: new Date().toISOString() })
+      .eq('id', inviteId);
+
+    if (status === 'accepted' && inv) {
+      await supabaseClient.from('tribe_members').insert({
+        tribe_id: inv.tribe_id,
+        user_id: currentUser.id,
+        role: 'member'
+      });
+      toast('Joined tribe! 🎉');
+    } else {
+      toast('Declined');
+    }
+
+    await loadRequests();
+    await loadTribes();
+    updateBadges();
+    renderList();
+  } catch (err) {
+    console.error(err);
+    toast(err.message);
+    btn.disabled = false;
+  }
+}
+
+/* ============================================================
+   TRIBE INVITE SHEET
+   ============================================================ */
+let invitableFriends = [];
+let selectedInviteIds = new Set();
+
+async function openTribeInviteSheet() {
+  if (!activeTribe) return;
+  selectedInviteIds.clear();
+  document.getElementById('tribeInviteModal').classList.add('active');
+  const list = document.getElementById('inviteFriendsList');
+  list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--az-text-secondary);"><i class="fas fa-circle-notch fa-spin"></i></div>';
+
+  try {
+    const { data: follows } = await supabaseClient
+      .from('follows')
+      .select('following_id')
+      .eq('follower_id', currentUser.id);
+
+    const followIds = (follows || []).map(f => f.following_id);
+
+    const { data: members } = await supabaseClient
+      .from('tribe_members')
+      .select('user_id')
+      .eq('tribe_id', activeTribe.id);
+
+    const memberIds = new Set((members || []).map(m => m.user_id));
+
+    if (followIds.length === 0) {
+      list.innerHTML = `
+        <div style="text-align:center;padding:40px;color:var(--az-text-secondary);font-size:13px;">
+          You're not following anyone yet.
+          <br><a href="Friends.html" style="color:var(--az-accent);font-weight:700;text-decoration:none;display:inline-block;margin-top:8px;">Find friends →</a>
+        </div>`;
+      return;
+    }
+
+    const { data: profiles } = await supabaseClient
+      .from('profiles')
+      .select('id, username, display_name, avatar_url, is_verified')
+      .in('id', followIds);
+
+    invitableFriends = (profiles || []).filter(p => !memberIds.has(p.id));
+    renderInviteFriendsList();
+  } catch (err) {
+    console.error(err);
+    list.innerHTML = `<div style="text-align:center;padding:20px;color:#ff7675;">${escapeHtml(err.message)}</div>`;
+  }
+}
+
+function renderInviteFriendsList() {
+  const list = document.getElementById('inviteFriendsList');
+  const search = (document.getElementById('tribeInviteSearch')?.value || '').toLowerCase();
+  const filtered = invitableFriends.filter(f => {
+    if (!search) return true;
+    const n = (f.display_name || f.username || '').toLowerCase();
+    return n.includes(search);
+  });
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:40px;color:var(--az-text-secondary);font-size:13px;">${search ? 'No matches' : 'Everyone is already in this tribe!'}</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(f => {
+    const name = f.display_name || f.username || 'user';
+    const initial = name.charAt(0).toUpperCase();
+    const avatar = f.avatar_url ? `<img src="${escapeHtml(f.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover;">` : initial;
+    const sel = selectedInviteIds.has(f.id);
+    return `
+      <div onclick="toggleInviteFriend('${f.id}')" style="display:flex;align-items:center;gap:12px;padding:10px 6px;border-radius:12px;cursor:pointer;background:${sel ? 'rgba(255,107,53,.12)' : 'transparent'};border:1px solid ${sel ? 'var(--az-primary)' : 'transparent'};margin-bottom:6px;">
+        <div style="width:44px;height:44px;border-radius:50%;background:var(--az-gradient);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;overflow:hidden;flex-shrink:0;">${avatar}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14px;font-weight:700;color:var(--az-text);">${escapeHtml(name)}</div>
+          <div style="font-size:11px;color:var(--az-text-secondary);margin-top:2px;">@${escapeHtml(f.username || 'user')}</div>
+        </div>
+        <div style="width:22px;height:22px;border-radius:50%;border:2px solid ${sel ? 'var(--az-primary)' : 'rgba(255,255,255,.2)'};background:${sel ? 'var(--az-primary)' : 'transparent'};display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;flex-shrink:0;">${sel ? '<i class="fas fa-check"></i>' : ''}</div>
+      </div>
+    `;
+  }).join('');
+  updateSendInvitesBtn();
+}
+
+function toggleInviteFriend(userId) {
+  if (selectedInviteIds.has(userId)) selectedInviteIds.delete(userId);
+  else selectedInviteIds.add(userId);
+  renderInviteFriendsList();
+}
+
+function filterInviteFriends() { renderInviteFriendsList(); }
+
+function updateSendInvitesBtn() {
+  const btn = document.getElementById('sendTribeInvitesBtn');
+  btn.disabled = selectedInviteIds.size === 0;
+  btn.innerHTML = selectedInviteIds.size > 0
+    ? `<i class="fas fa-paper-plane"></i> Send ${selectedInviteIds.size} Invite${selectedInviteIds.size > 1 ? 's' : ''}`
+    : '<i class="fas fa-paper-plane"></i> Send Invites';
+}
+
+function closeTribeInviteSheet(e) {
+  if (e && e.target && e.target.id !== 'tribeInviteModal') return;
+  document.getElementById('tribeInviteModal').classList.remove('active');
+  selectedInviteIds.clear();
+}
+
+async function sendTribeInvites() {
+  if (!activeTribe || selectedInviteIds.size === 0) return;
+  const btn = document.getElementById('sendTribeInvitesBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Sending…';
+
+  let ok = 0, fail = 0;
+  for (const inviteeId of selectedInviteIds) {
+    try {
+      const { error } = await supabaseClient.from('tribe_invites').insert({
+        tribe_id: activeTribe.id,
+        inviter_id: currentUser.id,
+        invitee_id: inviteeId,
+        status: 'pending'
+      });
+      if (error) {
+        if (error.code === '23505') { ok++; continue; }
+        throw error;
+      }
+      ok++;
+    } catch (err) { console.error(err); fail++; }
+  }
+
+  btn.disabled = false;
+  updateSendInvitesBtn();
+
+  if (ok > 0) {
+    toast(`✅ Sent ${ok} invite${ok > 1 ? 's' : ''}`);
+    closeTribeInviteSheet();
+  } else if (fail > 0) {
+    toast('Failed to send invites');
   }
 }
 
@@ -1151,7 +1744,6 @@ async function openChat(partnerId) {
       partner = data;
       profileCache.set(partnerId, partner);
     }
-
     activePartner = partner;
     dmReplyTo = null;
     clearReply();
@@ -1201,7 +1793,6 @@ async function openTribe(tribeId) {
       if (!data) { toast('Tribe not found'); return; }
       tribe = { ...data, id: data.id, name: data.name, avatar_url: data.avatar_url, member_count: data.member_count };
     }
-
     activeTribe = tribe;
     tribeReplyTo = null;
     clearTribeReply();
@@ -1233,13 +1824,11 @@ function closeTribe() {
 }
 
 function viewTribeInfo() {
-  if (activeTribe) {
-    toast('Tribe info coming soon');
-  }
+  if (activeTribe) toast('Tribe info coming soon');
 }
 
 /* ============================================================
-   LOAD MESSAGES (DM)
+   LOAD MESSAGES
    ============================================================ */
 async function loadMessages() {
   const box = document.getElementById('chatMessages');
@@ -1255,7 +1844,16 @@ async function loadMessages() {
       .limit(200);
 
     if (error) throw error;
-    renderMessagesInto(box, data || [], 'dm');
+
+    // Also load call history between the two users
+    const { data: calls } = await supabaseClient
+      .from('calls')
+      .select('*')
+      .or(`and(caller_id.eq.${currentUser.id},receiver_id.eq.${activePartner.id}),and(caller_id.eq.${activePartner.id},receiver_id.eq.${currentUser.id})`)
+      .order('created_at', { ascending: true })
+      .limit(50);
+
+    renderMessagesInto(box, data || [], 'dm', calls || []);
   } catch (err) {
     box.innerHTML = `<div style="text-align:center;color:#ff7675;padding:20px;">${escapeHtml(err.message)}</div>`;
   }
@@ -1275,8 +1873,6 @@ async function loadTribeMessages() {
       .limit(200);
 
     if (error) throw error;
-
-    // Fetch sender profiles
     const senderIds = [...new Set((data || []).map(m => m.sender_id))];
     if (senderIds.length > 0) {
       const { data: profiles } = await supabaseClient
@@ -1285,40 +1881,91 @@ async function loadTribeMessages() {
         .in('id', senderIds);
       (profiles || []).forEach(p => profileCache.set(p.id, p));
     }
-
-    renderMessagesInto(box, data || [], 'tribe');
+    renderMessagesInto(box, data || [], 'tribe', []);
   } catch (err) {
     box.innerHTML = `<div style="text-align:center;color:#ff7675;padding:20px;">${escapeHtml(err.message)}</div>`;
   }
 }
 
-function renderMessagesInto(box, messages, kind) {
-  if (!messages.length) {
+function renderMessagesInto(box, messages, kind, calls) {
+  if (!messages.length && (!calls || calls.length === 0)) {
     box.innerHTML = `<div class="date-divider">No messages yet — say hi 👋</div>`;
     return;
   }
 
+  // Merge messages + calls into one timeline
+  const timeline = [];
+  messages.forEach(m => timeline.push({ type: 'msg', data: m, at: m.created_at }));
+  (calls || []).forEach(c => timeline.push({ type: 'call', data: c, at: c.created_at }));
+  timeline.sort((a, b) => new Date(a.at) - new Date(b.at));
+
   const msgMap = new Map(messages.map(m => [m.id, m]));
   let lastDate = '';
-  const html = messages.map(m => {
-    const msgDate = new Date(m.created_at).toDateString();
+  const html = timeline.map(item => {
+    const itemDate = new Date(item.at).toDateString();
     let dateHtml = '';
-    if (msgDate !== lastDate) {
-      lastDate = msgDate;
-      dateHtml = `<div class="date-divider">${formatDateLabel(m.created_at)}</div>`;
+    if (itemDate !== lastDate) {
+      lastDate = itemDate;
+      dateHtml = `<div class="date-divider">${formatDateLabel(item.at)}</div>`;
     }
-    return dateHtml + renderBubble(m, kind, msgMap);
+
+    if (item.type === 'call') {
+      return dateHtml + renderCallLog(item.data);
+    }
+    return dateHtml + renderBubble(item.data, kind, msgMap);
   }).join('');
 
   box.innerHTML = html;
   box.scrollTop = box.scrollHeight;
 }
 
+function renderCallLog(call) {
+  const isCaller = call.caller_id === currentUser.id;
+  const partner = isCaller ? call.receiver_id : call.caller_id;
+  const prof = profileCache.get(partner) || {};
+  const name = prof.display_name || prof.username || 'User';
+
+  let icon = 'fa-phone';
+  let label = '';
+  let cls = '';
+  if (call.call_type === 'video') icon = 'fa-video';
+
+  if (call.status === 'ended' && call.duration_secs > 0) {
+    const mins = Math.floor(call.duration_secs / 60);
+    const secs = call.duration_secs % 60;
+    label = `${mins}:${String(secs).padStart(2, '0')}`;
+  } else if (call.status === 'missed') {
+    label = 'Missed';
+    cls = 'missed';
+  } else if (call.status === 'declined') {
+    label = 'Declined';
+    cls = 'declined';
+  } else if (call.status === 'cancelled') {
+    label = 'Cancelled';
+    cls = 'declined';
+  } else {
+    label = call.status;
+  }
+
+  const direction = isCaller ? 'Outgoing' : 'Incoming';
+  return `
+    <div class="call-log ${cls}">
+      <i class="fas ${icon}"></i>
+      <div class="call-info">
+        <strong>${direction} ${call.call_type} call</strong>
+        <span>${label}</span>
+      </div>
+      <button class="call-recall" onclick="recallUser('${partner}', '${call.call_type}')">
+        <i class="fas ${icon}"></i>
+      </button>
+    </div>
+  `;
+}
+
 function renderBubble(m, kind, msgMap) {
   const mine = m.sender_id === currentUser.id;
   const time = new Date(m.created_at).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
 
-  // Reply quote
   let replyHtml = '';
   if (m.reply_to && msgMap && msgMap.get(m.reply_to)) {
     const orig = msgMap.get(m.reply_to);
@@ -1330,7 +1977,6 @@ function renderBubble(m, kind, msgMap) {
       </div>`;
   }
 
-  // Media
   let mediaHtml = '';
   if (m.media_url && !m.is_deleted) {
     const url = escapeHtml(m.media_url);
@@ -1343,7 +1989,6 @@ function renderBubble(m, kind, msgMap) {
     }
   }
 
-  // Sender name for tribe
   let senderHtml = '';
   if (kind === 'tribe' && !mine) {
     const prof = profileCache.get(m.sender_id);
@@ -1369,19 +2014,16 @@ function renderBubble(m, kind, msgMap) {
 }
 
 /* ============================================================
-   SEND MESSAGE (DM)
+   SEND MESSAGE (DM + TRIBE)
    ============================================================ */
 async function sendMessage() {
   if (!activePartner) return;
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
   if (!text && !dmPendingFile) return;
-
   const btn = document.getElementById('sendBtn');
   btn.disabled = true;
-
-  let mediaUrl = null;
-  let mediaType = null;
+  let mediaUrl = null, mediaType = null;
 
   try {
     if (dmPendingFile) {
@@ -1398,16 +2040,14 @@ async function sendMessage() {
                 : dmPendingFile.type.startsWith('audio/') ? 'audio' : null;
     }
 
-    const payload = {
+    const { error } = await supabaseClient.from('messages').insert({
       sender_id:   currentUser.id,
       receiver_id: activePartner.id,
       content:     text || '',
       media_url:   mediaUrl,
       media_type:  mediaType,
       reply_to:    dmReplyTo?.id || null
-    };
-
-    const { error } = await supabaseClient.from('messages').insert(payload);
+    });
     if (error) throw error;
 
     input.value = '';
@@ -1415,28 +2055,18 @@ async function sendMessage() {
     clearAttachment();
     clearReply();
     await loadMessages();
-  } catch (err) {
-    toast(err.message);
-  } finally {
-    btn.disabled = false;
-    input.focus();
-  }
+  } catch (err) { toast(err.message); }
+  finally { btn.disabled = false; input.focus(); }
 }
 
-/* ============================================================
-   SEND MESSAGE (TRIBE)
-   ============================================================ */
 async function sendTribeMessage() {
   if (!activeTribe) return;
   const input = document.getElementById('tribeInput');
   const text = input.value.trim();
   if (!text && !tribePendingFile) return;
-
   const btn = document.getElementById('tribeSendBtn');
   btn.disabled = true;
-
-  let mediaUrl = null;
-  let mediaType = null;
+  let mediaUrl = null, mediaType = null;
 
   try {
     if (tribePendingFile) {
@@ -1468,12 +2098,8 @@ async function sendTribeMessage() {
     clearTribeAttachment();
     clearTribeReply();
     await loadTribeMessages();
-  } catch (err) {
-    toast(err.message);
-  } finally {
-    btn.disabled = false;
-    input.focus();
-  }
+  } catch (err) { toast(err.message); }
+  finally { btn.disabled = false; input.focus(); }
 }
 
 /* ============================================================
@@ -1486,7 +2112,6 @@ function onDmFilePicked(e) {
   const file = e.target.files[0];
   if (!file) return;
   if (file.size > 25 * 1024 * 1024) { toast('Max 25 MB'); e.target.value = ''; return; }
-
   dmPendingFile = file;
   if (dmPendingFileUrl) URL.revokeObjectURL(dmPendingFileUrl);
   dmPendingFileUrl = URL.createObjectURL(file);
@@ -1498,7 +2123,6 @@ function onTribeFilePicked(e) {
   const file = e.target.files[0];
   if (!file) return;
   if (file.size > 25 * 1024 * 1024) { toast('Max 25 MB'); e.target.value = ''; return; }
-
   tribePendingFile = file;
   if (tribePendingFileUrl) URL.revokeObjectURL(tribePendingFileUrl);
   tribePendingFileUrl = URL.createObjectURL(file);
@@ -1515,16 +2139,9 @@ function showAttachPreview(kind, file, url) {
 
   let type = 'file';
   let icon = '<i class="fas fa-file"></i>';
-  if (file.type.startsWith('image/')) {
-    type = 'image';
-    icon = `<img src="${url}" alt="">`;
-  } else if (file.type.startsWith('video/')) {
-    type = 'video';
-    icon = `<video src="${url}" muted></video>`;
-  } else if (file.type.startsWith('audio/')) {
-    type = 'audio';
-    icon = '<i class="fas fa-music"></i>';
-  }
+  if (file.type.startsWith('image/')) { type = 'image'; icon = `<img src="${url}" alt="">`; }
+  else if (file.type.startsWith('video/')) { type = 'video'; icon = `<video src="${url}" muted></video>`; }
+  else if (file.type.startsWith('audio/')) { type = 'audio'; icon = '<i class="fas fa-music"></i>'; }
 
   thumb.innerHTML = icon;
   nameEl.textContent = file.name;
@@ -1537,7 +2154,6 @@ function clearAttachment() {
   if (dmPendingFileUrl) { URL.revokeObjectURL(dmPendingFileUrl); dmPendingFileUrl = null; }
   document.getElementById('attachPreview').classList.remove('active');
 }
-
 function clearTribeAttachment() {
   tribePendingFile = null;
   if (tribePendingFileUrl) { URL.revokeObjectURL(tribePendingFileUrl); tribePendingFileUrl = null; }
@@ -1565,16 +2181,8 @@ function setReply(kind, msg) {
     document.getElementById('tribeInput').focus();
   }
 }
-
-function clearReply() {
-  dmReplyTo = null;
-  document.getElementById('replyPreview').classList.remove('active');
-}
-
-function clearTribeReply() {
-  tribeReplyTo = null;
-  document.getElementById('tribeReplyPreview').classList.remove('active');
-}
+function clearReply() { dmReplyTo = null; document.getElementById('replyPreview').classList.remove('active'); }
+function clearTribeReply() { tribeReplyTo = null; document.getElementById('tribeReplyPreview').classList.remove('active'); }
 
 /* ============================================================
    LONG PRESS MENU
@@ -1589,19 +2197,14 @@ async function openLpMenu(kind, msgId, event) {
     msg = data;
   }
   if (!msg) return;
-
   lpContext = { type: kind, msg };
-
   const mine = msg.sender_id === currentUser.id;
   const items = [];
-
   items.push({ icon: 'fa-reply', label: 'Reply', action: 'reply' });
   if (msg.content) items.push({ icon: 'fa-copy', label: 'Copy text', action: 'copy' });
   if (!msg.is_deleted) items.push({ icon: 'fa-thumbtack', label: msg.is_pinned ? 'Unpin' : 'Pin message', action: 'pin' });
   if (mine && !msg.is_deleted) items.push({ icon: 'fa-trash', label: 'Delete', action: 'delete', danger: true });
-
-  const menu = document.getElementById('lpMenu');
-  menu.innerHTML = items.map(it => `
+  document.getElementById('lpMenu').innerHTML = items.map(it => `
     <button class="lp-item ${it.danger ? 'danger' : ''}" onclick="lpAction('${it.action}')">
       <i class="fas ${it.icon}"></i> ${it.label}
     </button>
@@ -1618,16 +2221,11 @@ async function lpAction(action) {
   const { type, msg } = lpContext;
   document.getElementById('lpOverlay').classList.remove('active');
   if (!msg) return;
-
   const table = type === 'dm' ? 'messages' : 'tribe_messages';
-
   try {
-    if (action === 'reply') {
-      setReply(type, msg);
-    } else if (action === 'copy') {
-      await navigator.clipboard.writeText(msg.content || '');
-      toast('Copied ✅');
-    } else if (action === 'pin') {
+    if (action === 'reply') setReply(type, msg);
+    else if (action === 'copy') { await navigator.clipboard.writeText(msg.content || ''); toast('Copied ✅'); }
+    else if (action === 'pin') {
       await supabaseClient.from(table).update({ is_pinned: !msg.is_pinned }).eq('id', msg.id);
       toast(msg.is_pinned ? 'Unpinned' : 'Pinned 📌');
       if (type === 'dm') loadMessages(); else loadTribeMessages();
@@ -1637,35 +2235,22 @@ async function lpAction(action) {
       toast('Deleted');
       if (type === 'dm') loadMessages(); else loadTribeMessages();
     }
-  } catch (err) {
-    toast(err.message);
-  }
+  } catch (err) { toast(err.message); }
 }
 
 /* ============================================================
    VOICE RECORDING
    ============================================================ */
-async function startRecording() {
-  if (!activePartner) return;
-  recTarget = 'dm';
-  await beginRecording();
-}
-async function startTribeRecording() {
-  if (!activeTribe) return;
-  recTarget = 'tribe';
-  await beginRecording();
-}
+async function startRecording() { if (!activePartner) return; recTarget = 'dm'; await beginRecording(); }
+async function startTribeRecording() { if (!activeTribe) return; recTarget = 'tribe'; await beginRecording(); }
 
 async function beginRecording() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    recChunks = [];
-    recSeconds = 0;
-
+    recChunks = []; recSeconds = 0;
     const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
     const options = mimeType ? { mimeType } : {};
     const rec = new MediaRecorder(stream, options);
-
     rec.ondataavailable = e => { if (e.data.size > 0) recChunks.push(e.data); };
     rec.onstop = () => {
       stream.getTracks().forEach(t => t.stop());
@@ -1674,12 +2259,8 @@ async function beginRecording() {
       sendVoiceBlob(blob);
       cleanupRec();
     };
-
     rec.start();
-
-    if (recTarget === 'dm') dmRecorder = rec;
-    else tribeRecorder = rec;
-
+    if (recTarget === 'dm') dmRecorder = rec; else tribeRecorder = rec;
     document.getElementById('recOverlay').classList.add('active');
     document.getElementById('recTimer').textContent = '0:00';
     recTimerInterval = setInterval(() => {
@@ -1688,12 +2269,10 @@ async function beginRecording() {
       const s = recSeconds % 60;
       document.getElementById('recTimer').textContent = `${m}:${String(s).padStart(2, '0')}`;
     }, 1000);
-
     document.getElementById('micBtn')?.classList.add('recording');
     document.getElementById('tribeMicBtn')?.classList.add('recording');
   } catch (e) {
     toast('Microphone access denied');
-    console.error(e);
   }
 }
 
@@ -1702,37 +2281,24 @@ function cleanupRec() {
   document.getElementById('recOverlay').classList.remove('active');
   document.getElementById('micBtn')?.classList.remove('recording');
   document.getElementById('tribeMicBtn')?.classList.remove('recording');
-  dmRecorder = null;
-  tribeRecorder = null;
-  recSeconds = 0;
+  dmRecorder = null; tribeRecorder = null; recSeconds = 0;
 }
 
 function stopRecording(send) {
   const rec = recTarget === 'dm' ? dmRecorder : tribeRecorder;
   if (rec && rec.state !== 'inactive') rec.stop();
-  if (!send) {
-    recChunks = [];
-    recSeconds = 0;
-    cleanupRec();
-  }
+  if (!send) { recChunks = []; recSeconds = 0; cleanupRec(); }
 }
 
 function cancelRecording() {
-  recChunks = [];
-  recSeconds = 0;
+  recChunks = []; recSeconds = 0;
   stopRecording(false);
 }
 
 async function sendVoiceBlob(blob) {
   const file = new File([blob], `voice-${Date.now()}.webm`, { type: 'audio/webm' });
-
-  if (recTarget === 'dm' && activePartner) {
-    dmPendingFile = file;
-    await sendMessage();
-  } else if (recTarget === 'tribe' && activeTribe) {
-    tribePendingFile = file;
-    await sendTribeMessage();
-  }
+  if (recTarget === 'dm' && activePartner) { dmPendingFile = file; await sendMessage(); }
+  else if (recTarget === 'tribe' && activeTribe) { tribePendingFile = file; await sendTribeMessage(); }
 }
 
 /* ============================================================
@@ -1740,18 +2306,14 @@ async function sendVoiceBlob(blob) {
    ============================================================ */
 async function markMessagesRead() {
   if (!activePartner) return;
-  supabaseClient
-    .from('messages')
+  supabaseClient.from('messages')
     .update({ is_read: true })
     .eq('sender_id', activePartner.id)
     .eq('receiver_id', currentUser.id)
     .eq('is_read', false)
     .then(() => {});
 }
-
 async function markTribeRead(tribeId) {
-  // If you have a read tracking table for tribes, add it here.
-  // For now, just clear the badge locally.
   const t = tribes.find(x => x.id === tribeId);
   if (t) {
     tribeUnreadTotal = Math.max(0, tribeUnreadTotal - (t.unread || 0));
@@ -1761,7 +2323,7 @@ async function markTribeRead(tribeId) {
 }
 
 /* ============================================================
-   REALTIME — DM
+   REALTIME — DM & TRIBE
    ============================================================ */
 function setupRealtimeDM() {
   if (realtimeDM) supabaseClient.removeChannel(realtimeDM);
@@ -1771,8 +2333,6 @@ function setupRealtimeDM() {
       { event: 'INSERT', schema: 'public', table: 'messages' },
       payload => {
         const m = payload.new;
-
-        // Append to open chat
         if (activePartner &&
             ((m.sender_id === activePartner.id && m.receiver_id === currentUser.id) ||
              (m.sender_id === currentUser.id && m.receiver_id === activePartner.id))) {
@@ -1781,8 +2341,6 @@ function setupRealtimeDM() {
           box.scrollTop = box.scrollHeight;
           if (m.receiver_id === currentUser.id) markMessagesRead();
         }
-
-        // Update conversation list
         const partnerId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
         const existing = conversations.find(c => c.partnerId === partnerId);
         if (existing) {
@@ -1797,9 +2355,7 @@ function setupRealtimeDM() {
               .eq('id', partnerId).maybeSingle();
             if (data) {
               profileCache.set(partnerId, data);
-              conversations.unshift({
-                partnerId, partner: data, lastMessage: m, unread: 1
-              });
+              conversations.unshift({ partnerId, partner: data, lastMessage: m, unread: 1 });
               if (currentTab === 'chats') renderList();
             }
           })();
@@ -1811,9 +2367,6 @@ function setupRealtimeDM() {
     .subscribe();
 }
 
-/* ============================================================
-   REALTIME — TRIBE
-   ============================================================ */
 function setupRealtimeTribe() {
   if (realtimeTribe) supabaseClient.removeChannel(realtimeTribe);
   realtimeTribe = supabaseClient
@@ -1822,7 +2375,6 @@ function setupRealtimeTribe() {
       { event: 'INSERT', schema: 'public', table: 'tribe_messages' },
       payload => {
         const m = payload.new;
-
         if (activeTribe && m.tribe_id === activeTribe.id) {
           const box = document.getElementById('tribeMessages');
           if (m.sender_id !== currentUser.id) {
@@ -1839,8 +2391,6 @@ function setupRealtimeTribe() {
             })();
           }
         }
-
-        // Update tribe list preview
         const t = tribes.find(x => x.id === m.tribe_id);
         if (t) {
           t.lastMessage = { content: m.content, created_at: m.created_at, sender_id: m.sender_id, sender_name: profileCache.get(m.sender_id)?.username };
@@ -1852,11 +2402,539 @@ function setupRealtimeTribe() {
           tribes = tribes.filter(x => x.id !== m.tribe_id);
           tribes.unshift(t);
         }
-
         if (currentTab === 'tribes') renderList();
       }
     )
     .subscribe();
+}
+
+/* ============================================================
+   CALLS — WebRTC
+   ============================================================ */
+function setupCallListeners() {
+  if (!currentUser) return;
+
+  // Listen for incoming calls
+  if (realtimeCalls) supabaseClient.removeChannel(realtimeCalls);
+  realtimeCalls = supabaseClient
+    .channel('calls-rt')
+    .on('postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'calls',
+        filter: `receiver_id=eq.${currentUser.id}` },
+      payload => {
+        const call = payload.new;
+        if (call.status === 'ringing') {
+          showIncomingCall(call);
+        }
+      }
+    )
+    .on('postgres_changes',
+      { event: 'UPDATE', schema: 'public', table: 'calls',
+        filter: `caller_id=eq.${currentUser.id}` },
+      payload => {
+        const call = payload.new;
+        // If receiver accepted/declined
+        if (currentCall && call.id === currentCall.id) {
+          if (call.status === 'accepted') {
+            // Caller already started; update UI
+            setCallStatus('Connected', false);
+            startCallTimer();
+          } else if (call.status === 'declined' || call.status === 'missed') {
+            toast(call.status === 'missed' ? 'No answer' : 'Call declined');
+            endCall(false);
+          }
+        }
+      }
+    )
+    .subscribe();
+
+  // Listen for WebRTC signals
+  if (realtimeSignals) supabaseClient.removeChannel(realtimeSignals);
+  realtimeSignals = supabaseClient
+    .channel('signals-rt')
+    .on('postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'call_signals' },
+      async (payload) => {
+        const sig = payload.new;
+        if (!currentCall || sig.call_id !== currentCall.id) return;
+        if (sig.sender_id === currentUser.id) return;
+
+        if (sig.signal_type === 'offer') {
+          await handleOffer(sig.payload);
+        } else if (sig.signal_type === 'answer') {
+          await handleAnswer(sig.payload);
+        } else if (sig.signal_type === 'ice') {
+          await handleIce(sig.payload);
+        } else if (sig.signal_type === 'hangup') {
+          toast('Call ended');
+          endCall(false);
+        }
+      }
+    )
+    .subscribe();
+}
+
+/* ============ Start an outgoing call ============ */
+async function startCall(type) {
+  if (!activePartner) return;
+  if (callState !== 'idle') { toast('Already in a call'); return; }
+
+  try {
+    callState = 'outgoing';
+
+    // Create the call row
+    const { data: call, error } = await supabaseClient
+      .from('calls')
+      .insert({
+        caller_id: currentUser.id,
+        receiver_id: activePartner.id,
+        call_type: type,
+        status: 'ringing'
+      })
+      .select()
+      .single();
+    if (error) throw error;
+
+    currentCall = { id: call.id, type, role: 'caller', partner: activePartner };
+
+    // Show call screen
+    showCallScreen(activePartner, type, 'Calling…', true);
+
+    // Get local media
+    await acquireLocalMedia(type);
+
+    // Create peer connection
+    createPeerConnection();
+
+    // Create offer
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+
+    // Send offer
+    await supabaseClient.from('call_signals').insert({
+      call_id: call.id,
+      sender_id: currentUser.id,
+      signal_type: 'offer',
+      payload: { sdp: offer.sdp, type: offer.type }
+    });
+
+  } catch (err) {
+    console.error('[Call]', err);
+    toast(err.message || 'Could not start call');
+    endCall(true);
+  }
+}
+
+/* ============ Show incoming call modal (receiver) ============ */
+function showIncomingCall(call) {
+  if (callState !== 'idle') {
+    // Busy — auto-decline
+    supabaseClient.from('calls').update({ status: 'declined', ended_at: new Date().toISOString() }).eq('id', call.id);
+    return;
+  }
+
+  callState = 'incoming';
+  incomingCallData = call;
+
+  const caller = profileCache.get(call.caller_id) || { username: 'User' };
+  if (!profileCache.has(call.caller_id)) {
+    // Fetch and cache
+    supabaseClient.from('profiles').select('id, username, display_name, avatar_url').eq('id', call.caller_id).maybeSingle().then(({ data }) => {
+      if (data) {
+        profileCache.set(call.caller_id, data);
+        const initial = (data.display_name || data.username || 'U').charAt(0).toUpperCase();
+        document.getElementById('incName').textContent = data.display_name || data.username;
+        document.getElementById('incAvatar').innerHTML =
+          data.avatar_url ? `<img src="${escapeHtml(data.avatar_url)}" alt="">` : initial;
+      }
+    });
+  }
+
+  const name = caller.display_name || caller.username || 'User';
+  const initial = name.charAt(0).toUpperCase();
+  document.getElementById('incName').textContent = name;
+  document.getElementById('incAvatar').innerHTML =
+    caller.avatar_url ? `<img src="${escapeHtml(caller.avatar_url)}" alt="">` : initial;
+  document.getElementById('incType').textContent =
+    call.call_type === 'video' ? '📹 Incoming video call' : '📞 Incoming voice call';
+
+  document.getElementById('incomingCallModal').classList.add('active');
+
+  // Auto-decline after 45s
+  setTimeout(() => {
+    if (callState === 'incoming' && incomingCallData && incomingCallData.id === call.id) {
+      declineIncomingCall();
+    }
+  }, 45000);
+}
+
+async function declineIncomingCall() {
+  document.getElementById('incomingCallModal').classList.remove('active');
+  if (incomingCallData) {
+    await supabaseClient.from('calls')
+      .update({ status: 'declined', ended_at: new Date().toISOString() })
+      .eq('id', incomingCallData.id);
+  }
+  incomingCallData = null;
+  callState = 'idle';
+}
+
+async function acceptIncomingCall() {
+  if (!incomingCallData) return;
+  document.getElementById('incomingCallModal').classList.remove('active');
+  const call = incomingCallData;
+  incomingCallData = null;
+  callState = 'active';
+
+  try {
+    // Update call status
+    await supabaseClient.from('calls')
+      .update({ status: 'accepted', accepted_at: new Date().toISOString() })
+      .eq('id', call.id);
+
+    // Load partner profile
+    const partner = profileCache.get(call.caller_id) || await (async () => {
+      const { data } = await supabaseClient.from('profiles').select('*').eq('id', call.caller_id).single();
+      return data;
+    })();
+
+    currentCall = { id: call.id, type: call.call_type, role: 'receiver', partner };
+
+    showCallScreen(partner, call.call_type, 'Connecting…', false);
+    await acquireLocalMedia(call.call_type);
+    createPeerConnection();
+    // Wait for the offer signal from caller (handled by realtimeSignals listener)
+
+  } catch (err) {
+    console.error('[Accept]', err);
+    toast('Failed to accept call');
+    endCall(true);
+  }
+}
+
+/* ============ Peer connection ============ */
+function createPeerConnection() {
+  if (peerConnection) {
+    try { peerConnection.close(); } catch (e) {}
+  }
+
+  peerConnection = new RTCPeerConnection(ICE_SERVERS);
+
+  // Add local tracks
+  if (localStream) {
+    localStream.getTracks().forEach(track => {
+      peerConnection.addTrack(track, localStream);
+    });
+  }
+
+  // Receive remote tracks
+  remoteStream = new MediaStream();
+  peerConnection.ontrack = (event) => {
+    event.streams[0].getTracks().forEach(track => remoteStream.addTrack(track));
+
+    // Display remote media
+    if (currentCall && currentCall.type === 'video') {
+      const remoteEl = document.getElementById('remoteVideo');
+      remoteEl.srcObject = remoteStream;
+      remoteEl.style.display = 'block';
+      document.getElementById('callerInfo').style.opacity = '0';
+      document.getElementById('callerInfo').style.pointerEvents = 'none';
+    } else {
+      // Voice — show small avatar UI
+      document.getElementById('callerInfo').style.opacity = '1';
+    }
+  };
+
+  // ICE candidates
+  peerConnection.onicecandidate = async (event) => {
+    if (event.candidate && currentCall) {
+      try {
+        await supabaseClient.from('call_signals').insert({
+          call_id: currentCall.id,
+          sender_id: currentUser.id,
+          signal_type: 'ice',
+          payload: event.candidate.toJSON()
+        });
+      } catch (e) { console.warn('ICE send fail', e); }
+    }
+  };
+
+  // Connection state
+  peerConnection.onconnectionstatechange = () => {
+    console.log('[Call] state:', peerConnection.connectionState);
+    if (peerConnection.connectionState === 'connected') {
+      setCallStatus('Connected', false);
+      startCallTimer();
+    } else if (['failed','disconnected','closed'].includes(peerConnection.connectionState)) {
+      if (currentCall && callState === 'active') {
+        toast('Call ended');
+        endCall(true);
+      }
+    }
+  };
+}
+
+/* ============ WebRTC signaling handlers ============ */
+async function handleOffer(payload) {
+  if (!peerConnection) {
+    // Receiver: create PC if not ready
+    createPeerConnection();
+  }
+  try {
+    const offer = new RTCSessionDescription(payload);
+    await peerConnection.setRemoteDescription(offer);
+
+    // Apply queued ICE candidates
+    for (const ice of pendingIceCandidates) {
+      try { await peerConnection.addIceCandidate(ice); } catch (e) {}
+    }
+    pendingIceCandidates = [];
+
+    // Create answer
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+
+    await supabaseClient.from('call_signals').insert({
+      call_id: currentCall.id,
+      sender_id: currentUser.id,
+      signal_type: 'answer',
+      payload: { sdp: answer.sdp, type: answer.type }
+    });
+  } catch (err) {
+    console.error('[Offer]', err);
+  }
+}
+
+async function handleAnswer(payload) {
+  if (!peerConnection) return;
+  try {
+    const answer = new RTCSessionDescription(payload);
+    await peerConnection.setRemoteDescription(answer);
+
+    for (const ice of pendingIceCandidates) {
+      try { await peerConnection.addIceCandidate(ice); } catch (e) {}
+    }
+    pendingIceCandidates = [];
+  } catch (err) {
+    console.error('[Answer]', err);
+  }
+}
+
+async function handleIce(payload) {
+  const candidate = new RTCIceCandidate(payload);
+  if (peerConnection && peerConnection.remoteDescription) {
+    try { await peerConnection.addIceCandidate(candidate); } catch (e) {}
+  } else {
+    pendingIceCandidates.push(candidate);
+  }
+}
+
+/* ============ Local media ============ */
+async function acquireLocalMedia(type) {
+  try {
+    const constraints = type === 'video'
+      ? { audio: true, video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' } }
+      : { audio: true, video: false };
+
+    localStream = await navigator.mediaDevices.getUserMedia(constraints);
+
+    if (type === 'video') {
+      const localEl = document.getElementById('localVideo');
+      localEl.srcObject = localStream;
+      localEl.style.display = 'block';
+      localEl.muted = true;
+    }
+  } catch (err) {
+    console.error('[Media]', err);
+    toast('Cannot access camera/mic');
+    throw err;
+  }
+}
+
+/* ============ UI: show call screen ============ */
+function showCallScreen(partner, type, statusText, isCaller) {
+  const name = partner.display_name || partner.username || 'User';
+  const initial = name.charAt(0).toUpperCase();
+  const avatarHtml = partner.avatar_url
+    ? `<img src="${escapeHtml(partner.avatar_url)}" alt="">`
+    : initial;
+
+  document.getElementById('callAvatar').innerHTML = avatarHtml;
+  document.getElementById('callName').textContent = name;
+  document.getElementById('callRemoteName').textContent = name;
+  document.getElementById('callStatus').textContent = statusText;
+  document.getElementById('callStatus').classList.add('ringing');
+  document.getElementById('callTimer').textContent = '00:00';
+
+  // Reset videos
+  document.getElementById('remoteVideo').style.display = 'none';
+  document.getElementById('localVideo').style.display = 'none';
+  document.getElementById('remoteVideo').srcObject = null;
+  document.getElementById('localVideo').srcObject = null;
+  document.getElementById('callerInfo').style.opacity = '1';
+  document.getElementById('callerInfo').style.pointerEvents = 'auto';
+
+  renderCallActions(isCaller, type);
+  document.getElementById('callScreen').classList.add('active');
+}
+
+function renderCallActions(isCaller, type) {
+  const actions = document.getElementById('callActions');
+  if (isCaller) {
+    // Only show mute/video toggle + end
+    actions.innerHTML = `
+      <button class="call-btn-round mute" id="btnMute" onclick="toggleMute()">
+        <i class="fas fa-microphone"></i>
+      </button>
+      ${type === 'video' ? `
+        <button class="call-btn-round video-toggle" id="btnCam" onclick="toggleCam()">
+          <i class="fas fa-video"></i>
+        </button>
+      ` : `
+        <button class="call-btn-round speaker" id="btnSpeaker" onclick="toggleSpeaker()">
+          <i class="fas fa-volume-up"></i>
+        </button>
+      `}
+      <button class="call-btn-round decline" onclick="endCall(true)">
+        <i class="fas fa-phone-slash"></i>
+      </button>
+    `;
+  } else {
+    // Receiver already accepted → same controls
+    actions.innerHTML = `
+      <button class="call-btn-round mute" id="btnMute" onclick="toggleMute()">
+        <i class="fas fa-microphone"></i>
+      </button>
+      ${type === 'video' ? `
+        <button class="call-btn-round video-toggle" id="btnCam" onclick="toggleCam()">
+          <i class="fas fa-video"></i>
+        </button>
+      ` : ''}
+      <button class="call-btn-round decline" onclick="endCall(true)">
+        <i class="fas fa-phone-slash"></i>
+      </button>
+    `;
+  }
+}
+
+function setCallStatus(text, ringing) {
+  const el = document.getElementById('callStatus');
+  el.textContent = text;
+  el.classList.toggle('ringing', ringing);
+}
+
+function startCallTimer() {
+  if (callTimerInterval) clearInterval(callTimerInterval);
+  callSeconds = 0;
+  document.getElementById('callStatus').classList.remove('ringing');
+  document.getElementById('callStatus').style.display = 'none';
+  callTimerInterval = setInterval(() => {
+    callSeconds++;
+    const m = Math.floor(callSeconds / 60);
+    const s = callSeconds % 60;
+    document.getElementById('callTimer').textContent =
+      `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }, 1000);
+}
+
+/* ============ End call ============ */
+async function endCall(notify) {
+  try {
+    // Notify other party
+    if (notify && currentCall) {
+      try {
+        await supabaseClient.from('call_signals').insert({
+          call_id: currentCall.id,
+          sender_id: currentUser.id,
+          signal_type: 'hangup',
+          payload: { reason: 'user_ended' }
+        });
+      } catch (e) {}
+    }
+
+    // Update call record
+    if (currentCall && callState !== 'incoming') {
+      const update = {
+        status: callSeconds > 0 ? 'ended' : (callState === 'outgoing' ? 'cancelled' : 'ended'),
+        ended_at: new Date().toISOString(),
+        duration_secs: callSeconds
+      };
+      try {
+        await supabaseClient.from('calls').update(update).eq('id', currentCall.id);
+      } catch (e) {}
+    }
+
+    // Cleanup WebRTC
+    if (peerConnection) { try { peerConnection.close(); } catch (e) {} peerConnection = null; }
+    if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+    if (remoteStream) { remoteStream.getTracks().forEach(t => t.stop()); remoteStream = null; }
+    if (callTimerInterval) { clearInterval(callTimerInterval); callTimerInterval = null; }
+
+    callSeconds = 0;
+    callState = 'idle';
+    currentCall = null;
+    pendingIceCandidates = [];
+
+    document.getElementById('callScreen').classList.remove('active');
+    document.getElementById('incomingCallModal').classList.remove('active');
+
+    // Reload messages to show call log
+    if (activePartner) loadMessages();
+  } catch (err) {
+    console.error('[End call]', err);
+    document.getElementById('callScreen').classList.remove('active');
+    callState = 'idle';
+    currentCall = null;
+  }
+}
+
+/* ============ Call controls ============ */
+let isMuted = false;
+function toggleMute() {
+  if (!localStream) return;
+  const audio = localStream.getAudioTracks()[0];
+  if (audio) {
+    audio.enabled = !audio.enabled;
+    isMuted = !audio.enabled;
+    const btn = document.getElementById('btnMute');
+    btn.classList.toggle('muted', isMuted);
+    btn.innerHTML = isMuted ? '<i class="fas fa-microphone-slash"></i>' : '<i class="fas fa-microphone"></i>';
+  }
+}
+
+let isCamOff = false;
+function toggleCam() {
+  if (!localStream) return;
+  const video = localStream.getVideoTracks()[0];
+  if (video) {
+    video.enabled = !video.enabled;
+    isCamOff = !video.enabled;
+    const btn = document.getElementById('btnCam');
+    btn.classList.toggle('off', isCamOff);
+    btn.innerHTML = isCamOff ? '<i class="fas fa-video-slash"></i>' : '<i class="fas fa-video"></i>';
+    document.getElementById('localVideo').style.opacity = isCamOff ? '0.3' : '1';
+  }
+}
+
+let isSpeakerOn = false;
+function toggleSpeaker() {
+  isSpeakerOn = !isSpeakerOn;
+  const btn = document.getElementById('btnSpeaker');
+  btn.classList.toggle('on', isSpeakerOn);
+  toast(isSpeakerOn ? '🔊 Speaker on' : '🔈 Speaker off');
+}
+
+async function recallUser(userId, type) {
+  // Open the chat and start the call
+  const partner = profileCache.get(userId);
+  if (!partner) {
+    const { data } = await supabaseClient.from('profiles').select('*').eq('id', userId).single();
+    if (!data) { toast('User not found'); return; }
+    profileCache.set(userId, data);
+  }
+  activePartner = profileCache.get(userId);
+  await openChat(userId);
+  setTimeout(() => startCall(type), 500);
 }
 
 /* ============================================================
@@ -1877,7 +2955,6 @@ function autoResize(el) {
   el.style.height = 'auto';
   el.style.height = Math.min(el.scrollHeight, 100) + 'px';
 }
-
 function handleKey(e) {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
@@ -1895,6 +2972,7 @@ function handleTribeKey(e) {
    HELPERS
    ============================================================ */
 function formatTimeAgo(dateStr) {
+  if (!dateStr) return '';
   const s = Math.floor((Date.now() - new Date(dateStr)) / 1000);
   if (s < 60) return 'now';
   const m = Math.floor(s / 60); if (m < 60) return `${m}m`;
@@ -1902,7 +2980,6 @@ function formatTimeAgo(dateStr) {
   const d = Math.floor(h / 24); if (d < 7) return `${d}d`;
   return new Date(dateStr).toLocaleDateString();
 }
-
 function formatDateLabel(dateStr) {
   const d = new Date(dateStr);
   const now = new Date();
@@ -1914,12 +2991,10 @@ function formatDateLabel(dateStr) {
   if (diffDays < 7) return d.toLocaleDateString('en-US', { weekday: 'long' });
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
-
 function escapeHtml(s) {
   return String(s ?? '').replace(/[&<>"']/g, c =>
     ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-
 function toast(msg) {
   const el = document.getElementById('toastMini');
   el.textContent = msg;
@@ -1928,7 +3003,6 @@ function toast(msg) {
   window._toastT = setTimeout(() => el.classList.remove('show'), 2200);
 }
 
-/* ESC closes any open overlay */
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     document.getElementById('imgViewer').classList.remove('active');
