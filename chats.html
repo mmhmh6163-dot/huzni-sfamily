@@ -233,7 +233,6 @@ body {
 .chat-view-header .info .name { font-size: 14px; font-weight: 700; color: var(--az-text); }
 .chat-view-header .info .status { font-size: 11px; color: var(--az-text-secondary); }
 
-/* Call buttons in header */
 .chat-view-header .call-btn {
   width: 40px; height: 40px; border-radius: 50%;
   background: rgba(94,184,255,.12);
@@ -262,7 +261,6 @@ body {
 .chat-messages::-webkit-scrollbar { width: 4px; }
 .chat-messages::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
 
-/* Call log entry */
 .call-log {
   align-self: center;
   background: rgba(94,184,255,.08);
@@ -289,7 +287,6 @@ body {
 }
 .call-log .call-recall:active { transform: scale(.92); }
 
-/* Reply quote */
 .reply-quote {
   background: rgba(0,0,0,.25);
   border-left: 3px solid var(--az-accent);
@@ -311,6 +308,8 @@ body {
   animation: bubbleIn .18s ease;
   position: relative;
   cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
 }
 @keyframes bubbleIn { from { opacity: 0; transform: translateY(6px); } }
 .bubble.me {
@@ -679,7 +678,6 @@ body {
   box-shadow: 0 8px 30px rgba(0,0,0,.6);
 }
 
-/* Call header */
 .call-screen .call-header {
   position: relative;
   z-index: 4;
@@ -696,7 +694,6 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Caller info (center) */
 .call-screen .caller-info {
   flex: 1;
   display: flex;
@@ -740,7 +737,6 @@ body {
   50% { opacity: 1; }
 }
 
-/* Call actions */
 .call-screen .call-actions {
   position: relative;
   z-index: 4;
@@ -787,7 +783,7 @@ body {
   font-size: 20px;
 }
 
-/* ==================== CALL RINGING OVERLAY (receiver) ==================== */
+/* ==================== INCOMING CALL ==================== */
 .incoming-call-modal {
   position: fixed; inset: 0;
   background: rgba(5,5,16,.95);
@@ -867,6 +863,13 @@ body {
   box-shadow: 0 10px 40px rgba(0,0,0,.5);
 }
 .toast-mini.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ==================== CALL PERMISSION BANNER ==================== */
+#callPermissionBanner.show {
+  opacity: 1 !important;
+  transform: translateX(-50%) translateY(0) !important;
+  pointer-events: auto !important;
+}
 </style>
 </head>
 <body>
@@ -1083,9 +1086,29 @@ body {
     <div class="call-status ringing" id="callStatus">Ringing…</div>
   </div>
 
-  <div class="call-actions" id="callActions">
-    <!-- Will be dynamically filled -->
+  <div class="call-actions" id="callActions"></div>
+</div>
+
+<!-- ==================== CALL PERMISSION BANNER ==================== -->
+<div id="callPermissionBanner" style="
+  position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(100px);
+  background:linear-gradient(135deg, rgba(255,107,53,.15), rgba(255,178,15,.1));
+  border:1px solid rgba(255,107,53,.4);
+  border-radius:14px;
+  padding:14px 16px;
+  max-width:90%; width:340px;
+  display:flex; align-items:center; gap:12px;
+  z-index:9998;
+  opacity:0; pointer-events:none;
+  transition:all .3s ease;
+  box-shadow:0 10px 40px rgba(0,0,0,.6);
+">
+  <i class="fas fa-microphone-slash" style="font-size:22px; color:#ff7675; flex-shrink:0;"></i>
+  <div style="flex:1; font-size:13px; color:var(--az-text); line-height:1.4;">
+    <strong style="display:block; margin-bottom:3px;">Permission needed</strong>
+    <span id="permissionBannerText">Allow microphone/camera in browser settings to make calls</span>
   </div>
+  <button onclick="hidePermissionBanner()" style="background:none; border:none; color:var(--az-text-secondary); font-size:18px; cursor:pointer; padding:4px;">×</button>
 </div>
 
 <!-- Toast -->
@@ -1113,20 +1136,16 @@ let tribeMessageCache = new Map();
 let isOpeningChat  = false;
 let isOpeningTribe = false;
 
-// Attachments
 let dmPendingFile      = null;
 let dmPendingFileUrl   = null;
 let tribePendingFile     = null;
 let tribePendingFileUrl  = null;
 
-// Reply state
 let dmReplyTo    = null;
 let tribeReplyTo = null;
 
-// Long press
 let lpContext = { type: null, msg: null };
 
-// Recording
 let dmRecorder = null;
 let tribeRecorder = null;
 let recChunks = [];
@@ -1136,16 +1155,14 @@ let recTarget = null;
 
 let tribeUnreadTotal = 0;
 
-// ============================================================
 // CALL STATE
-// ============================================================
-let currentCall = null;         // { id, type, role: 'caller'|'receiver', partner }
+let currentCall = null;
 let peerConnection = null;
 let localStream = null;
 let remoteStream = null;
 let callTimerInterval = null;
 let callSeconds = 0;
-let callState = 'idle';         // idle | outgoing | incoming | active
+let callState = 'idle';
 let pendingIceCandidates = [];
 let incomingCallData = null;
 let callSignalChannel = null;
@@ -1195,12 +1212,27 @@ async function init() {
   const params = new URLSearchParams(window.location.search);
   const autoUser  = params.get('user');
   const autoTribe = params.get('tribe');
-  if (autoUser && autoUser !== currentUser.id) openChat(autoUser);
-  if (autoTribe) openTribe(autoTribe);
+  const autoCall  = params.get('call');
+
+  if (autoUser && autoUser !== currentUser.id) {
+    await openChat(autoUser);
+  }
+  if (autoTribe) {
+    await openTribe(autoTribe);
+  }
+
+  // Auto-start call if requested
+  if (autoCall && autoUser && (autoCall === 'voice' || autoCall === 'video')) {
+    setTimeout(() => {
+      if (activePartner) {
+        startCall(autoCall);
+      }
+    }, 900);
+  }
 }
 
 /* ============================================================
-   LOADERS (same as before + unified requests)
+   LOADERS
    ============================================================ */
 async function loadChats() {
   try {
@@ -1258,7 +1290,6 @@ async function loadChats() {
 
 async function loadRequests() {
   try {
-    // Try unified view first
     const { data, error } = await supabaseClient
       .from('all_requests')
       .select('*')
@@ -1269,7 +1300,6 @@ async function loadRequests() {
     if (!error && data) {
       requests = data;
     } else {
-      // Fallback: follow requests only
       const { data: fb } = await supabaseClient
         .from('follow_requests')
         .select('id, status, created_at, requester_id, target_id')
@@ -1370,7 +1400,9 @@ function renderChatsList(wrap) {
     const name = p.display_name || p.username || 'user';
     const initial = name.charAt(0).toUpperCase();
     const verified = p.is_verified ? '<i class="fas fa-circle-check v"></i>' : '';
-    const avatar = p.avatar_url ? `<img src="${escapeHtml(p.avatar_url)}" alt="" loading="lazy">` : initial;
+    const avatar = p.avatar_url
+      ? `<img src="${escapeHtml(p.avatar_url)}" alt="${escapeHtml(name)}'s avatar" loading="lazy" onerror="this.style.display='none'">`
+      : initial;
     const preview = buildPreview(c.lastMessage, 'dm');
     const time = formatTimeAgo(c.lastMessage.created_at);
     const unread = c.unread > 0 ? `<div class="unread-dot">${c.unread}</div>` : '';
@@ -1409,7 +1441,9 @@ function renderTribesList(wrap) {
 
   wrap.innerHTML = filtered.map(t => {
     const initial = (t.name || 'T').charAt(0).toUpperCase();
-    const avatar = t.avatar_url ? `<img src="${escapeHtml(t.avatar_url)}" alt="">` : initial;
+    const avatar = t.avatar_url
+      ? `<img src="${escapeHtml(t.avatar_url)}" alt="${escapeHtml(t.name)}'s avatar" onerror="this.style.display='none'">`
+      : initial;
     const preview = t.lastMessage ? buildPreview(t.lastMessage, 'tribe', t) : '<i>No messages yet</i>';
     const time = t.lastMessage ? formatTimeAgo(t.lastMessage.created_at) : '';
     const unread = t.unread > 0 ? `<div class="unread-dot">${t.unread}</div>` : '';
@@ -1447,13 +1481,14 @@ function renderRequestsList(wrap) {
     const p = r.requester || {};
     const name = p.display_name || p.username || 'user';
     const initial = name.charAt(0).toUpperCase();
-    const avatar = p.avatar_url ? `<img src="${escapeHtml(p.avatar_url)}" alt="" loading="lazy">` : initial;
+    const avatar = p.avatar_url
+      ? `<img src="${escapeHtml(p.avatar_url)}" alt="${escapeHtml(name)}'s avatar" loading="lazy" onerror="this.style.display='none'">`
+      : initial;
 
-    // ============ TRIBE INVITE ROW ============
     if (r.kind === 'tribe') {
       const tInitial = (r.tribe_name || 'T').charAt(0).toUpperCase();
       const tAvatar = r.tribe_avatar
-        ? `<img src="${escapeHtml(r.tribe_avatar)}" alt="">`
+        ? `<img src="${escapeHtml(r.tribe_avatar)}" alt="Tribe avatar" onerror="this.style.display='none'">`
         : tInitial;
 
       return `
@@ -1478,7 +1513,6 @@ function renderRequestsList(wrap) {
         </div>`;
     }
 
-    // ============ FOLLOW REQUEST ROW ============
     if (r.status === 'pending') {
       return `
         <div class="chat-row" style="cursor:default;">
@@ -1530,7 +1564,7 @@ function switchTab(tab, el) {
 }
 
 /* ============================================================
-   RESPOND REQUEST (follow)
+   RESPOND REQUESTS
    ============================================================ */
 async function respondRequest(reqId, status, btn) {
   btn.disabled = true;
@@ -1552,9 +1586,6 @@ async function respondRequest(reqId, status, btn) {
   }
 }
 
-/* ============================================================
-   RESPOND TRIBE INVITE
-   ============================================================ */
 async function respondTribeInvite(inviteId, status, btn) {
   btn.disabled = true;
   try {
@@ -1657,7 +1688,9 @@ function renderInviteFriendsList() {
   list.innerHTML = filtered.map(f => {
     const name = f.display_name || f.username || 'user';
     const initial = name.charAt(0).toUpperCase();
-    const avatar = f.avatar_url ? `<img src="${escapeHtml(f.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover;">` : initial;
+    const avatar = f.avatar_url
+      ? `<img src="${escapeHtml(f.avatar_url)}" alt="${escapeHtml(name)}'s avatar" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">`
+      : initial;
     const sel = selectedInviteIds.has(f.id);
     return `
       <div onclick="toggleInviteFriend('${f.id}')" style="display:flex;align-items:center;gap:12px;padding:10px 6px;border-radius:12px;cursor:pointer;background:${sel ? 'rgba(255,107,53,.12)' : 'transparent'};border:1px solid ${sel ? 'var(--az-primary)' : 'transparent'};margin-bottom:6px;">
@@ -1751,7 +1784,9 @@ async function openChat(partnerId) {
 
     const name = partner.display_name || partner.username || 'user';
     const initial = name.charAt(0).toUpperCase();
-    const avatar = partner.avatar_url ? `<img src="${escapeHtml(partner.avatar_url)}" alt="">` : initial;
+    const avatar = partner.avatar_url
+      ? `<img src="${escapeHtml(partner.avatar_url)}" alt="${escapeHtml(name)}'s avatar" onerror="this.style.display='none'">`
+      : initial;
 
     document.getElementById('cvAvatar').innerHTML = avatar;
     document.getElementById('cvName').textContent = name;
@@ -1799,7 +1834,9 @@ async function openTribe(tribeId) {
     clearTribeAttachment();
 
     const initial = (tribe.name || 'T').charAt(0).toUpperCase();
-    const avatar = tribe.avatar_url ? `<img src="${escapeHtml(tribe.avatar_url)}" alt="">` : initial;
+    const avatar = tribe.avatar_url
+      ? `<img src="${escapeHtml(tribe.avatar_url)}" alt="${escapeHtml(tribe.name)}'s avatar" onerror="this.style.display='none'">`
+      : initial;
 
     document.getElementById('tvAvatar').innerHTML = avatar;
     document.getElementById('tvName').textContent = tribe.name || 'Tribe';
@@ -1845,7 +1882,6 @@ async function loadMessages() {
 
     if (error) throw error;
 
-    // Also load call history between the two users
     const { data: calls } = await supabaseClient
       .from('calls')
       .select('*')
@@ -1893,7 +1929,6 @@ function renderMessagesInto(box, messages, kind, calls) {
     return;
   }
 
-  // Merge messages + calls into one timeline
   const timeline = [];
   messages.forEach(m => timeline.push({ type: 'msg', data: m, at: m.created_at }));
   (calls || []).forEach(c => timeline.push({ type: 'call', data: c, at: c.created_at }));
@@ -1981,7 +2016,7 @@ function renderBubble(m, kind, msgMap) {
   if (m.media_url && !m.is_deleted) {
     const url = escapeHtml(m.media_url);
     if (m.media_type === 'image') {
-      mediaHtml = `<div class="media" onclick="event.stopPropagation(); openImgViewer('${url}')"><img src="${url}" alt="" loading="lazy"></div>`;
+      mediaHtml = `<div class="media" onclick="event.stopPropagation(); openImgViewer('${url}')"><img src="${url}" alt="Shared image" loading="lazy" onerror="this.style.display='none'"></div>`;
     } else if (m.media_type === 'video') {
       mediaHtml = `<div class="media"><video src="${url}" controls playsinline preload="metadata"></video></div>`;
     } else if (m.media_type === 'audio') {
@@ -2002,7 +2037,10 @@ function renderBubble(m, kind, msgMap) {
   return `
     <div class="bubble ${mine ? 'me' : 'them'} ${m.is_pinned ? 'pinned' : ''} ${m.is_deleted ? 'deleted' : ''}"
          data-msg-id="${m.id}"
-         oncontextmenu="event.preventDefault(); openLpMenu('${kind}', '${m.id}', event); return false;">
+         oncontextmenu="event.preventDefault(); openLpMenu('${kind}', '${m.id}', event); return false;"
+         ontouchstart="handleTouchStart(event, '${kind}', '${m.id}')"
+         ontouchend="handleTouchEnd(event)"
+         ontouchmove="handleTouchCancel(event)">
       ${pinIcon}
       ${senderHtml}
       ${replyHtml}
@@ -2014,7 +2052,7 @@ function renderBubble(m, kind, msgMap) {
 }
 
 /* ============================================================
-   SEND MESSAGE (DM + TRIBE)
+   SEND MESSAGE
    ============================================================ */
 async function sendMessage() {
   if (!activePartner) return;
@@ -2139,7 +2177,7 @@ function showAttachPreview(kind, file, url) {
 
   let type = 'file';
   let icon = '<i class="fas fa-file"></i>';
-  if (file.type.startsWith('image/')) { type = 'image'; icon = `<img src="${url}" alt="">`; }
+  if (file.type.startsWith('image/')) { type = 'image'; icon = `<img src="${url}" alt="Attachment preview">`; }
   else if (file.type.startsWith('video/')) { type = 'video'; icon = `<video src="${url}" muted></video>`; }
   else if (file.type.startsWith('audio/')) { type = 'audio'; icon = '<i class="fas fa-music"></i>'; }
 
@@ -2239,6 +2277,53 @@ async function lpAction(action) {
 }
 
 /* ============================================================
+   TOUCH LONG-PRESS HANDLER
+   ============================================================ */
+let lpTouchTimer = null;
+let lpTouchStartX = 0;
+let lpTouchStartY = 0;
+let lpTouchFired = false;
+
+function handleTouchStart(event, kind, msgId) {
+  if (event.touches.length > 1) return;
+
+  lpTouchFired = false;
+  lpTouchStartX = event.touches[0].clientX;
+  lpTouchStartY = event.touches[0].clientY;
+
+  if (lpTouchTimer) clearTimeout(lpTouchTimer);
+
+  lpTouchTimer = setTimeout(() => {
+    lpTouchFired = true;
+    if (navigator.vibrate) navigator.vibrate(20);
+    openLpMenu(kind, msgId, event);
+  }, 500);
+}
+
+function handleTouchEnd(event) {
+  if (lpTouchTimer) {
+    clearTimeout(lpTouchTimer);
+    lpTouchTimer = null;
+  }
+  if (lpTouchFired) {
+    event.preventDefault();
+    lpTouchFired = false;
+  }
+}
+
+function handleTouchCancel(event) {
+  if (!event.touches || event.touches.length === 0) return;
+  const x = event.touches[0].clientX;
+  const y = event.touches[0].clientY;
+  if (Math.abs(x - lpTouchStartX) > 10 || Math.abs(y - lpTouchStartY) > 10) {
+    if (lpTouchTimer) {
+      clearTimeout(lpTouchTimer);
+      lpTouchTimer = null;
+    }
+  }
+}
+
+/* ============================================================
    VOICE RECORDING
    ============================================================ */
 async function startRecording() { if (!activePartner) return; recTarget = 'dm'; await beginRecording(); }
@@ -2272,7 +2357,12 @@ async function beginRecording() {
     document.getElementById('micBtn')?.classList.add('recording');
     document.getElementById('tribeMicBtn')?.classList.add('recording');
   } catch (e) {
-    toast('Microphone access denied');
+    console.error('[Rec]', e);
+    if (e.name === 'NotAllowedError') {
+      showPermissionBanner('Microphone permission denied');
+    } else {
+      toast('Microphone access denied');
+    }
   }
 }
 
@@ -2414,7 +2504,6 @@ function setupRealtimeTribe() {
 function setupCallListeners() {
   if (!currentUser) return;
 
-  // Listen for incoming calls
   if (realtimeCalls) supabaseClient.removeChannel(realtimeCalls);
   realtimeCalls = supabaseClient
     .channel('calls-rt')
@@ -2433,10 +2522,8 @@ function setupCallListeners() {
         filter: `caller_id=eq.${currentUser.id}` },
       payload => {
         const call = payload.new;
-        // If receiver accepted/declined
         if (currentCall && call.id === currentCall.id) {
           if (call.status === 'accepted') {
-            // Caller already started; update UI
             setCallStatus('Connected', false);
             startCallTimer();
           } else if (call.status === 'declined' || call.status === 'missed') {
@@ -2448,7 +2535,6 @@ function setupCallListeners() {
     )
     .subscribe();
 
-  // Listen for WebRTC signals
   if (realtimeSignals) supabaseClient.removeChannel(realtimeSignals);
   realtimeSignals = supabaseClient
     .channel('signals-rt')
@@ -2474,7 +2560,6 @@ function setupCallListeners() {
     .subscribe();
 }
 
-/* ============ Start an outgoing call ============ */
 async function startCall(type) {
   if (!activePartner) return;
   if (callState !== 'idle') { toast('Already in a call'); return; }
@@ -2482,7 +2567,6 @@ async function startCall(type) {
   try {
     callState = 'outgoing';
 
-    // Create the call row
     const { data: call, error } = await supabaseClient
       .from('calls')
       .insert({
@@ -2497,20 +2581,13 @@ async function startCall(type) {
 
     currentCall = { id: call.id, type, role: 'caller', partner: activePartner };
 
-    // Show call screen
     showCallScreen(activePartner, type, 'Calling…', true);
-
-    // Get local media
     await acquireLocalMedia(type);
-
-    // Create peer connection
     createPeerConnection();
 
-    // Create offer
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer);
 
-    // Send offer
     await supabaseClient.from('call_signals').insert({
       call_id: call.id,
       sender_id: currentUser.id,
@@ -2525,10 +2602,8 @@ async function startCall(type) {
   }
 }
 
-/* ============ Show incoming call modal (receiver) ============ */
 function showIncomingCall(call) {
   if (callState !== 'idle') {
-    // Busy — auto-decline
     supabaseClient.from('calls').update({ status: 'declined', ended_at: new Date().toISOString() }).eq('id', call.id);
     return;
   }
@@ -2538,14 +2613,13 @@ function showIncomingCall(call) {
 
   const caller = profileCache.get(call.caller_id) || { username: 'User' };
   if (!profileCache.has(call.caller_id)) {
-    // Fetch and cache
     supabaseClient.from('profiles').select('id, username, display_name, avatar_url').eq('id', call.caller_id).maybeSingle().then(({ data }) => {
       if (data) {
         profileCache.set(call.caller_id, data);
         const initial = (data.display_name || data.username || 'U').charAt(0).toUpperCase();
         document.getElementById('incName').textContent = data.display_name || data.username;
         document.getElementById('incAvatar').innerHTML =
-          data.avatar_url ? `<img src="${escapeHtml(data.avatar_url)}" alt="">` : initial;
+          data.avatar_url ? `<img src="${escapeHtml(data.avatar_url)}" alt="Caller avatar" onerror="this.style.display='none'">` : initial;
       }
     });
   }
@@ -2554,13 +2628,12 @@ function showIncomingCall(call) {
   const initial = name.charAt(0).toUpperCase();
   document.getElementById('incName').textContent = name;
   document.getElementById('incAvatar').innerHTML =
-    caller.avatar_url ? `<img src="${escapeHtml(caller.avatar_url)}" alt="">` : initial;
+    caller.avatar_url ? `<img src="${escapeHtml(caller.avatar_url)}" alt="${escapeHtml(name)}'s avatar" onerror="this.style.display='none'">` : initial;
   document.getElementById('incType').textContent =
     call.call_type === 'video' ? '📹 Incoming video call' : '📞 Incoming voice call';
 
   document.getElementById('incomingCallModal').classList.add('active');
 
-  // Auto-decline after 45s
   setTimeout(() => {
     if (callState === 'incoming' && incomingCallData && incomingCallData.id === call.id) {
       declineIncomingCall();
@@ -2587,12 +2660,10 @@ async function acceptIncomingCall() {
   callState = 'active';
 
   try {
-    // Update call status
     await supabaseClient.from('calls')
       .update({ status: 'accepted', accepted_at: new Date().toISOString() })
       .eq('id', call.id);
 
-    // Load partner profile
     const partner = profileCache.get(call.caller_id) || await (async () => {
       const { data } = await supabaseClient.from('profiles').select('*').eq('id', call.caller_id).single();
       return data;
@@ -2603,7 +2674,6 @@ async function acceptIncomingCall() {
     showCallScreen(partner, call.call_type, 'Connecting…', false);
     await acquireLocalMedia(call.call_type);
     createPeerConnection();
-    // Wait for the offer signal from caller (handled by realtimeSignals listener)
 
   } catch (err) {
     console.error('[Accept]', err);
@@ -2612,7 +2682,6 @@ async function acceptIncomingCall() {
   }
 }
 
-/* ============ Peer connection ============ */
 function createPeerConnection() {
   if (peerConnection) {
     try { peerConnection.close(); } catch (e) {}
@@ -2620,19 +2689,16 @@ function createPeerConnection() {
 
   peerConnection = new RTCPeerConnection(ICE_SERVERS);
 
-  // Add local tracks
   if (localStream) {
     localStream.getTracks().forEach(track => {
       peerConnection.addTrack(track, localStream);
     });
   }
 
-  // Receive remote tracks
   remoteStream = new MediaStream();
   peerConnection.ontrack = (event) => {
     event.streams[0].getTracks().forEach(track => remoteStream.addTrack(track));
 
-    // Display remote media
     if (currentCall && currentCall.type === 'video') {
       const remoteEl = document.getElementById('remoteVideo');
       remoteEl.srcObject = remoteStream;
@@ -2640,12 +2706,10 @@ function createPeerConnection() {
       document.getElementById('callerInfo').style.opacity = '0';
       document.getElementById('callerInfo').style.pointerEvents = 'none';
     } else {
-      // Voice — show small avatar UI
       document.getElementById('callerInfo').style.opacity = '1';
     }
   };
 
-  // ICE candidates
   peerConnection.onicecandidate = async (event) => {
     if (event.candidate && currentCall) {
       try {
@@ -2659,9 +2723,7 @@ function createPeerConnection() {
     }
   };
 
-  // Connection state
   peerConnection.onconnectionstatechange = () => {
-    console.log('[Call] state:', peerConnection.connectionState);
     if (peerConnection.connectionState === 'connected') {
       setCallStatus('Connected', false);
       startCallTimer();
@@ -2674,23 +2736,19 @@ function createPeerConnection() {
   };
 }
 
-/* ============ WebRTC signaling handlers ============ */
 async function handleOffer(payload) {
   if (!peerConnection) {
-    // Receiver: create PC if not ready
     createPeerConnection();
   }
   try {
     const offer = new RTCSessionDescription(payload);
     await peerConnection.setRemoteDescription(offer);
 
-    // Apply queued ICE candidates
     for (const ice of pendingIceCandidates) {
       try { await peerConnection.addIceCandidate(ice); } catch (e) {}
     }
     pendingIceCandidates = [];
 
-    // Create answer
     const answer = await peerConnection.createAnswer();
     await peerConnection.setLocalDescription(answer);
 
@@ -2729,9 +2787,14 @@ async function handleIce(payload) {
   }
 }
 
-/* ============ Local media ============ */
+/* ============ Local media WITH permission detection ============ */
 async function acquireLocalMedia(type) {
   try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      showPermissionBanner('Your browser does not support voice/video calls');
+      throw new Error('getUserMedia not supported');
+    }
+
     const constraints = type === 'video'
       ? { audio: true, video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' } }
       : { audio: true, video: false };
@@ -2746,17 +2809,59 @@ async function acquireLocalMedia(type) {
     }
   } catch (err) {
     console.error('[Media]', err);
-    toast('Cannot access camera/mic');
+    const name = err?.name || '';
+
+    if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+      showPermissionBanner(
+        type === 'video'
+          ? 'Camera & microphone permission denied'
+          : 'Microphone permission denied'
+      );
+      toast('Permission denied — check browser settings');
+    } else if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+      showPermissionBanner(
+        type === 'video'
+          ? 'No camera or microphone found on this device'
+          : 'No microphone found on this device'
+      );
+      toast('No device found');
+    } else if (name === 'NotReadableError' || name === 'TrackStartError') {
+      showPermissionBanner('Microphone/camera is already in use by another app');
+      toast('Device is busy — close other apps');
+    } else if (name === 'OverconstrainedError') {
+      showPermissionBanner('Your device does not meet camera requirements');
+      toast('Camera not supported');
+    } else {
+      showPermissionBanner('Cannot access microphone/camera');
+      toast('Access failed — try again');
+    }
     throw err;
   }
 }
 
-/* ============ UI: show call screen ============ */
+/* ============ Permission Banner Helpers ============ */
+function showPermissionBanner(customText) {
+  const banner = document.getElementById('callPermissionBanner');
+  if (!banner) return;
+  if (customText) {
+    document.getElementById('permissionBannerText').textContent = customText;
+  }
+  banner.classList.add('show');
+  clearTimeout(window._permBannerTimer);
+  window._permBannerTimer = setTimeout(hidePermissionBanner, 8000);
+}
+
+function hidePermissionBanner() {
+  const banner = document.getElementById('callPermissionBanner');
+  if (banner) banner.classList.remove('show');
+}
+
+/* ============ Call Screen ============ */
 function showCallScreen(partner, type, statusText, isCaller) {
   const name = partner.display_name || partner.username || 'User';
   const initial = name.charAt(0).toUpperCase();
   const avatarHtml = partner.avatar_url
-    ? `<img src="${escapeHtml(partner.avatar_url)}" alt="">`
+    ? `<img src="${escapeHtml(partner.avatar_url)}" alt="${escapeHtml(name)}'s avatar" onerror="this.style.display='none'">`
     : initial;
 
   document.getElementById('callAvatar').innerHTML = avatarHtml;
@@ -2766,7 +2871,6 @@ function showCallScreen(partner, type, statusText, isCaller) {
   document.getElementById('callStatus').classList.add('ringing');
   document.getElementById('callTimer').textContent = '00:00';
 
-  // Reset videos
   document.getElementById('remoteVideo').style.display = 'none';
   document.getElementById('localVideo').style.display = 'none';
   document.getElementById('remoteVideo').srcObject = null;
@@ -2781,7 +2885,6 @@ function showCallScreen(partner, type, statusText, isCaller) {
 function renderCallActions(isCaller, type) {
   const actions = document.getElementById('callActions');
   if (isCaller) {
-    // Only show mute/video toggle + end
     actions.innerHTML = `
       <button class="call-btn-round mute" id="btnMute" onclick="toggleMute()">
         <i class="fas fa-microphone"></i>
@@ -2800,7 +2903,6 @@ function renderCallActions(isCaller, type) {
       </button>
     `;
   } else {
-    // Receiver already accepted → same controls
     actions.innerHTML = `
       <button class="call-btn-round mute" id="btnMute" onclick="toggleMute()">
         <i class="fas fa-microphone"></i>
@@ -2837,10 +2939,8 @@ function startCallTimer() {
   }, 1000);
 }
 
-/* ============ End call ============ */
 async function endCall(notify) {
   try {
-    // Notify other party
     if (notify && currentCall) {
       try {
         await supabaseClient.from('call_signals').insert({
@@ -2852,7 +2952,6 @@ async function endCall(notify) {
       } catch (e) {}
     }
 
-    // Update call record
     if (currentCall && callState !== 'incoming') {
       const update = {
         status: callSeconds > 0 ? 'ended' : (callState === 'outgoing' ? 'cancelled' : 'ended'),
@@ -2864,7 +2963,6 @@ async function endCall(notify) {
       } catch (e) {}
     }
 
-    // Cleanup WebRTC
     if (peerConnection) { try { peerConnection.close(); } catch (e) {} peerConnection = null; }
     if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
     if (remoteStream) { remoteStream.getTracks().forEach(t => t.stop()); remoteStream = null; }
@@ -2878,7 +2976,6 @@ async function endCall(notify) {
     document.getElementById('callScreen').classList.remove('active');
     document.getElementById('incomingCallModal').classList.remove('active');
 
-    // Reload messages to show call log
     if (activePartner) loadMessages();
   } catch (err) {
     console.error('[End call]', err);
@@ -2888,7 +2985,6 @@ async function endCall(notify) {
   }
 }
 
-/* ============ Call controls ============ */
 let isMuted = false;
 function toggleMute() {
   if (!localStream) return;
@@ -2925,7 +3021,6 @@ function toggleSpeaker() {
 }
 
 async function recallUser(userId, type) {
-  // Open the chat and start the call
   const partner = profileCache.get(userId);
   if (!partner) {
     const { data } = await supabaseClient.from('profiles').select('*').eq('id', userId).single();
@@ -3008,6 +3103,48 @@ document.addEventListener('keydown', e => {
     document.getElementById('imgViewer').classList.remove('active');
     document.getElementById('lpOverlay').classList.remove('active');
     cancelRecording();
+  }
+});
+
+/* ============================================================
+   CLEANUP ON UNLOAD
+   ============================================================ */
+window.addEventListener('beforeunload', () => {
+  // Stop any active call gracefully
+  try {
+    if (callState !== 'idle' || peerConnection || localStream) {
+      if (currentCall && currentUser) {
+        try {
+          supabaseClient.from('call_signals').insert({
+            call_id: currentCall.id,
+            sender_id: currentUser.id,
+            signal_type: 'hangup',
+            payload: { reason: 'page_unload' }
+          });
+        } catch (e) {}
+      }
+      if (peerConnection) { try { peerConnection.close(); } catch (e) {} }
+      if (localStream) { localStream.getTracks().forEach(t => t.stop()); }
+      if (remoteStream) { remoteStream.getTracks().forEach(t => t.stop()); }
+    }
+  } catch (e) {}
+
+  // Clean up realtime channels
+  try {
+    if (realtimeDM) supabaseClient.removeChannel(realtimeDM);
+    if (realtimeTribe) supabaseClient.removeChannel(realtimeTribe);
+    if (realtimeCalls) supabaseClient.removeChannel(realtimeCalls);
+    if (realtimeSignals) supabaseClient.removeChannel(realtimeSignals);
+  } catch (e) {}
+});
+
+// Stop tracks when page hidden for a long time
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && callState === 'idle') {
+    if (localStream) {
+      localStream.getTracks().forEach(t => t.stop());
+      localStream = null;
+    }
   }
 });
 </script>
