@@ -248,6 +248,13 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   padding:0 2px;
 }
+.ig-story-ring.boosted {
+  animation: ringBoost 2s ease-in-out infinite;
+}
+@keyframes ringBoost {
+  0%,100% { box-shadow:0 0 12px rgba(255,107,53,.5); }
+  50% { box-shadow:0 0 25px rgba(124,58,237,.8); }
+}
 
 /* ==================== FEED ==================== */
 .ig-feed { max-width:640px; margin:0 auto; }
@@ -356,7 +363,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   100% { transform:translate(-50%,-50%) scale(1.3); opacity:0; }
 }
 
-/* Boost info bar inside post */
 .post-boost-bar {
   padding:10px 16px;
   background:linear-gradient(135deg, rgba(94,184,255,.08), rgba(124,58,237,.05));
@@ -762,15 +768,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 }
 .viewer-item .v-info .v-time {
   font-size:11px; color:var(--az-text-secondary); margin-top:2px;
-}
-.viewer-item .v-follow-btn {
-  padding:7px 14px; border-radius:18px;
-  background:var(--az-gradient); color:#fff;
-  border:none; font-weight:700; font-size:12px;
-  cursor:pointer; white-space:nowrap;
-}
-.viewer-item .v-follow-btn.following {
-  background:transparent; border:1px solid rgba(255,255,255,.2); color:var(--az-text);
 }
 
 /* ==================== POST OPTIONS MODAL ==================== */
@@ -1340,6 +1337,7 @@ let realtimeFeedChannel = null;
 
 let viewObserver = null;
 const viewedPosts = new Set();
+const shownBoostedIds = new Set(); // prevent boosted duplicates across pages
 
 let boostStats = null;
 
@@ -1519,7 +1517,7 @@ function goToStory() {
 }
 
 /* ============================================================
-   LIKED + SAVED + BOOST STATS
+   LIKED / SAVED / BOOST STATS
    ============================================================ */
 async function loadLikedPosts() {
   if (!currentUser) return;
@@ -1552,19 +1550,15 @@ async function loadBoostStats() {
     if (error) throw error;
     const stats = data && data[0];
     boostStats = stats;
-
-    // Re-boost nudge: if user has expired boosts and 0 active
     const nudge = document.getElementById('reboostNudge');
     if (stats && stats.total_boosts > 0 && stats.active_boosts === 0) {
       nudge.classList.add('show');
       document.getElementById('reboostTitle').textContent = `Boost again! 🔥`;
-      document.getElementById('reboostDesc').textContent =
-        `Your last boost ended. Get back in the spotlight for as little as $0.99.`;
+      document.getElementById('reboostDesc').textContent = `Your last boost ended. Get back in the spotlight for as little as $0.99.`;
     } else if (stats && stats.expiring_soon > 0) {
       nudge.classList.add('show');
       document.getElementById('reboostTitle').textContent = `Boost expiring soon!`;
-      document.getElementById('reboostDesc').textContent =
-        `${stats.expiring_soon} of your boosted posts expire in under 6 hours. Renew to stay visible.`;
+      document.getElementById('reboostDesc').textContent = `${stats.expiring_soon} of your boosted posts expire in under 6 hours. Renew to stay visible.`;
     } else {
       nudge.classList.remove('show');
     }
@@ -1572,24 +1566,20 @@ async function loadBoostStats() {
 }
 
 function openBoostFromNudge() {
-  // Find user's most recent post (likely what they were boosting)
   const myPost = currentFeedPosts.find(p => p.user_id === currentUser?.id);
-  if (myPost) {
-    openBoost(myPost.id);
-  } else {
-    // No posts in feed → go to profile
-    window.location.href = 'profile.html';
-  }
+  if (myPost) openBoost(myPost.id);
+  else window.location.href = 'profile.html';
 }
 
 /* ============================================================
-   FEED LOADING
+   FEED LOADING — mode-aware with guaranteed boosted posts
    ============================================================ */
 async function resetAndLoadFeed() {
   feedOffset = 0;
   feedExhausted = false;
   currentFeedPosts = [];
   viewedPosts.clear();
+  shownBoostedIds.clear();
   await loadMoreFeed(true);
 }
 
@@ -1622,46 +1612,7 @@ async function loadMoreFeed(replace = false) {
       if (targetPost) posts.push(targetPost);
     }
 
-    const from = feedOffset;
-    const to   = feedOffset + FEED_PAGE_SIZE - 1;
-
-    let query = supabaseClient
-      .from('posts')
-      .select(`*, profiles:user_id (username, display_name, avatar_url, is_verified)`)
-      .eq('visibility', 'public')
-      .order('created_at', { ascending: false })
-      .range(from, to);
-
-    if (deepLinkPostId && replace) query = query.neq('id', deepLinkPostId);
-
-    // ============ FOLLOWING MODE — Show following + boosted everywhere ============
-    if (currentFeedMode === 'following') {
-      if (!currentUser || followingIds.size === 0) {
-        // Still show all boosted posts even if no follows
-        query = query
-          .eq('is_boosted', true)
-          .gt('boost_expires_at', new Date().toISOString());
-      } else {
-        const ids = [...followingIds].map(id => `"${id}"`).join(',');
-        const nowIso = new Date().toISOString();
-        query = query.or(`user_id.in.(${ids}),and(is_boosted.eq.true,boost_expires_at.gt.${nowIso})`);
-      }
-    }
-
-    // ============ BOOSTED MODE ============
-    if (currentFeedMode === 'boosted') {
-      query = query
-        .eq('is_boosted', true)
-        .gt('boost_expires_at', new Date().toISOString());
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-
-    const pageData = data || [];
-    if (pageData.length < FEED_PAGE_SIZE) feedExhausted = true;
-    feedOffset += pageData.length;
-
+    const pageData = await fetchPostsForMode();
     posts = posts.concat(pageData);
 
     const loader = document.getElementById('feedLoader');
@@ -1698,6 +1649,147 @@ async function loadMoreFeed(replace = false) {
 }
 
 /* ============================================================
+   FETCH POSTS FOR MODE — the heart of the boost logic
+   ============================================================ */
+async function fetchPostsForMode() {
+  const from = feedOffset;
+  const to   = feedOffset + FEED_PAGE_SIZE - 1;
+  const nowIso = new Date().toISOString();
+  const selectFields = `*, profiles:user_id (username, display_name, avatar_url, is_verified)`;
+
+  // ---------- BOOSTED MODE ----------
+  if (currentFeedMode === 'boosted') {
+    const { data, error } = await supabaseClient
+      .from('posts')
+      .select(selectFields)
+      .eq('visibility', 'public')
+      .eq('is_boosted', true)
+      .gt('boost_expires_at', nowIso)
+      .order('boost_expires_at', { ascending: false })
+      .range(from, to);
+    if (error) throw error;
+    if ((data || []).length < FEED_PAGE_SIZE) feedExhausted = true;
+    feedOffset += (data || []).length;
+    return data || [];
+  }
+
+  // ---------- FOR YOU MODE ----------
+  if (currentFeedMode === 'for-you') {
+    const { data: normals, error: nErr } = await supabaseClient
+      .from('posts')
+      .select(selectFields)
+      .eq('visibility', 'public')
+      .or(`is_boosted.is.null,is_boosted.eq.false,boost_expires_at.lt.${nowIso}`)
+      .order('created_at', { ascending: false })
+      .range(from, to);
+    if (nErr) throw nErr;
+
+    // Fetch ALL active boosted posts on every page
+    const { data: boosts, error: bErr } = await supabaseClient
+      .from('posts')
+      .select(selectFields)
+      .eq('visibility', 'public')
+      .eq('is_boosted', true)
+      .gt('boost_expires_at', nowIso)
+      .order('boost_expires_at', { ascending: false })
+      .limit(50);
+    if (bErr) throw bErr;
+
+    // Filter out boosted posts already shown
+    const freshBoosts = (boosts || []).filter(b => !shownBoostedIds.has(b.id));
+    freshBoosts.forEach(b => shownBoostedIds.add(b.id));
+
+    // Track exhausted
+    if ((normals || []).length < FEED_PAGE_SIZE && freshBoosts.length === 0) feedExhausted = true;
+    feedOffset += (normals || []).length;
+
+    return mergeBoosted(normals || [], freshBoosts);
+  }
+
+  // ---------- FOLLOWING MODE ----------
+  if (currentFeedMode === 'following') {
+    const followIds = [...followingIds];
+
+    let normals = [];
+    if (followIds.length > 0) {
+      const { data, error } = await supabaseClient
+        .from('posts')
+        .select(selectFields)
+        .eq('visibility', 'public')
+        .in('user_id', followIds)
+        .order('created_at', { ascending: false })
+        .range(from, to);
+      if (error) throw error;
+      normals = data || [];
+    }
+
+    // Fetch ALL active boosted posts (regardless of follow)
+    const { data: boosts, error: bErr } = await supabaseClient
+      .from('posts')
+      .select(selectFields)
+      .eq('visibility', 'public')
+      .eq('is_boosted', true)
+      .gt('boost_expires_at', nowIso)
+      .order('boost_expires_at', { ascending: false })
+      .limit(50);
+    if (bErr) throw bErr;
+
+    const freshBoosts = (boosts || []).filter(b => !shownBoostedIds.has(b.id));
+    freshBoosts.forEach(b => shownBoostedIds.add(b.id));
+
+    if (normals.length < FEED_PAGE_SIZE && freshBoosts.length === 0) feedExhausted = true;
+    feedOffset += normals.length;
+
+    return mergeBoosted(normals, freshBoosts);
+  }
+
+  return [];
+}
+
+/* ============================================================
+   MERGE BOOSTED POSTS — Top + Random Interleave
+   ------------------------------------------------------------
+   • 1st boosted → position 1 (very top)
+   • Each remaining boosted → random gap (3–6) between normals
+   ============================================================ */
+function mergeBoosted(normals, boosts) {
+  const boostIds = new Set(boosts.map(b => b.id));
+  const cleanNormals = normals.filter(n => !boostIds.has(n.id));
+
+  if (boosts.length === 0) return cleanNormals;
+  if (cleanNormals.length === 0) return boosts;
+
+  // Shuffle boosted posts so the mid-feed positions vary
+  const shuffled = [...boosts];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  const result = [];
+  const remaining = [...shuffled];
+  let normalIdx = 0;
+
+  // First boosted post always at top
+  if (remaining.length > 0) result.push(remaining.shift());
+
+  // Interleave the rest
+  while (normalIdx < cleanNormals.length || remaining.length > 0) {
+    const gap = 3 + Math.floor(Math.random() * 4); // 3, 4, 5, or 6
+    for (let i = 0; i < gap && normalIdx < cleanNormals.length; i++) {
+      result.push(cleanNormals[normalIdx++]);
+    }
+    if (remaining.length > 0) {
+      result.push(remaining.shift());
+    } else if (normalIdx >= cleanNormals.length) {
+      break;
+    }
+  }
+  while (remaining.length > 0) result.push(remaining.shift());
+  return result;
+}
+
+/* ============================================================
    RENDER POST
    ============================================================ */
 function renderPost(post) {
@@ -1726,14 +1818,12 @@ function renderPost(post) {
     : '';
   const isOwnPost = currentUser && post.user_id === currentUser.id;
 
-  // Boost state
   const now = Date.now();
   const expiresAt = post.boost_expires_at ? new Date(post.boost_expires_at).getTime() : 0;
   const isBoosted = post.is_boosted && expiresAt > now;
   const hoursLeft = isBoosted ? Math.floor((expiresAt - now) / 3600000) : 0;
   const isExpiring = isBoosted && hoursLeft < 6;
 
-  // Boost info bar
   let boostBar = '';
   if (isBoosted) {
     const timeLabel = hoursLeft < 1 ? 'Less than 1h left'
@@ -1792,7 +1882,7 @@ function renderPost(post) {
         </button>
       </div>
 
-      <div class="ig-likes" id="likes-${post.id}" onclick="openLikers('${post.id}')">${post.likes_count || 0} likes</div>
+      <div class="ig-likes" id="likes-${post.id}">${post.likes_count || 0} likes</div>
       ${caption}
       <div class="ig-stats-row">
         <span id="comments-count-${post.id}" onclick="openComments('${post.id}')"><i class="far fa-comment"></i> ${post.comments_count || 0}</span>
@@ -1808,7 +1898,7 @@ function renderPost(post) {
 }
 
 /* ============================================================
-   POST OPTIONS MENU
+   POST OPTIONS
    ============================================================ */
 function openPostOptions(postId, isOwnPost) {
   postOptionsTargetId = postId;
@@ -1902,10 +1992,6 @@ function closeViewers() {
   document.getElementById('viewersModal').classList.remove('active');
 }
 
-function openLikers(postId) {
-  showToast('Likers list coming soon');
-}
-
 /* ============================================================
    LIKE / DOUBLE-TAP
    ============================================================ */
@@ -1978,7 +2064,7 @@ async function toggleSave(postId, btn) {
 }
 
 /* ============================================================
-   SHARE / COPY — FIXED URLs
+   SHARE / COPY — fixed URLs
    ============================================================ */
 function buildUrl(page, params) {
   const basePath = window.location.pathname.replace(/\/[^\/]*$/, '');
@@ -2073,7 +2159,6 @@ async function logPostView(postId, userId) {
   if (currentUser.id === userId) return;
   try {
     await supabaseClient.rpc('log_post_view', { p_post_id: postId });
-    // Also log who viewed (for owner analytics)
     try {
       await supabaseClient.from('post_viewers').insert({ post_id: postId, user_id: currentUser.id }).select().maybeSingle();
     } catch (e) {}
@@ -2175,23 +2260,36 @@ async function showNewPosts() {
 }
 
 /* ============================================================
-   STORIES
+   STORIES — uses RPC that prioritizes boosted stories
    ============================================================ */
 async function loadStories() {
   try {
-    const { data, error } = await supabaseClient
-      .from('stories')
-      .select(`id, media_url, media_type, caption, created_at, expires_at, views_count, likes_count, user_id, profiles:user_id (id, username, display_name, avatar_url, is_verified)`)
-      .gt('expires_at', new Date().toISOString())
-      .order('created_at', { ascending: false });
+    const { data, error } = await supabaseClient.rpc('get_boosted_stories', { p_limit: 30 });
     if (error) throw error;
 
     const map = new Map();
     (data || []).forEach(s => {
-      const p = s.profiles;
-      if (!p) return;
+      if (!s.user_id) return;
+      const p = {
+        id: s.user_id,
+        username: s.username,
+        display_name: s.display_name,
+        avatar_url: s.avatar_url,
+        is_verified: s.is_verified
+      };
       if (!map.has(p.id)) map.set(p.id, { user: p, stories: [] });
-      map.get(p.id).stories.push(s);
+      map.get(p.id).stories.push({
+        id: s.id,
+        media_url: s.media_url,
+        media_type: s.media_type,
+        caption: s.caption,
+        created_at: s.created_at,
+        expires_at: s.expires_at,
+        is_boosted: s.is_boosted,
+        views_count: s.views_count,
+        likes_count: s.likes_count,
+        user_id: s.user_id
+      });
     });
     map.forEach(g => g.stories.reverse());
     storiesByUser = Array.from(map.values());
@@ -2202,7 +2300,27 @@ async function loadStories() {
       storySeenIds = new Set((views || []).map(v => v.story_id));
     }
     renderStories();
-  } catch (err) { console.error('[Stories]', err); }
+  } catch (err) {
+    console.error('[Stories]', err);
+    // Fallback to direct query
+    try {
+      const { data } = await supabaseClient
+        .from('stories')
+        .select(`id, media_url, media_type, caption, created_at, expires_at, views_count, likes_count, user_id, is_boosted, profiles:user_id (id, username, display_name, avatar_url, is_verified)`)
+        .gt('expires_at', new Date().toISOString())
+        .order('created_at', { ascending: false });
+      const map = new Map();
+      (data || []).forEach(s => {
+        const p = s.profiles;
+        if (!p) return;
+        if (!map.has(p.id)) map.set(p.id, { user: p, stories: [] });
+        map.get(p.id).stories.push(s);
+      });
+      map.forEach(g => g.stories.reverse());
+      storiesByUser = Array.from(map.values());
+      renderStories();
+    } catch (e) {}
+  }
 }
 
 function renderStories() {
@@ -2218,13 +2336,17 @@ function renderStories() {
     const hasUnseen = group.stories.some(s => !storySeenIds.has(s.id));
     const ringClass = hasUnseen ? 'unseen' : 'seen';
     const firstStory = group.stories[0];
+    const isBoosted = firstStory.is_boosted && group.stories.some(s => s.is_boosted);
     const thumb = firstStory.media_type === 'video'
       ? `<div class="inner"><i class="fas fa-play" style="font-size:16px;"></i></div>`
       : `<div class="inner"><img src="${escapeHtml(firstStory.media_url)}" alt=""></div>`;
     const storyEl = document.createElement('div');
     storyEl.className = 'ig-story';
     storyEl.onclick = () => openStoryViewer(p.id);
-    storyEl.innerHTML = `<div class="ig-story-ring ${ringClass}">${thumb}</div><div class="label">${escapeHtml(name)}</div>`;
+    storyEl.innerHTML = `
+      <div class="ig-story-ring ${ringClass} ${isBoosted ? 'boosted' : ''}">${thumb}</div>
+      <div class="label">${escapeHtml(name)}</div>
+    `;
     row.appendChild(storyEl);
   });
 }
@@ -2570,7 +2692,6 @@ async function confirmBoost() {
       });
     } catch (e) {}
 
-    // Log boost history for re-engagement
     try {
       await supabaseClient.rpc('log_boost', {
         p_post_id: boostingPostId,
@@ -2627,7 +2748,7 @@ function escapeHtml(s) {
     ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-function showToast(msg, type) {
+function showToast(msg) {
   const el = document.getElementById('toastMini');
   el.textContent = msg;
   el.classList.add('show');
