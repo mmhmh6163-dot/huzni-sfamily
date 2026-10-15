@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Messages — Arizona AI</title>
 
 <link rel="icon" type="image/jpeg" href="arizonan%20png%20icon.jpeg">
@@ -11,253 +11,580 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
-body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; overflow:hidden; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: #0a0a0a;
+  padding-top: 60px;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
 
+/* ==================== TOP BAR ==================== */
 .topbar {
-  position:fixed; top:0; left:0; right:0; height:60px;
-  background:rgba(10,10,10,.97); backdrop-filter:blur(12px);
-  border-bottom:1px solid rgba(255,107,53,.25);
-  display:flex; align-items:center; justify-content:space-between;
-  padding:0 16px; z-index:1000; max-width:640px; margin:0 auto;
+  position: fixed; top: 0; left: 0; right: 0; height: 60px;
+  background: rgba(10,10,10,.97); backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,107,53,.25);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px; z-index: 1000;
+  max-width: 640px; margin: 0 auto;
 }
 .topbar .back, .topbar .icon-btn {
-  color:var(--az-text); font-size:19px;
-  width:40px; height:40px;
-  display:flex; align-items:center; justify-content:center;
-  border-radius:50%; text-decoration:none; cursor:pointer;
+  color: var(--az-text); font-size: 19px;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; text-decoration: none; cursor: pointer;
+  background: none; border: none;
+  transition: background .15s;
 }
-.topbar .title { font-size:16px; font-weight:700; color:var(--az-text); }
+.topbar .icon-btn:hover { background: rgba(255,255,255,.06); }
+.topbar .title {
+  font-size: 16px; font-weight: 700; color: var(--az-text);
+  flex: 1; text-align: center;
+}
 
+/* ==================== SEARCH ==================== */
 .search-bar {
-  max-width:640px; margin:12px auto 6px;
-  padding:0 16px;
+  max-width: 640px; margin: 12px auto 6px; padding: 0 16px;
 }
 .search-bar .wrap {
-  display:flex; align-items:center; gap:10px;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:12px; padding:10px 14px;
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px; padding: 10px 14px;
 }
 .search-bar input {
-  flex:1; background:transparent; border:none;
-  color:var(--az-text); font-size:14px; font-family:inherit;
+  flex: 1; background: transparent; border: none;
+  color: var(--az-text); font-size: 14px; font-family: inherit;
 }
-.search-bar input:focus { outline:none; }
-.search-bar i { color:var(--az-text-secondary); }
+.search-bar input:focus { outline: none; }
+.search-bar i { color: var(--az-text-secondary); }
 
+/* ==================== TABS ==================== */
 .msg-tabs {
-  max-width:640px; margin:0 auto;
-  padding:6px 16px;
-  display:flex; gap:8px;
+  max-width: 640px; margin: 0 auto;
+  padding: 6px 16px;
+  display: flex; gap: 6px;
 }
 .msg-tabs .tab {
-  flex:1; padding:10px;
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:10px;
-  color:var(--az-text-secondary);
-  font-size:13px; font-weight:600;
-  cursor:pointer; position:relative;
+  flex: 1; padding: 10px 8px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px;
+  color: var(--az-text-secondary);
+  font-size: 12.5px; font-weight: 600;
+  cursor: pointer; position: relative;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  transition: all .15s;
 }
 .msg-tabs .tab.active {
-  background:rgba(255,107,53,.15);
-  border-color:var(--az-primary);
-  color:var(--az-accent);
+  background: rgba(255,107,53,.15);
+  border-color: var(--az-primary);
+  color: var(--az-accent);
 }
 .msg-tabs .tab .badge {
-  position:absolute; top:-4px; right:-4px;
-  background:var(--az-primary); color:#fff;
-  font-size:9px; font-weight:800;
-  padding:2px 6px; border-radius:10px;
-  min-width:16px; display:none;
+  position: absolute; top: -5px; right: -5px;
+  background: var(--az-primary); color: #fff;
+  font-size: 9px; font-weight: 800;
+  padding: 2px 6px; border-radius: 10px;
+  min-width: 16px; text-align: center;
+  display: none;
 }
-.msg-tabs .tab .badge.show { display:inline-block; }
+.msg-tabs .tab .badge.show { display: inline-block; }
 
+/* ==================== LIST ==================== */
 .msg-list-wrap {
-  max-width:640px; margin:0 auto;
-  padding:8px 16px 80px;
+  max-width: 640px; margin: 0 auto;
+  padding: 8px 16px 80px;
   height: calc(100vh - 190px);
+  height: calc(100dvh - 190px);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
-.msg-list-wrap::-webkit-scrollbar { width:4px; }
-.msg-list-wrap::-webkit-scrollbar-thumb { background:#333; border-radius:2px; }
+.msg-list-wrap::-webkit-scrollbar { width: 4px; }
+.msg-list-wrap::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
 
-/* Skeleton loading */
+/* Skeleton */
 .skeleton {
-  display:flex; align-items:center; gap:12px;
-  padding:12px 8px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 8px;
 }
 .skeleton .sk-av {
-  width:52px; height:52px; border-radius:50%;
-  background:linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  width: 52px; height: 52px; border-radius: 50%;
+  background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
-  flex-shrink:0;
+  flex-shrink: 0;
 }
-.skeleton .sk-lines { flex:1; }
+.skeleton .sk-lines { flex: 1; }
 .skeleton .sk-line {
-  height:12px; border-radius:6px; margin-bottom:8px;
-  background:linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  height: 12px; border-radius: 6px; margin-bottom: 8px;
+  background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
 }
-.skeleton .sk-line.short { width:60%; }
+.skeleton .sk-line.short { width: 60%; }
 @keyframes shimmer {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
 
+/* Chat row */
 .chat-row {
-  display:flex; align-items:center; gap:12px;
-  padding:12px 8px;
-  border-bottom:1px solid rgba(255,255,255,.05);
-  cursor:pointer; border-radius:10px;
-  transition:background .15s;
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 8px;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  cursor: pointer; border-radius: 10px;
+  transition: background .15s;
   animation: fadeIn .2s ease;
 }
-@keyframes fadeIn { from { opacity:0; transform:translateY(4px); } }
-.chat-row:active { background:rgba(255,107,53,.08); }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } }
+.chat-row:active { background: rgba(255,107,53,.08); }
 .chat-row .av {
-  width:52px; height:52px; border-radius:50%;
-  background:var(--az-gradient);
-  display:flex; align-items:center; justify-content:center;
-  font-weight:700; color:#fff; font-size:20px;
-  flex-shrink:0; overflow:hidden;
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--az-gradient);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: #fff; font-size: 20px;
+  flex-shrink: 0; overflow: hidden; position: relative;
 }
-.chat-row .av img { width:100%; height:100%; object-fit:cover; }
-.chat-row .info { flex:1; min-width:0; }
+.chat-row .av img { width: 100%; height: 100%; object-fit: cover; }
+.chat-row .av .type-badge {
+  position: absolute; bottom: 0; right: 0;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: linear-gradient(135deg,#7c3aed,#5eb8ff);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; color: #fff;
+  border: 2px solid #0a0a0a;
+}
+.chat-row .info { flex: 1; min-width: 0; }
 .chat-row .info .name {
-  font-size:14px; font-weight:700; color:var(--az-text);
-  display:flex; align-items:center; gap:5px;
+  font-size: 14px; font-weight: 700; color: var(--az-text);
+  display: flex; align-items: center; gap: 5px;
 }
-.chat-row .info .name .v { color:#3b82f6; font-size:11px; }
+.chat-row .info .name .v { color: #3b82f6; font-size: 11px; }
 .chat-row .info .preview {
-  font-size:13px; color:var(--az-text-secondary);
-  margin-top:2px;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  font-size: 13px; color: var(--az-text-secondary);
+  margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  display: flex; align-items: center; gap: 5px;
 }
-.chat-row .info .preview.unread { color:var(--az-text); font-weight:600; }
+.chat-row .info .preview i { font-size: 11px; opacity: .7; }
+.chat-row .info .preview.unread { color: var(--az-text); font-weight: 600; }
 .chat-row .meta {
-  text-align:right; font-size:11px;
-  color:var(--az-text-secondary);
-  flex-shrink:0;
+  text-align: right; font-size: 11px;
+  color: var(--az-text-secondary);
+  flex-shrink: 0;
 }
 .chat-row .meta .unread-dot {
-  display:inline-block;
-  background:var(--az-primary); color:#fff;
-  border-radius:10px; padding:2px 7px;
-  font-weight:700; font-size:10px;
-  margin-top:6px;
+  display: inline-block;
+  background: var(--az-primary); color: #fff;
+  border-radius: 10px; padding: 2px 7px;
+  font-weight: 700; font-size: 10px;
+  margin-top: 6px;
 }
 
+/* Empty */
 .empty {
-  text-align:center; padding:60px 20px;
-  color:var(--az-text-secondary);
+  text-align: center; padding: 60px 20px;
+  color: var(--az-text-secondary);
 }
-.empty i { font-size:52px; color:var(--az-primary); opacity:.4; margin-bottom:14px; display:block; }
-.empty h3 { color:var(--az-text); font-size:16px; margin-bottom:6px; }
-.empty p { font-size:13px; margin-bottom:16px; }
+.empty i { font-size: 52px; color: var(--az-primary); opacity: .4; margin-bottom: 14px; display: block; }
+.empty h3 { color: var(--az-text); font-size: 16px; margin-bottom: 6px; }
+.empty p { font-size: 13px; margin-bottom: 16px; }
 .empty a {
-  display:inline-block; padding:11px 24px; border-radius:20px;
-  background:var(--az-gradient); color:#fff;
-  text-decoration:none; font-weight:700; font-size:13px;
+  display: inline-block; padding: 11px 24px; border-radius: 20px;
+  background: var(--az-gradient); color: #fff;
+  text-decoration: none; font-weight: 700; font-size: 13px;
 }
 
-/* CHAT VIEW */
+/* ==================== CHAT VIEW ==================== */
 .chat-view {
-  position:fixed; inset:0;
-  background:#0a0a0a;
-  z-index:1500;
-  display:none; flex-direction:column;
-  max-width:640px; margin:0 auto;
+  position: fixed; inset: 0;
+  background: #0a0a0a;
+  z-index: 1500;
+  display: none; flex-direction: column;
+  max-width: 640px; margin: 0 auto;
 }
-.chat-view.active { display:flex; }
+.chat-view.active { display: flex; }
+
 .chat-view-header {
-  display:flex; align-items:center; gap:12px;
-  padding:12px 16px;
-  border-bottom:1px solid rgba(255,255,255,.08);
-  background:rgba(10,10,10,.98);
-  height:60px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  background: rgba(10,10,10,.98);
+  height: 60px;
+  flex-shrink: 0;
 }
 .chat-view-header .back {
-  color:var(--az-text); font-size:20px;
-  width:40px; height:40px;
-  display:flex; align-items:center; justify-content:center;
-  border-radius:50%; cursor:pointer; background:none; border:none;
+  color: var(--az-text); font-size: 20px;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; cursor: pointer; background: none; border: none;
 }
 .chat-view-header .av {
-  width:40px; height:40px; border-radius:50%;
-  background:var(--az-gradient);
-  display:flex; align-items:center; justify-content:center;
-  font-weight:700; color:#fff; font-size:16px;
-  overflow:hidden;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--az-gradient);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: #fff; font-size: 16px;
+  overflow: hidden; flex-shrink: 0;
 }
-.chat-view-header .av img { width:100%; height:100%; object-fit:cover; }
-.chat-view-header .info { flex:1; }
-.chat-view-header .info .name { font-size:14px; font-weight:700; color:var(--az-text); }
-.chat-view-header .info .status { font-size:11px; color:var(--az-text-secondary); }
+.chat-view-header .av img { width: 100%; height: 100%; object-fit: cover; }
+.chat-view-header .info { flex: 1; min-width: 0; }
+.chat-view-header .info .name { font-size: 14px; font-weight: 700; color: var(--az-text); }
+.chat-view-header .info .status { font-size: 11px; color: var(--az-text-secondary); }
 
+/* ==================== MESSAGES AREA ==================== */
 .chat-messages {
-  flex:1; overflow-y:auto;
-  padding:16px;
-  display:flex; flex-direction:column; gap:8px;
+  flex: 1; overflow-y: auto;
+  padding: 16px 12px;
+  display: flex; flex-direction: column; gap: 4px;
   -webkit-overflow-scrolling: touch;
 }
-.chat-messages::-webkit-scrollbar { width:4px; }
-.chat-messages::-webkit-scrollbar-thumb { background:#333; border-radius:2px; }
+.chat-messages::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
 
-.bubble {
-  max-width:75%;
-  padding:10px 14px;
-  border-radius:18px;
-  font-size:14px; line-height:1.45;
-  word-wrap:break-word;
-  animation:bubbleIn .2s ease;
+/* Reply quote inside bubble */
+.reply-quote {
+  background: rgba(0,0,0,.25);
+  border-left: 3px solid var(--az-accent);
+  padding: 6px 10px; border-radius: 8px;
+  margin-bottom: 6px; font-size: 12px;
+  opacity: .85;
 }
-@keyframes bubbleIn { from { opacity:0; transform:translateY(6px); } }
+.reply-quote .rq-name {
+  font-weight: 700; color: var(--az-accent);
+  margin-bottom: 2px;
+}
+
+/* Bubble */
+.bubble {
+  max-width: 78%;
+  padding: 9px 14px;
+  border-radius: 18px;
+  font-size: 14px; line-height: 1.45;
+  word-wrap: break-word; overflow-wrap: anywhere;
+  animation: bubbleIn .18s ease;
+  position: relative;
+  cursor: pointer;
+}
+@keyframes bubbleIn { from { opacity: 0; transform: translateY(6px); } }
 .bubble.me {
-  background:var(--az-gradient); color:#fff;
-  align-self:flex-end;
-  border-bottom-right-radius:4px;
+  background: var(--az-gradient); color: #fff;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
 }
 .bubble.them {
-  background:rgba(255,255,255,.08);
-  color:var(--az-text);
-  align-self:flex-start;
-  border-bottom-left-radius:4px;
+  background: rgba(255,255,255,.08);
+  color: var(--az-text);
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+.bubble.pinned {
+  border: 1.5px solid var(--az-accent);
+}
+.bubble.deleted {
+  font-style: italic; opacity: .55;
 }
 .bubble .time {
-  display:block;
-  font-size:10px; opacity:.7;
-  margin-top:4px;
+  display: block;
+  font-size: 10px; opacity: .7;
+  margin-top: 4px;
+  display: flex; align-items: center; gap: 4px; justify-content: flex-end;
+}
+.bubble .pin-icon {
+  position: absolute; top: -6px; right: -6px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--az-accent); color: #1a1a1a;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px;
 }
 
+/* Media inside bubble */
+.bubble .media {
+  display: block; width: 100%;
+  max-width: 260px;
+  margin-top: 4px;
+  border-radius: 12px; overflow: hidden;
+  background: #000;
+  cursor: pointer;
+}
+.bubble .media img,
+.bubble .media video {
+  display: block; width: 100%;
+  max-height: 320px; object-fit: cover;
+}
+.bubble .media.audio {
+  background: rgba(0,0,0,.3);
+  padding: 8px 10px;
+}
+.bubble .media.audio audio {
+  display: block; width: 240px; max-width: 100%;
+}
+
+/* Date divider */
+.date-divider {
+  align-self: center;
+  font-size: 11px;
+  color: var(--az-text-secondary);
+  background: rgba(255,255,255,.04);
+  padding: 4px 12px;
+  border-radius: 12px;
+  margin: 10px 0;
+}
+
+/* Typing indicator */
+.typing-bubble {
+  align-self: flex-start;
+  background: rgba(255,255,255,.08);
+  padding: 12px 16px;
+  border-radius: 18px;
+  border-bottom-left-radius: 4px;
+}
+.typing-bubble .dots {
+  display: flex; gap: 4px;
+}
+.typing-bubble .dots span {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--az-accent);
+  animation: bounce 1.2s infinite;
+}
+.typing-bubble .dots span:nth-child(2) { animation-delay: .2s; }
+.typing-bubble .dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes bounce { 0%,60%,100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-5px); opacity: 1; } }
+
+/* ==================== INPUT WRAP ==================== */
 .chat-input-wrap {
-  display:flex; gap:10px;
-  padding:12px 16px;
-  padding-bottom:calc(12px + env(safe-area-inset-bottom));
-  border-top:1px solid rgba(255,255,255,.08);
-  background:rgba(10,10,10,.98);
+  display: flex; gap: 8px; align-items: flex-end;
+  padding: 10px 12px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(255,255,255,.08);
+  background: rgba(10,10,10,.98);
+  flex-shrink: 0;
 }
-.chat-input-wrap input {
-  flex:1;
-  padding:12px 16px;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:24px;
-  color:var(--az-text); font-size:14px;
-  font-family:inherit;
+
+/* Reply preview bar */
+.reply-preview {
+  display: none; align-items: center; gap: 10px;
+  padding: 8px 12px;
+  background: rgba(255,107,53,.08);
+  border-top: 1px solid rgba(255,107,53,.2);
+  font-size: 12px;
+  flex-shrink: 0;
 }
-.chat-input-wrap input:focus { outline:none; border-color:var(--az-primary); }
-.chat-input-wrap button {
-  width:44px; height:44px; border-radius:50%;
-  background:var(--az-gradient); color:#fff;
-  border:none; font-size:16px;
-  cursor:pointer; flex-shrink:0;
-  display:flex; align-items:center; justify-content:center;
+.reply-preview.active { display: flex; }
+.reply-preview .rp-body {
+  flex: 1; min-width: 0;
+  color: var(--az-text-secondary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.chat-input-wrap button:disabled { opacity:.5; }
+.reply-preview .rp-body strong {
+  color: var(--az-accent); font-weight: 700;
+}
+.reply-preview .rp-close {
+  background: none; border: none; color: var(--az-text-secondary);
+  font-size: 16px; cursor: pointer; padding: 4px;
+}
+
+/* Input pill */
+.input-pill {
+  flex: 1;
+  display: flex; align-items: flex-end; gap: 4px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 22px;
+  padding: 3px 3px 3px 6px;
+  transition: border-color .15s;
+}
+.input-pill:focus-within { border-color: var(--az-primary); }
+.input-pill .icn {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: transparent; border: none;
+  color: var(--az-accent); font-size: 15px;
+  cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.input-pill .icn:active { background: rgba(255,107,53,.15); }
+.input-pill .icn.recording {
+  background: rgba(255,118,117,.2);
+  color: #ff7675;
+  animation: recPulse 1s infinite;
+}
+@keyframes recPulse {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+.input-pill textarea {
+  flex: 1;
+  background: transparent; border: none; outline: none;
+  color: var(--az-text); font-size: 14.5px;
+  font-family: inherit; resize: none;
+  max-height: 100px; min-height: 22px; line-height: 1.4;
+  padding: 8px 4px;
+}
+.input-pill textarea::placeholder { color: rgba(255,255,255,.4); }
+
+.send-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--az-gradient); color: #fff;
+  border: none; font-size: 15px;
+  cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .12s;
+}
+.send-btn:active { transform: scale(.92); }
+.send-btn:disabled { opacity: .5; }
+
+/* ==================== ATTACHMENT PREVIEW ==================== */
+.attach-preview {
+  display: none;
+  padding: 8px 12px;
+  background: rgba(255,107,53,.06);
+  border-top: 1px solid rgba(255,107,53,.2);
+  gap: 10px; align-items: center;
+  flex-shrink: 0;
+}
+.attach-preview.active { display: flex; }
+.attach-preview .thumb {
+  width: 50px; height: 50px; border-radius: 10px;
+  background: #000; overflow: hidden; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--az-accent); font-size: 18px;
+}
+.attach-preview .thumb img,
+.attach-preview .thumb video { width: 100%; height: 100%; object-fit: cover; }
+.attach-preview .info { flex: 1; min-width: 0; font-size: 12px; color: rgba(255,255,255,.75); }
+.attach-preview .info .name { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.attach-preview .info .meta { font-size: 11px; color: rgba(255,255,255,.45); margin-top: 2px; }
+.attach-preview .remove { background: transparent; border: none; color: #ff7675; font-size: 18px; cursor: pointer; padding: 6px 8px; }
+
+/* ==================== LONG PRESS MENU ==================== */
+.lp-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.5);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: none;
+  align-items: flex-end; justify-content: center;
+  animation: fadeIn .15s;
+}
+.lp-overlay.active { display: flex; }
+.lp-menu {
+  background: #151515;
+  width: 100%; max-width: 640px;
+  border-top-left-radius: 20px; border-top-right-radius: 20px;
+  padding: 12px 0;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  animation: slideUp .2s ease;
+}
+@keyframes slideUp { from { transform: translateY(100%); } }
+.lp-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 22px;
+  color: var(--az-text); font-size: 15px;
+  background: none; border: none; width: 100%;
+  text-align: left; cursor: pointer;
+  font-family: inherit;
+}
+.lp-item:active { background: rgba(255,255,255,.05); }
+.lp-item i { width: 22px; text-align: center; color: var(--az-accent); font-size: 16px; }
+.lp-item.danger { color: #ff7675; }
+.lp-item.danger i { color: #ff7675; }
+
+/* ==================== VOICE RECORDING OVERLAY ==================== */
+.rec-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.85);
+  backdrop-filter: blur(10px);
+  z-index: 2100;
+  display: none;
+  flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px 24px;
+  text-align: center;
+}
+.rec-overlay.active { display: flex; }
+.rec-overlay .rec-circle {
+  width: 120px; height: 120px; border-radius: 50%;
+  background: linear-gradient(135deg, #FF6B35, #FFB20F);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 44px; color: #fff;
+  animation: listenPulse 1.5s infinite;
+  margin-bottom: 24px;
+}
+@keyframes listenPulse {
+  0% { box-shadow: 0 0 0 0 rgba(255,107,53,.5); }
+  70% { box-shadow: 0 0 0 40px rgba(255,107,53,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,107,53,0); }
+}
+.rec-overlay h3 {
+  font-size: 20px; font-weight: 800; margin: 0 0 8px;
+  color: #fff;
+}
+.rec-overlay .timer {
+  font-size: 32px; font-weight: 800;
+  color: var(--az-accent);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 30px;
+}
+.rec-overlay .actions {
+  display: flex; gap: 20px;
+}
+.rec-overlay .actions button {
+  width: 66px; height: 66px; border-radius: 50%;
+  border: none; font-size: 22px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.rec-overlay .actions .cancel {
+  background: rgba(255,255,255,.12);
+  color: #fff;
+}
+.rec-overlay .actions .send {
+  background: var(--az-gradient);
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(255,107,53,.4);
+}
+.rec-overlay .actions button:active { transform: scale(.94); }
+
+/* ==================== IMAGE VIEWER ==================== */
+.img-viewer {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.96);
+  z-index: 2200;
+  display: none;
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+.img-viewer.active { display: flex; }
+.img-viewer img {
+  max-width: 100%; max-height: 100%;
+  border-radius: 12px;
+}
+.img-viewer .close {
+  position: absolute; top: 20px; right: 20px;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,.12); color: #fff;
+  border: none; font-size: 20px;
+  cursor: pointer;
+}
+
+/* ==================== TOAST ==================== */
+.toast-mini {
+  position: fixed; bottom: 100px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(10,10,10,.98);
+  border: 1px solid rgba(255,107,53,.4);
+  color: #fff; padding: 10px 18px;
+  border-radius: 22px; font-size: 13px; font-weight: 600;
+  z-index: 9999; opacity: 0; pointer-events: none;
+  transition: all .25s ease;
+  max-width: 90%; text-align: center;
+  box-shadow: 0 10px 40px rgba(0,0,0,.5);
+}
+.toast-mini.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
@@ -273,13 +600,17 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
 <div class="search-bar">
   <div class="wrap">
     <i class="fas fa-search"></i>
-    <input type="text" id="searchInput" placeholder="Search messages…" oninput="filterChats()">
+    <input type="text" id="searchInput" placeholder="Search…" oninput="filterList()">
   </div>
 </div>
 
 <div class="msg-tabs">
   <button class="tab active" data-tab="chats" onclick="switchTab('chats', this)">
     <i class="fas fa-comments"></i> Chats
+  </button>
+  <button class="tab" data-tab="tribes" onclick="switchTab('tribes', this)">
+    <i class="fas fa-users"></i> Tribes
+    <span class="badge" id="tribeBadge">0</span>
   </button>
   <button class="tab" data-tab="requests" onclick="switchTab('requests', this)">
     <i class="fas fa-user-clock"></i> Requests
@@ -288,12 +619,12 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
 </div>
 
 <div class="msg-list-wrap" id="listWrap">
-  <!-- Skeleton shown immediately -->
   <div class="skeleton"><div class="sk-av"></div><div class="sk-lines"><div class="sk-line"></div><div class="sk-line short"></div></div></div>
   <div class="skeleton"><div class="sk-av"></div><div class="sk-lines"><div class="sk-line"></div><div class="sk-line short"></div></div></div>
   <div class="skeleton"><div class="sk-av"></div><div class="sk-lines"><div class="sk-line"></div><div class="sk-line short"></div></div></div>
 </div>
 
+<!-- ==================== CHAT VIEW (DM) ==================== -->
 <div class="chat-view" id="chatView">
   <div class="chat-view-header">
     <button class="back" onclick="closeChat()"><i class="fas fa-arrow-left"></i></button>
@@ -305,27 +636,150 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:0; height:100vh; ove
     <button class="back" onclick="viewProfile()"><i class="fas fa-info-circle"></i></button>
   </div>
   <div class="chat-messages" id="chatMessages"></div>
+
+  <div class="reply-preview" id="replyPreview">
+    <i class="fas fa-reply" style="color:var(--az-accent);"></i>
+    <div class="rp-body" id="rpBody"></div>
+    <button class="rp-close" onclick="clearReply()"><i class="fas fa-times"></i></button>
+  </div>
+
+  <div class="attach-preview" id="attachPreview">
+    <div class="thumb" id="attachThumb"></div>
+    <div class="info">
+      <div class="name" id="attachName">file.jpg</div>
+      <div class="meta" id="attachSize">120 KB</div>
+    </div>
+    <button class="remove" onclick="clearAttachment()"><i class="fas fa-times"></i></button>
+  </div>
+
   <div class="chat-input-wrap">
-    <input type="text" id="chatInput" placeholder="Message…" maxlength="2000"
-           onkeydown="if(event.key==='Enter') sendMessage()">
-    <button id="sendBtn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+    <div class="input-pill">
+      <button class="icn" onclick="pickFile()" title="Attach"><i class="fas fa-paperclip"></i></button>
+      <textarea id="chatInput" rows="1" placeholder="Message…"
+                oninput="autoResize(this)"
+                onkeydown="handleKey(event)"></textarea>
+      <button class="icn" id="micBtn" onclick="startRecording()" title="Voice"><i class="fas fa-microphone"></i></button>
+    </div>
+    <button class="send-btn" id="sendBtn" onclick="sendMessage()"><i class="fas fa-arrow-up"></i></button>
   </div>
 </div>
 
+<!-- ==================== TRIBE CHAT VIEW ==================== -->
+<div class="chat-view" id="tribeView">
+  <div class="chat-view-header">
+    <button class="back" onclick="closeTribe()"><i class="fas fa-arrow-left"></i></button>
+    <div class="av" id="tvAvatar" style="background:linear-gradient(135deg,#7c3aed,#5eb8ff);">T</div>
+    <div class="info">
+      <div class="name" id="tvName">Tribe</div>
+      <div class="status" id="tvStatus">0 members</div>
+    </div>
+    <button class="back" onclick="viewTribeInfo()"><i class="fas fa-info-circle"></i></button>
+  </div>
+  <div class="chat-messages" id="tribeMessages"></div>
+
+  <div class="reply-preview" id="tribeReplyPreview">
+    <i class="fas fa-reply" style="color:var(--az-accent);"></i>
+    <div class="rp-body" id="trpBody"></div>
+    <button class="rp-close" onclick="clearTribeReply()"><i class="fas fa-times"></i></button>
+  </div>
+
+  <div class="attach-preview" id="tribeAttachPreview">
+    <div class="thumb" id="tribeAttachThumb"></div>
+    <div class="info">
+      <div class="name" id="tribeAttachName">file.jpg</div>
+      <div class="meta" id="tribeAttachSize">120 KB</div>
+    </div>
+    <button class="remove" onclick="clearTribeAttachment()"><i class="fas fa-times"></i></button>
+  </div>
+
+  <div class="chat-input-wrap">
+    <div class="input-pill">
+      <button class="icn" onclick="pickTribeFile()" title="Attach"><i class="fas fa-paperclip"></i></button>
+      <textarea id="tribeInput" rows="1" placeholder="Message the tribe…"
+                oninput="autoResize(this)"
+                onkeydown="handleTribeKey(event)"></textarea>
+      <button class="icn" id="tribeMicBtn" onclick="startTribeRecording()" title="Voice"><i class="fas fa-microphone"></i></button>
+    </div>
+    <button class="send-btn" id="tribeSendBtn" onclick="sendTribeMessage()"><i class="fas fa-arrow-up"></i></button>
+  </div>
+</div>
+
+<!-- File inputs -->
+<input type="file" id="fileInput" accept="image/*,video/*,audio/*" style="display:none;">
+<input type="file" id="tribeFileInput" accept="image/*,video/*,audio/*" style="display:none;">
+
+<!-- Long-press menu -->
+<div class="lp-overlay" id="lpOverlay" onclick="closeLpMenu(event)">
+  <div class="lp-menu" onclick="event.stopPropagation()" id="lpMenu"></div>
+</div>
+
+<!-- Recording overlay -->
+<div class="rec-overlay" id="recOverlay">
+  <div class="rec-circle"><i class="fas fa-microphone"></i></div>
+  <h3>Recording…</h3>
+  <div class="timer" id="recTimer">0:00</div>
+  <div class="actions">
+    <button class="cancel" onclick="cancelRecording()"><i class="fas fa-times"></i></button>
+    <button class="send" onclick="stopRecording(true)"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<!-- Image viewer -->
+<div class="img-viewer" id="imgViewer" onclick="closeImgViewer()">
+  <button class="close"><i class="fas fa-times"></i></button>
+  <img id="imgViewerSrc" src="" alt="">
+</div>
+
+<!-- Toast -->
+<div class="toast-mini" id="toastMini"></div>
+
 <script src="auth.js"></script>
 <script>
-/* ==================== STATE ==================== */
-let currentTab = 'chats';
+/* ============================================================
+   STATE
+   ============================================================ */
+let currentTab    = 'chats';
 let conversations = [];
-let requests = [];
+let requests      = [];
+let tribes        = [];
 let activePartner = null;
-let searchQuery = '';
-let realtimeChannel = null;
-let profileCache = new Map();     // id → profile object
-let messageCache = new Map();     // partnerId → array of messages
-let isOpeningChat = false;
+let activeTribe   = null;
+let searchQuery   = '';
+let realtimeDM    = null;
+let realtimeTribe = null;
+let profileCache  = new Map();
+let tribeMessageCache = new Map();
 
-/* ==================== INIT ==================== */
+let isOpeningChat  = false;
+let isOpeningTribe = false;
+
+// Attachments
+let dmPendingFile      = null;
+let dmPendingFileUrl   = null;
+let tribePendingFile     = null;
+let tribePendingFileUrl  = null;
+
+// Reply state
+let dmReplyTo    = null;
+let tribeReplyTo = null;
+
+// Long press context
+let lpContext = { type: null, msg: null };
+
+// Recording
+let dmRecorder = null;
+let tribeRecorder = null;
+let recChunks = [];
+let recTimerInterval = null;
+let recSeconds = 0;
+let recTarget = null; // 'dm' | 'tribe'
+
+// Unread tribe count (computed on load)
+let tribeUnreadTotal = 0;
+
+/* ============================================================
+   INIT
+   ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
   const check = setInterval(() => {
     if (typeof authReady !== 'undefined' && authReady) {
@@ -333,6 +787,9 @@ document.addEventListener('DOMContentLoaded', () => {
       init();
     }
   }, 100);
+
+  document.getElementById('fileInput')?.addEventListener('change', onDmFilePicked);
+  document.getElementById('tribeFileInput')?.addEventListener('change', onTribeFilePicked);
 });
 
 async function init() {
@@ -347,77 +804,75 @@ async function init() {
     return;
   }
 
-  // Run in parallel — much faster
-  await Promise.all([loadChats(), loadRequests()]);
-
-  updateReqBadge();
+  await Promise.all([loadChats(), loadRequests(), loadTribes()]);
+  updateBadges();
   renderList();
-  setupRealtime();
+  setupRealtimeDM();
+  setupRealtimeTribe();
 
-  // Auto-open chat if ?user=ID is passed
   const params = new URLSearchParams(window.location.search);
-  const autoUser = params.get('user');
-  if (autoUser && autoUser !== currentUser.id) {
-    openChat(autoUser);
-  }
+  const autoUser  = params.get('user');
+  const autoTribe = params.get('tribe');
+  if (autoUser && autoUser !== currentUser.id) openChat(autoUser);
+  if (autoTribe) openTribe(autoTribe);
 }
 
-/* ==================== FAST LOAD ==================== */
+/* ============================================================
+   LOADERS
+   ============================================================ */
 async function loadChats() {
   try {
-    // Only fetch the LATEST message per conversation — 10x faster
+    let rows = [];
     const { data, error } = await supabaseClient.rpc('get_conversations', {
       viewer_id: currentUser.id
     });
 
-    if (error) {
-      // Fallback: if RPC not set up, use a lighter query
-      const { data: fallback, error: fbErr } = await supabaseClient
+    if (!error && data) {
+      rows = data.map(r => ({
+        partnerId: r.partner_id,
+        lastMessage: {
+          content: r.last_content,
+          created_at: r.last_at,
+          sender_id: r.last_sender_id,
+          is_read: r.last_is_read
+        },
+        unread: r.unread_count || 0
+      }));
+    } else {
+      // Fallback: group locally
+      const { data: fb, error: fbErr } = await supabaseClient
         .from('messages')
-        .select('id, content, created_at, is_read, sender_id, receiver_id')
+        .select('id, content, media_type, media_url, created_at, is_read, sender_id, receiver_id')
         .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
         .order('created_at', { ascending: false })
-        .limit(80);
+        .limit(120);
       if (fbErr) throw fbErr;
 
-      // Group locally
       const map = new Map();
-      (fallback || []).forEach(m => {
+      (fb || []).forEach(m => {
         const partnerId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
         if (!map.has(partnerId)) map.set(partnerId, { partnerId, lastMessage: m, unread: 0 });
         const entry = map.get(partnerId);
         if (!m.is_read && m.receiver_id === currentUser.id) entry.unread++;
       });
-      conversations = Array.from(map.values());
-    } else {
-      // RPC returned ready-to-use conversations
-      conversations = (data || []).map(row => ({
-        partnerId: row.partner_id,
-        lastMessage: {
-          content: row.last_content,
-          created_at: row.last_at,
-          sender_id: row.last_sender_id,
-          is_read: row.last_is_read
-        },
-        unread: row.unread_count || 0
-      }));
+      rows = Array.from(map.values());
     }
 
-    // Fetch all partner profiles in ONE query (not N queries)
-    const partnerIds = [...new Set(conversations.map(c => c.partnerId))];
-    if (partnerIds.length > 0) {
+    // Fetch partner profiles
+    const ids = [...new Set(rows.map(c => c.partnerId))];
+    if (ids.length > 0) {
       const { data: profiles } = await supabaseClient
         .from('profiles')
         .select('id, username, display_name, avatar_url, is_verified')
-        .in('id', partnerIds);
+        .in('id', ids);
       (profiles || []).forEach(p => profileCache.set(p.id, p));
-      conversations.forEach(c => {
+      rows.forEach(c => {
         c.partner = profileCache.get(c.partnerId) || { id: c.partnerId, username: 'user' };
       });
     }
 
-    // Sort by latest
-    conversations.sort((a, b) => new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at));
+    rows.sort((a,b) => new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at));
+    conversations = rows;
   } catch (err) {
     console.error('loadChats:', err);
     conversations = [];
@@ -431,17 +886,15 @@ async function loadRequests() {
       .select('id, status, created_at, requester_id, target_id')
       .eq('target_id', currentUser.id)
       .order('created_at', { ascending: false });
-
     if (error) throw error;
     requests = data || [];
 
-    // Fetch requester profiles in one query
-    const requesterIds = [...new Set(requests.map(r => r.requester_id))];
-    if (requesterIds.length > 0) {
+    const ids = [...new Set(requests.map(r => r.requester_id))];
+    if (ids.length > 0) {
       const { data: profiles } = await supabaseClient
         .from('profiles')
-        .select('id, username, display_name, avatar_url, is_verified, is_private')
-        .in('id', requesterIds);
+        .select('id, username, display_name, avatar_url, is_verified')
+        .in('id', ids);
       (profiles || []).forEach(p => profileCache.set(p.id, p));
       requests.forEach(r => { r.requester = profileCache.get(r.requester_id) || { id: r.requester_id }; });
     }
@@ -451,21 +904,55 @@ async function loadRequests() {
   }
 }
 
-function updateReqBadge() {
-  const pending = requests.filter(r => r.status === 'pending').length;
-  const badge = document.getElementById('reqBadge');
-  badge.textContent = pending;
-  badge.classList.toggle('show', pending > 0);
+async function loadTribes() {
+  try {
+    const { data, error } = await supabaseClient.rpc('get_tribe_chats', {
+      p_user_id: currentUser.id
+    });
+    if (error) throw error;
+    tribes = (data || []).map(row => ({
+      id: row.tribe_id,
+      name: row.tribe_name,
+      avatar_url: row.tribe_avatar,
+      member_count: row.member_count,
+      lastMessage: row.last_message ? {
+        content: row.last_message,
+        created_at: row.last_at,
+        sender_id: row.last_sender,
+        sender_name: row.last_sender_name
+      } : null,
+      unread: row.unread_count || 0
+    }));
+
+    tribeUnreadTotal = tribes.reduce((sum, t) => sum + (t.unread || 0), 0);
+  } catch (err) {
+    console.warn('loadTribes:', err);
+    tribes = [];
+  }
 }
 
-/* ==================== RENDER ==================== */
+function updateBadges() {
+  const pending = requests.filter(r => r.status === 'pending').length;
+  const reqBadge = document.getElementById('reqBadge');
+  reqBadge.textContent = pending;
+  reqBadge.classList.toggle('show', pending > 0);
+
+  const tribeBadge = document.getElementById('tribeBadge');
+  tribeBadge.textContent = tribeUnreadTotal;
+  tribeBadge.classList.toggle('show', tribeUnreadTotal > 0);
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
 function renderList() {
   const wrap = document.getElementById('listWrap');
-  if (currentTab === 'chats') renderChats(wrap);
-  else renderRequests(wrap);
+  if (currentTab === 'chats') renderChatsList(wrap);
+  else if (currentTab === 'tribes') renderTribesList(wrap);
+  else renderRequestsList(wrap);
 }
 
-function renderChats(wrap) {
+function renderChatsList(wrap) {
   if (conversations.length === 0) {
     wrap.innerHTML = `
       <div class="empty">
@@ -488,14 +975,13 @@ function renderChats(wrap) {
     return;
   }
 
-  // Build HTML in one chunk (faster than DOM appends)
   wrap.innerHTML = filtered.map(c => {
     const p = c.partner || {};
     const name = p.display_name || p.username || 'user';
     const initial = name.charAt(0).toUpperCase();
     const verified = p.is_verified ? '<i class="fas fa-circle-check v"></i>' : '';
     const avatar = p.avatar_url ? `<img src="${escapeHtml(p.avatar_url)}" alt="" loading="lazy">` : initial;
-    const preview = (c.lastMessage.sender_id === currentUser.id ? 'You: ' : '') + (c.lastMessage.content || '📎');
+    const preview = buildPreview(c.lastMessage, 'dm');
     const time = formatTimeAgo(c.lastMessage.created_at);
     const unread = c.unread > 0 ? `<div class="unread-dot">${c.unread}</div>` : '';
 
@@ -504,7 +990,7 @@ function renderChats(wrap) {
         <div class="av">${avatar}</div>
         <div class="info">
           <div class="name">${escapeHtml(name)} ${verified}</div>
-          <div class="preview ${c.unread > 0 ? 'unread' : ''}">${escapeHtml(preview).slice(0, 60)}</div>
+          <div class="preview ${c.unread > 0 ? 'unread' : ''}">${preview}</div>
         </div>
         <div class="meta">
           <div>${time}</div>
@@ -515,7 +1001,50 @@ function renderChats(wrap) {
   }).join('');
 }
 
-function renderRequests(wrap) {
+function renderTribesList(wrap) {
+  if (tribes.length === 0) {
+    wrap.innerHTML = `
+      <div class="empty">
+        <i class="fas fa-users"></i>
+        <h3>No tribes yet</h3>
+        <p>Create or join a tribe to chat with your people.</p>
+        <a href="Friends.html">Find or Create a Tribe</a>
+      </div>`;
+    return;
+  }
+
+  const filtered = tribes.filter(t => {
+    if (!searchQuery) return true;
+    return (t.name || '').toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
+  wrap.innerHTML = filtered.map(t => {
+    const initial = (t.name || 'T').charAt(0).toUpperCase();
+    const avatar = t.avatar_url ? `<img src="${escapeHtml(t.avatar_url)}" alt="">` : initial;
+    const preview = t.lastMessage ? buildPreview(t.lastMessage, 'tribe', t) : '<i>No messages yet</i>';
+    const time = t.lastMessage ? formatTimeAgo(t.lastMessage.created_at) : '';
+    const unread = t.unread > 0 ? `<div class="unread-dot">${t.unread}</div>` : '';
+
+    return `
+      <div class="chat-row" onclick="openTribe('${t.id}')">
+        <div class="av">
+          ${avatar}
+          <div class="type-badge"><i class="fas fa-users"></i></div>
+        </div>
+        <div class="info">
+          <div class="name">${escapeHtml(t.name)}</div>
+          <div class="preview ${t.unread > 0 ? 'unread' : ''}">${preview}</div>
+        </div>
+        <div class="meta">
+          <div>${time}</div>
+          ${unread}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderRequestsList(wrap) {
   if (requests.length === 0) {
     wrap.innerHTML = `
       <div class="empty">
@@ -559,7 +1088,19 @@ function renderRequests(wrap) {
   }).join('');
 }
 
-function filterChats() {
+function buildPreview(msg, kind, tribe) {
+  if (!msg) return '<i>No messages yet</i>';
+  const prefix = kind === 'dm' && msg.sender_id === currentUser.id ? 'You: ' : '';
+
+  if (msg.media_type === 'image') return `${prefix}<i class="fas fa-image"></i> Photo`;
+  if (msg.media_type === 'video') return `${prefix}<i class="fas fa-video"></i> Video`;
+  if (msg.media_type === 'audio') return `${prefix}<i class="fas fa-microphone"></i> Voice message`;
+
+  const content = (msg.content || '📎').slice(0, 60);
+  return escapeHtml(prefix + content);
+}
+
+function filterList() {
   searchQuery = document.getElementById('searchInput').value.trim();
   renderList();
 }
@@ -571,7 +1112,9 @@ function switchTab(tab, el) {
   renderList();
 }
 
-/* ==================== RESPOND REQUEST ==================== */
+/* ============================================================
+   RESPOND REQUEST
+   ============================================================ */
 async function respondRequest(reqId, status, btn) {
   btn.disabled = true;
   try {
@@ -580,36 +1123,40 @@ async function respondRequest(reqId, status, btn) {
 
     if (status === 'accepted' && req) {
       await supabaseClient.from('follows').insert({ follower_id: req.requester_id, following_id: req.target_id });
-      showToast('Request accepted ✅', 'success');
+      toast('Request accepted ✅');
     } else {
-      showToast('Declined', 'success');
+      toast('Declined');
     }
     await loadRequests();
-    updateReqBadge();
+    updateBadges();
     renderList();
   } catch (err) {
-    showToast(err.message, 'error');
+    toast(err.message);
     btn.disabled = false;
   }
 }
 
-/* ==================== OPEN CHAT ==================== */
+/* ============================================================
+   OPEN DM CHAT
+   ============================================================ */
 async function openChat(partnerId) {
   if (isOpeningChat) return;
   isOpeningChat = true;
-
   try {
-    // Get partner from cache or fetch
     let partner = profileCache.get(partnerId);
     if (!partner) {
       const { data } = await supabaseClient
         .from('profiles').select('*').eq('id', partnerId).maybeSingle();
-      if (!data) { showToast('User not found', 'error'); return; }
+      if (!data) { toast('User not found'); return; }
       partner = data;
       profileCache.set(partnerId, partner);
     }
 
     activePartner = partner;
+    dmReplyTo = null;
+    clearReply();
+    clearAttachment();
+
     const name = partner.display_name || partner.username || 'user';
     const initial = name.charAt(0).toUpperCase();
     const avatar = partner.avatar_url ? `<img src="${escapeHtml(partner.avatar_url)}" alt="">` : initial;
@@ -619,7 +1166,6 @@ async function openChat(partnerId) {
     document.getElementById('cvStatus').textContent = '@' + (partner.username || 'user');
 
     document.getElementById('chatView').classList.add('active');
-
     await loadMessages();
     await markMessagesRead();
   } finally {
@@ -630,106 +1176,570 @@ async function openChat(partnerId) {
 function closeChat() {
   document.getElementById('chatView').classList.remove('active');
   activePartner = null;
-  if (window.history.replaceState) {
-    window.history.replaceState(null, '', 'chats.html');
-  }
-  loadChats().then(() => renderList());
+  dmReplyTo = null;
+  clearAttachment();
+  clearReply();
+  if (window.history.replaceState) window.history.replaceState(null, '', 'chats.html');
+  loadChats().then(() => { updateBadges(); renderList(); });
 }
 
 function viewProfile() {
   if (activePartner) window.location.href = 'profile.html?user=' + activePartner.id;
 }
 
-/* ==================== LOAD MESSAGES ==================== */
+/* ============================================================
+   OPEN TRIBE CHAT
+   ============================================================ */
+async function openTribe(tribeId) {
+  if (isOpeningTribe) return;
+  isOpeningTribe = true;
+  try {
+    let tribe = tribes.find(t => t.id === tribeId);
+    if (!tribe) {
+      const { data } = await supabaseClient
+        .from('tribes').select('*').eq('id', tribeId).maybeSingle();
+      if (!data) { toast('Tribe not found'); return; }
+      tribe = { ...data, id: data.id, name: data.name, avatar_url: data.avatar_url, member_count: data.member_count };
+    }
+
+    activeTribe = tribe;
+    tribeReplyTo = null;
+    clearTribeReply();
+    clearTribeAttachment();
+
+    const initial = (tribe.name || 'T').charAt(0).toUpperCase();
+    const avatar = tribe.avatar_url ? `<img src="${escapeHtml(tribe.avatar_url)}" alt="">` : initial;
+
+    document.getElementById('tvAvatar').innerHTML = avatar;
+    document.getElementById('tvName').textContent = tribe.name || 'Tribe';
+    document.getElementById('tvStatus').textContent = (tribe.member_count || 0) + ' members';
+
+    document.getElementById('tribeView').classList.add('active');
+    await loadTribeMessages();
+    await markTribeRead(tribeId);
+  } finally {
+    isOpeningTribe = false;
+  }
+}
+
+function closeTribe() {
+  document.getElementById('tribeView').classList.remove('active');
+  activeTribe = null;
+  tribeReplyTo = null;
+  clearTribeReply();
+  clearTribeAttachment();
+  if (window.history.replaceState) window.history.replaceState(null, '', 'chats.html');
+  loadTribes().then(() => { updateBadges(); renderList(); });
+}
+
+function viewTribeInfo() {
+  if (activeTribe) {
+    toast('Tribe info coming soon');
+  }
+}
+
+/* ============================================================
+   LOAD MESSAGES (DM)
+   ============================================================ */
 async function loadMessages() {
   const box = document.getElementById('chatMessages');
   if (!activePartner) return;
-
-  // Show skeleton while loading
-  box.innerHTML = `
-    <div style="text-align:center;padding:20px;">
-      <div class="skeleton"><div class="sk-av"></div><div class="sk-lines"><div class="sk-line"></div></div></div>
-    </div>`;
+  box.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-circle-notch fa-spin" style="color:#666;"></i></div>';
 
   try {
     const { data, error } = await supabaseClient
       .from('messages')
-      .select('id, sender_id, receiver_id, content, created_at')
+      .select('id, sender_id, receiver_id, content, created_at, media_url, media_type, reply_to, is_pinned, is_deleted')
       .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${activePartner.id}),and(sender_id.eq.${activePartner.id},receiver_id.eq.${currentUser.id})`)
       .order('created_at', { ascending: true })
-      .limit(100);
+      .limit(200);
 
     if (error) throw error;
-    messageCache.set(activePartner.id, data || []);
-    box.innerHTML = (data || []).map(m => renderBubble(m)).join('');
-    box.scrollTop = box.scrollHeight;
+    renderMessagesInto(box, data || [], 'dm');
   } catch (err) {
     box.innerHTML = `<div style="text-align:center;color:#ff7675;padding:20px;">${escapeHtml(err.message)}</div>`;
   }
 }
 
-function renderBubble(m) {
-  const mine = m.sender_id === currentUser.id;
-  const time = new Date(m.created_at).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
-  return `
-    <div class="bubble ${mine ? 'me' : 'them'}">
-      ${escapeHtml(m.content || '')}
-      <span class="time">${time}</span>
-    </div>`;
+async function loadTribeMessages() {
+  const box = document.getElementById('tribeMessages');
+  if (!activeTribe) return;
+  box.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-circle-notch fa-spin" style="color:#666;"></i></div>';
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('tribe_messages')
+      .select('id, sender_id, content, media_url, media_type, reply_to, is_deleted, created_at')
+      .eq('tribe_id', activeTribe.id)
+      .order('created_at', { ascending: true })
+      .limit(200);
+
+    if (error) throw error;
+
+    // Fetch sender profiles
+    const senderIds = [...new Set((data || []).map(m => m.sender_id))];
+    if (senderIds.length > 0) {
+      const { data: profiles } = await supabaseClient
+        .from('profiles')
+        .select('id, username, display_name, avatar_url')
+        .in('id', senderIds);
+      (profiles || []).forEach(p => profileCache.set(p.id, p));
+    }
+
+    renderMessagesInto(box, data || [], 'tribe');
+  } catch (err) {
+    box.innerHTML = `<div style="text-align:center;color:#ff7675;padding:20px;">${escapeHtml(err.message)}</div>`;
+  }
 }
 
-/* ==================== SEND MESSAGE ==================== */
-async function sendMessage() {
-  const input = document.getElementById('chatInput');
-  const content = input.value.trim();
-  if (!content || !activePartner) return;
+function renderMessagesInto(box, messages, kind) {
+  if (!messages.length) {
+    box.innerHTML = `<div class="date-divider">No messages yet — say hi 👋</div>`;
+    return;
+  }
 
-  input.value = '';
+  const msgMap = new Map(messages.map(m => [m.id, m]));
+  let lastDate = '';
+  const html = messages.map(m => {
+    const msgDate = new Date(m.created_at).toDateString();
+    let dateHtml = '';
+    if (msgDate !== lastDate) {
+      lastDate = msgDate;
+      dateHtml = `<div class="date-divider">${formatDateLabel(m.created_at)}</div>`;
+    }
+    return dateHtml + renderBubble(m, kind, msgMap);
+  }).join('');
+
+  box.innerHTML = html;
+  box.scrollTop = box.scrollHeight;
+}
+
+function renderBubble(m, kind, msgMap) {
+  const mine = m.sender_id === currentUser.id;
+  const time = new Date(m.created_at).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+
+  // Reply quote
+  let replyHtml = '';
+  if (m.reply_to && msgMap && msgMap.get(m.reply_to)) {
+    const orig = msgMap.get(m.reply_to);
+    const origName = orig.sender_id === currentUser.id ? 'You' : (profileCache.get(orig.sender_id)?.display_name || profileCache.get(orig.sender_id)?.username || 'User');
+    replyHtml = `
+      <div class="reply-quote">
+        <div class="rq-name">${escapeHtml(origName)}</div>
+        <div>${escapeHtml((orig.content || '').slice(0, 60) || (orig.media_type ? '📎 Attachment' : ''))}</div>
+      </div>`;
+  }
+
+  // Media
+  let mediaHtml = '';
+  if (m.media_url && !m.is_deleted) {
+    const url = escapeHtml(m.media_url);
+    if (m.media_type === 'image') {
+      mediaHtml = `<div class="media" onclick="event.stopPropagation(); openImgViewer('${url}')"><img src="${url}" alt="" loading="lazy"></div>`;
+    } else if (m.media_type === 'video') {
+      mediaHtml = `<div class="media"><video src="${url}" controls playsinline preload="metadata"></video></div>`;
+    } else if (m.media_type === 'audio') {
+      mediaHtml = `<div class="media audio"><audio src="${url}" controls preload="metadata"></audio></div>`;
+    }
+  }
+
+  // Sender name for tribe
+  let senderHtml = '';
+  if (kind === 'tribe' && !mine) {
+    const prof = profileCache.get(m.sender_id);
+    const sname = prof?.display_name || prof?.username || 'User';
+    senderHtml = `<div style="font-size:11px;font-weight:700;color:var(--az-accent);margin-bottom:3px;">${escapeHtml(sname)}</div>`;
+  }
+
+  const content = m.is_deleted ? '<i>Message deleted</i>' : escapeHtml(m.content || '');
+  const pinIcon = m.is_pinned ? `<div class="pin-icon"><i class="fas fa-thumbtack"></i></div>` : '';
+
+  return `
+    <div class="bubble ${mine ? 'me' : 'them'} ${m.is_pinned ? 'pinned' : ''} ${m.is_deleted ? 'deleted' : ''}"
+         data-msg-id="${m.id}"
+         oncontextmenu="event.preventDefault(); openLpMenu('${kind}', '${m.id}', event); return false;">
+      ${pinIcon}
+      ${senderHtml}
+      ${replyHtml}
+      ${content ? `<div>${content}</div>` : ''}
+      ${mediaHtml}
+      <span class="time">${time}${mine && m.is_read ? ' <i class="fas fa-check-double" style="font-size:9px;"></i>' : ''}</span>
+    </div>
+  `;
+}
+
+/* ============================================================
+   SEND MESSAGE (DM)
+   ============================================================ */
+async function sendMessage() {
+  if (!activePartner) return;
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text && !dmPendingFile) return;
+
   const btn = document.getElementById('sendBtn');
   btn.disabled = true;
 
-  // Optimistic append (instant feedback)
-  const box = document.getElementById('chatMessages');
-  const optimisticId = 'temp-' + Date.now();
-  box.insertAdjacentHTML('beforeend', `
-    <div class="bubble me" id="${optimisticId}">
-      ${escapeHtml(content)}
-      <span class="time">Sending…</span>
-    </div>`);
-  box.scrollTop = box.scrollHeight;
+  let mediaUrl = null;
+  let mediaType = null;
 
   try {
-    const { error } = await supabaseClient.from('messages').insert({
+    if (dmPendingFile) {
+      const ext = (dmPendingFile.name.split('.').pop() || 'bin').toLowerCase();
+      const path = `dm/${currentUser.id}/${Date.now()}.${ext}`;
+      const { data: up, error: upErr } = await supabaseClient.storage
+        .from('chat_media')
+        .upload(path, dmPendingFile, { cacheControl: '3600' });
+      if (upErr) throw upErr;
+      const { data: urlData } = supabaseClient.storage.from('chat_media').getPublicUrl(up.path);
+      mediaUrl = urlData.publicUrl;
+      mediaType = dmPendingFile.type.startsWith('image/') ? 'image'
+                : dmPendingFile.type.startsWith('video/') ? 'video'
+                : dmPendingFile.type.startsWith('audio/') ? 'audio' : null;
+    }
+
+    const payload = {
       sender_id:   currentUser.id,
       receiver_id: activePartner.id,
-      content:     content
-    });
+      content:     text || '',
+      media_url:   mediaUrl,
+      media_type:  mediaType,
+      reply_to:    dmReplyTo?.id || null
+    };
+
+    const { error } = await supabaseClient.from('messages').insert(payload);
     if (error) throw error;
 
-    // Remove optimistic + reload quietly
-    document.getElementById(optimisticId)?.remove();
-    const { data } = await supabaseClient
-      .from('messages')
-      .select('id, sender_id, receiver_id, content, created_at')
-      .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${activePartner.id}),and(sender_id.eq.${activePartner.id},receiver_id.eq.${currentUser.id})`)
-      .order('created_at', { ascending: true })
-      .limit(100);
-    box.innerHTML = (data || []).map(m => renderBubble(m)).join('');
-    box.scrollTop = box.scrollHeight;
-    messageCache.set(activePartner.id, data || []);
+    input.value = '';
+    autoResize(input);
+    clearAttachment();
+    clearReply();
+    await loadMessages();
   } catch (err) {
-    document.getElementById(optimisticId)?.remove();
-    showToast(err.message, 'error');
+    toast(err.message);
   } finally {
     btn.disabled = false;
     input.focus();
   }
 }
 
-/* ==================== MARK READ ==================== */
+/* ============================================================
+   SEND MESSAGE (TRIBE)
+   ============================================================ */
+async function sendTribeMessage() {
+  if (!activeTribe) return;
+  const input = document.getElementById('tribeInput');
+  const text = input.value.trim();
+  if (!text && !tribePendingFile) return;
+
+  const btn = document.getElementById('tribeSendBtn');
+  btn.disabled = true;
+
+  let mediaUrl = null;
+  let mediaType = null;
+
+  try {
+    if (tribePendingFile) {
+      const ext = (tribePendingFile.name.split('.').pop() || 'bin').toLowerCase();
+      const path = `tribe/${activeTribe.id}/${Date.now()}.${ext}`;
+      const { data: up, error: upErr } = await supabaseClient.storage
+        .from('chat_media')
+        .upload(path, tribePendingFile, { cacheControl: '3600' });
+      if (upErr) throw upErr;
+      const { data: urlData } = supabaseClient.storage.from('chat_media').getPublicUrl(up.path);
+      mediaUrl = urlData.publicUrl;
+      mediaType = tribePendingFile.type.startsWith('image/') ? 'image'
+                : tribePendingFile.type.startsWith('video/') ? 'video'
+                : tribePendingFile.type.startsWith('audio/') ? 'audio' : null;
+    }
+
+    const { error } = await supabaseClient.from('tribe_messages').insert({
+      tribe_id:   activeTribe.id,
+      sender_id:  currentUser.id,
+      content:    text || '',
+      media_url:  mediaUrl,
+      media_type: mediaType,
+      reply_to:   tribeReplyTo?.id || null
+    });
+    if (error) throw error;
+
+    input.value = '';
+    autoResize(input);
+    clearTribeAttachment();
+    clearTribeReply();
+    await loadTribeMessages();
+  } catch (err) {
+    toast(err.message);
+  } finally {
+    btn.disabled = false;
+    input.focus();
+  }
+}
+
+/* ============================================================
+   FILE PICKERS
+   ============================================================ */
+function pickFile() { document.getElementById('fileInput').click(); }
+function pickTribeFile() { document.getElementById('tribeFileInput').click(); }
+
+function onDmFilePicked(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 25 * 1024 * 1024) { toast('Max 25 MB'); e.target.value = ''; return; }
+
+  dmPendingFile = file;
+  if (dmPendingFileUrl) URL.revokeObjectURL(dmPendingFileUrl);
+  dmPendingFileUrl = URL.createObjectURL(file);
+  showAttachPreview('dm', file, dmPendingFileUrl);
+  e.target.value = '';
+}
+
+function onTribeFilePicked(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 25 * 1024 * 1024) { toast('Max 25 MB'); e.target.value = ''; return; }
+
+  tribePendingFile = file;
+  if (tribePendingFileUrl) URL.revokeObjectURL(tribePendingFileUrl);
+  tribePendingFileUrl = URL.createObjectURL(file);
+  showAttachPreview('tribe', file, tribePendingFileUrl);
+  e.target.value = '';
+}
+
+function showAttachPreview(kind, file, url) {
+  const prefix = kind === 'dm' ? '' : 'tribe';
+  const preview = document.getElementById(prefix ? 'tribeAttachPreview' : 'attachPreview');
+  const thumb = document.getElementById(prefix ? 'tribeAttachThumb' : 'attachThumb');
+  const nameEl = document.getElementById(prefix ? 'tribeAttachName' : 'attachName');
+  const sizeEl = document.getElementById(prefix ? 'tribeAttachSize' : 'attachSize');
+
+  let type = 'file';
+  let icon = '<i class="fas fa-file"></i>';
+  if (file.type.startsWith('image/')) {
+    type = 'image';
+    icon = `<img src="${url}" alt="">`;
+  } else if (file.type.startsWith('video/')) {
+    type = 'video';
+    icon = `<video src="${url}" muted></video>`;
+  } else if (file.type.startsWith('audio/')) {
+    type = 'audio';
+    icon = '<i class="fas fa-music"></i>';
+  }
+
+  thumb.innerHTML = icon;
+  nameEl.textContent = file.name;
+  sizeEl.textContent = `${type} · ${(file.size / 1024).toFixed(0)} KB`;
+  preview.classList.add('active');
+}
+
+function clearAttachment() {
+  dmPendingFile = null;
+  if (dmPendingFileUrl) { URL.revokeObjectURL(dmPendingFileUrl); dmPendingFileUrl = null; }
+  document.getElementById('attachPreview').classList.remove('active');
+}
+
+function clearTribeAttachment() {
+  tribePendingFile = null;
+  if (tribePendingFileUrl) { URL.revokeObjectURL(tribePendingFileUrl); tribePendingFileUrl = null; }
+  document.getElementById('tribeAttachPreview').classList.remove('active');
+}
+
+/* ============================================================
+   REPLY
+   ============================================================ */
+function setReply(kind, msg) {
+  const prof = profileCache.get(msg.sender_id);
+  const name = msg.sender_id === currentUser.id ? 'You' : (prof?.display_name || prof?.username || 'User');
+  const preview = (msg.content || '').slice(0, 60) || (msg.media_type ? '📎 Attachment' : '');
+  const html = `<strong>${escapeHtml(name)}</strong> · ${escapeHtml(preview)}`;
+
+  if (kind === 'dm') {
+    dmReplyTo = msg;
+    document.getElementById('rpBody').innerHTML = html;
+    document.getElementById('replyPreview').classList.add('active');
+    document.getElementById('chatInput').focus();
+  } else {
+    tribeReplyTo = msg;
+    document.getElementById('trpBody').innerHTML = html;
+    document.getElementById('tribeReplyPreview').classList.add('active');
+    document.getElementById('tribeInput').focus();
+  }
+}
+
+function clearReply() {
+  dmReplyTo = null;
+  document.getElementById('replyPreview').classList.remove('active');
+}
+
+function clearTribeReply() {
+  tribeReplyTo = null;
+  document.getElementById('tribeReplyPreview').classList.remove('active');
+}
+
+/* ============================================================
+   LONG PRESS MENU
+   ============================================================ */
+async function openLpMenu(kind, msgId, event) {
+  let msg = null;
+  if (kind === 'dm') {
+    const { data } = await supabaseClient.from('messages').select('*').eq('id', msgId).single();
+    msg = data;
+  } else {
+    const { data } = await supabaseClient.from('tribe_messages').select('*').eq('id', msgId).single();
+    msg = data;
+  }
+  if (!msg) return;
+
+  lpContext = { type: kind, msg };
+
+  const mine = msg.sender_id === currentUser.id;
+  const items = [];
+
+  items.push({ icon: 'fa-reply', label: 'Reply', action: 'reply' });
+  if (msg.content) items.push({ icon: 'fa-copy', label: 'Copy text', action: 'copy' });
+  if (!msg.is_deleted) items.push({ icon: 'fa-thumbtack', label: msg.is_pinned ? 'Unpin' : 'Pin message', action: 'pin' });
+  if (mine && !msg.is_deleted) items.push({ icon: 'fa-trash', label: 'Delete', action: 'delete', danger: true });
+
+  const menu = document.getElementById('lpMenu');
+  menu.innerHTML = items.map(it => `
+    <button class="lp-item ${it.danger ? 'danger' : ''}" onclick="lpAction('${it.action}')">
+      <i class="fas ${it.icon}"></i> ${it.label}
+    </button>
+  `).join('');
+  document.getElementById('lpOverlay').classList.add('active');
+}
+
+function closeLpMenu(e) {
+  if (e && e.target && e.target.id !== 'lpOverlay') return;
+  document.getElementById('lpOverlay').classList.remove('active');
+}
+
+async function lpAction(action) {
+  const { type, msg } = lpContext;
+  document.getElementById('lpOverlay').classList.remove('active');
+  if (!msg) return;
+
+  const table = type === 'dm' ? 'messages' : 'tribe_messages';
+
+  try {
+    if (action === 'reply') {
+      setReply(type, msg);
+    } else if (action === 'copy') {
+      await navigator.clipboard.writeText(msg.content || '');
+      toast('Copied ✅');
+    } else if (action === 'pin') {
+      await supabaseClient.from(table).update({ is_pinned: !msg.is_pinned }).eq('id', msg.id);
+      toast(msg.is_pinned ? 'Unpinned' : 'Pinned 📌');
+      if (type === 'dm') loadMessages(); else loadTribeMessages();
+    } else if (action === 'delete') {
+      if (!confirm('Delete this message?')) return;
+      await supabaseClient.from(table).update({ is_deleted: true, content: '', media_url: null }).eq('id', msg.id);
+      toast('Deleted');
+      if (type === 'dm') loadMessages(); else loadTribeMessages();
+    }
+  } catch (err) {
+    toast(err.message);
+  }
+}
+
+/* ============================================================
+   VOICE RECORDING
+   ============================================================ */
+async function startRecording() {
+  if (!activePartner) return;
+  recTarget = 'dm';
+  await beginRecording();
+}
+async function startTribeRecording() {
+  if (!activeTribe) return;
+  recTarget = 'tribe';
+  await beginRecording();
+}
+
+async function beginRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    recChunks = [];
+    recSeconds = 0;
+
+    const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
+    const options = mimeType ? { mimeType } : {};
+    const rec = new MediaRecorder(stream, options);
+
+    rec.ondataavailable = e => { if (e.data.size > 0) recChunks.push(e.data); };
+    rec.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      if (recSeconds < 1) { toast('Too short'); cleanupRec(); return; }
+      const blob = new Blob(recChunks, { type: 'audio/webm' });
+      sendVoiceBlob(blob);
+      cleanupRec();
+    };
+
+    rec.start();
+
+    if (recTarget === 'dm') dmRecorder = rec;
+    else tribeRecorder = rec;
+
+    document.getElementById('recOverlay').classList.add('active');
+    document.getElementById('recTimer').textContent = '0:00';
+    recTimerInterval = setInterval(() => {
+      recSeconds++;
+      const m = Math.floor(recSeconds / 60);
+      const s = recSeconds % 60;
+      document.getElementById('recTimer').textContent = `${m}:${String(s).padStart(2, '0')}`;
+    }, 1000);
+
+    document.getElementById('micBtn')?.classList.add('recording');
+    document.getElementById('tribeMicBtn')?.classList.add('recording');
+  } catch (e) {
+    toast('Microphone access denied');
+    console.error(e);
+  }
+}
+
+function cleanupRec() {
+  if (recTimerInterval) { clearInterval(recTimerInterval); recTimerInterval = null; }
+  document.getElementById('recOverlay').classList.remove('active');
+  document.getElementById('micBtn')?.classList.remove('recording');
+  document.getElementById('tribeMicBtn')?.classList.remove('recording');
+  dmRecorder = null;
+  tribeRecorder = null;
+  recSeconds = 0;
+}
+
+function stopRecording(send) {
+  const rec = recTarget === 'dm' ? dmRecorder : tribeRecorder;
+  if (rec && rec.state !== 'inactive') rec.stop();
+  if (!send) {
+    recChunks = [];
+    recSeconds = 0;
+    cleanupRec();
+  }
+}
+
+function cancelRecording() {
+  recChunks = [];
+  recSeconds = 0;
+  stopRecording(false);
+}
+
+async function sendVoiceBlob(blob) {
+  const file = new File([blob], `voice-${Date.now()}.webm`, { type: 'audio/webm' });
+
+  if (recTarget === 'dm' && activePartner) {
+    dmPendingFile = file;
+    await sendMessage();
+  } else if (recTarget === 'tribe' && activeTribe) {
+    tribePendingFile = file;
+    await sendTribeMessage();
+  }
+}
+
+/* ============================================================
+   MARK READ
+   ============================================================ */
 async function markMessagesRead() {
   if (!activePartner) return;
-  // Fire and forget — don't await
   supabaseClient
     .from('messages')
     .update({ is_read: true })
@@ -739,38 +1749,48 @@ async function markMessagesRead() {
     .then(() => {});
 }
 
-/* ==================== REALTIME (efficient) ==================== */
-function setupRealtime() {
-  if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
+async function markTribeRead(tribeId) {
+  // If you have a read tracking table for tribes, add it here.
+  // For now, just clear the badge locally.
+  const t = tribes.find(x => x.id === tribeId);
+  if (t) {
+    tribeUnreadTotal = Math.max(0, tribeUnreadTotal - (t.unread || 0));
+    t.unread = 0;
+    updateBadges();
+  }
+}
 
-  realtimeChannel = supabaseClient
-    .channel('messages-realtime')
+/* ============================================================
+   REALTIME — DM
+   ============================================================ */
+function setupRealtimeDM() {
+  if (realtimeDM) supabaseClient.removeChannel(realtimeDM);
+  realtimeDM = supabaseClient
+    .channel('messages-rt')
     .on('postgres_changes',
       { event: 'INSERT', schema: 'public', table: 'messages' },
       payload => {
         const m = payload.new;
 
-        // If open chat, append bubble instantly
+        // Append to open chat
         if (activePartner &&
             ((m.sender_id === activePartner.id && m.receiver_id === currentUser.id) ||
              (m.sender_id === currentUser.id && m.receiver_id === activePartner.id))) {
           const box = document.getElementById('chatMessages');
-          box.insertAdjacentHTML('beforeend', renderBubble(m));
-          box.scrollTop = 999999;
+          box.insertAdjacentHTML('beforeend', renderBubble(m, 'dm', new Map()));
+          box.scrollTop = box.scrollHeight;
           if (m.receiver_id === currentUser.id) markMessagesRead();
         }
 
-        // Update the conversation list WITHOUT full reload
+        // Update conversation list
         const partnerId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
         const existing = conversations.find(c => c.partnerId === partnerId);
-
         if (existing) {
           existing.lastMessage = m;
           if (m.receiver_id === currentUser.id && !m.is_read) existing.unread++;
           conversations = conversations.filter(c => c.partnerId !== partnerId);
           conversations.unshift(existing);
         } else {
-          // New conversation — fetch partner profile once
           (async () => {
             const { data } = await supabaseClient
               .from('profiles').select('id, username, display_name, avatar_url, is_verified')
@@ -778,24 +1798,102 @@ function setupRealtime() {
             if (data) {
               profileCache.set(partnerId, data);
               conversations.unshift({
-                partnerId,
-                partner: data,
-                lastMessage: m,
-                unread: 1
+                partnerId, partner: data, lastMessage: m, unread: 1
               });
-              renderList();
+              if (currentTab === 'chats') renderList();
             }
           })();
           return;
         }
-
         if (currentTab === 'chats') renderList();
       }
     )
     .subscribe();
 }
 
-/* ==================== HELPERS ==================== */
+/* ============================================================
+   REALTIME — TRIBE
+   ============================================================ */
+function setupRealtimeTribe() {
+  if (realtimeTribe) supabaseClient.removeChannel(realtimeTribe);
+  realtimeTribe = supabaseClient
+    .channel('tribe-rt')
+    .on('postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'tribe_messages' },
+      payload => {
+        const m = payload.new;
+
+        if (activeTribe && m.tribe_id === activeTribe.id) {
+          const box = document.getElementById('tribeMessages');
+          if (m.sender_id !== currentUser.id) {
+            (async () => {
+              if (!profileCache.has(m.sender_id)) {
+                const { data } = await supabaseClient
+                  .from('profiles').select('id, username, display_name, avatar_url')
+                  .eq('id', m.sender_id).maybeSingle();
+                if (data) profileCache.set(m.sender_id, data);
+              }
+              box.insertAdjacentHTML('beforeend', renderBubble(m, 'tribe', new Map()));
+              box.scrollTop = box.scrollHeight;
+              markTribeRead(activeTribe.id);
+            })();
+          }
+        }
+
+        // Update tribe list preview
+        const t = tribes.find(x => x.id === m.tribe_id);
+        if (t) {
+          t.lastMessage = { content: m.content, created_at: m.created_at, sender_id: m.sender_id, sender_name: profileCache.get(m.sender_id)?.username };
+          if (m.sender_id !== currentUser.id && (!activeTribe || activeTribe.id !== m.tribe_id)) {
+            t.unread = (t.unread || 0) + 1;
+            tribeUnreadTotal++;
+            updateBadges();
+          }
+          tribes = tribes.filter(x => x.id !== m.tribe_id);
+          tribes.unshift(t);
+        }
+
+        if (currentTab === 'tribes') renderList();
+      }
+    )
+    .subscribe();
+}
+
+/* ============================================================
+   IMAGE VIEWER
+   ============================================================ */
+function openImgViewer(url) {
+  document.getElementById('imgViewerSrc').src = url;
+  document.getElementById('imgViewer').classList.add('active');
+}
+function closeImgViewer() {
+  document.getElementById('imgViewer').classList.remove('active');
+}
+
+/* ============================================================
+   INPUT HELPERS
+   ============================================================ */
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+function handleTribeKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendTribeMessage();
+  }
+}
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
 function formatTimeAgo(dateStr) {
   const s = Math.floor((Date.now() - new Date(dateStr)) / 1000);
   if (s < 60) return 'now';
@@ -804,6 +1902,40 @@ function formatTimeAgo(dateStr) {
   const d = Math.floor(h / 24); if (d < 7) return `${d}d`;
   return new Date(dateStr).toLocaleDateString();
 }
+
+function formatDateLabel(dateStr) {
+  const d = new Date(dateStr);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const dDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const diffDays = Math.floor((today - dDay) / 86400000);
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return 'Yesterday';
+  if (diffDays < 7) return d.toLocaleDateString('en-US', { weekday: 'long' });
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function toast(msg) {
+  const el = document.getElementById('toastMini');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(window._toastT);
+  window._toastT = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+/* ESC closes any open overlay */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('imgViewer').classList.remove('active');
+    document.getElementById('lpOverlay').classList.remove('active');
+    cancelRecording();
+  }
+});
 </script>
 </body>
 </html>
