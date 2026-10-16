@@ -1,0 +1,2983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Arizona AI — Earn While You Share</title>
+
+<!-- ==================== PWA ==================== -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#050a14">
+<meta name="color-scheme" content="dark">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Arizona AI">
+<link rel="apple-touch-icon" sizes="180x180" href="/icon.png">
+<link rel="apple-touch-icon" href="/icon.png">
+<link rel="icon" type="image/png" href="/icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/icon.png">
+<!-- ==================== /PWA ==================== -->
+
+<!-- ==================== Social Sharing (Open Graph) ==================== -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Arizona AI">
+<meta property="og:title" content="Arizona AI — Earn While You Share">
+<meta property="og:description" content="Post, earn, chat, and create with AI. Join the AI-powered social platform by Huzni's Family.">
+<meta property="og:image" content="https://aiarizonan.com/icon.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Arizona AI — Earn While You Share">
+<meta property="og:url" content="https://aiarizonan.com/">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter / X Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Arizona AI — Earn While You Share">
+<meta name="twitter:description" content="Post, earn, chat, and create with AI. Join the AI-powered social platform.">
+<meta name="twitter:image" content="https://aiarizonan.com/icon.png">
+<meta name="twitter:image:alt" content="Arizona AI">
+
+<!-- WhatsApp / Telegram / iMessage preview -->
+<meta itemprop="name" content="Arizona AI">
+<meta itemprop="description" content="Post, earn, chat, and create with AI.">
+<meta itemprop="image" content="https://aiarizonan.com/icon.png">
+<!-- ==================== /Social Sharing ==================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; }
+body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); padding-bottom:calc(70px + env(safe-area-inset-bottom)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; overscroll-behavior-y: contain; }
+
+/* ==================== TOP BAR ==================== */
+.ig-topbar {
+  position:fixed; top:0; left:0; right:0;
+  height: calc(60px + env(safe-area-inset-top));
+  padding-top: env(safe-area-inset-top);
+  background:rgba(10,10,10,.97); backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,107,53,.25);
+  display:flex; align-items:center; justify-content:space-between;
+  padding-left:16px; padding-right:16px;
+  z-index:1000; max-width:640px; margin:0 auto;
+}
+.ig-topbar .brand {
+  font-size:20px; font-weight:800;
+  display:flex; align-items:center; gap:8px;
+  text-decoration:none; color:inherit;
+}
+.ig-topbar .brand .brand-logo {
+  width:32px; height:32px; border-radius:8px;
+  object-fit:cover; border:1.5px solid rgba(255,178,15,.5);
+}
+.ig-topbar .brand span {
+  background:var(--az-gradient);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.ig-topbar .actions { display:flex; align-items:center; gap:4px; }
+.ig-icon-btn {
+  width:40px; height:40px; border-radius:50%;
+  background:transparent; border:none; color:var(--az-text);
+  font-size:19px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  position:relative; text-decoration:none;
+}
+.ig-icon-btn:hover { background:rgba(255,255,255,.06); }
+.ig-icon-btn .dot {
+  position:absolute; top:8px; right:8px;
+  width:8px; height:8px; border-radius:50%;
+  background:var(--az-primary); border:2px solid #0a0a0a;
+}
+.ig-icon-btn.ai-btn { color:#5eb8ff; }
+
+/* ==================== BLOOMY AI ICON ==================== */
+.ig-icon-btn.ai-btn {
+  position: relative;
+  color: #5eb8ff;
+  font-size: 21px;
+  overflow: visible;
+  animation: aiGlow 3s ease-in-out infinite;
+}
+.ig-icon-btn.ai-btn i {
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 0 8px rgba(94,184,255,.9));
+}
+.ig-icon-btn.ai-btn::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center,
+    rgba(94,184,255,.45) 0%,
+    rgba(124,58,237,.25) 45%,
+    rgba(94,184,255,0) 75%);
+  z-index: 0;
+  animation: aiPulse 2.2s ease-in-out infinite;
+  pointer-events: none;
+}
+.ig-icon-btn.ai-btn::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center,
+    rgba(94,184,255,.35) 0%,
+    rgba(124,58,237,.2) 40%,
+    transparent 70%);
+  z-index: -1;
+  filter: blur(6px);
+  animation: aiHalo 3s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes aiPulse {
+  0%,100% { transform: scale(1); opacity: .85; }
+  50% { transform: scale(1.25); opacity: 1; }
+}
+@keyframes aiHalo {
+  0%,100% { transform: scale(1); opacity: .6; }
+  50% { transform: scale(1.5); opacity: 1; }
+}
+@keyframes aiGlow {
+  0%,100% { filter: drop-shadow(0 0 6px rgba(94,184,255,.6)); }
+  50% { filter: drop-shadow(0 0 14px rgba(94,184,255,1)) drop-shadow(0 0 20px rgba(124,58,237,.7)); }
+}
+
+/* ==================== PULL-TO-REFRESH ==================== */
+.ptr-indicator {
+  position:fixed; top:calc(60px + env(safe-area-inset-top)); left:50%; transform:translateX(-50%);
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(10,10,10,.95);
+  border:1px solid rgba(255,107,53,.35);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--az-accent); font-size:18px;
+  z-index:900; opacity:0; pointer-events:none;
+  transition:opacity .2s, transform .2s;
+}
+.ptr-indicator.active { opacity:1; }
+.ptr-indicator.spin i { animation: ptrSpin .8s linear infinite; }
+@keyframes ptrSpin { to { transform: rotate(360deg); } }
+.ptr-indicator.rotate i { transform: rotate(180deg); transition: transform .2s; }
+
+/* ==================== NEW POSTS BANNER ==================== */
+.new-posts-banner {
+  position:fixed; top:calc(72px + env(safe-area-inset-top)); left:50%; transform:translateX(-50%) translateY(-20px);
+  background:linear-gradient(135deg, #FF6B35, #FFB20F);
+  color:#fff; padding:10px 20px; border-radius:22px;
+  font-size:13px; font-weight:800;
+  z-index:950;
+  display:flex; align-items:center; gap:8px;
+  box-shadow:0 8px 24px rgba(255,107,53,.5);
+  cursor:pointer; opacity:0; pointer-events:none;
+  transition:all .3s ease; max-width:90%;
+}
+.new-posts-banner.show { opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
+
+/* ==================== RE-BOOST NUDGE ==================== */
+.reboost-nudge {
+  max-width:640px; margin:12px auto 0;
+  padding:14px 16px;
+  background:linear-gradient(135deg, rgba(94,184,255,.15), rgba(124,58,237,.1));
+  border:1px solid rgba(94,184,255,.4);
+  border-radius:14px;
+  margin-left:16px; margin-right:16px;
+  display:none; align-items:center; gap:12px;
+}
+.reboost-nudge.show { display:flex; }
+.reboost-nudge i.big-icon {
+  font-size:26px; color:#5eb8ff; flex-shrink:0;
+  animation:nudgePulse 2s ease-in-out infinite;
+}
+@keyframes nudgePulse {
+  0%,100% { transform:scale(1); }
+  50% { transform:scale(1.15); }
+}
+.reboost-nudge .text { flex:1; font-size:13px; color:var(--az-text); line-height:1.45; }
+.reboost-nudge .text strong { display:block; color:#5eb8ff; margin-bottom:2px; font-size:14px; }
+.reboost-nudge button {
+  padding:9px 16px; border-radius:20px;
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
+  color:#fff; border:none;
+  font-weight:700; font-size:12px;
+  cursor:pointer; white-space:nowrap;
+}
+
+/* ==================== USER STRIP ==================== */
+.ig-user-strip {
+  max-width:640px; margin:0 auto;
+  padding:12px 16px;
+  display:flex; align-items:center; gap:12px;
+  background:rgba(255,255,255,.03);
+  border-bottom:1px solid rgba(255,107,53,.15);
+}
+.ig-user-strip .avatar {
+  width:42px; height:42px; border-radius:50%;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:#fff; font-size:16px; flex-shrink:0;
+  text-decoration:none; overflow:hidden;
+}
+.ig-user-strip .avatar img { width:100%; height:100%; object-fit:cover; }
+.ig-user-strip .info { flex:1; min-width:0; }
+.ig-user-strip .name {
+  font-weight:700; font-size:14px; color:var(--az-text);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.ig-user-strip .balance {
+  font-size:12px; color:var(--az-accent);
+  display:flex; align-items:center; gap:4px;
+}
+.ig-user-strip .logout-mini {
+  background:transparent; border:1px solid rgba(255,118,117,.5);
+  color:var(--az-danger); padding:6px 12px;
+  border-radius:18px; font-size:12px; font-weight:600;
+  cursor:pointer; text-decoration:none;
+}
+
+/* ==================== GUEST CTA ==================== */
+.guest-cta {
+  max-width:640px; margin:0 auto; padding:16px;
+  display:flex; align-items:center; gap:12px;
+  background:linear-gradient(135deg,rgba(255,107,53,.15),rgba(255,178,15,.08));
+  border-bottom:1px solid rgba(255,107,53,.2);
+}
+.guest-cta .text { flex:1; font-size:13px; color:var(--az-text); }
+.guest-cta .text strong { display:block; font-size:14px; margin-bottom:2px; }
+.guest-cta a {
+  padding:9px 16px; border-radius:20px;
+  background:var(--az-gradient); color:#fff;
+  font-weight:700; font-size:13px; text-decoration:none;
+  white-space:nowrap;
+}
+
+/* ==================== DEEP LINK ==================== */
+.deep-link-banner {
+  max-width:640px; margin:12px auto 0;
+  padding:12px 16px;
+  background:linear-gradient(135deg, rgba(94,184,255,.15), rgba(124,58,237,.1));
+  border:1px solid rgba(94,184,255,.4);
+  border-radius:14px;
+  display:none; align-items:center; gap:12px;
+  margin-left:16px; margin-right:16px;
+}
+.deep-link-banner.active { display:flex; }
+.deep-link-banner i { font-size:22px; color:#5eb8ff; flex-shrink:0; }
+.deep-link-banner .text { flex:1; font-size:13px; color:var(--az-text); line-height:1.45; }
+.deep-link-banner .text strong { display:block; color:#5eb8ff; margin-bottom:2px; }
+.deep-link-banner button {
+  padding:8px 14px; border-radius:18px;
+  background:#5eb8ff; color:#fff;
+  border:none; font-weight:700; font-size:12px;
+  cursor:pointer; white-space:nowrap;
+}
+
+/* ==================== FEED TABS ==================== */
+.feed-tabs {
+  max-width:640px; margin:0 auto;
+  display:flex; gap:0;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  background:rgba(10,10,10,.97);
+  position:sticky; top:calc(60px + env(safe-area-inset-top)); z-index:900;
+  backdrop-filter:blur(12px);
+}
+.feed-tabs .ftab {
+  flex:1; padding:12px 8px;
+  background:none; border:none;
+  color:var(--az-text-secondary);
+  font-size:13px; font-weight:700;
+  cursor:pointer; font-family:inherit;
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  border-bottom:2px solid transparent;
+  transition: all .15s;
+}
+.feed-tabs .ftab.active {
+  color:var(--az-text);
+  border-bottom-color:var(--az-primary);
+}
+.feed-tabs .ftab i { font-size:13px; }
+
+/* ==================== STORIES ROW ==================== */
+.ig-stories-wrap {
+  max-width:640px; margin:0 auto;
+  padding:14px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  position:relative;
+}
+.ig-stories {
+  display:flex; gap:14px;
+  padding:0 16px;
+  overflow-x:auto; scrollbar-width:none;
+}
+.ig-stories::-webkit-scrollbar { display:none; }
+
+.ig-story { flex-shrink:0; text-align:center; cursor:pointer; width:72px; position:relative; }
+.ig-story-ring {
+  width:64px; height:64px; border-radius:50%;
+  padding:2.5px; margin:0 auto 6px;
+  transition:background .3s;
+  position:relative;
+}
+.ig-story-ring.unseen {
+  background:conic-gradient(from 180deg, #FF6B35, #FFB20F, #7c3aed, #FF6B35);
+  box-shadow:0 0 12px rgba(255,107,53,.5);
+  animation:ringSpin 4s linear infinite;
+}
+@keyframes ringSpin { to { transform: rotate(360deg); } }
+.ig-story-ring.seen { background:#3a3a3a; }
+.ig-story-ring .inner {
+  width:100%; height:100%; border-radius:50%;
+  background:#0a0a0a; border:2px solid #0a0a0a;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:#fff; font-size:20px; overflow:hidden;
+}
+.ig-story-ring.seen .inner { opacity:.7; }
+.ig-story-ring .inner img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.ig-story.add .ig-story-ring { background:#2a2a2a; }
+.ig-story.add .inner { background:var(--az-accent); color:#1a1a1a; }
+.ig-story .label {
+  font-size:11px; color:var(--az-text-secondary);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  padding:0 2px;
+}
+.ig-story-ring.boosted {
+  animation: ringBoost 2s ease-in-out infinite;
+}
+@keyframes ringBoost {
+  0%,100% { box-shadow:0 0 12px rgba(255,107,53,.5); }
+  50% { box-shadow:0 0 25px rgba(124,58,237,.8); }
+}
+
+/* ==================== FEED ==================== */
+.ig-feed { max-width:640px; margin:0 auto; }
+.ig-post {
+  background:rgba(255,255,255,.03);
+  border-bottom:1px solid rgba(255,255,255,.06);
+  margin-bottom:8px;
+  position:relative;
+  transition:background .3s;
+}
+.ig-post.highlighted {
+  background:rgba(94,184,255,.08);
+  animation:highlightPulse 2s ease-in-out;
+}
+@keyframes highlightPulse {
+  0%,100% { background:rgba(94,184,255,.08); }
+  50% { background:rgba(94,184,255,.2); }
+}
+.ig-post.boosted {
+  border:1px solid rgba(94,184,255,.4);
+  box-shadow:0 0 20px rgba(94,184,255,.15);
+}
+.ig-post.boosted::before {
+  content:"⚡ Boosted";
+  display:block;
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
+  color:#fff; font-size:11px; font-weight:700;
+  padding:5px 16px; letter-spacing:.5px;
+  text-transform:uppercase;
+}
+.ig-post.boost-expiring {
+  border-color:rgba(255,178,15,.6);
+}
+.ig-post.boost-expiring::before {
+  content:"⚡ Boost expiring soon";
+  background:linear-gradient(135deg,#FFB20F,#FF6B35);
+  color:#1a1a1a;
+}
+.ig-post-head {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px;
+}
+.ig-post-head .p-avatar {
+  width:38px; height:38px; border-radius:50%;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:#fff; font-size:15px; flex-shrink:0;
+  text-decoration:none; overflow:hidden;
+  position:relative;
+}
+.ig-post-head .p-avatar img { width:100%; height:100%; object-fit:cover; }
+.ig-post-head .p-avatar.has-story::before {
+  content:''; position:absolute; inset:-3px;
+  border-radius:50%;
+  background:conic-gradient(from 0deg,#FF6B35,#FFB20F,#7c3aed,#FF6B35);
+  z-index:-1;
+}
+.ig-post-head .meta { flex:1; min-width:0; }
+.ig-post-head .meta .name {
+  font-weight:700; font-size:14px; color:var(--az-text);
+  display:flex; align-items:center; gap:5px; text-decoration:none;
+}
+.ig-post-head .meta .name .verified { color:#3b82f6; font-size:12px; }
+.ig-post-head .meta .sub { font-size:11px; color:var(--az-text-secondary); }
+.ig-post-head .post-menu {
+  background:none; border:none; color:var(--az-text-secondary);
+  font-size:18px; cursor:pointer; padding:4px 8px;
+}
+
+.ig-post-media {
+  width:100%; background:#000;
+  display:flex; align-items:center; justify-content:center;
+  max-height:620px; overflow:hidden; cursor:pointer;
+  position:relative;
+}
+.ig-post-media img, .ig-post-media video {
+  width:100%; height:auto;
+  max-height:620px; object-fit:contain;
+  display:block;
+}
+.ig-post-media .post-watermark {
+  position:absolute; bottom:12px; right:12px;
+  display:flex; align-items:center; gap:5px;
+  font-size:10px; color:rgba(255,255,255,.85);
+  background:rgba(0,0,0,.5);
+  padding:4px 10px; border-radius:12px;
+  font-weight:700; letter-spacing:.3px;
+  backdrop-filter:blur(4px);
+  pointer-events:none;
+}
+.ig-post-media .post-watermark img { width:14px; height:14px; border-radius:3px; }
+
+.ig-post-media .dbl-heart {
+  position:absolute; top:50%; left:50%;
+  transform:translate(-50%,-50%) scale(0);
+  font-size:90px; color:#fff;
+  filter:drop-shadow(0 0 20px rgba(255,71,87,.9));
+  pointer-events:none; z-index:10;
+}
+.ig-post-media .dbl-heart.pop { animation:dblHeartPop .8s ease; }
+@keyframes dblHeartPop {
+  0% { transform:translate(-50%,-50%) scale(0); opacity:0; }
+  15% { transform:translate(-50%,-50%) scale(1.2); opacity:1; }
+  30% { transform:translate(-50%,-50%) scale(1); opacity:1; }
+  70% { transform:translate(-50%,-50%) scale(1); opacity:1; }
+  100% { transform:translate(-50%,-50%) scale(1.3); opacity:0; }
+}
+
+.post-boost-bar {
+  padding:10px 16px;
+  background:linear-gradient(135deg, rgba(94,184,255,.08), rgba(124,58,237,.05));
+  border-bottom:1px solid rgba(94,184,255,.15);
+  display:flex; align-items:center; gap:12px;
+  font-size:12px; color:var(--az-text-secondary);
+}
+.post-boost-bar i { color:#5eb8ff; }
+.post-boost-bar .growth {
+  color:#00b894; font-weight:700;
+  display:flex; align-items:center; gap:3px;
+}
+.post-boost-bar .time-left {
+  margin-left:auto;
+  color:var(--az-accent); font-weight:700;
+}
+
+.ig-post-body { padding:10px 16px 14px; }
+.ig-post-caption {
+  font-size:14px; line-height:1.5; color:var(--az-text);
+  margin-top:6px; word-wrap:break-word;
+}
+.ig-post-caption .cap-user { font-weight:700; margin-right:6px; }
+
+.ig-actions {
+  display:flex; align-items:center; gap:16px;
+  padding:8px 16px 6px;
+}
+.ig-action {
+  background:none; border:none; color:var(--az-text);
+  font-size:22px; cursor:pointer; padding:4px;
+  display:flex; align-items:center;
+  transition:transform .15s ease;
+}
+.ig-action:hover { transform:scale(1.1); }
+.ig-action.liked { color:var(--az-primary); }
+.ig-action.saved { color:var(--az-accent); }
+.ig-action.save { margin-left:auto; }
+.ig-action.boost-btn { color:#5eb8ff; font-size:18px; }
+.ig-action.like-anim { animation:likePop .35s ease; }
+@keyframes likePop {
+  0% { transform:scale(1); }
+  50% { transform:scale(1.35); }
+  100% { transform:scale(1); }
+}
+
+.ig-likes {
+  padding:2px 16px 4px;
+  font-size:13px; font-weight:700; color:var(--az-text);
+  cursor:pointer;
+}
+.ig-stats-row {
+  padding:0 16px 6px;
+  display:flex; gap:14px;
+  font-size:12px; color:var(--az-text-secondary);
+}
+.ig-stats-row span { display:flex; align-items:center; gap:4px; cursor:pointer; }
+.ig-stats-row span:hover { color:var(--az-accent); }
+.ig-time {
+  padding:4px 16px 12px;
+  font-size:10px; color:var(--az-text-secondary);
+  text-transform:uppercase; letter-spacing:.5px;
+}
+.ig-comments-preview {
+  padding:0 16px 12px;
+  font-size:13px; color:var(--az-text-secondary);
+  cursor:pointer;
+}
+
+.feed-skeleton { padding: 12px 0; }
+.feed-skeleton .sk-row {
+  background: rgba(255,255,255,.03);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  padding: 14px 16px;
+  margin-bottom: 8px;
+}
+.feed-skeleton .sk-head { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+.feed-skeleton .sk-av {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+.feed-skeleton .sk-line {
+  height: 12px; border-radius: 6px; margin-bottom: 6px;
+  background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+.feed-skeleton .sk-line.short { width: 40%; }
+.feed-skeleton .sk-media {
+  width: 100%; aspect-ratio: 1/1; border-radius: 8px;
+  background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.feed-loader {
+  text-align: center; padding: 24px;
+  color: var(--az-text-secondary);
+  font-size: 13px;
+}
+.feed-loader i { font-size: 22px; color: var(--az-primary); }
+
+.ig-empty {
+  text-align:center; padding:60px 24px;
+  color:var(--az-text-secondary);
+}
+.ig-empty i {
+  font-size:56px; color:var(--az-primary);
+  opacity:.4; margin-bottom:16px; display:block;
+}
+.ig-empty h3 { color:var(--az-text); font-size:17px; margin-bottom:6px; }
+
+/* ==================== BOTTOM NAV ==================== */
+.ig-bottom-nav {
+  position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+  width:100%; max-width:640px;
+  background:rgba(10,10,10,.98); backdrop-filter:blur(12px);
+  border-top:1px solid rgba(255,107,53,.25);
+  display:flex; justify-content:space-around; align-items:center;
+  padding:8px 0 calc(8px + env(safe-area-inset-bottom));
+  z-index:1000;
+}
+.ig-bottom-nav .bnav-item {
+  background:none; border:none; color:var(--az-text-secondary);
+  display:flex; flex-direction:column; align-items:center;
+  gap:3px; cursor:pointer; padding:4px 12px;
+  font-size:10px; text-decoration:none;
+}
+.ig-bottom-nav .bnav-item i { font-size:22px; }
+.ig-bottom-nav .bnav-item.active { color:var(--az-text); }
+.ig-bottom-nav .bnav-item.create {
+  color:#fff; background:var(--az-gradient);
+  width:44px; height:44px; border-radius:12px;
+  padding:0; justify-content:center;
+}
+.ig-bottom-nav .bnav-avatar {
+  width:26px; height:26px; border-radius:50%;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:#fff; font-size:11px;
+  border:2px solid var(--az-text); overflow:hidden;
+}
+.ig-bottom-nav .bnav-avatar img { width:100%; height:100%; object-fit:cover; }
+
+/* ==================== FULLSCREEN VIEWER ==================== */
+.fs-viewer {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.98); z-index:3000;
+  align-items:center; justify-content:center;
+}
+.fs-viewer.active { display:flex; }
+.fs-viewer img, .fs-viewer video {
+  max-width:100vw; max-height:100vh;
+  object-fit:contain; animation:fsIn .25s ease;
+}
+@keyframes fsIn { from { opacity:0; transform:scale(.92); } }
+.fs-viewer .close-btn {
+  position:absolute; top:20px; right:20px;
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(255,255,255,.12); color:#fff;
+  border:none; font-size:22px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  backdrop-filter:blur(8px); z-index:10;
+}
+.fs-viewer .nav-btn {
+  position:absolute; top:50%; transform:translateY(-50%);
+  width:50px; height:50px; border-radius:50%;
+  background:rgba(255,255,255,.12); color:#fff;
+  border:none; font-size:22px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  backdrop-filter:blur(8px); z-index:10;
+}
+.fs-viewer .nav-btn.prev { left:16px; }
+.fs-viewer .nav-btn.next { right:16px; }
+.fs-viewer .counter {
+  position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
+  color:#fff; font-size:13px; font-weight:600;
+  background:rgba(255,255,255,.12);
+  padding:6px 14px; border-radius:20px;
+  backdrop-filter:blur(8px); z-index:10;
+}
+
+/* ==================== STORY VIEWER ==================== */
+.story-viewer { display:none; position:fixed; inset:0; background:#000; z-index:3400; }
+.story-viewer.active { display:block; }
+.story-viewer .sv-inner { position:relative; width:100%; height:100%; max-width:640px; margin:0 auto; }
+.story-viewer .sv-progress {
+  position:absolute; top:0; left:0; right:0;
+  padding:8px 6px; padding-top:calc(8px + env(safe-area-inset-top));
+  display:flex; gap:3px; z-index:20;
+}
+.story-viewer .sv-segment {
+  flex:1; height:3px; background:rgba(255,255,255,.25);
+  border-radius:2px; overflow:hidden;
+}
+.story-viewer .sv-segment .fill { height:100%; background:#fff; width:0%; }
+.story-viewer .sv-segment.done .fill { width:100%; }
+.story-viewer .sv-header {
+  position:absolute; top:20px; left:0; right:0;
+  padding:12px 14px; padding-top:calc(12px + env(safe-area-inset-top));
+  display:flex; align-items:center; gap:10px; z-index:15;
+  background:linear-gradient(rgba(0,0,0,.75), transparent);
+}
+.story-viewer .sv-av {
+  width:38px; height:38px; border-radius:50%;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:#fff; font-size:14px; overflow:hidden;
+  flex-shrink:0; border:2px solid rgba(255,255,255,.5);
+}
+.story-viewer .sv-av img { width:100%; height:100%; object-fit:cover; }
+.story-viewer .sv-info { flex:1; min-width:0; }
+.story-viewer .sv-info .name {
+  font-size:13px; font-weight:700; color:#fff;
+  display:flex; align-items:center; gap:5px;
+}
+.story-viewer .sv-info .time { font-size:10px; color:rgba(255,255,255,.7); margin-top:1px; }
+.story-viewer .sv-close {
+  width:34px; height:34px; border-radius:50%;
+  background:rgba(0,0,0,.5); color:#fff;
+  border:none; font-size:16px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  backdrop-filter:blur(8px);
+}
+.story-viewer .sv-body {
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  background:#000;
+}
+.story-viewer .sv-body img, .story-viewer .sv-body video {
+  max-width:100%; max-height:100%; object-fit:contain;
+}
+.story-viewer .sv-tap-left, .story-viewer .sv-tap-right {
+  position:absolute; top:80px; bottom:110px;
+  width:35%; cursor:pointer; z-index:10;
+}
+.story-viewer .sv-tap-left { left:0; }
+.story-viewer .sv-tap-right { right:0; }
+.story-viewer .sv-caption {
+  position:absolute; bottom:130px; left:20px; right:20px;
+  background:rgba(0,0,0,.6); backdrop-filter:blur(10px);
+  padding:12px 16px; border-radius:14px;
+  color:#fff; font-size:14px; line-height:1.45;
+  text-align:center; z-index:15; display:none;
+}
+.story-viewer .sv-caption.show { display:block; }
+.story-viewer .sv-actions {
+  position:absolute; bottom:30px; left:20px; right:20px;
+  padding-bottom:env(safe-area-inset-bottom);
+  display:flex; align-items:center; gap:8px; z-index:15;
+}
+.story-viewer .sv-input {
+  flex:1; display:flex;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:24px; padding:4px 4px 4px 16px;
+  backdrop-filter:blur(8px);
+}
+.story-viewer .sv-input input {
+  flex:1; background:transparent; border:none;
+  color:#fff; font-size:14px; font-family:inherit;
+  outline:none; padding:8px 0;
+}
+.story-viewer .sv-input input::placeholder { color:rgba(255,255,255,.6); }
+.story-viewer .sv-input button {
+  width:34px; height:34px; border-radius:50%;
+  background:var(--az-gradient); color:#fff;
+  border:none; font-size:14px; cursor:pointer;
+}
+.story-viewer .sv-action-btn {
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(255,255,255,.12); color:#fff;
+  border:none; font-size:18px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  backdrop-filter:blur(8px);
+  transition: transform .12s, background .15s;
+}
+.story-viewer .sv-action-btn:active { transform:scale(.9); }
+.story-viewer .sv-action-btn.liked { color:#ff4757; background:rgba(255,71,87,.25); }
+.story-viewer .sv-stats {
+  position:absolute; top:80px; right:14px;
+  display:flex; flex-direction:column; gap:8px; z-index:15;
+}
+.story-viewer .sv-stat {
+  background:rgba(0,0,0,.55); backdrop-filter:blur(10px);
+  border-radius:12px; padding:6px 10px;
+  color:#fff; font-size:11px; font-weight:700;
+  display:flex; align-items:center; gap:5px;
+}
+
+/* ==================== COMMENTS MODAL ==================== */
+.comments-modal {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.85); z-index:2000;
+  align-items:flex-end; justify-content:center;
+}
+.comments-modal.active { display:flex; }
+.comments-panel {
+  background:#151515; width:100%; max-width:640px;
+  border-top-left-radius:20px; border-top-right-radius:20px;
+  max-height:85vh; display:flex; flex-direction:column;
+}
+.comments-head {
+  padding:16px 20px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.comments-head h3 { font-size:16px; color:var(--az-text); }
+.comments-head .close-x {
+  background:none; border:none; color:var(--az-text-secondary);
+  font-size:22px; cursor:pointer; padding:4px;
+}
+.comments-list { flex:1; overflow-y:auto; padding:14px 20px; }
+.comment-item {
+  display:flex; gap:12px; padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+.comment-item:last-child { border-bottom:none; }
+.comment-item .c-avatar {
+  width:36px; height:36px; border-radius:50%;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:#fff; font-size:14px;
+  flex-shrink:0; overflow:hidden;
+}
+.comment-item .c-avatar img { width:100%; height:100%; object-fit:cover; }
+.comment-item .c-body { flex:1; min-width:0; }
+.comment-item .c-name {
+  font-size:13px; font-weight:700; color:var(--az-text);
+  margin-bottom:3px;
+}
+.comment-item .c-text {
+  font-size:14px; color:var(--az-text); line-height:1.5; word-wrap:break-word;
+}
+.comment-item .c-time { font-size:11px; color:var(--az-text-secondary); margin-top:4px; }
+.comments-empty { text-align:center; padding:40px 20px; color:var(--az-text-secondary); font-size:14px; }
+.comments-input-wrap {
+  padding:12px 16px;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom));
+  border-top:1px solid rgba(255,255,255,.08);
+  display:flex; gap:10px;
+}
+.comments-input {
+  flex:1; padding:12px 16px;
+  background:#0a0a0a; border:1px solid #333;
+  border-radius:24px; color:#fff; font-size:14px; font-family:inherit;
+}
+.comments-input:focus { outline:none; border-color:var(--az-primary); }
+.comments-send {
+  padding:0 20px;
+  background:var(--az-gradient); color:#fff;
+  border:none; border-radius:24px;
+  font-weight:700; font-size:14px; cursor:pointer;
+}
+.comments-send:disabled { opacity:.5; cursor:not-allowed; }
+
+/* ==================== POST VIEWERS MODAL ==================== */
+.viewers-modal {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.85); z-index:2050;
+  align-items:flex-end; justify-content:center;
+}
+.viewers-modal.active { display:flex; }
+.viewers-panel {
+  background:#151515; width:100%; max-width:640px;
+  border-top-left-radius:20px; border-top-right-radius:20px;
+  max-height:80vh; display:flex; flex-direction:column;
+}
+.viewers-head {
+  padding:16px 20px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.viewers-head h3 { font-size:16px; color:var(--az-text); }
+.viewers-head .close-x {
+  background:none; border:none; color:var(--az-text-secondary);
+  font-size:22px; cursor:pointer; padding:4px;
+}
+.viewers-list { flex:1; overflow-y:auto; padding:8px 20px; }
+.viewer-item {
+  display:flex; align-items:center; gap:12px;
+  padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+.viewer-item .v-avatar {
+  width:42px; height:42px; border-radius:50%;
+  background:var(--az-gradient);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:#fff; font-size:16px;
+  flex-shrink:0; overflow:hidden;
+}
+.viewer-item .v-avatar img { width:100%; height:100%; object-fit:cover; }
+.viewer-item .v-info { flex:1; min-width:0; }
+.viewer-item .v-info .v-name {
+  font-size:14px; font-weight:700; color:var(--az-text);
+}
+.viewer-item .v-info .v-time {
+  font-size:11px; color:var(--az-text-secondary); margin-top:2px;
+}
+
+/* ==================== POST OPTIONS MODAL ==================== */
+.post-options-modal {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.7); z-index:2200;
+  align-items:flex-end; justify-content:center;
+}
+.post-options-modal.active { display:flex; }
+.post-options-panel {
+  background:#151515; width:100%; max-width:640px;
+  border-top-left-radius:20px; border-top-right-radius:20px;
+  padding:12px 0;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom));
+  animation:slideUp .25s ease;
+}
+.post-options-panel .handle {
+  width:40px; height:4px; background:#333; border-radius:2px;
+  margin:0 auto 12px;
+}
+.post-opt-item {
+  display:flex; align-items:center; gap:14px;
+  padding:14px 22px;
+  background:none; border:none; width:100%;
+  text-align:left; cursor:pointer;
+  color:var(--az-text); font-size:15px; font-family:inherit;
+}
+.post-opt-item:active { background:rgba(255,255,255,.05); }
+.post-opt-item i { width:22px; text-align:center; color:var(--az-accent); font-size:16px; }
+.post-opt-item.danger { color:#ff7675; }
+.post-opt-item.danger i { color:#ff7675; }
+
+/* ==================== LANGUAGE MENU ==================== */
+.lang-menu {
+  position:fixed; top:calc(60px + env(safe-area-inset-top)); right:16px;
+  background:#1a1a1a; border:1px solid rgba(255,178,15,.3);
+  border-radius:12px; padding:6px;
+  z-index:1500; display:none; min-width:140px;
+  box-shadow:0 15px 40px rgba(0,0,0,.6);
+}
+.lang-menu.active { display:block; }
+.lang-menu button {
+  display:flex; align-items:center; gap:10px;
+  width:100%; padding:10px 12px;
+  background:transparent; border:none;
+  color:var(--az-text); font-size:14px;
+  cursor:pointer; border-radius:8px; text-align:left;
+}
+.lang-menu button:hover { background:rgba(255,107,53,.2); }
+.lang-menu button.active { background:var(--az-primary); color:#fff; }
+
+/* ==================== BOOST MODAL ==================== */
+.boost-modal {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.88); z-index:2500;
+  align-items:flex-end; justify-content:center;
+}
+.boost-modal.active { display:flex; }
+.boost-panel {
+  background:#151515; width:100%; max-width:640px;
+  border-top-left-radius:24px; border-top-right-radius:24px;
+  padding:20px;
+  padding-bottom:calc(20px + env(safe-area-inset-bottom));
+  max-height:90vh; overflow-y:auto;
+  animation:slideUp .25s ease;
+}
+@keyframes slideUp { from { transform:translateY(100%); } }
+.boost-panel .handle {
+  width:40px; height:4px; background:#333; border-radius:2px;
+  margin:0 auto 16px;
+}
+.boost-panel h3 {
+  text-align:center; font-size:18px;
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  margin-bottom:6px;
+}
+.boost-panel .sub {
+  text-align:center; color:var(--az-text-secondary);
+  font-size:13px; margin-bottom:20px;
+}
+.boost-options { display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
+.boost-option {
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:14px; padding:14px 16px;
+  cursor:pointer; transition:all .2s;
+  display:flex; align-items:center; gap:14px;
+}
+.boost-option:hover { background:rgba(94,184,255,.1); border-color:rgba(94,184,255,.5); }
+.boost-option.selected {
+  background:rgba(94,184,255,.15); border-color:#5eb8ff;
+  box-shadow:0 0 20px rgba(94,184,255,.2);
+}
+.boost-option .icon {
+  width:44px; height:44px; border-radius:12px;
+  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:20px; flex-shrink:0;
+}
+.boost-option .details { flex:1; }
+.boost-option .details .title { font-weight:700; font-size:15px; color:var(--az-text); }
+.boost-option .details .desc { font-size:12px; color:var(--az-text-secondary); margin-top:2px; }
+.boost-option .price { font-weight:800; color:#5eb8ff; font-size:16px; white-space:nowrap; }
+.boost-summary {
+  background:rgba(94,184,255,.08);
+  border:1px solid rgba(94,184,255,.25);
+  border-radius:12px; padding:14px 16px; margin-bottom:16px;
+}
+.boost-summary .row {
+  display:flex; justify-content:space-between;
+  font-size:14px; margin-bottom:6px;
+}
+.boost-summary .row:last-child {
+  margin-bottom:0; padding-top:6px;
+  border-top:1px solid rgba(94,184,255,.2);
+  font-weight:700;
+}
+.boost-summary .row .val { color:#5eb8ff; }
+.boost-actions { display:flex; gap:10px; }
+.boost-actions button {
+  flex:1; padding:14px; border-radius:12px;
+  font-weight:700; cursor:pointer; font-size:15px;
+  border:none; font-family:inherit;
+}
+.boost-actions .cancel { background:transparent; border:1px solid #333; color:#fff; }
+.boost-actions .confirm { background:linear-gradient(135deg,#5eb8ff,#7c3aed); color:#fff; }
+.boost-actions button:disabled { opacity:.6; cursor:not-allowed; }
+
+/* ==================== SETTINGS DRAWER ==================== */
+.settings-overlay {
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(4px);
+  z-index:2500; display:none; justify-content:flex-end;
+}
+.settings-overlay.active { display:flex; }
+.settings-drawer {
+  background:#0f0f0f;
+  width:100%; max-width:400px;
+  height:100vh; overflow-y:auto;
+  padding:20px;
+  padding-bottom:calc(20px + env(safe-area-inset-bottom));
+  border-left:1px solid rgba(255,107,53,.25);
+  animation:slideIn .3s ease;
+}
+@keyframes slideIn { from { transform:translateX(100%); } }
+.settings-header {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:24px; padding-bottom:16px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.settings-header h3 { font-size:18px; font-weight:800; color:var(--az-text); }
+.settings-close {
+  width:36px; height:36px; border-radius:50%;
+  background:rgba(255,255,255,.06);
+  border:none; color:var(--az-text);
+  font-size:16px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+.settings-section { margin-bottom:24px; }
+.settings-section-title {
+  font-size:11px; font-weight:800;
+  color:var(--az-text-secondary);
+  text-transform:uppercase; letter-spacing:1.2px;
+  margin-bottom:8px; padding-left:12px;
+}
+.settings-item {
+  display:flex; align-items:center; gap:14px;
+  padding:13px 14px; border-radius:12px;
+  color:var(--az-text); text-decoration:none;
+  font-size:14px; font-weight:500;
+  transition:all .15s; margin-bottom:2px;
+}
+.settings-item:hover { background:rgba(255,107,53,.1); transform:translateX(3px); }
+.settings-item i {
+  width:24px; text-align:center;
+  color:var(--az-accent); font-size:16px;
+}
+.settings-item.danger {
+  color:var(--az-danger); margin-top:8px;
+  border-top:1px solid rgba(255,255,255,.08);
+  padding-top:14px;
+}
+.settings-item.danger i { color:var(--az-danger); }
+.settings-lang { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:0 4px; }
+.settings-lang .lang-btn {
+  padding:12px; background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:10px; color:var(--az-text);
+  font-size:13px; font-weight:600; cursor:pointer;
+}
+.settings-lang .lang-btn:hover { background:rgba(255,107,53,.15); border-color:var(--az-primary); }
+.settings-footer {
+  text-align:center; color:var(--az-text-secondary);
+  font-size:11px; padding:20px 0 30px; opacity:.5;
+}
+
+/* ==================== TOAST ==================== */
+.toast-mini {
+  position:fixed; bottom:calc(100px + env(safe-area-inset-bottom)); left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:rgba(10,10,10,.98);
+  border:1px solid rgba(255,107,53,.4);
+  color:#fff; padding:10px 18px;
+  border-radius:22px; font-size:13px; font-weight:600;
+  z-index:9999; opacity:0; pointer-events:none;
+  transition:all .25s ease;
+  max-width:90%; text-align:center;
+  box-shadow:0 10px 40px rgba(0,0,0,.5);
+}
+.toast-mini.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+.spinner {
+  display:inline-block; width:14px; height:14px;
+  border:2px solid rgba(255,255,255,.3);
+  border-radius:50%; border-top-color:#fff;
+  animation:spin .7s linear infinite;
+  margin-right:6px; vertical-align:middle;
+}
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* ==================== PWA INSTALL BANNER ==================== */
+#pwa-install-banner {
+  position: fixed;
+  bottom: calc(80px + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  background: linear-gradient(135deg, #FF6B35, #FFB20F);
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 30px;
+  box-shadow: 0 10px 40px rgba(255,107,53,.5);
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  font-family: -apple-system, sans-serif;
+  max-width: 90%;
+}
+#pwa-install-banner button.install-btn {
+  background: #fff;
+  color: #FF6B35;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+}
+#pwa-install-banner button.close-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 4px;
+}
+</style>
+</head>
+<body>
+
+<div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
+
+<div class="ptr-indicator" id="ptrIndicator"><i class="fas fa-arrow-down"></i></div>
+
+<div class="new-posts-banner" id="newPostsBanner" onclick="showNewPosts()">
+  <i class="fas fa-arrow-up"></i>
+  <span id="newPostsText">New posts available</span>
+</div>
+
+<!-- ==================== TOP BAR ==================== -->
+<header class="ig-topbar">
+  <a href="index.html" class="brand">
+    <img src="/icon.png" alt="Arizonan logo" class="brand-logo" decoding="async">
+    <span>Arizona AI</span>
+  </a>
+  <div class="actions" id="topActions"></div>
+</header>
+
+<!-- ==================== LANGUAGE MENU ==================== -->
+<div class="lang-menu" id="langMenu">
+  <button onclick="setLang('en', this)" class="active"><span style="font-size:18px;">🇬🇧</span> English</button>
+  <button onclick="setLang('ar', this)"><span style="font-size:18px;">🇸🇦</span> العربية</button>
+</div>
+
+<!-- ==================== USER STRIP ==================== -->
+<div class="ig-user-strip" id="userStrip" style="display:none;">
+  <a href="profile.html" class="avatar" id="uAvatar">U</a>
+  <div class="info">
+    <div class="name" id="uName">User</div>
+    <div class="balance">
+      <i class="fas fa-wallet"></i>
+      <span id="uBalance">$0.00</span>
+      <span style="color:var(--az-text-secondary);"> · <span data-i18n="earn-more">Earn more by posting</span></span>
+    </div>
+  </div>
+  <a href="logout.html" class="logout-mini"><i class="fas fa-sign-out-alt"></i> <span data-i18n="logout">Logout</span></a>
+</div>
+
+<!-- ==================== GUEST CTA ==================== -->
+<div class="guest-cta" id="guestCta" style="display:none;">
+  <div class="text">
+    <strong data-i18n="welcome">🏜️ Welcome to Arizona AI</strong>
+    <span data-i18n="signup-cta">Sign up free — earn money for your posts!</span>
+  </div>
+  <a href="register.html" data-i18n="sign-up">Sign Up</a>
+</div>
+
+<!-- ==================== DEEP LINK ==================== -->
+<div class="deep-link-banner" id="deepLinkBanner">
+  <i class="fas fa-share-alt"></i>
+  <div class="text">
+    <strong>Shared post</strong>
+    You're viewing a post someone shared with you
+  </div>
+  <button onclick="dismissDeepLink()">×</button>
+</div>
+
+<!-- ==================== RE-BOOST NUDGE ==================== -->
+<div class="reboost-nudge" id="reboostNudge">
+  <i class="fas fa-rocket big-icon"></i>
+  <div class="text">
+    <strong id="reboostTitle">Boost again!</strong>
+    <span id="reboostDesc">Your last boost ended. Get back in the spotlight for as little as $0.99.</span>
+  </div>
+  <button onclick="openBoostFromNudge()">Boost Now</button>
+</div>
+
+<!-- ==================== FEED TABS ==================== -->
+<div class="feed-tabs">
+  <button class="ftab active" data-feed="for-you" onclick="switchFeed('for-you', this)">
+    <i class="fas fa-fire"></i> For You
+  </button>
+  <button class="ftab" data-feed="following" onclick="switchFeed('following', this)">
+    <i class="fas fa-user-check"></i> Following
+  </button>
+  <button class="ftab" data-feed="boosted" onclick="switchFeed('boosted', this)">
+    <i class="fas fa-bolt"></i> Boosted
+  </button>
+</div>
+
+<!-- ==================== STORIES ROW ==================== -->
+<div class="ig-stories-wrap">
+  <div class="ig-stories" id="storiesRow">
+    <div class="ig-story add" onclick="goToStory()">
+      <div class="ig-story-ring"><div class="inner"><i class="fas fa-plus"></i></div></div>
+      <div class="label" data-i18n="your-story">Your story</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== FEED ==================== -->
+<main class="ig-feed" id="feed">
+  <div class="feed-skeleton">
+    <div class="sk-row">
+      <div class="sk-head"><div class="sk-av"></div><div style="flex:1;"><div class="sk-line"></div><div class="sk-line short"></div></div></div>
+      <div class="sk-media"></div>
+    </div>
+  </div>
+</main>
+
+<!-- ==================== BOTTOM NAV ==================== -->
+<nav class="ig-bottom-nav">
+  <a href="index.html" class="bnav-item active"><i class="fas fa-home"></i><span data-i18n="home">Home</span></a>
+  <a href="Friends.html" class="bnav-item"><i class="fas fa-search"></i><span data-i18n="search">Search</span></a>
+  <a href="Post.html" class="bnav-item create"><i class="fas fa-plus"></i></a>
+  <a href="notifications.html" class="bnav-item"><i class="far fa-heart"></i><span data-i18n="activity">Activity</span></a>
+  <a href="profile.html" class="bnav-item" id="profileNav">
+    <div class="bnav-avatar" id="bnavAvatar"><i class="far fa-user"></i></div>
+    <span data-i18n="profile">Profile</span>
+  </a>
+</nav>
+
+<!-- ==================== FULLSCREEN VIEWER ==================== -->
+<div class="fs-viewer" id="fsViewer">
+  <button class="close-btn" onclick="closeFs()"><i class="fas fa-times"></i></button>
+  <button class="nav-btn prev" id="fsPrev" onclick="fsNav(-1)"><i class="fas fa-chevron-left"></i></button>
+  <button class="nav-btn next" id="fsNext" onclick="fsNav(1)"><i class="fas fa-chevron-right"></i></button>
+  <div id="fsContent"></div>
+  <div class="counter" id="fsCounter">1 / 1</div>
+</div>
+
+<!-- ==================== STORY VIEWER ==================== -->
+<div class="story-viewer" id="storyViewer">
+  <div class="sv-inner">
+    <div class="sv-progress" id="svProgress"></div>
+    <div class="sv-header">
+      <div class="sv-av" id="svAvatar">U</div>
+      <div class="sv-info">
+        <div class="name" id="svName">User</div>
+        <div class="time" id="svTime">Just now</div>
+      </div>
+      <button class="sv-close" onclick="closeStoryViewer()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="sv-body" id="svBody"></div>
+    <div class="sv-tap-left" onclick="storyNav(-1)"></div>
+    <div class="sv-tap-right" onclick="storyNav(1)"></div>
+    <div class="sv-stats" id="svStats" style="display:none;">
+      <div class="sv-stat"><i class="fas fa-eye"></i> <span id="svViews">0</span></div>
+      <div class="sv-stat"><i class="fas fa-heart" style="color:#ff4757;"></i> <span id="svLikes">0</span></div>
+    </div>
+    <div class="sv-caption" id="svCaption"></div>
+    <div class="sv-actions">
+      <div class="sv-input">
+        <input type="text" id="svReplyInput" placeholder="Send a message…"
+               onkeydown="if(event.key==='Enter') sendStoryReply()">
+        <button onclick="sendStoryReply()"><i class="fas fa-paper-plane"></i></button>
+      </div>
+      <button class="sv-action-btn" id="svLikeBtn" onclick="toggleStoryLike()">
+        <i class="far fa-heart"></i>
+      </button>
+      <button class="sv-action-btn" onclick="shareCurrentStory()">
+        <i class="fas fa-share-alt"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== COMMENTS MODAL ==================== -->
+<div class="comments-modal" id="commentsModal">
+  <div class="comments-panel">
+    <div class="comments-head">
+      <h3 data-i18n="comments">Comments</h3>
+      <button class="close-x" onclick="closeComments()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="comments-list" id="commentsList"></div>
+    <div class="comments-input-wrap">
+      <input type="text" class="comments-input" id="commentInput"
+             placeholder="Add a comment…" maxlength="500"
+             onkeydown="if(event.key==='Enter') submitComment()">
+      <button class="comments-send" id="commentSendBtn" onclick="submitComment()" data-i18n="post">Post</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== POST VIEWERS MODAL ==================== -->
+<div class="viewers-modal" id="viewersModal">
+  <div class="viewers-panel">
+    <div class="viewers-head">
+      <h3><i class="fas fa-eye" style="color:var(--az-accent);"></i> Post Viewers</h3>
+      <button class="close-x" onclick="closeViewers()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="viewers-list" id="viewersList"></div>
+  </div>
+</div>
+
+<!-- ==================== POST OPTIONS MODAL ==================== -->
+<div class="post-options-modal" id="postOptionsModal" onclick="closePostOptions(event)">
+  <div class="post-options-panel" onclick="event.stopPropagation()">
+    <div class="handle"></div>
+    <button class="post-opt-item" onclick="postOptAction('copy')">
+      <i class="fas fa-link"></i> Copy link
+    </button>
+    <button class="post-opt-item" onclick="postOptAction('share')">
+      <i class="fas fa-share-alt"></i> Share post
+    </button>
+    <button class="post-opt-item" onclick="postOptAction('save')">
+      <i class="far fa-bookmark"></i> Save post
+    </button>
+    <button class="post-opt-item" onclick="postOptAction('viewers')" id="postOptViewers">
+      <i class="fas fa-users"></i> Who viewed this
+    </button>
+    <button class="post-opt-item" onclick="postOptAction('boost')" id="postOptBoost">
+      <i class="fas fa-rocket" style="color:#5eb8ff;"></i> Boost this post
+    </button>
+    <button class="post-opt-item" onclick="postOptAction('report')">
+      <i class="fas fa-flag"></i> Report post
+    </button>
+    <button class="post-opt-item danger" onclick="postOptAction('delete')" id="postOptDelete" style="display:none;">
+      <i class="fas fa-trash"></i> Delete post
+    </button>
+    <button class="post-opt-item" onclick="closePostOptions()">
+      <i class="fas fa-times"></i> Cancel
+    </button>
+  </div>
+</div>
+
+<!-- ==================== BOOST MODAL ==================== -->
+<div class="boost-modal" id="boostModal">
+  <div class="boost-panel">
+    <div class="handle"></div>
+    <h3>🚀 Boost This Post</h3>
+    <p class="sub">Get more reach & engagement with paid promotion</p>
+    <div class="boost-options" id="boostOptions">
+      <div class="boost-option" data-boost="24h" data-price="0.99" onclick="selectBoost(this)">
+        <div class="icon"><i class="fas fa-bolt"></i></div>
+        <div class="details"><div class="title">Quick Boost — 24 hours</div><div class="desc">~500 views · Perfect for testing</div></div>
+        <div class="price">$0.99</div>
+      </div>
+      <div class="boost-option selected" data-boost="3d" data-price="2.49" onclick="selectBoost(this)">
+        <div class="icon"><i class="fas fa-fire"></i></div>
+        <div class="details"><div class="title">Standard — 3 days ⭐</div><div class="desc">~3,000 views · Most popular</div></div>
+        <div class="price">$2.49</div>
+      </div>
+      <div class="boost-option" data-boost="7d" data-price="4.99" onclick="selectBoost(this)">
+        <div class="icon"><i class="fas fa-rocket"></i></div>
+        <div class="details"><div class="title">Premium — 7 days</div><div class="desc">~10,000 views · Best value</div></div>
+        <div class="price">$4.99</div>
+      </div>
+      <div class="boost-option" data-boost="14d" data-price="8.99" onclick="selectBoost(this)">
+        <div class="icon"><i class="fas fa-crown"></i></div>
+        <div class="details"><div class="title">Mega — 14 days</div><div class="desc">~25,000 views · Maximum reach</div></div>
+        <div class="price">$8.99</div>
+      </div>
+    </div>
+    <div class="boost-summary" id="boostSummary" style="display:none;">
+      <div class="row"><span>Wallet balance</span><span class="val" id="bsBalance">$0.00</span></div>
+      <div class="row"><span>Cost</span><span class="val" id="bsCost">$0.00</span></div>
+      <div class="row"><span>After boost</span><span class="val" id="bsAfter">$0.00</span></div>
+    </div>
+    <div class="boost-actions">
+      <button class="cancel" onclick="closeBoost()">Cancel</button>
+      <button class="confirm" id="boostConfirmBtn" onclick="confirmBoost()">
+        <i class="fas fa-rocket"></i> Boost Now
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SETTINGS DRAWER ==================== -->
+<div class="settings-overlay" id="settingsOverlay" onclick="closeSettings(event)">
+  <div class="settings-drawer" onclick="event.stopPropagation()">
+    <div class="settings-header">
+      <h3>⚙️ Settings & More</h3>
+      <button class="settings-close" onclick="closeSettings()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">Account</div>
+      <a href="profile.html" class="settings-item"><i class="fas fa-user"></i> My Profile</a>
+      <a href="wallets.html" class="settings-item"><i class="fas fa-wallet"></i> My Wallet</a>
+      <a href="notifications.html" class="settings-item"><i class="far fa-bell"></i> Notifications</a>
+      <a href="offers.html" class="settings-item"><i class="fas fa-gift"></i> Offers & Rewards</a>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">Creator Tools</div>
+      <a href="Post.html" class="settings-item"><i class="fas fa-plus-circle"></i> Create Post</a>
+      <a href="ads.html" class="settings-item"><i class="fas fa-bullhorn"></i> My Ads & Boosts</a>
+      <a href="AI.Arizonan.html" class="settings-item"><i class="fas fa-robot" style="color:#5eb8ff;"></i> AI Assistant</a>
+      <a href="crypto.forex.html" class="settings-item"><i class="fas fa-chart-line"></i> Exchange Market</a>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">Company</div>
+      <a href="aboutus.html" class="settings-item"><i class="fas fa-info-circle"></i> About Us</a>
+      <a href="contact.html" class="settings-item"><i class="fas fa-envelope"></i> Contact Support</a>
+      <a href="partner.html" class="settings-item"><i class="fas fa-handshake"></i> Become a Partner</a>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">Legal</div>
+      <a href="privacy.html" class="settings-item"><i class="fas fa-shield-alt"></i> Privacy Policy</a>
+      <a href="policy.html" class="settings-item"><i class="fas fa-file-contract"></i> Terms of Service</a>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">Language</div>
+      <div class="settings-lang">
+        <button onclick="setLang('en', this)" class="lang-btn">🇬🇧 English</button>
+        <button onclick="setLang('ar', this)" class="lang-btn">🇸🇦 العربية</button>
+      </div>
+    </div>
+    <div class="settings-section">
+      <a href="logout.html" class="settings-item danger"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+    </div>
+    <div class="settings-footer">Arizona AI · v1.0 · © 2026</div>
+  </div>
+</div>
+
+<!-- ==================== PWA INSTALL BANNER ==================== -->
+<div id="pwa-install-banner" style="display:none;">
+  <i class="fas fa-download"></i>
+  <span>Install Arizona AI</span>
+  <button class="install-btn" onclick="pwaInstall()">Install</button>
+  <button class="close-btn" onclick="this.parentElement.style.display='none'">×</button>
+</div>
+
+<!-- ==================== TOAST ==================== -->
+<div class="toast-mini" id="toastMini"></div>
+
+<script src="auth.js"></script>
+<!-- PWA registration -->
+<script src="/pwa-register.js"></script>
+<script>
+/* ============================================================
+   STATE
+   ============================================================ */
+let currentPostId = null;
+let currentMediaList = [];
+let currentMediaIndex = 0;
+let likedPosts = new Set();
+let savedPosts = new Set();
+let storiesByUser = [];
+let storySeenIds = new Set();
+let myLikedStories = new Set();
+let currentStoryUserIndex = 0;
+let currentStoryIndex = 0;
+let storyProgressTimer = null;
+
+let currentLang = localStorage.getItem('az_lang') || 'en';
+let selectedBoost = { duration:'3d', price:2.49 };
+let boostingPostId = null;
+let deepLinkPostId = null;
+let postOptionsTargetId = null;
+
+let currentFeedMode = 'for-you';
+let followingIds = new Set();
+
+let feedOffset = 0;
+const FEED_PAGE_SIZE = 20;
+let feedLoading = false;
+let feedExhausted = false;
+let currentFeedPosts = [];
+
+let pendingNewPosts = false;
+let realtimeFeedChannel = null;
+
+let viewObserver = null;
+let videoObserver = null;
+const viewedPosts = new Set();
+const shownBoostedIds = new Set();
+
+let boostStats = null;
+
+/* ============================================================
+   TRANSLATIONS
+   ============================================================ */
+const TRANSLATIONS = {
+  en: {
+    'home':'Home','search':'Search','activity':'Activity','profile':'Profile',
+    'logout':'Logout','sign-up':'Sign Up','earn-more':'Earn more by posting',
+    'welcome':'🏜️ Welcome to Arizona AI','signup-cta':'Sign up free — earn money for your posts!',
+    'your-story':'Your story','comments':'Comments','post':'Post',
+    'view-comments':'View all {n} comments','no-posts-title':'No posts yet','no-posts-sub':'Be the first to post!'
+  },
+  ar: {
+    'home':'الرئيسية','search':'بحث','activity':'النشاط','profile':'الملف',
+    'logout':'خروج','sign-up':'إنشاء حساب','earn-more':'اكسب أكثر بالمشاركة',
+    'welcome':'🏜️ مرحباً بك في أريزونا AI','signup-cta':'سجّل مجاناً — اكسب المال!',
+    'your-story':'قصتك','comments':'التعليقات','post':'نشر',
+    'view-comments':'عرض كل {n} تعليق','no-posts-title':'لا توجد منشورات','no-posts-sub':'كن أول من ينشر!'
+  }
+};
+function t(key) { return (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || key; }
+
+function setLang(lang, el) {
+  currentLang = lang;
+  localStorage.setItem('az_lang', lang);
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.querySelectorAll('.lang-menu button').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.querySelectorAll('[data-i18n]').forEach(node => {
+    const key = node.getAttribute('data-i18n');
+    const val = t(key);
+    if (val) node.textContent = val;
+  });
+  document.getElementById('langMenu').classList.remove('active');
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  const check = setInterval(() => {
+    if (typeof authReady !== 'undefined' && authReady) {
+      clearInterval(check);
+      init();
+    }
+  }, 100);
+});
+
+async function init() {
+  setLang(currentLang);
+  renderTopActions();
+  renderUserSection();
+  renderBottomAvatar();
+
+  const params = new URLSearchParams(window.location.search);
+  deepLinkPostId = params.get('post');
+
+  if (currentUser) {
+    const { data: follows } = await supabaseClient.from('follows').select('following_id').eq('follower_id', currentUser.id);
+    followingIds = new Set((follows || []).map(f => f.following_id));
+  }
+
+  await loadLikedPosts();
+  await loadSavedPosts();
+  await resetAndLoadFeed();
+  await loadStories();
+  await loadMyLikedStories();
+  await loadBoostStats();
+
+  setupRealtimeFeed();
+  setupInfiniteScroll();
+  setupPullToRefresh();
+  setupViewObserver();
+  setupVideoAutopause();
+
+  if (deepLinkPostId) {
+    setTimeout(() => {
+      const postEl = document.querySelector(`article[data-id="${deepLinkPostId}"]`);
+      if (postEl) {
+        postEl.scrollIntoView({ behavior:'smooth', block:'center' });
+        postEl.classList.add('highlighted');
+        document.getElementById('deepLinkBanner').classList.add('active');
+        setTimeout(() => postEl.classList.remove('highlighted'), 2500);
+      } else {
+        showToast('Post not found or has been removed');
+      }
+    }, 700);
+  }
+}
+
+function dismissDeepLink() {
+  document.getElementById('deepLinkBanner').classList.remove('active');
+  if (window.history.replaceState) window.history.replaceState(null, '', 'index.html');
+  deepLinkPostId = null;
+}
+
+/* ============================================================
+   FEED TABS
+   ============================================================ */
+function switchFeed(mode, el) {
+  currentFeedMode = mode;
+  document.querySelectorAll('.feed-tabs .ftab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  resetAndLoadFeed();
+}
+
+/* ============================================================
+   TOP ACTIONS
+   ============================================================ */
+function renderTopActions() {
+  const el = document.getElementById('topActions');
+  if (currentUser) {
+    el.innerHTML = `
+      <a href="AI.Arizonan.html" class="ig-icon-btn ai-btn" title="AI"><i class="fas fa-robot"></i></a>
+      <a href="Friends.html" class="ig-icon-btn"><i class="far fa-heart"></i></a>
+      <a href="chats.html" class="ig-icon-btn"><i class="far fa-paper-plane"></i><span class="dot"></span></a>
+      <a href="notifications.html" class="ig-icon-btn"><i class="far fa-bell"></i></a>
+      <button class="ig-icon-btn" onclick="toggleLangMenu()"><i class="fas fa-globe"></i></button>
+    `;
+  } else {
+    el.innerHTML = `
+      <a href="AI.Arizonan.html" class="ig-icon-btn ai-btn"><i class="fas fa-robot"></i></a>
+      <a href="login.html" class="ig-icon-btn" style="width:auto;padding:0 12px;font-size:13px;font-weight:600;">Login</a>
+      <a href="register.html" class="ig-icon-btn" style="width:auto;padding:0 12px;font-size:13px;font-weight:600;background:var(--az-gradient);color:#fff;">Sign Up</a>
+      <button class="ig-icon-btn" onclick="toggleLangMenu()"><i class="fas fa-globe"></i></button>
+    `;
+  }
+}
+
+function toggleLangMenu() { document.getElementById('langMenu').classList.toggle('active'); }
+document.addEventListener('click', e => {
+  if (!e.target.closest('.lang-menu') && !e.target.closest('[onclick="toggleLangMenu()"]')) {
+    document.getElementById('langMenu').classList.remove('active');
+  }
+});
+
+/* ============================================================
+   USER STRIP
+   ============================================================ */
+function renderUserSection() {
+  const strip = document.getElementById('userStrip');
+  const cta   = document.getElementById('guestCta');
+  if (currentUser) {
+    strip.style.display = 'flex';
+    cta.style.display = 'none';
+    const name = currentProfile?.username || currentUser.email?.split('@')[0] || 'User';
+    const bal  = Number(currentWallet?.balance ?? 0).toFixed(2);
+    const av   = currentProfile?.avatar_url;
+    document.getElementById('uName').textContent = name;
+    document.getElementById('uBalance').textContent = '$' + bal;
+    const uAvatarEl = document.getElementById('uAvatar');
+    if (av) uAvatarEl.innerHTML = `<img src="${escapeHtml(av)}" alt="User avatar" onerror="this.style.display='none'">`;
+    else uAvatarEl.textContent = name.charAt(0).toUpperCase();
+  } else {
+    strip.style.display = 'none';
+    cta.style.display = 'flex';
+  }
+}
+
+function renderBottomAvatar() {
+  const av = document.getElementById('bnavAvatar');
+  if (currentUser) {
+    const name = currentProfile?.username || currentUser.email?.split('@')[0] || 'U';
+    const img  = currentProfile?.avatar_url;
+    if (img) av.innerHTML = `<img src="${escapeHtml(img)}" alt="User avatar" onerror="this.style.display='none'">`;
+    else av.textContent = name.charAt(0).toUpperCase();
+  } else {
+    av.innerHTML = '<i class="far fa-user"></i>';
+  }
+}
+
+function goToStory() {
+  if (!currentUser) { window.location.href = 'login.html'; return; }
+  window.location.href = 'profile.html';
+}
+
+/* ============================================================
+   LIKED / SAVED / BOOST STATS
+   ============================================================ */
+async function loadLikedPosts() {
+  if (!currentUser) return;
+  try {
+    const { data } = await supabaseClient.from('likes').select('post_id').eq('user_id', currentUser.id);
+    likedPosts = new Set((data || []).map(r => r.post_id));
+  } catch (e) {}
+}
+
+async function loadSavedPosts() {
+  if (!currentUser) return;
+  try {
+    const { data } = await supabaseClient.from('saved_posts').select('post_id').eq('user_id', currentUser.id);
+    savedPosts = new Set((data || []).map(r => r.post_id));
+  } catch (e) {}
+}
+
+async function loadMyLikedStories() {
+  if (!currentUser) return;
+  try {
+    const { data } = await supabaseClient.from('story_likes').select('story_id').eq('user_id', currentUser.id);
+    myLikedStories = new Set((data || []).map(r => r.story_id));
+  } catch (e) {}
+}
+
+async function loadBoostStats() {
+  if (!currentUser) return;
+  try {
+    const { data, error } = await supabaseClient.rpc('get_boost_stats', { p_user_id: currentUser.id });
+    if (error) throw error;
+    const stats = data && data[0];
+    boostStats = stats;
+    const nudge = document.getElementById('reboostNudge');
+    if (stats && stats.total_boosts > 0 && stats.active_boosts === 0) {
+      nudge.classList.add('show');
+      document.getElementById('reboostTitle').textContent = `Boost again! 🔥`;
+      document.getElementById('reboostDesc').textContent = `Your last boost ended. Get back in the spotlight for as little as $0.99.`;
+    } else if (stats && stats.expiring_soon > 0) {
+      nudge.classList.add('show');
+      document.getElementById('reboostTitle').textContent = `Boost expiring soon!`;
+      document.getElementById('reboostDesc').textContent = `${stats.expiring_soon} of your boosted posts expire in under 6 hours. Renew to stay visible.`;
+    } else {
+      nudge.classList.remove('show');
+    }
+  } catch (e) { console.warn('boost stats', e); }
+}
+
+function openBoostFromNudge() {
+  const myPost = currentFeedPosts.find(p => p.user_id === currentUser?.id);
+  if (myPost) openBoost(myPost.id);
+  else window.location.href = 'profile.html';
+}
+
+/* ============================================================
+   FEED LOADING
+   ============================================================ */
+async function resetAndLoadFeed() {
+  feedOffset = 0;
+  feedExhausted = false;
+  currentFeedPosts = [];
+  viewedPosts.clear();
+  shownBoostedIds.clear();
+  await loadMoreFeed(true);
+}
+
+async function loadMoreFeed(replace = false) {
+  if (feedLoading || feedExhausted) return;
+  feedLoading = true;
+  const feed = document.getElementById('feed');
+
+  if (replace) {
+    feed.innerHTML = `
+      <div class="feed-skeleton">
+        <div class="sk-row">
+          <div class="sk-head"><div class="sk-av"></div><div style="flex:1;"><div class="sk-line"></div><div class="sk-line short"></div></div></div>
+          <div class="sk-media"></div>
+        </div>
+      </div>`;
+  } else {
+    feed.insertAdjacentHTML('beforeend', `<div class="feed-loader" id="feedLoader"><i class="fas fa-circle-notch fa-spin"></i> Loading more…</div>`);
+  }
+
+  try {
+    let posts = [];
+
+    if (deepLinkPostId && replace) {
+      const { data: targetPost } = await supabaseClient
+        .from('posts')
+        .select(`*, profiles:user_id (username, display_name, avatar_url, is_verified)`)
+        .eq('id', deepLinkPostId)
+        .maybeSingle();
+      if (targetPost) posts.push(targetPost);
+    }
+
+    const pageData = await fetchPostsForMode();
+    posts = posts.concat(pageData);
+
+    const loader = document.getElementById('feedLoader');
+    if (loader) loader.remove();
+
+    if (replace) {
+      if (posts.length === 0) {
+        const emptyMsg = currentFeedMode === 'boosted'
+          ? { icon: 'fas fa-bolt', title: 'No boosted posts', sub: 'Be the first to boost!' }
+          : currentFeedMode === 'following'
+            ? { icon: 'fas fa-user-plus', title: 'Follow some people', sub: 'Posts from people you follow will show here.' }
+            : { icon: 'far fa-newspaper', title: t('no-posts-title'), sub: t('no-posts-sub') };
+        feed.innerHTML = `<div class="ig-empty"><i class="${emptyMsg.icon}"></i><h3>${emptyMsg.title}</h3><p>${emptyMsg.sub}</p></div>`;
+        return;
+      }
+      currentFeedPosts = posts;
+      feed.innerHTML = posts.map(post => renderPost(post)).join('');
+    } else {
+      currentFeedPosts = currentFeedPosts.concat(pageData);
+      feed.insertAdjacentHTML('beforeend', pageData.map(post => renderPost(post)).join(''));
+    }
+
+    observeVisiblePosts();
+    setupVideoAutopause();
+  } catch (err) {
+    console.error('[Feed]', err);
+    const loader = document.getElementById('feedLoader');
+    if (loader) loader.remove();
+    if (replace) {
+      feed.innerHTML = `<div class="ig-empty"><i class="fas fa-exclamation-triangle"></i><h3>Couldn't load</h3><p style="opacity:.6;font-size:12px;">${escapeHtml(err.message)}</p></div>`;
+    }
+  } finally {
+    feedLoading = false;
+  }
+}
+
+/* ============================================================
+   FETCH POSTS FOR MODE
+   ============================================================ */
+async function fetchPostsForMode() {
+  const from = feedOffset;
+  const to   = feedOffset + FEED_PAGE_SIZE - 1;
+  const nowIso = new Date().toISOString();
+  const selectFields = `*, profiles:user_id (username, display_name, avatar_url, is_verified)`;
+
+  // ---------- BOOSTED ----------
+  if (currentFeedMode === 'boosted') {
+    const { data, error } = await supabaseClient
+      .from('posts')
+      .select(selectFields)
+      .eq('visibility', 'public')
+      .eq('is_boosted', true)
+      .gt('boost_expires_at', nowIso)
+      .order('boost_expires_at', { ascending: false })
+      .range(from, to);
+    if (error) throw error;
+    if ((data || []).length < FEED_PAGE_SIZE) feedExhausted = true;
+    feedOffset += (data || []).length;
+    return data || [];
+  }
+
+  // ---------- FOR YOU ----------
+  if (currentFeedMode === 'for-you') {
+    const { data: normals, error: nErr } = await supabaseClient
+      .from('posts')
+      .select(selectFields)
+      .eq('visibility', 'public')
+      .or(`is_boosted.is.null,is_boosted.eq.false,boost_expires_at.lt.${nowIso}`)
+      .order('created_at', { ascending: false })
+      .range(from, to);
+    if (nErr) throw nErr;
+
+    const { data: boosts, error: bErr } = await supabaseClient
+      .from('posts')
+      .select(selectFields)
+      .eq('visibility', 'public')
+      .eq('is_boosted', true)
+      .gt('boost_expires_at', nowIso)
+      .order('boost_expires_at', { ascending: false })
+      .limit(50);
+    if (bErr) throw bErr;
+
+    const freshBoosts = (boosts || []).filter(b => !shownBoostedIds.has(b.id));
+    freshBoosts.forEach(b => shownBoostedIds.add(b.id));
+
+    if ((normals || []).length < FEED_PAGE_SIZE && freshBoosts.length === 0) feedExhausted = true;
+    feedOffset += (normals || []).length;
+
+    return mergeBoosted(normals || [], freshBoosts);
+  }
+
+  // ---------- FOLLOWING ----------
+  if (currentFeedMode === 'following') {
+    const followIds = [...followingIds];
+
+    let normals = [];
+    if (followIds.length > 0) {
+      const { data, error } = await supabaseClient
+        .from('posts')
+        .select(selectFields)
+        .eq('visibility', 'public')
+        .in('user_id', followIds)
+        .order('created_at', { ascending: false })
+        .range(from, to);
+      if (error) throw error;
+      normals = data || [];
+    }
+
+    const { data: boosts, error: bErr } = await supabaseClient
+      .from('posts')
+      .select(selectFields)
+      .eq('visibility', 'public')
+      .eq('is_boosted', true)
+      .gt('boost_expires_at', nowIso)
+      .order('boost_expires_at', { ascending: false })
+      .limit(50);
+    if (bErr) throw bErr;
+
+    const freshBoosts = (boosts || []).filter(b => !shownBoostedIds.has(b.id));
+    freshBoosts.forEach(b => shownBoostedIds.add(b.id));
+
+    if (normals.length < FEED_PAGE_SIZE && freshBoosts.length === 0) feedExhausted = true;
+    feedOffset += normals.length;
+
+    return mergeBoosted(normals, freshBoosts);
+  }
+
+  return [];
+}
+
+/* ============================================================
+   MERGE BOOSTED
+   ============================================================ */
+function mergeBoosted(normals, boosts) {
+  const boostIds = new Set(boosts.map(b => b.id));
+  const cleanNormals = normals.filter(n => !boostIds.has(n.id));
+
+  if (boosts.length === 0) return cleanNormals;
+  if (cleanNormals.length === 0) return boosts;
+
+  const shuffled = [...boosts];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  const result = [];
+  const remaining = [...shuffled];
+  let normalIdx = 0;
+
+  if (remaining.length > 0) result.push(remaining.shift());
+
+  while (normalIdx < cleanNormals.length || remaining.length > 0) {
+    const gap = 3 + Math.floor(Math.random() * 4);
+    for (let i = 0; i < gap && normalIdx < cleanNormals.length; i++) {
+      result.push(cleanNormals[normalIdx++]);
+    }
+    if (remaining.length > 0) {
+      result.push(remaining.shift());
+    } else if (normalIdx >= cleanNormals.length) {
+      break;
+    }
+  }
+  while (remaining.length > 0) result.push(remaining.shift());
+  return result;
+}
+
+/* ============================================================
+   RENDER POST
+   ============================================================ */
+function renderPost(post) {
+  const prof    = post.profiles || {};
+  const name    = prof.display_name || prof.username || 'user';
+  const uname   = prof.username || 'user';
+  const initial = name.charAt(0).toUpperCase();
+  const verified = prof.is_verified ? '<i class="fas fa-circle-check verified"></i>' : '';
+  const timeAgo = formatTimeAgo(post.created_at);
+
+  const hasActiveStory = storiesByUser.some(g => g.user.id === post.user_id);
+  const avatarHtml = prof.avatar_url
+    ? `<img src="${escapeHtml(prof.avatar_url)}" alt="User avatar" onerror="this.style.display='none'">`
+    : initial;
+
+  const mediaUrls = Array.isArray(post.media_urls) ? post.media_urls : [];
+  const mediaHtml = mediaUrls.map((url, idx) => {
+    if (/\.(mp4|webm|ogg|mov)$/i.test(url)) {
+      return `<video src="${escapeHtml(url)}" controls playsinline preload="metadata"></video>`;
+    }
+    return `<img src="${escapeHtml(url)}" alt="Post image" loading="lazy" decoding="async" onclick="openFs('${post.id}', ${idx})" onerror="this.style.display='none'">`;
+  }).join('');
+
+  const isLiked = likedPosts.has(post.id);
+  const isSaved = savedPosts.has(post.id);
+  const caption = post.content
+    ? `<div class="ig-post-caption"><span class="cap-user">${escapeHtml(uname)}</span>${escapeHtml(post.content)}</div>`
+    : '';
+  const isOwnPost = currentUser && post.user_id === currentUser.id;
+
+  const now = Date.now();
+  const expiresAt = post.boost_expires_at ? new Date(post.boost_expires_at).getTime() : 0;
+  const isBoosted = post.is_boosted && expiresAt > now;
+  const hoursLeft = isBoosted ? Math.floor((expiresAt - now) / 3600000) : 0;
+  const isExpiring = isBoosted && hoursLeft < 6;
+
+  let boostBar = '';
+  if (isBoosted) {
+    const timeLabel = hoursLeft < 1 ? 'Less than 1h left'
+                   : hoursLeft < 24 ? `${hoursLeft}h left`
+                   : `${Math.floor(hoursLeft/24)}d left`;
+    boostBar = `
+      <div class="post-boost-bar">
+        <i class="fas fa-bolt"></i>
+        <span>Boosted by ${isOwnPost ? 'you' : '@' + escapeHtml(uname)}</span>
+        <span class="growth"><i class="fas fa-arrow-up"></i> Reaching more people</span>
+        <span class="time-left">${timeLabel}</span>
+      </div>`;
+  }
+
+  const classNames = ['ig-post'];
+  if (isBoosted) classNames.push('boosted');
+  if (isExpiring) classNames.push('boost-expiring');
+
+  return `
+    <article class="${classNames.join(' ')}" data-id="${post.id}" data-user-id="${post.user_id}">
+      <div class="ig-post-head">
+        <a href="profile.html?user=${post.user_id}" class="p-avatar ${hasActiveStory ? 'has-story' : ''}">${avatarHtml}</a>
+        <div class="meta">
+          <a href="profile.html?user=${post.user_id}" class="name">${escapeHtml(name)} ${verified}</a>
+          <div class="sub">@${escapeHtml(uname)} · ${timeAgo}</div>
+        </div>
+        <button class="post-menu" onclick="openPostOptions('${post.id}', ${isOwnPost})">
+          <i class="fas fa-ellipsis-v"></i>
+        </button>
+      </div>
+
+      ${boostBar}
+
+      ${mediaHtml ? `
+        <div class="ig-post-media" ondblclick="doubleTapLike('${post.id}')">
+          ${mediaHtml}
+          <div class="dbl-heart" id="dblheart-${post.id}"><i class="fas fa-heart"></i></div>
+          <div class="post-watermark">
+            <img src="/icon.png" alt="Arizona AI logo" decoding="async">
+            Arizona AI
+          </div>
+        </div>` : ''}
+
+      <div class="ig-actions">
+        <button class="ig-action ${isLiked ? 'liked' : ''}" id="likebtn-${post.id}" onclick="toggleLike('${post.id}', this)">
+          <i class="${isLiked ? 'fas' : 'far'} fa-heart"></i>
+        </button>
+        <button class="ig-action" onclick="openComments('${post.id}')"><i class="far fa-comment"></i></button>
+        <button class="ig-action" onclick="sharePost('${post.id}')"><i class="far fa-paper-plane"></i></button>
+        <button class="ig-action" onclick="copyPostUrl('${post.id}')" title="Copy link"><i class="far fa-copy"></i></button>
+        ${isOwnPost ? `
+          <button class="ig-action boost-btn" onclick="openBoost('${post.id}')" title="Boost"><i class="fas fa-rocket"></i></button>
+        ` : ''}
+        <button class="ig-action save ${isSaved ? 'saved' : ''}" id="savebtn-${post.id}" onclick="toggleSave('${post.id}', this)">
+          <i class="${isSaved ? 'fas' : 'far'} fa-bookmark"></i>
+        </button>
+      </div>
+
+      <div class="ig-likes" id="likes-${post.id}">${post.likes_count || 0} likes</div>
+      ${caption}
+      <div class="ig-stats-row">
+        <span id="comments-count-${post.id}" onclick="openComments('${post.id}')"><i class="far fa-comment"></i> ${post.comments_count || 0}</span>
+        <span id="shares-count-${post.id}"><i class="far fa-paper-plane"></i> ${post.shares_count || 0}</span>
+        <span id="views-count-${post.id}" ${isOwnPost ? `onclick="openViewers('${post.id}')" style="cursor:pointer;"` : ''}><i class="far fa-eye"></i> ${post.views_count || 0}</span>
+      </div>
+      <div class="ig-comments-preview" onclick="openComments('${post.id}')">
+        ${t('view-comments').replace('{n}', post.comments_count || 0)}
+      </div>
+      <div class="ig-time">${timeAgo}</div>
+    </article>
+  `;
+}
+
+/* ============================================================
+   POST OPTIONS
+   ============================================================ */
+function openPostOptions(postId, isOwnPost) {
+  postOptionsTargetId = postId;
+  document.getElementById('postOptDelete').style.display = isOwnPost ? 'flex' : 'none';
+  document.getElementById('postOptBoost').style.display = isOwnPost ? 'flex' : 'none';
+  document.getElementById('postOptViewers').style.display = isOwnPost ? 'flex' : 'none';
+  document.getElementById('postOptionsModal').classList.add('active');
+}
+
+function closePostOptions(e) {
+  if (e && e.target && e.target.id !== 'postOptionsModal') return;
+  document.getElementById('postOptionsModal').classList.remove('active');
+}
+
+async function postOptAction(action) {
+  const postId = postOptionsTargetId;
+  document.getElementById('postOptionsModal').classList.remove('active');
+  if (!postId) return;
+
+  if (action === 'copy') copyPostUrl(postId);
+  else if (action === 'share') sharePost(postId);
+  else if (action === 'save') toggleSave(postId, document.getElementById('savebtn-' + postId));
+  else if (action === 'boost') openBoost(postId);
+  else if (action === 'viewers') openViewers(postId);
+  else if (action === 'report') reportPost(postId);
+  else if (action === 'delete') {
+    if (!confirm('Delete this post permanently?')) return;
+    try {
+      await supabaseClient.from('posts').delete().eq('id', postId).eq('user_id', currentUser.id);
+      showToast('Post deleted 🗑️');
+      document.querySelector(`article[data-id="${postId}"]`)?.remove();
+    } catch (err) { showToast(err.message); }
+  }
+}
+
+async function reportPost(postId) {
+  if (!currentUser) { showToast('Sign in to report'); return; }
+  const reason = prompt('Why are you reporting this post? (spam, nudity, hate, other)', 'spam');
+  if (!reason) return;
+  showToast('✅ Report submitted. Thank you.');
+}
+
+/* ============================================================
+   VIEWERS   ============================================================ */
+async function openViewers(postId) {
+  if (!currentUser) { showToast('Sign in first'); return; }
+  const modal = document.getElementById('viewersModal');
+  const list = document.getElementById('viewersList');
+  modal.classList.add('active');
+  list.innerHTML = '<div style="text-align:center;padding:40px;color:#666;"><i class="fas fa-circle-notch fa-spin"></i></div>';
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('post_viewers')
+      .select(`
+        id, viewed_at, user_id,
+        profile:profiles!post_viewers_user_id_fkey(id, username, display_name, avatar_url)
+      `)
+      .eq('post_id', postId)
+      .order('viewed_at', { ascending: false })
+      .limit(200);
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--az-text-secondary);">No viewers yet</div>';
+      return;
+    }
+
+    list.innerHTML = data.map(v => {
+      const p = v.profile || {};
+      const name = p.display_name || p.username || 'User';
+      const init = name.charAt(0).toUpperCase();
+      const av = p.avatar_url ? `<img src="${escapeHtml(p.avatar_url)}" alt="User avatar" onerror="this.style.display='none'">` : init;
+      return `
+        <div class="viewer-item">
+          <div class="v-avatar">${av}</div>
+          <div class="v-info">
+            <div class="v-name">${escapeHtml(name)}</div>
+            <div class="v-time">${formatTimeAgo(v.viewed_at)}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch (err) {
+    list.innerHTML = `<div style="text-align:center;padding:40px;color:#ff7675;">${escapeHtml(err.message)}</div>`;
+  }
+}
+
+function closeViewers() {
+  document.getElementById('viewersModal').classList.remove('active');
+}
+
+/* ============================================================
+   LIKE / DOUBLE-TAP — with rollback
+   ============================================================ */
+async function toggleLike(postId, btn) {
+  if (!currentUser) { showToast('Sign in to like'); return; }
+  const icon = btn.querySelector('i');
+  const isLiked = likedPosts.has(postId);
+  try {
+    if (isLiked) {
+      await supabaseClient.from('likes').delete().eq('user_id', currentUser.id).eq('post_id', postId);
+      likedPosts.delete(postId);
+      btn.classList.remove('liked');
+      icon.className = 'far fa-heart';
+    } else {
+      await supabaseClient.from('likes').insert({ user_id: currentUser.id, post_id: postId });
+      likedPosts.add(postId);
+      btn.classList.add('liked');
+      btn.classList.add('like-anim');
+      icon.className = 'fas fa-heart';
+      setTimeout(() => btn.classList.remove('like-anim'), 400);
+      if (navigator.vibrate) navigator.vibrate(15);
+    }
+    await refreshPostCounters(postId);
+  } catch (err) {
+    // Rollback UI state if request fails
+    if (isLiked) likedPosts.add(postId);
+    else likedPosts.delete(postId);
+    showToast(err.message);
+    await refreshPostCounters(postId);
+  }
+}
+
+async function doubleTapLike(postId) {
+  const heart = document.getElementById('dblheart-' + postId);
+  if (heart) {
+    heart.classList.remove('pop');
+    void heart.offsetWidth;
+    heart.classList.add('pop');
+  }
+  if (!currentUser) { showToast('Sign in to like'); return; }
+  if (likedPosts.has(postId)) return;
+
+  const btn = document.getElementById('likebtn-' + postId);
+  try {
+    await supabaseClient.from('likes').insert({ user_id: currentUser.id, post_id: postId });
+    likedPosts.add(postId);
+    if (btn) {
+      btn.classList.add('liked');
+      btn.querySelector('i').className = 'fas fa-heart';
+    }
+    if (navigator.vibrate) navigator.vibrate(20);
+    await refreshPostCounters(postId);
+  } catch (err) {
+    if (likedPosts.has(postId)) likedPosts.delete(postId);
+  }
+}
+
+/* ============================================================
+   SAVE
+   ============================================================ */
+async function toggleSave(postId, btn) {
+  if (!currentUser) { showToast('Sign in to save'); return; }
+  if (!btn) btn = document.getElementById('savebtn-' + postId);
+  const isSaved = savedPosts.has(postId);
+  try {
+    if (isSaved) {
+      await supabaseClient.from('saved_posts').delete().eq('user_id', currentUser.id).eq('post_id', postId);
+      savedPosts.delete(postId);
+      if (btn) { btn.classList.remove('saved'); btn.querySelector('i').className = 'far fa-bookmark'; }
+      showToast('Removed from saved');
+    } else {
+      await supabaseClient.from('saved_posts').insert({ user_id: currentUser.id, post_id: postId });
+      savedPosts.add(postId);
+      if (btn) { btn.classList.add('saved'); btn.querySelector('i').className = 'fas fa-bookmark'; }
+      showToast('Saved ✅');
+    }
+  } catch (err) {
+    if (isSaved) savedPosts.add(postId);
+    else savedPosts.delete(postId);
+    showToast(err.message);
+  }
+}
+
+/* ============================================================
+   SHARE / COPY
+   ============================================================ */
+function buildUrl(page, params) {
+  const basePath = window.location.pathname.replace(/\/[^\/]*$/, '');
+  const url = window.location.origin + basePath + '/' + page;
+  return url + (params ? '?' + params : '');
+}
+
+async function sharePost(postId) {
+  const url = buildUrl('index.html', 'post=' + postId);
+  if (currentUser) {
+    try {
+      const { data: existing } = await supabaseClient
+        .from('shares').select('id').eq('user_id', currentUser.id).eq('post_id', postId).maybeSingle();
+      if (!existing) {
+        await supabaseClient.from('shares').insert({ user_id: currentUser.id, post_id: postId });
+        await refreshPostCounters(postId);
+      }
+    } catch (e) {}
+  }
+  if (navigator.share) {
+    try { await navigator.share({ title:'Arizona AI', text:'Check out this post!', url }); return; } catch(e){}
+  }
+  try { await navigator.clipboard.writeText(url); showToast('Link copied! 📋'); }
+  catch { showToast('Link: ' + url); }
+}
+
+async function copyPostUrl(postId) {
+  const url = buildUrl('index.html', 'post=' + postId);
+  try {
+    await navigator.clipboard.writeText(url);
+    showToast('Post link copied! 📋');
+  } catch { showToast('Link: ' + url); }
+}
+
+/* ============================================================
+   REFRESH COUNTERS
+   ============================================================ */
+async function refreshPostCounters(postId) {
+  await new Promise(r => setTimeout(r, 200));
+  try {
+    const { data } = await supabaseClient
+      .from('posts')
+      .select('likes_count, comments_count, shares_count, views_count')
+      .eq('id', postId).single();
+    if (!data) return;
+
+    const likesEl    = document.getElementById('likes-' + postId);
+    const commentsEl = document.getElementById('comments-count-' + postId);
+    const sharesEl   = document.getElementById('shares-count-' + postId);
+    const viewsEl    = document.getElementById('views-count-' + postId);
+    const previewEl  = document.querySelector(`article[data-id="${postId}"] .ig-comments-preview`);
+
+    if (likesEl)    likesEl.textContent = `${data.likes_count || 0} likes`;
+    if (commentsEl) commentsEl.innerHTML = `<i class="far fa-comment"></i> ${data.comments_count || 0}`;
+    if (sharesEl)   sharesEl.innerHTML   = `<i class="far fa-paper-plane"></i> ${data.shares_count || 0}`;
+    if (viewsEl)    viewsEl.innerHTML    = `<i class="far fa-eye"></i> ${data.views_count || 0}`;
+    if (previewEl)  previewEl.textContent = t('view-comments').replace('{n}', data.comments_count || 0);
+  } catch (e) {}
+}
+
+/* ============================================================
+   VIEW TRACKING
+   ============================================================ */
+function setupViewObserver() {
+  if (viewObserver) viewObserver.disconnect();
+  viewObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+        const postId = entry.target.dataset.id;
+        const userId = entry.target.dataset.userId;
+        if (postId && !viewedPosts.has(postId)) {
+          viewedPosts.add(postId);
+          logPostView(postId, userId);
+        }
+      }
+    });
+  }, { threshold: [0.6] });
+}
+
+function observeVisiblePosts() {
+  if (!viewObserver) return;
+  document.querySelectorAll('.ig-post').forEach(el => {
+    if (!el.dataset.observed) {
+      el.dataset.observed = '1';
+      viewObserver.observe(el);
+    }
+  });
+}
+
+async function logPostView(postId, userId) {
+  if (!currentUser) return;
+  if (currentUser.id === userId) return;
+  try {
+    await supabaseClient.rpc('log_post_view', { p_post_id: postId });
+    try {
+      await supabaseClient.from('post_viewers').insert({ post_id: postId, user_id: currentUser.id }).select().maybeSingle();
+    } catch (e) {}
+    setTimeout(() => refreshPostCounters(postId), 500);
+  } catch (e) {}
+}
+
+/* ============================================================
+   VIDEO AUTOPAUSE
+   ============================================================ */
+function setupVideoAutopause() {
+  if (!videoObserver) {
+    videoObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const video = entry.target;
+        if (!entry.isIntersecting) {
+          try { video.pause(); } catch (e) {}
+        }
+      });
+    }, { threshold: 0.3 });
+  }
+
+  document.querySelectorAll('.ig-post video').forEach(v => {
+    if (!v.dataset.observed) {
+      v.dataset.observed = '1';
+      videoObserver.observe(v);
+    }
+  });
+}
+
+/* ============================================================
+   INFINITE SCROLL — throttled
+   ============================================================ */
+function setupInfiniteScroll() {
+  let scrollTimeout;
+  window.addEventListener('scroll', () => {
+    if (scrollTimeout) return;
+    scrollTimeout = setTimeout(() => {
+      scrollTimeout = null;
+      if (feedLoading || feedExhausted) return;
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 600) {
+        loadMoreFeed(false);
+      }
+    }, 100);
+  }, { passive: true });
+}
+
+/* ============================================================
+   PULL-TO-REFRESH — direction aware
+   ============================================================ */
+function setupPullToRefresh() {
+  let startX = 0, startY = 0;
+  let pulling = false;
+  const indicator = document.getElementById('ptrIndicator');
+  const threshold = 70;
+
+  window.addEventListener('touchstart', (e) => {
+    if (window.scrollY === 0 && e.touches.length === 1) {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      pulling = true;
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchmove', (e) => {
+    if (!pulling) return;
+    const y = e.touches[0].clientY;
+    const x = e.touches[0].clientX;
+    const deltaY = y - startY;
+    const deltaX = x - startX;
+
+    // Only trigger if more vertical than horizontal
+    if (Math.abs(deltaY) < Math.abs(deltaX)) return;
+
+    if (deltaY > 10 && window.scrollY === 0) {
+      indicator.classList.add('active');
+      if (deltaY > threshold) indicator.classList.add('rotate');
+      else indicator.classList.remove('rotate');
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchend', async () => {
+    if (!pulling) return;
+    pulling = false;
+    if (indicator.classList.contains('rotate')) {
+      indicator.classList.add('spin');
+      indicator.classList.remove('rotate');
+      await resetAndLoadFeed();
+      await loadStories();
+      await loadLikedPosts();
+      await loadSavedPosts();
+      await loadBoostStats();
+      setTimeout(() => indicator.classList.remove('active', 'spin'), 400);
+    } else {
+      indicator.classList.remove('active', 'rotate');
+    }
+  });
+
+  // Cleanup on unload
+  window.addEventListener('beforeunload', () => {
+    if (realtimeFeedChannel) supabaseClient.removeChannel(realtimeFeedChannel);
+    if (viewObserver) viewObserver.disconnect();
+    if (videoObserver) videoObserver.disconnect();
+  });
+}
+
+/* ============================================================
+   REALTIME
+   ============================================================ */
+function setupRealtimeFeed() {
+  if (realtimeFeedChannel) supabaseClient.removeChannel(realtimeFeedChannel);
+  realtimeFeedChannel = supabaseClient
+    .channel('feed-realtime')
+    .on('postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'posts' },
+      payload => {
+        if (currentUser && payload.new.user_id === currentUser.id) return;
+        pendingNewPosts = true;
+        showNewPostsBanner();
+      }
+    )
+    .subscribe();
+}
+
+function showNewPostsBanner() {
+  const banner = document.getElementById('newPostsBanner');
+  document.getElementById('newPostsText').textContent = 'New posts available — tap to refresh';
+  banner.classList.add('show');
+  clearTimeout(window._newPostTimer);
+  window._newPostTimer = setTimeout(() => {
+    banner.classList.remove('show');
+    pendingNewPosts = false;
+  }, 15000);
+}
+
+async function showNewPosts() {
+  document.getElementById('newPostsBanner').classList.remove('show');
+  pendingNewPosts = false;
+  await resetAndLoadFeed();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ============================================================
+   STORIES — FIXED viewer_id
+   ============================================================ */
+async function loadStories() {
+  try {
+    const { data, error } = await supabaseClient.rpc('get_boosted_stories', { p_limit: 30 });
+    if (error) throw error;
+
+    const map = new Map();
+    (data || []).forEach(s => {
+      if (!s.user_id) return;
+      const p = {
+        id: s.user_id,
+        username: s.username,
+        display_name: s.display_name,
+        avatar_url: s.avatar_url,
+        is_verified: s.is_verified
+      };
+      if (!map.has(p.id)) map.set(p.id, { user: p, stories: [] });
+      map.get(p.id).stories.push({
+        id: s.id,
+        media_url: s.media_url,
+        media_type: s.media_type,
+        caption: s.caption,
+        created_at: s.created_at,
+        expires_at: s.expires_at,
+        is_boosted: s.is_boosted,
+        views_count: s.views_count,
+        likes_count: s.likes_count,
+        user_id: s.user_id
+      });
+    });
+    map.forEach(g => g.stories.reverse());
+    storiesByUser = Array.from(map.values());
+
+    // ⚠️ FIX: Uses viewer_id (not user_id)
+    if (currentUser) {
+      try {
+        const { data: views } = await supabaseClient
+          .from('story_views')
+          .select('story_id')
+          .eq('viewer_id', currentUser.id);
+        storySeenIds = new Set((views || []).map(v => v.story_id));
+      } catch (e) {
+        console.warn('story_views load failed:', e);
+        storySeenIds = new Set();
+      }
+    }
+    renderStories();
+  } catch (err) {
+    console.error('[Stories]', err);
+    try {
+      const { data } = await supabaseClient
+        .from('stories')
+        .select(`id, media_url, media_type, caption, created_at, expires_at, views_count, likes_count, user_id, is_boosted, profiles:user_id (id, username, display_name, avatar_url, is_verified)`)
+        .gt('expires_at', new Date().toISOString())
+        .order('created_at', { ascending: false });
+      const map = new Map();
+      (data || []).forEach(s => {
+        const p = s.profiles;
+        if (!p) return;
+        if (!map.has(p.id)) map.set(p.id, { user: p, stories: [] });
+        map.get(p.id).stories.push(s);
+      });
+      map.forEach(g => g.stories.reverse());
+      storiesByUser = Array.from(map.values());
+      renderStories();
+    } catch (e) {}
+  }
+}
+
+function renderStories() {
+  const row = document.getElementById('storiesRow');
+  if (!row) return;
+  const addTile = row.querySelector('.ig-story.add');
+  row.innerHTML = '';
+  if (addTile) row.appendChild(addTile);
+
+  storiesByUser.forEach(group => {
+    const p = group.user;
+    const name = p.display_name || p.username || 'user';
+    const hasUnseen = group.stories.some(s => !storySeenIds.has(s.id));
+    const ringClass = hasUnseen ? 'unseen' : 'seen';
+    const firstStory = group.stories[0];
+    const isBoosted = firstStory.is_boosted && group.stories.some(s => s.is_boosted);
+    const thumb = firstStory.media_type === 'video'
+      ? `<div class="inner"><i class="fas fa-play" style="font-size:16px;"></i></div>`
+      : `<div class="inner"><img src="${escapeHtml(firstStory.media_url)}" alt="Story thumbnail" onerror="this.style.display='none'"></div>`;
+    const storyEl = document.createElement('div');
+    storyEl.className = 'ig-story';
+    storyEl.onclick = () => openStoryViewer(p.id);
+    storyEl.innerHTML = `
+      <div class="ig-story-ring ${ringClass} ${isBoosted ? 'boosted' : ''}">${thumb}</div>
+      <div class="label">${escapeHtml(name)}</div>
+    `;
+    row.appendChild(storyEl);
+  });
+}
+
+async function openStoryViewer(userId) {
+  const groupIdx = storiesByUser.findIndex(g => g.user.id === userId);
+  if (groupIdx < 0) return;
+  currentStoryUserIndex = groupIdx;
+  currentStoryIndex = 0;
+  showStory(currentStoryUserIndex, 0);
+  document.getElementById('storyViewer').classList.add('active');
+}
+
+function showStory(groupIdx, storyIdx) {
+  const group = storiesByUser[groupIdx];
+  if (!group) { closeStoryViewer(); return; }
+  const story = group.stories[storyIdx];
+  if (!story) { closeStoryViewer(); return; }
+
+  currentStoryUserIndex = groupIdx;
+  currentStoryIndex = storyIdx;
+
+  const p = group.user;
+  const name = p.display_name || p.username || 'user';
+  const initial = name.charAt(0).toUpperCase();
+
+  const prog = document.getElementById('svProgress');
+  prog.innerHTML = group.stories.map((_, i) => `
+    <div class="sv-segment ${i < storyIdx ? 'done' : ''}">
+      <div class="fill" id="svSeg-${i}" style="${i < storyIdx ? 'width:100%' : 'width:0%'}"></div>
+    </div>
+  `).join('');
+
+  const av = document.getElementById('svAvatar');
+  if (p.avatar_url) av.innerHTML = `<img src="${escapeHtml(p.avatar_url)}" alt="User avatar" onerror="this.style.display='none'">`;
+  else av.textContent = initial;
+  document.getElementById('svName').textContent = name;
+  document.getElementById('svTime').textContent = formatTimeAgo(story.created_at);
+
+  const body = document.getElementById('svBody');
+  if (story.media_type === 'video') {
+    body.innerHTML = `<video id="svMedia" src="${escapeHtml(story.media_url)}" autoplay playsinline></video>`;
+  } else {
+    body.innerHTML = `<img id="svMedia" src="${escapeHtml(story.media_url)}" alt="Story image" onerror="this.style.display='none'">`;
+  }
+
+  const cap = document.getElementById('svCaption');
+  if (story.caption) { cap.textContent = story.caption; cap.classList.add('show'); }
+  else cap.classList.remove('show');
+
+  const stats = document.getElementById('svStats');
+  if (currentUser && p.id === currentUser.id) {
+    stats.style.display = 'flex';
+    document.getElementById('svViews').textContent = story.views_count || 0;
+    document.getElementById('svLikes').textContent = story.likes_count || 0;
+  } else {
+    stats.style.display = 'none';
+  }
+
+  const likeBtn = document.getElementById('svLikeBtn');
+  if (myLikedStories.has(story.id)) {
+    likeBtn.classList.add('liked');
+    likeBtn.innerHTML = '<i class="fas fa-heart"></i>';
+  } else {
+    likeBtn.classList.remove('liked');
+    likeBtn.innerHTML = '<i class="far fa-heart"></i>';
+  }
+
+  logStoryView(story.id);
+  clearStoryTimer();
+  startStoryProgress(storyIdx);
+}
+
+function startStoryProgress(storyIdx) {
+  const fill = document.getElementById('svSeg-' + storyIdx);
+  if (!fill) return;
+  let progress = 0;
+  const duration = 5000;
+  const step = 50;
+  storyProgressTimer = setInterval(() => {
+    progress += (step / duration) * 100;
+    if (progress >= 100) {
+      fill.style.width = '100%';
+      clearInterval(storyProgressTimer);
+      setTimeout(() => storyNav(1), 150);
+    } else {
+      fill.style.width = progress + '%';
+    }
+  }, step);
+}
+
+function clearStoryTimer() {
+  if (storyProgressTimer) { clearInterval(storyProgressTimer); storyProgressTimer = null; }
+}
+
+function storyNav(dir) {
+  const group = storiesByUser[currentStoryUserIndex];
+  if (!group) { closeStoryViewer(); return; }
+  const nextStory = currentStoryIndex + dir;
+  if (nextStory < 0) {
+    const prevUser = currentStoryUserIndex - 1;
+    if (prevUser < 0) { showStory(currentStoryUserIndex, 0); return; }
+    const prevGroup = storiesByUser[prevUser];
+    showStory(prevUser, prevGroup.stories.length - 1);
+  } else if (nextStory >= group.stories.length) {
+    const nextUser = currentStoryUserIndex + 1;
+    if (nextUser >= storiesByUser.length) { closeStoryViewer(); return; }
+    showStory(nextUser, 0);
+  } else {
+    showStory(currentStoryUserIndex, nextStory);
+  }
+}
+
+function closeStoryViewer() {
+  clearStoryTimer();
+  document.getElementById('storyViewer').classList.remove('active');
+  document.getElementById('svBody').innerHTML = '';
+  renderStories();
+}
+
+// ⚠️ FIX: uses viewer_id
+async function logStoryView(storyId) {
+  if (!currentUser) return;
+  try {
+    await supabaseClient.from('story_views').insert({
+      story_id: storyId,
+      viewer_id: currentUser.id
+    }).select().maybeSingle();
+  } catch (e) {
+    // Ignore duplicates
+  }
+  try {
+    await supabaseClient.rpc('increment_story_views', { p_story_id: storyId });
+  } catch (e) {}
+}
+
+async function toggleStoryLike() {
+  const group = storiesByUser[currentStoryUserIndex];
+  if (!group) return;
+  const story = group.stories[currentStoryIndex];
+  if (!story || !currentUser) return;
+  const btn = document.getElementById('svLikeBtn');
+
+  try {
+    if (myLikedStories.has(story.id)) {
+      await supabaseClient.from('story_likes').delete().eq('story_id', story.id).eq('user_id', currentUser.id);
+      myLikedStories.delete(story.id);
+      btn.classList.remove('liked');
+      btn.innerHTML = '<i class="far fa-heart"></i>';
+      try { await supabaseClient.rpc('decrement_story_likes', { p_story_id: story.id }); } catch(e){}
+    } else {
+      await supabaseClient.from('story_likes').insert({ story_id: story.id, user_id: currentUser.id });
+      myLikedStories.add(story.id);
+      btn.classList.add('liked');
+      btn.innerHTML = '<i class="fas fa-heart"></i>';
+      try { await supabaseClient.rpc('increment_story_likes', { p_story_id: story.id }); } catch(e){}
+    }
+  } catch (err) { showToast(err.message); }
+}
+
+async function sendStoryReply() {
+  const input = document.getElementById('svReplyInput');
+  const text = input.value.trim();
+  if (!text) return;
+  const group = storiesByUser[currentStoryUserIndex];
+  if (!group) return;
+  const story = group.stories[currentStoryIndex];
+  if (!currentUser) { showToast('Sign in to reply'); return; }
+
+  try {
+    await supabaseClient.from('messages').insert({
+      sender_id: currentUser.id,
+      receiver_id: story.user_id,
+      content: `💬 Replied to your story: ${text}`,
+      media_type: 'story_reply',
+      media_url: story.media_url
+    });
+    input.value = '';
+    showToast('Reply sent ✅');
+  } catch (err) { showToast(err.message); }
+}
+
+async function shareCurrentStory() {
+  const group = storiesByUser[currentStoryUserIndex];
+  if (!group) return;
+  const story = group.stories[currentStoryIndex];
+  if (!story) return;
+  const url = buildUrl('profile.html', 'story=' + story.id);
+  if (navigator.share) {
+    try { await navigator.share({ title: 'Arizona AI Story', text: story.caption || 'Check this out!', url }); return; } catch(e){}
+  }
+  try { await navigator.clipboard.writeText(url); showToast('Link copied 📋'); } catch {}
+}
+
+/* ============================================================
+   FULLSCREEN VIEWER
+   ============================================================ */
+function openFs(postId, idx) {
+  const postEl = document.querySelector(`article[data-id="${postId}"]`);
+  if (!postEl) return;
+  const mediaEls = postEl.querySelectorAll('.ig-post-media img, .ig-post-media video');
+  currentMediaList = Array.from(mediaEls).map(el => ({ src: el.src, isVideo: el.tagName === 'VIDEO' }));
+  currentMediaIndex = idx || 0;
+  renderFs();
+  document.getElementById('fsViewer').classList.add('active');
+}
+
+function renderFs() {
+  const content = document.getElementById('fsContent');
+  const counter = document.getElementById('fsCounter');
+  const item = currentMediaList[currentMediaIndex];
+  if (!item) return;
+  content.innerHTML = item.isVideo
+    ? `<video src="${escapeHtml(item.src)}" controls autoplay playsinline></video>`
+    : `<img src="${escapeHtml(item.src)}" alt="Full size image">`;
+  counter.textContent = `${currentMediaIndex + 1} / ${currentMediaList.length}`;
+  const showNav = currentMediaList.length > 1;
+  document.getElementById('fsPrev').style.display = showNav ? 'flex' : 'none';
+  document.getElementById('fsNext').style.display = showNav ? 'flex' : 'none';
+}
+
+function fsNav(dir) {
+  currentMediaIndex = (currentMediaIndex + dir + currentMediaList.length) % currentMediaList.length;
+  renderFs();
+}
+
+function closeFs() {
+  document.getElementById('fsViewer').classList.remove('active');
+  document.getElementById('fsContent').innerHTML = '';
+}
+
+/* ============================================================
+   COMMENTS
+   ============================================================ */
+async function openComments(postId) {
+  currentPostId = postId;
+  document.getElementById('commentsModal').classList.add('active');
+  await loadComments(postId);
+}
+
+function closeComments() {
+  document.getElementById('commentsModal').classList.remove('active');
+  currentPostId = null;
+}
+
+async function loadComments(postId) {
+  const list = document.getElementById('commentsList');
+  list.innerHTML = '<div class="comments-empty"><i class="fas fa-circle-notch fa-spin"></i></div>';
+  try {
+    const { data, error } = await supabaseClient
+      .from('comments').select(`*, profiles:user_id (username, display_name, avatar_url)`)
+      .eq('post_id', postId).order('created_at', { ascending: true });
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      list.innerHTML = '<div class="comments-empty">No comments yet. Be the first!</div>';
+      return;
+    }
+    list.innerHTML = data.map(c => {
+      const prof = c.profiles || {};
+      const name = prof.display_name || prof.username || 'user';
+      const initial = name.charAt(0).toUpperCase();
+      const av = prof.avatar_url ? `<img src="${escapeHtml(prof.avatar_url)}" alt="User avatar" onerror="this.style.display='none'">` : initial;
+      return `
+        <div class="comment-item">
+          <div class="c-avatar">${av}</div>
+          <div class="c-body">
+            <div class="c-name">${escapeHtml(name)}</div>
+            <div class="c-text">${escapeHtml(c.content)}</div>
+            <div class="c-time">${formatTimeAgo(c.created_at)}</div>
+          </div>
+        </div>`;
+    }).join('');
+  } catch (err) {
+    list.innerHTML = `<div class="comments-empty" style="color:var(--az-danger);">${escapeHtml(err.message)}</div>`;
+  }
+}
+
+async function submitComment() {
+  const input = document.getElementById('commentInput');
+  const text = input.value.trim();
+  if (!text) return;
+  if (!currentUser) { showToast('Sign in to comment'); return; }
+  const btn = document.getElementById('commentSendBtn');
+  btn.disabled = true;
+  try {
+    await supabaseClient.from('comments').insert({ user_id: currentUser.id, post_id: currentPostId, content: text });
+    input.value = '';
+    await loadComments(currentPostId);
+    await refreshPostCounters(currentPostId);
+  } catch (err) { showToast(err.message); }
+  finally { btn.disabled = false; }
+}
+
+/* ============================================================
+   BOOST
+   ============================================================ */
+function openBoost(postId) {
+  if (!currentUser) { showToast('Sign in first'); return; }
+  boostingPostId = postId;
+  selectedBoost = { duration:'3d', price:2.49 };
+  document.querySelectorAll('.boost-option').forEach(o => o.classList.remove('selected'));
+  document.querySelector('.boost-option[data-boost="3d"]').classList.add('selected');
+  updateBoostSummary();
+  document.getElementById('boostModal').classList.add('active');
+}
+
+function closeBoost() {
+  document.getElementById('boostModal').classList.remove('active');
+  boostingPostId = null;
+}
+
+function selectBoost(el) {
+  document.querySelectorAll('.boost-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedBoost = { duration: el.dataset.boost, price: parseFloat(el.dataset.price) };
+  updateBoostSummary();
+}
+
+function updateBoostSummary() {
+  const summary = document.getElementById('boostSummary');
+  const balance = Number(currentWallet?.balance ?? 0);
+  summary.style.display = 'block';
+  document.getElementById('bsBalance').textContent = '$' + balance.toFixed(2);
+  document.getElementById('bsCost').textContent    = '$' + selectedBoost.price.toFixed(2);
+  const after = balance - selectedBoost.price;
+  const afterEl = document.getElementById('bsAfter');
+  afterEl.textContent = '$' + after.toFixed(2);
+  afterEl.style.color = after < 0 ? '#ff7675' : '#5eb8ff';
+}
+
+async function confirmBoost() {
+  if (!currentUser || !boostingPostId) return;
+  const balance = Number(currentWallet?.balance ?? 0);
+  if (balance < selectedBoost.price) { showToast('Insufficient balance'); return; }
+  const btn = document.getElementById('boostConfirmBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Boosting…';
+  try {
+    const durationMs = { '24h': 864e5, '3d': 2592e5, '7d': 6048e5, '14d': 12096e5 }[selectedBoost.duration];
+    const expiresAt = new Date(Date.now() + durationMs).toISOString();
+
+    await supabaseClient.from('posts').update({ is_boosted: true, boost_expires_at: expiresAt }).eq('id', boostingPostId);
+
+    const newBal = balance - selectedBoost.price;
+    const newSpent = Number(currentWallet?.total_spent || 0) + selectedBoost.price;
+    await supabaseClient.from('wallets').update({ balance: newBal, total_spent: newSpent }).eq('user_id', currentUser.id);
+
+    try {
+      await supabaseClient.from('wallet_transactions').insert({
+        user_id: currentUser.id, amount: -selectedBoost.price,
+        type: 'spend', source: 'boost',
+        note: `Boosted post for ${selectedBoost.duration}`
+      });
+    } catch (e) {}
+
+    try {
+      await supabaseClient.rpc('log_boost', {
+        p_post_id: boostingPostId,
+        p_user_id: currentUser.id,
+        p_duration: selectedBoost.duration,
+        p_price: selectedBoost.price,
+        p_expires_at: expiresAt
+      });
+    } catch (e) {}
+
+    currentWallet.balance = newBal;
+    currentWallet.total_spent = newSpent;
+    renderUserSection();
+    await loadBoostStats();
+    closeBoost();
+    showToast('🚀 Post boosted!');
+    resetAndLoadFeed();
+  } catch (err) {
+    showToast(err.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-rocket"></i> Boost Now';
+  }
+}
+
+/* ============================================================
+   SETTINGS
+   ============================================================ */
+function openSettings() { document.getElementById('settingsOverlay').classList.add('active'); }
+function closeSettings(e) {
+  if (e && e.target && e.target.id !== 'settingsOverlay' && !e.target.closest('.settings-close')) return;
+  document.getElementById('settingsOverlay').classList.remove('active');
+}
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function formatTimeAgo(dateStr) {
+  if (!dateStr) return 'Just now';
+  const dateStr2 = String(dateStr).includes('Z') || String(dateStr).includes('+') ? dateStr : dateStr + 'Z';
+  const then = new Date(dateStr2).getTime();
+  const now = Date.now();
+  const s = Math.floor((now - then) / 1000);
+  if (s < 5) return 'Just now';
+  if (s < 60) return `${s}s ago`;
+  const m = Math.floor(s / 60); if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60); if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24); if (d < 7) return `${d}d ago`;
+  return new Date(dateStr2).toLocaleDateString();
+}
+
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function showToast(msg) {
+  const el = document.getElementById('toastMini');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(window._toastT);
+  window._toastT = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (document.getElementById('fsViewer').classList.contains('active')) closeFs();
+    if (document.getElementById('storyViewer').classList.contains('active')) closeStoryViewer();
+    if (document.getElementById('commentsModal').classList.contains('active')) closeComments();
+    if (document.getElementById('viewersModal').classList.contains('active')) closeViewers();
+    if (document.getElementById('boostModal').classList.contains('active')) closeBoost();
+    if (document.getElementById('postOptionsModal').classList.contains('active')) closePostOptions();
+  }
+  const v = document.getElementById('fsViewer');
+  if (v && v.classList.contains('active')) {
+    if (e.key === 'ArrowLeft') fsNav(-1);
+    if (e.key === 'ArrowRight') fsNav(1);
+  }
+});
+</script>
+</body>
+</html>
