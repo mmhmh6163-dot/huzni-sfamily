@@ -368,23 +368,6 @@ body {
   margin: 10px 0;
 }
 
-.typing-bubble {
-  align-self: flex-start;
-  background: rgba(255,255,255,.08);
-  padding: 12px 16px;
-  border-radius: 18px;
-  border-bottom-left-radius: 4px;
-}
-.typing-bubble .dots { display: flex; gap: 4px; }
-.typing-bubble .dots span {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--az-accent);
-  animation: bounce 1.2s infinite;
-}
-.typing-bubble .dots span:nth-child(2) { animation-delay: .2s; }
-.typing-bubble .dots span:nth-child(3) { animation-delay: .4s; }
-@keyframes bounce { 0%,60%,100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-5px); opacity: 1; } }
-
 /* ==================== INPUT WRAP ==================== */
 .chat-input-wrap {
   display: flex; gap: 8px; align-items: flex-end;
@@ -566,7 +549,7 @@ body {
 .modal-actions .primary { background: var(--az-gradient); border: none; color: #fff; }
 .modal-actions button:disabled { opacity: .6; cursor: not-allowed; }
 
-/* ==================== VOICE RECORDING OVERLAY ==================== */
+/* ==================== RECORDING OVERLAY ==================== */
 .rec-overlay {
   position: fixed; inset: 0;
   background: rgba(0,0,0,.85);
@@ -609,10 +592,7 @@ body {
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
 }
-.rec-overlay .actions .cancel {
-  background: rgba(255,255,255,.12);
-  color: #fff;
-}
+.rec-overlay .actions .cancel { background: rgba(255,255,255,.12); color: #fff; }
 .rec-overlay .actions .send {
   background: var(--az-gradient);
   color: #fff;
@@ -686,9 +666,7 @@ body {
   display: flex; justify-content: space-between; align-items: center;
   color: #fff;
 }
-.call-screen .call-header .name {
-  font-size: 15px; font-weight: 700;
-}
+.call-screen .call-header .name { font-size: 15px; font-weight: 700; }
 .call-screen .call-header .timer {
   font-size: 13px; opacity: .8;
   font-variant-numeric: tabular-nums;
@@ -729,13 +707,8 @@ body {
   font-size: 14px; opacity: .7;
   margin-bottom: 40px;
 }
-.call-screen .caller-info .call-status.ringing {
-  animation: ringingBlink 1.2s infinite;
-}
-@keyframes ringingBlink {
-  0%,100% { opacity: .5; }
-  50% { opacity: 1; }
-}
+.call-screen .caller-info .call-status.ringing { animation: ringingBlink 1.2s infinite; }
+@keyframes ringingBlink { 0%,100% { opacity: .5; } 50% { opacity: 1; } }
 
 .call-screen .call-actions {
   position: relative;
@@ -755,33 +728,12 @@ body {
   transition: transform .12s;
 }
 .call-screen .call-btn-round:active { transform: scale(.92); }
-.call-screen .call-btn-round.accept {
-  background: #00b894;
-  box-shadow: 0 10px 30px rgba(0,184,148,.5);
-}
-.call-screen .call-btn-round.decline {
-  background: #ff4757;
-  box-shadow: 0 10px 30px rgba(255,71,87,.5);
-}
-.call-screen .call-btn-round.mute {
-  background: rgba(255,255,255,.12);
-  backdrop-filter: blur(8px);
-}
-.call-screen .call-btn-round.mute.muted {
-  background: #ff4757;
-  color: #fff;
-}
-.call-screen .call-btn-round.video-toggle.off {
-  background: rgba(255,71,87,.3);
-  color: #fff;
-}
-.call-screen .call-btn-round.speaker.on {
-  background: rgba(94,184,255,.3);
-}
-.call-screen .call-btn-round.small {
-  width: 56px; height: 56px;
-  font-size: 20px;
-}
+.call-screen .call-btn-round.accept { background: #00b894; box-shadow: 0 10px 30px rgba(0,184,148,.5); }
+.call-screen .call-btn-round.decline { background: #ff4757; box-shadow: 0 10px 30px rgba(255,71,87,.5); }
+.call-screen .call-btn-round.mute { background: rgba(255,255,255,.12); backdrop-filter: blur(8px); }
+.call-screen .call-btn-round.mute.muted { background: #ff4757; }
+.call-screen .call-btn-round.video-toggle.off { background: rgba(255,71,87,.3); }
+.call-screen .call-btn-round.speaker.on { background: rgba(94,184,255,.3); }
 
 /* ==================== INCOMING CALL ==================== */
 .incoming-call-modal {
@@ -813,18 +765,9 @@ body {
   0%,100% { box-shadow: 0 0 60px rgba(94,184,255,.5); transform: scale(1); }
   50% { box-shadow: 0 0 90px rgba(94,184,255,.8); transform: scale(1.05); }
 }
-.incoming-call-modal .inc-name {
-  font-size: 26px; font-weight: 800;
-  margin-bottom: 8px;
-}
-.incoming-call-modal .inc-type {
-  font-size: 15px; opacity: .7;
-  margin-bottom: 50px;
-}
-.incoming-call-modal .inc-actions {
-  display: flex;
-  gap: 40px;
-}
+.incoming-call-modal .inc-name { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+.incoming-call-modal .inc-type { font-size: 15px; opacity: .7; margin-bottom: 50px; }
+.incoming-call-modal .inc-actions { display: flex; gap: 40px; }
 .incoming-call-modal .inc-actions button {
   width: 76px; height: 76px; border-radius: 50%;
   border: none;
@@ -835,10 +778,7 @@ body {
   transition: transform .12s;
 }
 .incoming-call-modal .inc-actions button:active { transform: scale(.92); }
-.incoming-call-modal .inc-actions .decline {
-  background: #ff4757;
-  box-shadow: 0 10px 30px rgba(255,71,87,.5);
-}
+.incoming-call-modal .inc-actions .decline { background: #ff4757; box-shadow: 0 10px 30px rgba(255,71,87,.5); }
 .incoming-call-modal .inc-actions .accept {
   background: #00b894;
   box-shadow: 0 10px 30px rgba(0,184,148,.5);
@@ -847,6 +787,43 @@ body {
 @keyframes acceptPulse {
   0%,100% { box-shadow: 0 10px 30px rgba(0,184,148,.5); }
   50% { box-shadow: 0 10px 40px rgba(0,184,148,.9); }
+}
+
+/* ==================== PERMISSION HELP MODAL ==================== */
+.permission-help-content {
+  padding: 6px 0;
+  color: var(--az-text);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.permission-help-content .step {
+  background: rgba(94,184,255,.06);
+  border-left: 3px solid #5eb8ff;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.permission-help-content .step strong {
+  display: block;
+  color: #5eb8ff;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+.permission-help-content .step ol {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+}
+.permission-help-content .step ol li {
+  margin-bottom: 4px;
+}
+.permission-help-content kbd {
+  background: #333;
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: monospace;
 }
 
 /* ==================== TOAST ==================== */
@@ -864,11 +841,52 @@ body {
 }
 .toast-mini.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* ==================== CALL PERMISSION BANNER ==================== */
-#callPermissionBanner.show {
-  opacity: 1 !important;
-  transform: translateX(-50%) translateY(0) !important;
-  pointer-events: auto !important;
+/* ==================== PERMISSION BANNER ==================== */
+.permission-banner {
+  position: fixed;
+  bottom: 100px; left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: linear-gradient(135deg, rgba(255,107,53,.15), rgba(255,178,15,.1));
+  border: 1px solid rgba(255,107,53,.4);
+  border-radius: 14px;
+  padding: 14px 16px;
+  max-width: 90%; width: 380px;
+  display: flex; align-items: center; gap: 12px;
+  z-index: 9998;
+  opacity: 0; pointer-events: none;
+  transition: all .3s ease;
+  box-shadow: 0 10px 40px rgba(0,0,0,.6);
+}
+.permission-banner.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+.permission-banner .permission-icon {
+  font-size: 22px; color: #ff7675; flex-shrink: 0;
+}
+.permission-banner .permission-text {
+  flex: 1; font-size: 13px; color: var(--az-text); line-height: 1.4;
+}
+.permission-banner .permission-text strong {
+  display: block; margin-bottom: 3px;
+}
+.permission-banner .permission-actions {
+  display: flex; gap: 6px; flex-shrink: 0;
+}
+.permission-banner .permission-btn-help {
+  background: rgba(94,184,255,.2);
+  border: 1px solid #5eb8ff;
+  color: #5eb8ff;
+  padding: 6px 10px; border-radius: 10px;
+  font-size: 11px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  white-space: nowrap;
+}
+.permission-banner .permission-btn-close {
+  background: none; border: none;
+  color: var(--az-text-secondary);
+  font-size: 18px; cursor: pointer; padding: 4px;
 }
 </style>
 </head>
@@ -909,7 +927,7 @@ body {
   <div class="skeleton"><div class="sk-av"></div><div class="sk-lines"><div class="sk-line"></div><div class="sk-line short"></div></div></div>
 </div>
 
-<!-- ==================== CHAT VIEW (DM) ==================== -->
+<!-- CHAT VIEW (DM) -->
 <div class="chat-view" id="chatView">
   <div class="chat-view-header">
     <button class="back" onclick="closeChat()"><i class="fas fa-arrow-left"></i></button>
@@ -955,7 +973,7 @@ body {
   </div>
 </div>
 
-<!-- ==================== TRIBE CHAT VIEW ==================== -->
+<!-- TRIBE CHAT VIEW -->
 <div class="chat-view" id="tribeView">
   <div class="chat-view-header">
     <button class="back" onclick="closeTribe()"><i class="fas fa-arrow-left"></i></button>
@@ -998,7 +1016,7 @@ body {
   </div>
 </div>
 
-<!-- ==================== TRIBE INVITE SHEET ==================== -->
+<!-- TRIBE INVITE SHEET -->
 <div class="modal-backdrop" id="tribeInviteModal" onclick="closeTribeInviteSheet(event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="handle"></div>
@@ -1022,6 +1040,62 @@ body {
       <button class="cancel" onclick="closeTribeInviteSheet()">Cancel</button>
       <button class="primary" id="sendTribeInvitesBtn" onclick="sendTribeInvites()">
         <i class="fas fa-paper-plane"></i> Send Invites
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PERMISSION HELP MODAL -->
+<div class="modal-backdrop" id="permissionHelpModal" onclick="closePermissionHelp(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div class="handle"></div>
+    <h3>🎤 Enable Microphone & Camera</h3>
+
+    <div class="permission-help-content">
+      <div class="step">
+        <strong>🌐 Chrome / Edge / Brave</strong>
+        <ol>
+          <li>Click the <kbd>🔒</kbd> lock icon in the URL bar</li>
+          <li>Set <b>Microphone</b> → <b>Allow</b></li>
+          <li>Set <b>Camera</b> → <b>Allow</b></li>
+          <li>Refresh the page</li>
+        </ol>
+      </div>
+
+      <div class="step">
+        <strong>🦊 Firefox</strong>
+        <ol>
+          <li>Click the <kbd>🔒</kbd> lock icon</li>
+          <li>Click "Clear cookies and site data"</li>
+          <li>Refresh → Allow when asked</li>
+        </ol>
+      </div>
+
+      <div class="step">
+        <strong>🖥️ Windows System Settings</strong>
+        <ol>
+          <li>Open <b>Windows Settings</b> → <b>Privacy & security</b></li>
+          <li>Click <b>Microphone</b> → Toggle ON</li>
+          <li>Also enable <b>Let desktop apps access</b></li>
+          <li>Click <b>Camera</b> → Toggle ON</li>
+        </ol>
+      </div>
+
+      <div class="step">
+        <strong>⚙️ Chrome Advanced (if it's still blocked)</strong>
+        <ol>
+          <li>Open <kbd>chrome://settings/content/microphone</kbd></li>
+          <li>Look for <b>aiarizonan.com</b> in "Not allowed"</li>
+          <li>Click trash icon to remove</li>
+          <li>Do the same at <kbd>chrome://settings/content/camera</kbd></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="cancel" onclick="closePermissionHelp()">Close</button>
+      <button class="primary" onclick="location.reload()">
+        <i class="fas fa-redo"></i> Refresh Page
       </button>
     </div>
   </div>
@@ -1053,7 +1127,7 @@ body {
   <img id="imgViewerSrc" src="" alt="">
 </div>
 
-<!-- ==================== INCOMING CALL MODAL ==================== -->
+<!-- INCOMING CALL MODAL -->
 <div class="incoming-call-modal" id="incomingCallModal">
   <div class="inc-avatar" id="incAvatar">U</div>
   <div class="inc-name" id="incName">User</div>
@@ -1068,7 +1142,7 @@ body {
   </div>
 </div>
 
-<!-- ==================== CALL SCREEN ==================== -->
+<!-- CALL SCREEN -->
 <div class="call-screen" id="callScreen">
   <div class="call-bg"></div>
 
@@ -1089,26 +1163,17 @@ body {
   <div class="call-actions" id="callActions"></div>
 </div>
 
-<!-- ==================== CALL PERMISSION BANNER ==================== -->
-<div id="callPermissionBanner" style="
-  position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(100px);
-  background:linear-gradient(135deg, rgba(255,107,53,.15), rgba(255,178,15,.1));
-  border:1px solid rgba(255,107,53,.4);
-  border-radius:14px;
-  padding:14px 16px;
-  max-width:90%; width:340px;
-  display:flex; align-items:center; gap:12px;
-  z-index:9998;
-  opacity:0; pointer-events:none;
-  transition:all .3s ease;
-  box-shadow:0 10px 40px rgba(0,0,0,.6);
-">
-  <i class="fas fa-microphone-slash" style="font-size:22px; color:#ff7675; flex-shrink:0;"></i>
-  <div style="flex:1; font-size:13px; color:var(--az-text); line-height:1.4;">
-    <strong style="display:block; margin-bottom:3px;">Permission needed</strong>
-    <span id="permissionBannerText">Allow microphone/camera in browser settings to make calls</span>
+<!-- PERMISSION BANNER -->
+<div class="permission-banner" id="callPermissionBanner">
+  <i class="fas fa-microphone-slash permission-icon"></i>
+  <div class="permission-text">
+    <strong>Permission needed</strong>
+    <span id="permissionBannerText">Allow microphone/camera to make calls</span>
   </div>
-  <button onclick="hidePermissionBanner()" style="background:none; border:none; color:var(--az-text-secondary); font-size:18px; cursor:pointer; padding:4px;">×</button>
+  <div class="permission-actions">
+    <button class="permission-btn-help" onclick="showPermissionHelp()">How to fix</button>
+    <button class="permission-btn-close" onclick="hidePermissionBanner()">×</button>
+  </div>
 </div>
 
 <!-- Toast -->
@@ -1131,7 +1196,6 @@ let realtimeTribe = null;
 let realtimeCalls = null;
 let realtimeSignals = null;
 let profileCache  = new Map();
-let tribeMessageCache = new Map();
 
 let isOpeningChat  = false;
 let isOpeningTribe = false;
@@ -1165,7 +1229,6 @@ let callSeconds = 0;
 let callState = 'idle';
 let pendingIceCandidates = [];
 let incomingCallData = null;
-let callSignalChannel = null;
 
 const ICE_SERVERS = {
   iceServers: [
@@ -1221,7 +1284,6 @@ async function init() {
     await openTribe(autoTribe);
   }
 
-  // Auto-start call if requested
   if (autoCall && autoUser && (autoCall === 'voice' || autoCall === 'video')) {
     setTimeout(() => {
       if (activePartner) {
@@ -1401,7 +1463,7 @@ function renderChatsList(wrap) {
     const initial = name.charAt(0).toUpperCase();
     const verified = p.is_verified ? '<i class="fas fa-circle-check v"></i>' : '';
     const avatar = p.avatar_url
-      ? `<img src="${escapeHtml(p.avatar_url)}" alt="${escapeHtml(name)}'s avatar" loading="lazy" onerror="this.style.display='none'">`
+      ? `<img src="${escapeHtml(p.avatar_url)}" alt="${escapeHtml(name)}" loading="lazy" onerror="this.style.display='none'">`
       : initial;
     const preview = buildPreview(c.lastMessage, 'dm');
     const time = formatTimeAgo(c.lastMessage.created_at);
@@ -1442,7 +1504,7 @@ function renderTribesList(wrap) {
   wrap.innerHTML = filtered.map(t => {
     const initial = (t.name || 'T').charAt(0).toUpperCase();
     const avatar = t.avatar_url
-      ? `<img src="${escapeHtml(t.avatar_url)}" alt="${escapeHtml(t.name)}'s avatar" onerror="this.style.display='none'">`
+      ? `<img src="${escapeHtml(t.avatar_url)}" alt="${escapeHtml(t.name)}" onerror="this.style.display='none'">`
       : initial;
     const preview = t.lastMessage ? buildPreview(t.lastMessage, 'tribe', t) : '<i>No messages yet</i>';
     const time = t.lastMessage ? formatTimeAgo(t.lastMessage.created_at) : '';
@@ -1482,13 +1544,13 @@ function renderRequestsList(wrap) {
     const name = p.display_name || p.username || 'user';
     const initial = name.charAt(0).toUpperCase();
     const avatar = p.avatar_url
-      ? `<img src="${escapeHtml(p.avatar_url)}" alt="${escapeHtml(name)}'s avatar" loading="lazy" onerror="this.style.display='none'">`
+      ? `<img src="${escapeHtml(p.avatar_url)}" alt="${escapeHtml(name)}" loading="lazy" onerror="this.style.display='none'">`
       : initial;
 
     if (r.kind === 'tribe') {
       const tInitial = (r.tribe_name || 'T').charAt(0).toUpperCase();
       const tAvatar = r.tribe_avatar
-        ? `<img src="${escapeHtml(r.tribe_avatar)}" alt="Tribe avatar" onerror="this.style.display='none'">`
+        ? `<img src="${escapeHtml(r.tribe_avatar)}" alt="Tribe" onerror="this.style.display='none'">`
         : tInitial;
 
       return `
@@ -1689,7 +1751,7 @@ function renderInviteFriendsList() {
     const name = f.display_name || f.username || 'user';
     const initial = name.charAt(0).toUpperCase();
     const avatar = f.avatar_url
-      ? `<img src="${escapeHtml(f.avatar_url)}" alt="${escapeHtml(name)}'s avatar" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">`
+      ? `<img src="${escapeHtml(f.avatar_url)}" alt="${escapeHtml(name)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">`
       : initial;
     const sel = selectedInviteIds.has(f.id);
     return `
@@ -1785,7 +1847,7 @@ async function openChat(partnerId) {
     const name = partner.display_name || partner.username || 'user';
     const initial = name.charAt(0).toUpperCase();
     const avatar = partner.avatar_url
-      ? `<img src="${escapeHtml(partner.avatar_url)}" alt="${escapeHtml(name)}'s avatar" onerror="this.style.display='none'">`
+      ? `<img src="${escapeHtml(partner.avatar_url)}" alt="${escapeHtml(name)}" onerror="this.style.display='none'">`
       : initial;
 
     document.getElementById('cvAvatar').innerHTML = avatar;
@@ -1835,7 +1897,7 @@ async function openTribe(tribeId) {
 
     const initial = (tribe.name || 'T').charAt(0).toUpperCase();
     const avatar = tribe.avatar_url
-      ? `<img src="${escapeHtml(tribe.avatar_url)}" alt="${escapeHtml(tribe.name)}'s avatar" onerror="this.style.display='none'">`
+      ? `<img src="${escapeHtml(tribe.avatar_url)}" alt="${escapeHtml(tribe.name)}" onerror="this.style.display='none'">`
       : initial;
 
     document.getElementById('tvAvatar').innerHTML = avatar;
@@ -1958,7 +2020,6 @@ function renderCallLog(call) {
   const isCaller = call.caller_id === currentUser.id;
   const partner = isCaller ? call.receiver_id : call.caller_id;
   const prof = profileCache.get(partner) || {};
-  const name = prof.display_name || prof.username || 'User';
 
   let icon = 'fa-phone';
   let label = '';
@@ -2177,7 +2238,7 @@ function showAttachPreview(kind, file, url) {
 
   let type = 'file';
   let icon = '<i class="fas fa-file"></i>';
-  if (file.type.startsWith('image/')) { type = 'image'; icon = `<img src="${url}" alt="Attachment preview">`; }
+  if (file.type.startsWith('image/')) { type = 'image'; icon = `<img src="${url}" alt="">`; }
   else if (file.type.startsWith('video/')) { type = 'video'; icon = `<video src="${url}" muted></video>`; }
   else if (file.type.startsWith('audio/')) { type = 'audio'; icon = '<i class="fas fa-music"></i>'; }
 
@@ -2277,7 +2338,7 @@ async function lpAction(action) {
 }
 
 /* ============================================================
-   TOUCH LONG-PRESS HANDLER
+   TOUCH LONG-PRESS
    ============================================================ */
 let lpTouchTimer = null;
 let lpTouchStartX = 0;
@@ -2286,13 +2347,10 @@ let lpTouchFired = false;
 
 function handleTouchStart(event, kind, msgId) {
   if (event.touches.length > 1) return;
-
   lpTouchFired = false;
   lpTouchStartX = event.touches[0].clientX;
   lpTouchStartY = event.touches[0].clientY;
-
   if (lpTouchTimer) clearTimeout(lpTouchTimer);
-
   lpTouchTimer = setTimeout(() => {
     lpTouchFired = true;
     if (navigator.vibrate) navigator.vibrate(20);
@@ -2301,14 +2359,8 @@ function handleTouchStart(event, kind, msgId) {
 }
 
 function handleTouchEnd(event) {
-  if (lpTouchTimer) {
-    clearTimeout(lpTouchTimer);
-    lpTouchTimer = null;
-  }
-  if (lpTouchFired) {
-    event.preventDefault();
-    lpTouchFired = false;
-  }
+  if (lpTouchTimer) { clearTimeout(lpTouchTimer); lpTouchTimer = null; }
+  if (lpTouchFired) { event.preventDefault(); lpTouchFired = false; }
 }
 
 function handleTouchCancel(event) {
@@ -2316,10 +2368,7 @@ function handleTouchCancel(event) {
   const x = event.touches[0].clientX;
   const y = event.touches[0].clientY;
   if (Math.abs(x - lpTouchStartX) > 10 || Math.abs(y - lpTouchStartY) > 10) {
-    if (lpTouchTimer) {
-      clearTimeout(lpTouchTimer);
-      lpTouchTimer = null;
-    }
+    if (lpTouchTimer) { clearTimeout(lpTouchTimer); lpTouchTimer = null; }
   }
 }
 
@@ -2597,7 +2646,7 @@ async function startCall(type) {
 
   } catch (err) {
     console.error('[Call]', err);
-    toast(err.message || 'Could not start call');
+    // No toast here — the permission banner handles the message
     endCall(true);
   }
 }
@@ -2619,7 +2668,7 @@ function showIncomingCall(call) {
         const initial = (data.display_name || data.username || 'U').charAt(0).toUpperCase();
         document.getElementById('incName').textContent = data.display_name || data.username;
         document.getElementById('incAvatar').innerHTML =
-          data.avatar_url ? `<img src="${escapeHtml(data.avatar_url)}" alt="Caller avatar" onerror="this.style.display='none'">` : initial;
+          data.avatar_url ? `<img src="${escapeHtml(data.avatar_url)}" alt="" onerror="this.style.display='none'">` : initial;
       }
     });
   }
@@ -2628,7 +2677,7 @@ function showIncomingCall(call) {
   const initial = name.charAt(0).toUpperCase();
   document.getElementById('incName').textContent = name;
   document.getElementById('incAvatar').innerHTML =
-    caller.avatar_url ? `<img src="${escapeHtml(caller.avatar_url)}" alt="${escapeHtml(name)}'s avatar" onerror="this.style.display='none'">` : initial;
+    caller.avatar_url ? `<img src="${escapeHtml(caller.avatar_url)}" alt="" onerror="this.style.display='none'">` : initial;
   document.getElementById('incType').textContent =
     call.call_type === 'video' ? '📹 Incoming video call' : '📞 Incoming voice call';
 
@@ -2737,9 +2786,7 @@ function createPeerConnection() {
 }
 
 async function handleOffer(payload) {
-  if (!peerConnection) {
-    createPeerConnection();
-  }
+  if (!peerConnection) createPeerConnection();
   try {
     const offer = new RTCSessionDescription(payload);
     await peerConnection.setRemoteDescription(offer);
@@ -2787,37 +2834,52 @@ async function handleIce(payload) {
   }
 }
 
-/* ============ Local media WITH permission detection ============ */
+/* ============ Local media WITH FULL PERMISSION HANDLING ============ */
 async function acquireLocalMedia(type) {
   try {
+    // 1. Check browser support
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       showPermissionBanner('Your browser does not support voice/video calls');
       throw new Error('getUserMedia not supported');
     }
 
+    // 2. Check HTTPS (required by browser)
+    if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+      showPermissionBanner('Calls require HTTPS. Open via https://aiarizonan.com');
+      throw new Error('HTTPS required');
+    }
+
+    // 3. Try the actual media request
     const constraints = type === 'video'
       ? { audio: true, video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' } }
       : { audio: true, video: false };
 
     localStream = await navigator.mediaDevices.getUserMedia(constraints);
+    console.log('[Media] Granted tracks:', localStream.getTracks().map(t => t.kind));
 
+    // 4. Show local video for video calls
     if (type === 'video') {
       const localEl = document.getElementById('localVideo');
       localEl.srcObject = localStream;
       localEl.style.display = 'block';
       localEl.muted = true;
     }
+
+    // 5. Hide any stale permission banner
+    hidePermissionBanner();
+
   } catch (err) {
-    console.error('[Media]', err);
+    console.error('[Media] Error:', err.name, '-', err.message);
+
     const name = err?.name || '';
 
     if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
       showPermissionBanner(
         type === 'video'
-          ? 'Camera & microphone permission denied'
-          : 'Microphone permission denied'
+          ? 'Camera & mic blocked — click "How to fix" to enable'
+          : 'Microphone blocked — click "How to fix" to enable'
       );
-      toast('Permission denied — check browser settings');
+      toast('Permission denied. Click "How to fix"');
     } else if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
       showPermissionBanner(
         type === 'video'
@@ -2826,20 +2888,21 @@ async function acquireLocalMedia(type) {
       );
       toast('No device found');
     } else if (name === 'NotReadableError' || name === 'TrackStartError') {
-      showPermissionBanner('Microphone/camera is already in use by another app');
-      toast('Device is busy — close other apps');
+      showPermissionBanner('Mic/camera is in use by another app. Close other apps and try again.');
+      toast('Device busy');
     } else if (name === 'OverconstrainedError') {
-      showPermissionBanner('Your device does not meet camera requirements');
+      showPermissionBanner('Your camera does not meet requirements. Try a voice call instead.');
       toast('Camera not supported');
+    } else if (name === 'AbortError') {
+      showPermissionBanner('Call was interrupted. Please try again.');
     } else {
-      showPermissionBanner('Cannot access microphone/camera');
-      toast('Access failed — try again');
+      showPermissionBanner('Cannot access mic/camera: ' + (err.message || 'unknown error'));
     }
     throw err;
   }
 }
 
-/* ============ Permission Banner Helpers ============ */
+/* ============ Permission Banner ============ */
 function showPermissionBanner(customText) {
   const banner = document.getElementById('callPermissionBanner');
   if (!banner) return;
@@ -2848,7 +2911,7 @@ function showPermissionBanner(customText) {
   }
   banner.classList.add('show');
   clearTimeout(window._permBannerTimer);
-  window._permBannerTimer = setTimeout(hidePermissionBanner, 8000);
+  window._permBannerTimer = setTimeout(hidePermissionBanner, 12000);
 }
 
 function hidePermissionBanner() {
@@ -2856,12 +2919,20 @@ function hidePermissionBanner() {
   if (banner) banner.classList.remove('show');
 }
 
+function showPermissionHelp() {
+  document.getElementById('permissionHelpModal').classList.add('active');
+}
+function closePermissionHelp(e) {
+  if (e && e.target && e.target.id !== 'permissionHelpModal') return;
+  document.getElementById('permissionHelpModal').classList.remove('active');
+}
+
 /* ============ Call Screen ============ */
 function showCallScreen(partner, type, statusText, isCaller) {
   const name = partner.display_name || partner.username || 'User';
   const initial = name.charAt(0).toUpperCase();
   const avatarHtml = partner.avatar_url
-    ? `<img src="${escapeHtml(partner.avatar_url)}" alt="${escapeHtml(name)}'s avatar" onerror="this.style.display='none'">`
+    ? `<img src="${escapeHtml(partner.avatar_url)}" alt="" onerror="this.style.display='none'">`
     : initial;
 
   document.getElementById('callAvatar').innerHTML = avatarHtml;
@@ -2869,6 +2940,7 @@ function showCallScreen(partner, type, statusText, isCaller) {
   document.getElementById('callRemoteName').textContent = name;
   document.getElementById('callStatus').textContent = statusText;
   document.getElementById('callStatus').classList.add('ringing');
+  document.getElementById('callStatus').style.display = '';
   document.getElementById('callTimer').textContent = '00:00';
 
   document.getElementById('remoteVideo').style.display = 'none';
@@ -3102,6 +3174,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     document.getElementById('imgViewer').classList.remove('active');
     document.getElementById('lpOverlay').classList.remove('active');
+    document.getElementById('permissionHelpModal').classList.remove('active');
     cancelRecording();
   }
 });
@@ -3110,7 +3183,6 @@ document.addEventListener('keydown', e => {
    CLEANUP ON UNLOAD
    ============================================================ */
 window.addEventListener('beforeunload', () => {
-  // Stop any active call gracefully
   try {
     if (callState !== 'idle' || peerConnection || localStream) {
       if (currentCall && currentUser) {
@@ -3129,7 +3201,6 @@ window.addEventListener('beforeunload', () => {
     }
   } catch (e) {}
 
-  // Clean up realtime channels
   try {
     if (realtimeDM) supabaseClient.removeChannel(realtimeDM);
     if (realtimeTribe) supabaseClient.removeChannel(realtimeTribe);
@@ -3138,7 +3209,6 @@ window.addEventListener('beforeunload', () => {
   } catch (e) {}
 });
 
-// Stop tracks when page hidden for a long time
 document.addEventListener('visibilitychange', () => {
   if (document.hidden && callState === 'idle') {
     if (localStream) {
