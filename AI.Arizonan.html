@@ -163,9 +163,8 @@ body {
   border-radius: 18px;
   font-size: 14.5px; line-height: 1.5;
   word-wrap: break-word; overflow-wrap: anywhere;
-  white-space: pre-wrap;
 }
-.msg.user .bubble { background: linear-gradient(135deg,#FF6B35,#FFB20F); color: #fff; border-bottom-right-radius: 5px; }
+.msg.user .bubble { background: linear-gradient(135deg,#FF6B35,#FFB20F); color: #fff; border-bottom-right-radius: 5px; white-space: pre-wrap; }
 .msg.bot .bubble {
   background: rgba(94,184,255,.1);
   border: 1px solid rgba(94,184,255,.22);
@@ -183,6 +182,58 @@ body {
   0%, 50% { opacity: 1; }
   51%, 100% { opacity: 0; }
 }
+
+/* Markdown content inside bubble */
+.msg .bubble h1, .msg .bubble h2, .msg .bubble h3 {
+  margin: 10px 0 6px; font-size: 15px; color: #fff;
+}
+.msg .bubble h1 { font-size: 17px; }
+.msg .bubble h2 { font-size: 16px; }
+.msg .bubble p { margin: 6px 0; }
+.msg .bubble p:first-child { margin-top: 0; }
+.msg .bubble p:last-child { margin-bottom: 0; }
+.msg .bubble ul, .msg .bubble ol { margin: 6px 0; padding-left: 20px; }
+.msg .bubble li { margin-bottom: 3px; }
+.msg .bubble strong { font-weight: 800; color: #fff; }
+.msg .bubble em { font-style: italic; opacity: .9; }
+.msg .bubble a { color: #5eb8ff; text-decoration: underline; }
+.msg .bubble code {
+  background: rgba(0,0,0,.4);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: 'SF Mono', Menlo, monospace;
+  font-size: 13px;
+  color: #FFB20F;
+}
+.msg .bubble pre {
+  background: rgba(0,0,0,.5);
+  border: 1px solid rgba(94,184,255,.2);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 8px 0;
+  overflow-x: auto;
+  position: relative;
+}
+.msg .bubble pre code {
+  background: none;
+  padding: 0;
+  color: #e0f2ff;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+.msg .bubble pre .copy-code {
+  position: absolute;
+  top: 6px; right: 6px;
+  background: rgba(94,184,255,.15);
+  border: 1px solid rgba(94,184,255,.4);
+  color: #5eb8ff;
+  border-radius: 8px;
+  padding: 3px 8px;
+  font-size: 10px; font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.msg .bubble pre .copy-code:active { background: rgba(94,184,255,.3); }
 
 .msg .bubble .media {
   display: block; width: 100%;
@@ -212,6 +263,24 @@ body {
   margin-top: 2px; padding-left: 2px; letter-spacing: 0.3px;
 }
 .powered-by i { color: #FFB20F; font-size: 10px; }
+
+/* ==================== SUGGESTED REPLIES ==================== */
+.suggested-replies {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  margin-top: 6px;
+}
+.suggested-replies button {
+  background: rgba(94,184,255,.08);
+  border: 1px solid rgba(94,184,255,.3);
+  color: #5eb8ff;
+  border-radius: 16px;
+  padding: 6px 12px;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .15s;
+}
+.suggested-replies button:active { transform: scale(.96); background: rgba(94,184,255,.2); }
 
 /* ==================== REPLY ACTIONS ==================== */
 .reply-actions {
@@ -268,9 +337,7 @@ body {
 }
 .welcome p { color: rgba(255,255,255,.55); font-size: 13px; margin: 0 0 20px; line-height: 1.5; }
 
-.welcome .prompts-section {
-  margin-top: 18px; text-align: left;
-}
+.welcome .prompts-section { margin-top: 18px; text-align: left; }
 .welcome .prompts-section h3 {
   font-size: 11px; font-weight: 800;
   color: rgba(255,255,255,.4);
@@ -279,9 +346,7 @@ body {
   display: flex; align-items: center; gap: 6px;
 }
 .welcome .prompts-section h3 i { color: #5eb8ff; }
-.welcome .prompt-chips {
-  display: flex; flex-direction: column; gap: 6px;
-}
+.welcome .prompt-chips { display: flex; flex-direction: column; gap: 6px; }
 .chip {
   background: rgba(94,184,255,.06);
   border: 1px solid rgba(94,184,255,.22);
@@ -322,6 +387,7 @@ body {
   border-top: 1px solid rgba(94,184,255,.2);
   gap: 10px; align-items: center;
   flex-shrink: 0;
+  overflow-x: auto;
 }
 .attach-preview.active { display: flex; }
 .attach-preview .thumb {
@@ -329,6 +395,7 @@ body {
   background: #000; overflow: hidden; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   color: #5eb8ff; font-size: 18px;
+  position: relative;
 }
 .attach-preview .thumb img,
 .attach-preview .thumb video { width: 100%; height: 100%; object-fit: cover; }
@@ -474,11 +541,14 @@ body {
   font-size: 13px; color: rgba(255,255,255,.75);
   margin-bottom: 2px;
   transition: background .15s;
+  position: relative;
 }
 .chat-item:active { background: rgba(94,184,255,.15); }
 .chat-item.active { background: rgba(94,184,255,.15); color: #5eb8ff; }
+.chat-item.pinned { background: rgba(255,178,15,.08); }
 .chat-item i { color: rgba(255,255,255,.4); font-size: 13px; flex-shrink: 0; }
 .chat-item.active i { color: #5eb8ff; }
+.chat-item.pinned i { color: #FFB20F; }
 .chat-item .title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .chat-item .del {
   background: none; border: none; color: rgba(255,255,255,.3);
@@ -501,7 +571,7 @@ body {
   text-align: center;
 }
 
-/* ==================== MODEL PICKER ==================== */
+/* ==================== MODEL / MODE PICKER ==================== */
 .model-picker {
   position: fixed; inset: 0;
   background: rgba(0,0,0,.85);
@@ -520,6 +590,7 @@ body {
   border: 1px solid rgba(94,184,255,.2);
   border-bottom: none;
   animation: slideUp .25s ease;
+  max-height: 90vh; overflow-y: auto;
 }
 @keyframes slideUp { from { transform: translateY(100%); } }
 .model-sheet .handle {
@@ -568,6 +639,30 @@ body {
 }
 .model-opt.selected .m-check {
   background: #5eb8ff; border-color: #5eb8ff;
+}
+
+/* AI Mode chips */
+.mode-chips {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.mode-chip {
+  padding: 7px 12px;
+  background: rgba(94,184,255,.06);
+  border: 1px solid rgba(94,184,255,.2);
+  color: rgba(255,255,255,.7);
+  border-radius: 16px;
+  font-size: 12px; font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex; align-items: center; gap: 4px;
+  transition: all .15s;
+}
+.mode-chip:active { transform: scale(.95); }
+.mode-chip.active {
+  background: rgba(94,184,255,.2);
+  border-color: #5eb8ff;
+  color: #5eb8ff;
 }
 
 /* ==================== IMAGE VIEWER ==================== */
@@ -696,18 +791,71 @@ body {
   box-shadow: 0 10px 30px rgba(255,107,53,.4);
 }
 .listening-overlay .stop-btn:active { transform: scale(.96); }
+
+/* ==================== EDIT BAR ==================== */
+.edit-bar {
+  display: none;
+  padding: 8px 12px;
+  background: rgba(255,178,15,.08);
+  border-top: 1px solid rgba(255,178,15,.3);
+  font-size: 12px;
+  color: #FFB20F;
+  align-items: center; gap: 10px;
+  flex-shrink: 0;
+}
+.edit-bar.active { display: flex; }
+.edit-bar i { font-size: 14px; }
+.edit-bar .edit-text { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.edit-bar button {
+  background: transparent; border: none;
+  color: #FFB20F; font-size: 16px;
+  cursor: pointer; padding: 4px;
+}
+
+/* Long-press menu for messages */
+.msg-actions-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.5);
+  backdrop-filter: blur(4px);
+  z-index: 300;
+  display: none;
+  align-items: flex-end; justify-content: center;
+  animation: fadeIn .15s;
+}
+@keyframes fadeIn { from { opacity: 0; } }
+.msg-actions-overlay.active { display: flex; }
+.msg-actions-menu {
+  background: #0f1525;
+  width: 100%; max-width: 480px;
+  border-top-left-radius: 20px; border-top-right-radius: 20px;
+  padding: 12px 0;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  animation: slideUp .2s ease;
+}
+.msg-action-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 22px;
+  color: #fff; font-size: 15px;
+  background: none; border: none; width: 100%;
+  text-align: left; cursor: pointer;
+  font-family: inherit;
+}
+.msg-action-item:active { background: rgba(255,255,255,.05); }
+.msg-action-item i { width: 22px; text-align: center; color: #5eb8ff; font-size: 16px; }
+.msg-action-item.danger { color: #ff7675; }
+.msg-action-item.danger i { color: #ff7675; }
 </style>
 </head>
 <body>
 
 <div class="app" id="appShell" style="display:none;">
 
-  <!-- ==================== TOP BAR ==================== -->
+  <!-- TOP BAR -->
   <header class="topbar">
-    <a href="index.html" class="icon-btn" aria-label="Back" title="Back to Home">
+    <a href="index.html" class="icon-btn" title="Back to Home">
       <i class="fas fa-arrow-left"></i>
     </a>
-    <button class="icon-btn" onclick="openDrawer()" aria-label="History" title="Chat History">
+    <button class="icon-btn" onclick="openDrawer()" title="Chat History">
       <i class="fas fa-bars"></i>
     </button>
     <div class="title">
@@ -719,7 +867,7 @@ body {
       <span id="modelLabel">Fast</span>
       <i class="fas fa-chevron-down" style="font-size:9px;"></i>
     </button>
-    <button class="icon-btn" onclick="startNewChat()" aria-label="New chat" title="New Chat">
+    <button class="icon-btn" onclick="startNewChat()" title="New Chat">
       <i class="fas fa-plus"></i>
     </button>
     <a href="profile.html" class="user-av" id="topUserAv" title="My Profile">
@@ -727,61 +875,61 @@ body {
     </a>
   </header>
 
-  <!-- ==================== STATUS BAR ==================== -->
+  <!-- STATUS BAR -->
   <div class="status-bar">
     <div class="pill" id="quotaPill">
       <i class="fas fa-image"></i>
       <span id="quotaText">4/4 images</span>
     </div>
-    <button class="toggle" id="voiceToggle" onclick="toggleAutoVoice()">
+    <button class="toggle" onclick="toggleAutoVoice()">
       <div class="pill" id="voicePill">
         <i class="fas fa-volume-up"></i>
         <span id="voiceLabel">Voice ON</span>
       </div>
     </button>
-    <div class="pill on" id="streamPill">
-      <i class="fas fa-bolt"></i>
-      <span>Streaming</span>
-    </div>
-  </div>
-
-  <!-- ==================== MESSAGES ==================== -->
-  <div class="messages" id="messages"></div>
-
-  <!-- ==================== ATTACHMENT PREVIEW ==================== -->
-  <div class="attach-preview" id="attachPreview">
-    <div class="thumb" id="attachThumb"></div>
-    <div class="info">
-      <div class="name" id="attachName">file.jpg</div>
-      <div class="meta" id="attachSize">120 KB</div>
-    </div>
-    <button class="remove" onclick="clearAttachment()" aria-label="Remove">
-      <i class="fas fa-times"></i>
+    <button class="toggle" onclick="openModelPicker()">
+      <div class="pill">
+        <i class="fas fa-sliders-h"></i>
+        <span id="modeLabel">Chat</span>
+      </div>
     </button>
   </div>
 
-  <!-- ==================== INPUT ==================== -->
+  <!-- MESSAGES -->
+  <div class="messages" id="messages"></div>
+
+  <!-- ATTACHMENT PREVIEW -->
+  <div class="attach-preview" id="attachPreview"></div>
+
+  <!-- EDIT BAR -->
+  <div class="edit-bar" id="editBar">
+    <i class="fas fa-pen"></i>
+    <span class="edit-text" id="editText"></span>
+    <button onclick="cancelEdit()"><i class="fas fa-times"></i></button>
+  </div>
+
+  <!-- INPUT -->
   <div class="input-wrap">
     <div class="input-inner">
-      <button class="icon-inline" onclick="pickFile()" aria-label="Attach" title="Attach image">
+      <button class="icon-inline" onclick="pickFile()" title="Attach image">
         <i class="fas fa-paperclip"></i>
       </button>
       <textarea id="chatInput" rows="1" placeholder="Message AI.Arizonan…"
                 oninput="autoResize(this)"
                 onkeydown="handleKey(event)"></textarea>
-      <button class="icon-inline" id="voiceBtn" onclick="startVoiceInput()" aria-label="Voice input" title="Speak">
+      <button class="icon-inline" id="voiceBtn" onclick="startVoiceInput()" title="Speak">
         <i class="fas fa-microphone"></i>
       </button>
-      <button class="send-btn" id="sendBtn" onclick="sendMessage()" aria-label="Send">
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()">
         <i class="fas fa-arrow-up"></i>
       </button>
     </div>
   </div>
 
-  <input type="file" id="fileInput" accept="image/*" style="display:none;">
+  <input type="file" id="fileInput" accept="image/*" multiple style="display:none;">
 </div>
 
-<!-- ==================== AUTH WALL ==================== -->
+<!-- AUTH WALL -->
 <div class="auth-wall" id="authWall" style="display:none;">
   <div class="icon"><i class="fas fa-robot"></i></div>
   <h2>Sign in to chat with AI.Arizonan</h2>
@@ -790,7 +938,7 @@ body {
   <a href="register.html" class="outline"><i class="fas fa-user-plus"></i> Create Free Account</a>
 </div>
 
-<!-- ==================== DRAWER ==================== -->
+<!-- DRAWER -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 <aside class="drawer" id="drawer">
   <div class="drawer-head">
@@ -812,11 +960,34 @@ body {
   </div>
 </aside>
 
-<!-- ==================== MODEL PICKER ==================== -->
+<!-- MODEL + MODE PICKER -->
 <div class="model-picker" id="modelPicker" onclick="closeModelPicker(event)">
   <div class="model-sheet" onclick="event.stopPropagation()">
     <div class="handle"></div>
-    <h3>Choose AI Model</h3>
+
+    <h3>AI Mode</h3>
+    <div class="mode-chips" id="modeChips">
+      <button class="mode-chip active" data-mode="chat" onclick="selectMode('chat', this)">
+        <i class="fas fa-comments"></i> Chat
+      </button>
+      <button class="mode-chip" data-mode="concise" onclick="selectMode('concise', this)">
+        <i class="fas fa-bolt"></i> Concise
+      </button>
+      <button class="mode-chip" data-mode="detailed" onclick="selectMode('detailed', this)">
+        <i class="fas fa-book"></i> Detailed
+      </button>
+      <button class="mode-chip" data-mode="coder" onclick="selectMode('coder', this)">
+        <i class="fas fa-code"></i> Coder
+      </button>
+      <button class="mode-chip" data-mode="writer" onclick="selectMode('writer', this)">
+        <i class="fas fa-pen-fancy"></i> Writer
+      </button>
+      <button class="mode-chip" data-mode="tutor" onclick="selectMode('tutor', this)">
+        <i class="fas fa-graduation-cap"></i> Tutor
+      </button>
+    </div>
+
+    <h3 style="margin-top: 20px;">AI Model</h3>
 
     <div class="model-opt selected" data-model="fast" onclick="selectModel('fast', this)">
       <div class="m-icon fast"><i class="fas fa-bolt"></i></div>
@@ -856,13 +1027,13 @@ body {
   </div>
 </div>
 
-<!-- ==================== IMAGE VIEWER ==================== -->
+<!-- IMAGE VIEWER -->
 <div class="image-viewer" id="imageViewer" onclick="closeImageViewer()">
   <button class="close"><i class="fas fa-times"></i></button>
   <img id="imageViewerImg" src="" alt="">
 </div>
 
-<!-- ==================== LISTENING OVERLAY ==================== -->
+<!-- LISTENING OVERLAY -->
 <div class="listening-overlay" id="listeningOverlay">
   <div class="mic-circle"><i class="fas fa-microphone"></i></div>
   <h3>Listening…</h3>
@@ -873,7 +1044,12 @@ body {
   </button>
 </div>
 
-<!-- ==================== TOAST ==================== -->
+<!-- MESSAGE ACTIONS OVERLAY -->
+<div class="msg-actions-overlay" id="msgActionsOverlay" onclick="closeMsgActions(event)">
+  <div class="msg-actions-menu" id="msgActionsMenu" onclick="event.stopPropagation()"></div>
+</div>
+
+<!-- TOAST -->
 <div class="toast-mini" id="toastMini"></div>
 
 <script src="auth.js"></script>
@@ -886,15 +1062,17 @@ let currentChatTitle = 'AI.Arizonan';
 let messages = [];
 let allChats = [];
 let isSending = false;
-let pendingFile = null;
-let pendingFileUrl = null;
+let pendingFiles = [];        // multiple images
+let pendingFileUrls = [];
 let imagesUsedToday = 0;
 let reactions = {};
+let userProfile = null;       // Option C: AI memory
 const DAILY_IMAGE_LIMIT = 4;
 
-// Model
 let currentModel = 'fast';
+let currentMode = 'chat';
 const MODEL_LABELS = { fast: 'Fast', vision: 'Vision', smart: 'Smart', image: 'Image' };
+const MODE_LABELS = { chat: 'Chat', concise: 'Concise', detailed: 'Detailed', coder: 'Coder', writer: 'Writer', tutor: 'Tutor' };
 
 // Voice input
 let recognition = null;
@@ -906,8 +1084,8 @@ let autoVoice = localStorage.getItem('az_auto_voice') !== 'off';
 let currentUtterance = null;
 let currentSpeakingBtn = null;
 
-// Streaming
-let currentStreamAbort = null;
+// Edit state
+let editingMessageIndex = -1;
 
 /* ============================================================
    INIT
@@ -924,6 +1102,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (fileInput) fileInput.addEventListener('change', onFilePicked);
 
   updateVoiceToggleUI();
+
+  // Restore mode
+  currentMode = localStorage.getItem('az_ai_mode') || 'chat';
+  const modeChip = document.querySelector(`.mode-chip[data-mode="${currentMode}"]`);
+  if (modeChip) modeChip.classList.add('active');
+  document.getElementById('modeLabel').textContent = MODE_LABELS[currentMode];
 });
 
 async function initChat() {
@@ -936,20 +1120,104 @@ async function initChat() {
   document.getElementById('appShell').style.display = 'flex';
   document.getElementById('authWall').style.display = 'none';
 
-  // Top avatar
   const avEl = document.getElementById('topUserAv');
   const avatarUrl = currentProfile?.avatar_url;
   if (avatarUrl) {
-    avEl.innerHTML = `<img src="${escapeHtml(avatarUrl)}" alt="">`;
+    avEl.innerHTML = `<img src="${escapeHtml(avatarUrl)}" alt="" onerror="this.style.display='none'">`;
   } else {
     const initial = (currentProfile?.username || currentUser.email || 'U').charAt(0).toUpperCase();
     avEl.innerHTML = initial;
   }
 
-  await loadImageQuota();
-  await loadChatsList();
+  await Promise.all([
+    loadImageQuota(),
+    loadChatsList(),
+    loadUserProfile(),
+  ]);
   await startNewChat();
   setTimeout(() => document.getElementById('chatInput').focus(), 300);
+}
+
+/* ============================================================
+   USER PROFILE (MEMORY - Option C)
+   ============================================================ */
+async function loadUserProfile() {
+  if (!currentUser) return;
+  try {
+    const { data } = await supabaseClient
+      .from('ai_user_profile')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .maybeSingle();
+
+    if (!data) {
+      // Create empty profile
+      const { data: created } = await supabaseClient
+        .from('ai_user_profile')
+        .insert({ user_id: currentUser.id, facts: [], preferences: {} })
+        .select()
+        .single();
+      userProfile = created || { facts: [], preferences: {} };
+    } else {
+      userProfile = data;
+    }
+  } catch (e) {
+    console.warn('[AI Profile]', e);
+    userProfile = { facts: [], preferences: {} };
+  }
+}
+
+async function saveUserProfile() {
+  if (!currentUser || !userProfile) return;
+  try {
+    await supabaseClient
+      .from('ai_user_profile')
+      .update({
+        facts: userProfile.facts || [],
+        preferences: userProfile.preferences || {},
+        updated_at: new Date().toISOString()
+      })
+      .eq('user_id', currentUser.id);
+  } catch (e) {}
+}
+
+// Simple fact detection from user messages
+async function learnFromMessage(text) {
+  if (!text || !userProfile) return;
+  const t = text.toLowerCase();
+  const facts = userProfile.facts || [];
+
+  const addFact = (key, value) => {
+    const existing = facts.find(f => f.key === key);
+    if (existing) existing.value = value;
+    else facts.push({ key, value, source: 'chat' });
+  };
+
+  // Detect name
+  const nameMatch = t.match(/(?:my name is|i am|i'm|call me)\s+([a-z\u0600-\u06FF]+)/i);
+  if (nameMatch) addFact('name', nameMatch[1]);
+
+  // Detect role/profession
+  if (t.includes("i'm a developer") || t.includes('i am a developer') || t.includes('i code')) {
+    addFact('role', 'developer');
+  }
+  if (t.includes("i'm a designer") || t.includes('i am a designer')) {
+    addFact('role', 'designer');
+  }
+  if (t.includes("i'm a student") || t.includes('i am a student')) {
+    addFact('role', 'student');
+  }
+
+  // Detect preferences
+  if (t.includes('keep it short') || t.includes('be brief') || t.includes('be concise')) {
+    userProfile.preferences = { ...(userProfile.preferences||{}), length: 'short' };
+  }
+  if (t.includes('explain more') || t.includes('be detailed')) {
+    userProfile.preferences = { ...(userProfile.preferences||{}), length: 'detailed' };
+  }
+
+  userProfile.facts = facts;
+  await saveUserProfile();
 }
 
 /* ============================================================
@@ -963,9 +1231,7 @@ async function loadImageQuota() {
     });
     if (error) throw error;
     imagesUsedToday = data || 0;
-    updateQuotaBadge();
   } catch (e) {
-    // fallback: count from table
     try {
       const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
       const { count } = await supabaseClient
@@ -974,9 +1240,9 @@ async function loadImageQuota() {
         .eq('user_id', currentUser.id)
         .gte('created_at', since);
       imagesUsedToday = count || 0;
-      updateQuotaBadge();
     } catch (e2) {}
   }
+  updateQuotaBadge();
 }
 
 function updateQuotaBadge() {
@@ -1002,12 +1268,15 @@ async function registerImageUse(prompt) {
 }
 
 /* ============================================================
-   MODEL PICKER
+   MODEL / MODE PICKER
    ============================================================ */
 function openModelPicker() {
   document.getElementById('modelPicker').classList.add('active');
   document.querySelectorAll('.model-opt').forEach(o => {
     o.classList.toggle('selected', o.dataset.model === currentModel);
+  });
+  document.querySelectorAll('.mode-chip').forEach(o => {
+    o.classList.toggle('active', o.dataset.mode === currentMode);
   });
 }
 function closeModelPicker(e) {
@@ -1019,8 +1288,15 @@ function selectModel(model, el) {
   document.getElementById('modelLabel').textContent = MODEL_LABELS[model] || 'Fast';
   document.querySelectorAll('.model-opt').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
-  setTimeout(() => document.getElementById('modelPicker').classList.remove('active'), 200);
-  toast(`Switched to ${MODEL_LABELS[model]}`);
+  toast(`Model: ${MODEL_LABELS[model]}`);
+}
+function selectMode(mode, el) {
+  currentMode = mode;
+  localStorage.setItem('az_ai_mode', mode);
+  document.querySelectorAll('.mode-chip').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('modeLabel').textContent = MODE_LABELS[mode];
+  toast(`Mode: ${MODE_LABELS[mode]}`);
 }
 
 /* ============================================================
@@ -1065,8 +1341,9 @@ async function loadChatsList() {
   try {
     const { data, error } = await supabaseClient
       .from('ai_chats')
-      .select('id, title, updated_at, created_at')
+      .select('id, title, is_pinned, updated_at, created_at')
       .eq('user_id', currentUser.id)
+      .order('is_pinned', { ascending: false })
       .order('updated_at', { ascending: false })
       .limit(100);
     if (error) throw error;
@@ -1096,13 +1373,17 @@ function renderDrawerList() {
     return;
   }
 
+  // Pinned chats first
+  const pinned = filtered.filter(c => c.is_pinned);
+  const unpinned = filtered.filter(c => !c.is_pinned);
+
   const groups = { today: [], yesterday: [], week: [], older: [] };
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const yesterdayStart = new Date(todayStart.getTime() - 86400000);
   const weekStart = new Date(todayStart.getTime() - 7 * 86400000);
 
-  filtered.forEach(c => {
+  unpinned.forEach(c => {
     const d = new Date(c.updated_at || c.created_at);
     if (d >= todayStart) groups.today.push(c);
     else if (d >= yesterdayStart) groups.yesterday.push(c);
@@ -1111,6 +1392,9 @@ function renderDrawerList() {
   });
 
   let html = '';
+  if (pinned.length > 0) {
+    html += `<div class="chat-group-label">📌 Pinned</div>` + pinned.map(renderChatItem).join('');
+  }
   if (groups.today.length)     html += `<div class="chat-group-label">Today</div>`     + groups.today.map(renderChatItem).join('');
   if (groups.yesterday.length) html += `<div class="chat-group-label">Yesterday</div>` + groups.yesterday.map(renderChatItem).join('');
   if (groups.week.length)      html += `<div class="chat-group-label">This Week</div>` + groups.week.map(renderChatItem).join('');
@@ -1120,14 +1404,44 @@ function renderDrawerList() {
 }
 
 function renderChatItem(c) {
+  const icon = c.is_pinned ? 'fas fa-thumbtack' : 'far fa-comment';
   return `
-    <div class="chat-item ${c.id === currentChatId ? 'active' : ''}" onclick="openChat('${c.id}')">
-      <i class="far fa-comment"></i>
+    <div class="chat-item ${c.id === currentChatId ? 'active' : ''} ${c.is_pinned ? 'pinned' : ''}"
+         onclick="openChat('${c.id}')"
+         oncontextmenu="event.preventDefault(); chatItemMenu('${c.id}', event); return false;">
+      <i class="${icon}"></i>
       <span class="title">${escapeHtml(c.title || 'New chat')}</span>
       <button class="del" onclick="event.stopPropagation(); deleteChat('${c.id}')">
         <i class="fas fa-trash"></i>
       </button>
     </div>`;
+}
+
+async function chatItemMenu(chatId, event) {
+  const chat = allChats.find(c => c.id === chatId);
+  if (!chat) return;
+  const action = prompt(
+    `Chat: ${chat.title}\n\nType:\n1 = Rename\n2 = ${chat.is_pinned ? 'Unpin' : 'Pin'}\n3 = Cancel`,
+    chat.is_pinned ? '2' : '2'
+  );
+  if (action === '1') {
+    const newTitle = prompt('New title:', chat.title);
+    if (newTitle && newTitle.trim()) {
+      await supabaseClient.from('ai_chats').update({ title: newTitle.trim() }).eq('id', chatId);
+      chat.title = newTitle.trim();
+      if (currentChatId === chatId) {
+        currentChatTitle = newTitle.trim();
+        document.getElementById('chatTitle').textContent = currentChatTitle;
+      }
+      renderDrawerList();
+    }
+  } else if (action === '2') {
+    await supabaseClient.from('ai_chats').update({ is_pinned: !chat.is_pinned }).eq('id', chatId);
+    chat.is_pinned = !chat.is_pinned;
+    toast(chat.is_pinned ? '📌 Pinned' : 'Unpinned');
+    await loadChatsList();
+    renderDrawerList();
+  }
 }
 
 /* ============================================================
@@ -1139,6 +1453,7 @@ async function startNewChat() {
   currentChatTitle = 'AI.Arizonan';
   document.getElementById('chatTitle').textContent = 'AI.Arizonan';
   clearAttachment();
+  cancelEdit();
   renderWelcome();
   renderDrawerList();
   closeDrawer();
@@ -1194,7 +1509,53 @@ async function createChatIfNeeded(firstMessage) {
   currentChatTitle = title;
   document.getElementById('chatTitle').textContent = title;
   await loadChatsList();
+
+  // 🔥 AI-generated smart title
+  generateSmartTitle(title, data.id);
+
   return currentChatId;
+}
+
+async function generateSmartTitle(firstMessage, chatId) {
+  // Simple heuristic — extract key nouns
+  const t = (firstMessage || '').trim();
+  if (!t || t.length > 80) return;
+
+  try {
+    const payload = {
+      messages: [{
+        role: 'user',
+        content: `Create a 2-4 word title for a chat that starts with: "${t}". Only return the title, nothing else, no quotes.`
+      }],
+      model: 'fast',
+      stream: false,
+      mode: 'concise',
+      lang: 'en',
+    };
+    const session = await supabaseClient.auth.getSession();
+    const accessToken = session?.data?.session?.access_token;
+    const url = `${SUPABASE_URL}/functions/v1/ai-chat`;
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+    const data = await resp.json();
+    const smartTitle = (data.reply || '').trim().replace(/^["']|["']$/g, '').slice(0, 40);
+    if (smartTitle && smartTitle.length > 2) {
+      await supabaseClient.from('ai_chats').update({ title: smartTitle }).eq('id', chatId);
+      const chat = allChats.find(c => c.id === chatId);
+      if (chat) chat.title = smartTitle;
+      if (currentChatId === chatId) {
+        currentChatTitle = smartTitle;
+        document.getElementById('chatTitle').textContent = smartTitle;
+      }
+      renderDrawerList();
+    }
+  } catch (e) {}
 }
 
 /* ============================================================
@@ -1238,17 +1599,85 @@ async function saveReactionToDB(msgIndex, reaction, active) {
 }
 
 /* ============================================================
+   MARKDOWN RENDERER
+   ============================================================ */
+function renderMarkdown(text) {
+  if (!text) return '';
+  let html = escapeHtml(text);
+
+  // Code blocks first (to protect their content)
+  const codeBlocks = [];
+  html = html.replace(/```([a-z]*)\n?([\s\S]*?)```/g, (m, lang, code) => {
+    const idx = codeBlocks.length;
+    codeBlocks.push({ lang, code });
+    return `__CODEBLOCK_${idx}__`;
+  });
+
+  // Inline code
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+  // Bold
+  html = html.replace(/\*\*([^\*]+)\*\*/g, '<strong>$1</strong>');
+  // Italic
+  html = html.replace(/(^|[^\*])\*([^\*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
+
+  // Headers
+  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+
+  // Lists
+  html = html.replace(/^[\-\*] (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/(<li>.*<\/li>)(?![\s\S]*<li>)/, '<ul>$1</ul>');
+  // Group consecutive <li> into <ul>
+  html = html.replace(/(?:^|\n)((?:<li>.*<\/li>\n?)+)/g, (m, group) => `\n<ul>${group}</ul>`);
+
+  // Links
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+
+  // Paragraphs — convert line breaks
+  html = html.replace(/\n\n/g, '</p><p>');
+  html = html.replace(/\n/g, '<br>');
+
+  // Wrap text that isn't inside tags
+  if (!html.startsWith('<')) html = '<p>' + html + '</p>';
+
+  // Restore code blocks
+  html = html.replace(/__CODEBLOCK_(\d+)__/g, (m, idx) => {
+    const block = codeBlocks[parseInt(idx)];
+    if (!block) return '';
+    const escapedCode = escapeHtml(block.code);
+    return `<pre><button class="copy-code" onclick="copyCodeBlock(this)">Copy</button><code>${escapedCode}</code></pre>`;
+  });
+
+  return html;
+}
+
+function copyCodeBlock(btn) {
+  const pre = btn.parentElement;
+  const code = pre.querySelector('code');
+  if (code) {
+    navigator.clipboard.writeText(code.textContent).then(() => {
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+    });
+  }
+}
+
+/* ============================================================
    RENDER
    ============================================================ */
 function renderWelcome() {
   const name = currentProfile?.display_name || currentProfile?.username || currentUser?.email?.split('@')[0] || 'friend';
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
   const remaining = Math.max(0, DAILY_IMAGE_LIMIT - imagesUsedToday);
 
   document.getElementById('messages').innerHTML = `
     <div class="welcome">
       <div class="icon"><i class="fas fa-robot"></i></div>
-      <h1>Hi ${escapeHtml(name)}, I'm AI.Arizonan</h1>
-      <p>Your AI assistant. Chat, generate images, analyze photos, and more.</p>
+      <h1>${greeting}, ${escapeHtml(name)}</h1>
+      <p>I'm AI.Arizonan. Ask me anything, generate images, analyze photos, write code, or translate — in any language.</p>
 
       <div class="prompts-section">
         <h3><i class="fas fa-sparkles"></i> Try these</h3>
@@ -1327,7 +1756,7 @@ function createMessageEl(msg, index) {
   if (isUser) {
     const avatarUrl = currentProfile?.avatar_url;
     const initial = (currentProfile?.username || currentUser?.email?.split('@')[0] || 'U').charAt(0).toUpperCase();
-    avHtml = avatarUrl ? `<img src="${escapeHtml(avatarUrl)}" alt="">` : initial;
+    avHtml = avatarUrl ? `<img src="${escapeHtml(avatarUrl)}" alt="" onerror="this.style.display='none'">` : initial;
   } else {
     avHtml = 'AI';
   }
@@ -1337,7 +1766,7 @@ function createMessageEl(msg, index) {
   if (msg.media_url) {
     const url = escapeHtml(msg.media_url);
     if (msg.media_type === 'image') {
-      mediaHtml = `<div class="media"><img src="${url}" alt="" loading="lazy" onclick="viewImage('${url}')"></div>`;
+      mediaHtml = `<div class="media"><img src="${url}" alt="" loading="lazy" onclick="viewImage('${url}')" onerror="this.style.display='none'"></div>`;
       mediaActions = `<div class="media-actions"><a href="${url}" download="arizona-ai-image.png" target="_blank" rel="noopener"><i class="fas fa-download"></i> Download</a></div>`;
     } else if (msg.media_type === 'video') {
       mediaHtml = `<div class="media"><video src="${url}" controls playsinline preload="metadata"></video></div>`;
@@ -1346,8 +1775,9 @@ function createMessageEl(msg, index) {
     }
   }
 
-  const textContent = msg.content ? escapeHtml(msg.content).replace(/\n/g, '<br>') : '';
-  const bubbleContent = textContent + mediaHtml;
+  const bubbleContent = isUser
+    ? (msg.content ? escapeHtml(msg.content).replace(/\n/g, '<br>') : '') + mediaHtml
+    : renderMarkdown(msg.content || '') + mediaHtml;
 
   const poweredBy = !isUser ? `
     <div class="powered-by">
@@ -1370,6 +1800,11 @@ function createMessageEl(msg, index) {
       <button class="dislike-btn ${dislikeActive ? 'active' : ''}" onclick="reactToMessage(${index}, 'dislike', this)" title="Not helpful">
         <i class="${dislikeActive ? 'fas' : 'far'} fa-thumbs-down"></i>
       </button>
+      ${index === messages.length - 1 ? `
+        <button onclick="regenerateMessage(${index})" title="Regenerate">
+          <i class="fas fa-redo"></i>
+        </button>
+      ` : ''}
       <button onclick="shareMessage(${index})" title="Share">
         <i class="far fa-paper-plane"></i>
       </button>
@@ -1379,7 +1814,15 @@ function createMessageEl(msg, index) {
       <button class="speak-btn" onclick="speakMessage(${index}, this)" title="Read aloud">
         <i class="fas fa-volume-up"></i>
       </button>
-    </div>` : '';
+    </div>` : `
+    <div class="reply-actions">
+      <button onclick="editMessage(${index})" title="Edit">
+        <i class="fas fa-pen"></i>
+      </button>
+      <button onclick="copyMessage(${index})" title="Copy">
+        <i class="far fa-copy"></i>
+      </button>
+    </div>`;
 
   div.innerHTML = `
     <div class="av">${avHtml}</div>
@@ -1390,6 +1833,160 @@ function createMessageEl(msg, index) {
       ${replyActions}
     </div>`;
   return div;
+}
+
+/* ============================================================
+   EDIT MESSAGE
+   ============================================================ */
+function editMessage(index) {
+  const msg = messages[index];
+  if (!msg || msg.role !== 'user') return;
+  editingMessageIndex = index;
+  const input = document.getElementById('chatInput');
+  input.value = msg.content || '';
+  autoResize(input);
+  document.getElementById('editBar').classList.add('active');
+  document.getElementById('editText').textContent = 'Editing your message';
+  input.focus();
+}
+
+function cancelEdit() {
+  editingMessageIndex = -1;
+  document.getElementById('editBar').classList.remove('active');
+  document.getElementById('chatInput').value = '';
+  autoResize(document.getElementById('chatInput'));
+}
+
+/* ============================================================
+   REGENERATE
+   ============================================================ */
+async function regenerateMessage(index) {
+  // Remove the last AI message + ask again
+  if (index !== messages.length - 1) return;
+  // Find the last user message before this
+  let lastUserIdx = -1;
+  for (let i = index - 1; i >= 0; i--) {
+    if (messages[i].role === 'user') { lastUserIdx = i; break; }
+  }
+  if (lastUserIdx < 0) { toast('Nothing to regenerate'); return; }
+
+  // Pop the last AI message
+  messages.pop();
+  renderMessages();
+
+  // Resend using stored user message
+  await resendFromIndex(lastUserIdx);
+}
+
+async function resendFromIndex(userIndex) {
+  const userMsg = messages[userIndex];
+  if (!userMsg) return;
+
+  // Build payload from messages up to user index
+  const payloadMessages = messages.slice(0, userIndex + 1).map(m => ({ role: m.role, content: m.content || '' }));
+
+  const container = document.getElementById('messages');
+  const typingEl = document.createElement('div');
+  typingEl.className = 'msg bot';
+  typingEl.innerHTML = `
+    <div class="av">AI</div>
+    <div class="body">
+      <div class="bubble" id="streamBubble">
+        <div class="typing"><span></span><span></span><span></span></div>
+      </div>
+    </div>`;
+  container.appendChild(typingEl);
+  container.scrollTop = container.scrollHeight;
+
+  isSending = true;
+  document.getElementById('sendBtn').disabled = true;
+
+  try {
+    const payload = {
+      messages: payloadMessages,
+      model: currentModel,
+      stream: true,
+      mode: currentMode,
+      lang: localStorage.getItem('az_lang') || navigator.language.split('-')[0] || 'en',
+      user_profile: userProfile,
+    };
+
+    const session = await supabaseClient.auth.getSession();
+    const accessToken = session?.data?.session?.access_token;
+    const url = `${SUPABASE_URL}/functions/v1/ai-chat`;
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const contentType = resp.headers.get('content-type') || '';
+    let fullText = '';
+    const bubbleEl = document.getElementById('streamBubble');
+
+    if (contentType.includes('text/event-stream')) {
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let buffer = '';
+      bubbleEl.classList.add('streaming');
+      bubbleEl.innerHTML = '';
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split('\n\n');
+        buffer = events.pop();
+        for (const evt of events) {
+          for (const line of evt.split('\n')) {
+            if (!line.startsWith('data:')) continue;
+            const data = line.slice(5).trim();
+            if (!data || data === '[DONE]') continue;
+            try {
+              const parsed = JSON.parse(data);
+              const delta = parsed?.choices?.[0]?.delta?.content;
+              if (delta) {
+                fullText += delta;
+                bubbleEl.innerHTML = renderMarkdown(fullText);
+                container.scrollTop = container.scrollHeight;
+              }
+            } catch(e) {}
+          }
+        }
+      }
+      bubbleEl.classList.remove('streaming');
+    } else {
+      const data = await resp.json();
+      fullText = data.reply || '';
+      typingEl.remove();
+    }
+
+    if (!fullText) fullText = 'No response.';
+    const assistantMsg = { role: 'assistant', content: fullText };
+    messages.push(assistantMsg);
+
+    try {
+      await supabaseClient.from('ai_messages').insert({
+        chat_id: currentChatId,
+        role: 'assistant',
+        content: fullText,
+        media_url: null,
+        media_type: null
+      });
+    } catch(e) {}
+
+    renderMessages();
+    autoSpeakLast();
+  } catch (err) {
+    console.error(err);
+    const t = document.getElementById('streamBubble');
+    if (t) t.parentElement.parentElement.remove();
+    messages.push({ role: 'assistant', content: '⚠️ Error. Please try again.' });
+    renderMessages();
+  } finally {
+    isSending = false;
+    document.getElementById('sendBtn').disabled = false;
+  }
 }
 
 /* ============================================================
@@ -1460,7 +2057,7 @@ function copyMessage(index) {
 }
 
 /* ============================================================
-   SPEAK (TTS)
+   SPEAK (TTS) — with language matching
    ============================================================ */
 function speakMessage(index, btn) {
   const msg = messages[index];
@@ -1484,6 +2081,8 @@ function speakMessage(index, btn) {
   }
 
   const cleanText = msg.content
+    .replace(/```[\s\S]*?```/g, '')
+    .replace(/[#*_`]/g, '')
     .replace(/\n+/g, '. ')
     .replace(/[🖼🎨🎥🎵🔊🎉👍❤️👎✅📋💡🔔💰🤖👋✨🚀😊]/g, '')
     .trim();
@@ -1491,11 +2090,15 @@ function speakMessage(index, btn) {
   const utterance = new SpeechSynthesisUtterance(cleanText);
   utterance.rate = 1;
   utterance.pitch = 1;
-  utterance.lang = 'en-US';
+
+  // Detect language from text
+  const detected = detectLanguage(cleanText);
+  const langMap = { ar: 'ar-SA', ku: 'ar-IQ', fa: 'fa-IR', tr: 'tr-TR', en: 'en-US' };
+  utterance.lang = langMap[detected] || 'en-US';
 
   const voices = window.speechSynthesis.getVoices();
-  const preferred = voices.find(v => v.name.includes('Google') && v.lang.startsWith('en'))
-                 || voices.find(v => v.lang.startsWith('en-US'))
+  const preferred = voices.find(v => v.lang.startsWith(detected === 'en' ? 'en' : detected))
+                 || voices.find(v => v.name.includes('Google') && v.lang.startsWith('en'))
                  || voices[0];
   if (preferred) utterance.voice = preferred;
 
@@ -1514,14 +2117,25 @@ function speakMessage(index, btn) {
   window.speechSynthesis.speak(utterance);
 }
 
-// Auto-speak helper for last bot message
+function detectLanguage(text) {
+  if (!text) return 'en';
+  // Simple script detection
+  if (/[\u0600-\u06FF]/.test(text)) {
+    // Arabic script — distinguish Arabic vs Persian vs Kurdish
+    if (/[پچژگک]/.test(text)) return 'fa';  // Persian-specific
+    if (/[ێڕۆڵ]/.test(text)) return 'ku';   // Kurdish-specific
+    return 'ar';
+  }
+  if (/[çğışöü]/i.test(text)) return 'tr';
+  return 'en';
+}
+
 function autoSpeakLast() {
   if (!autoVoice) return;
   const lastIndex = messages.length - 1;
   if (lastIndex < 0) return;
   const msg = messages[lastIndex];
   if (!msg || msg.role !== 'assistant' || !msg.content) return;
-  // Give the DOM a moment
   setTimeout(() => {
     const buttons = document.querySelectorAll('.reply-actions .speak-btn');
     const btn = buttons[buttons.length - 1];
@@ -1534,15 +2148,14 @@ function autoSpeakLast() {
    ============================================================ */
 function startVoiceInput() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) {
-    toast('Voice input not supported in this browser');
-    return;
-  }
+  if (!SR) { toast('Voice input not supported'); return; }
 
   if (isListening) { stopVoiceInput(); return; }
 
   recognition = new SR();
-  recognition.lang = 'en-US';
+  const lang = localStorage.getItem('az_lang') || navigator.language || 'en-US';
+  const langMap = { en: 'en-US', ar: 'ar-SA', ku: 'ar-IQ', fa: 'fa-IR', tr: 'tr-TR' };
+  recognition.lang = langMap[lang] || lang;
   recognition.continuous = true;
   recognition.interimResults = true;
   recognition.maxAlternatives = 1;
@@ -1582,10 +2195,7 @@ function startVoiceInput() {
 
   try {
     recognition.start();
-  } catch (e) {
-    console.error(e);
-    toast('Could not start voice input');
-  }
+  } catch (e) { toast('Could not start voice input'); }
 }
 
 function stopVoiceInput() {
@@ -1608,47 +2218,67 @@ function stopVoiceInput() {
 }
 
 /* ============================================================
-   FILE PICKER
+   FILE PICKER (MULTI)
    ============================================================ */
 function pickFile() {
   document.getElementById('fileInput').click();
 }
 
 function onFilePicked(event) {
-  const file = event.target.files[0];
-  if (!file) return;
+  const files = Array.from(event.target.files || []);
+  if (!files.length) return;
 
-  const maxMB = 10;
-  if (file.size > maxMB * 1024 * 1024) {
-    toast(`Image must be under ${maxMB} MB`);
-    event.target.value = '';
-    return;
-  }
-  if (!file.type.startsWith('image/')) {
-    toast('Only images are supported for AI analysis');
-    event.target.value = '';
-    return;
+  for (const file of files) {
+    if (file.size > 10 * 1024 * 1024) { toast(`${file.name} > 10 MB`); continue; }
+    if (!file.type.startsWith('image/')) { toast('Only images'); continue; }
+    if (pendingFiles.length >= 4) { toast('Max 4 images'); break; }
+
+    pendingFiles.push(file);
+    pendingFileUrls.push(URL.createObjectURL(file));
   }
 
-  pendingFile = file;
-  pendingFileUrl = URL.createObjectURL(file);
+  renderAttachPreview();
+  event.target.value = '';
+}
 
+function renderAttachPreview() {
   const preview = document.getElementById('attachPreview');
-  const thumb = document.getElementById('attachThumb');
-  const nameEl = document.getElementById('attachName');
-  const sizeEl = document.getElementById('attachSize');
+  if (pendingFiles.length === 0) {
+    preview.classList.remove('active');
+    preview.innerHTML = '';
+    return;
+  }
 
-  thumb.innerHTML = `<img src="${pendingFileUrl}" alt="">`;
-  nameEl.textContent = file.name;
-  sizeEl.textContent = `image · ${(file.size / 1024).toFixed(0)} KB`;
   preview.classList.add('active');
-  document.getElementById('fileInput').value = '';
+  preview.innerHTML = pendingFiles.map((file, i) => `
+    <div style="position:relative;">
+      <div class="thumb">
+        <img src="${pendingFileUrls[i]}" alt="">
+      </div>
+      <button class="remove" style="position:absolute;top:-4px;right:-4px;background:rgba(255,71,87,.9);border-radius:50%;width:18px;height:18px;padding:0;font-size:10px;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;"
+              onclick="removeAttach(${i})">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  `).join('') + `
+    <div class="info" style="min-width:60px;">
+      <div class="name">${pendingFiles.length} image${pendingFiles.length>1?'s':''}</div>
+      <div class="meta">Ready to send</div>
+    </div>`;
+}
+
+function removeAttach(i) {
+  if (pendingFileUrls[i]) URL.revokeObjectURL(pendingFileUrls[i]);
+  pendingFiles.splice(i, 1);
+  pendingFileUrls.splice(i, 1);
+  renderAttachPreview();
 }
 
 function clearAttachment() {
-  pendingFile = null;
-  if (pendingFileUrl) { URL.revokeObjectURL(pendingFileUrl); pendingFileUrl = null; }
-  document.getElementById('attachPreview').classList.remove('active');
+  pendingFileUrls.forEach(u => URL.revokeObjectURL(u));
+  pendingFiles = [];
+  pendingFileUrls = [];
+  renderAttachPreview();
 }
 
 /* ============================================================
@@ -1663,7 +2293,7 @@ function wantsImage(text) {
 }
 
 /* ============================================================
-   SEND MESSAGE — streaming
+   SEND MESSAGE
    ============================================================ */
 async function sendMessage() {
   if (isSending) return;
@@ -1671,32 +2301,34 @@ async function sendMessage() {
 
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
-  if (!text && !pendingFile) return;
+  if (!text && pendingFiles.length === 0) return;
 
-  // Image quota check for image requests
+  // Edit mode?
+  if (editingMessageIndex >= 0) {
+    return handleEditResend(text);
+  }
+
   const imageIntent = wantsImage(text) || currentModel === 'image';
   if (imageIntent && imagesUsedToday >= DAILY_IMAGE_LIMIT) {
-    toast(`Daily image limit reached (${DAILY_IMAGE_LIMIT}). Try tomorrow!`);
+    toast(`Daily image limit (${DAILY_IMAGE_LIMIT}). Try tomorrow!`);
     return;
   }
 
-  let mediaUrl = null;
-  let mediaType = null;
-
-  if (pendingFile instanceof File) {
+  // Upload images
+  const uploadedUrls = [];
+  for (const file of pendingFiles) {
     try {
-      const ext = (pendingFile.name.split('.').pop() || 'jpg').toLowerCase();
-      const path = `${currentUser.id}/ai-${Date.now()}.${ext}`;
+      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      const path = `${currentUser.id}/ai-${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
       const { data: upload, error: upErr } = await supabaseClient.storage
         .from('ai_uploads')
-        .upload(path, pendingFile, { cacheControl: '3600' });
+        .upload(path, file, { cacheControl: '3600' });
       if (upErr) throw upErr;
       const { data: urlData } = supabaseClient.storage.from('ai_uploads').getPublicUrl(upload.path);
-      mediaUrl = urlData.publicUrl;
-      mediaType = 'image';
+      uploadedUrls.push(urlData.publicUrl);
     } catch (e) {
-      console.error('[Upload] Error:', e);
-      toast('Upload failed');
+      console.error('[Upload]', e);
+      toast('Image upload failed');
       return;
     }
   }
@@ -1704,9 +2336,17 @@ async function sendMessage() {
   input.value = '';
   autoResize(input);
 
-  const userMsg = { role: 'user', content: text || '', media_url: mediaUrl, media_type: mediaType };
+  const userMsg = {
+    role: 'user',
+    content: text || '',
+    media_url: uploadedUrls[0] || null,
+    media_type: uploadedUrls.length ? 'image' : null
+  };
   messages.push(userMsg);
   clearAttachment();
+
+  // Learn from user message
+  if (text) learnFromMessage(text);
 
   try {
     await createChatIfNeeded(text || '[image]');
@@ -1714,14 +2354,13 @@ async function sendMessage() {
       chat_id: currentChatId,
       role: 'user',
       content: text || '',
-      media_url: mediaUrl,
-      media_type: mediaType
+      media_url: uploadedUrls[0] || null,
+      media_type: uploadedUrls.length ? 'image' : null
     });
-  } catch (e) { console.warn('[AI] save user msg failed:', e); }
+  } catch (e) { console.warn('[AI] save failed:', e); }
 
   renderMessages();
 
-  // Add empty assistant bubble for streaming
   const container = document.getElementById('messages');
   const typingEl = document.createElement('div');
   typingEl.className = 'msg bot';
@@ -1743,18 +2382,23 @@ async function sendMessage() {
     const payload = {
       messages: payloadMessages,
       model: imageIntent ? 'image' : currentModel,
-      stream: !imageIntent,       // image requests don't stream
-      image_url: mediaUrl && mediaType === 'image' ? mediaUrl : undefined,
+      stream: !imageIntent,
+      mode: currentMode,
+      lang: localStorage.getItem('az_lang') || navigator.language.split('-')[0] || 'en',
+      user_profile: userProfile,
+      image_url: uploadedUrls[0] || undefined,
+      multi_images: uploadedUrls.length > 1 ? uploadedUrls : [],
     };
 
+    const session = await supabaseClient.auth.getSession();
+    const accessToken = session?.data?.session?.access_token;
     const functionUrl = `${SUPABASE_URL}/functions/v1/ai-chat`;
 
-    // ============ Image generation (non-streaming) ============
+    // Image gen — non-streaming
     if (imageIntent) {
       const { data, error } = await supabaseClient.functions.invoke('ai-chat', { body: payload });
       typingEl.remove();
       if (error) throw error;
-
       if (data?.image_url) await registerImageUse(text || 'image');
 
       const assistantMsg = {
@@ -1764,7 +2408,6 @@ async function sendMessage() {
         media_type: 'image'
       };
       messages.push(assistantMsg);
-
       try {
         await supabaseClient.from('ai_messages').insert({
           chat_id: currentChatId,
@@ -1774,16 +2417,12 @@ async function sendMessage() {
           media_type: assistantMsg.media_type
         });
       } catch (e) {}
-
       renderMessages();
       autoSpeakLast();
       return;
     }
 
-    // ============ Streaming chat ============
-    const session = await supabaseClient.auth.getSession();
-    const accessToken = session?.data?.session?.access_token || SUPABASE_ANON_KEY;
-
+    // Streaming
     const response = await fetch(functionUrl, {
       method: 'POST',
       headers: {
@@ -1793,38 +2432,32 @@ async function sendMessage() {
       body: JSON.stringify(payload),
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-    // Check if it's actually streaming
     const contentType = response.headers.get('content-type') || '';
     if (!contentType.includes('text/event-stream')) {
-      // Fallback: JSON response
       const data = await response.json();
       typingEl.remove();
       const assistantMsg = {
         role: 'assistant',
         content: data.reply || 'No response.',
         media_url: data.image_url || null,
-        media_type: data.media_type || (data.image_url ? 'image' : null)
+        media_type: data.media_type || null
       };
       messages.push(assistantMsg);
       try {
         await supabaseClient.from('ai_messages').insert({
-          chat_id: currentChatId,
-          role: 'assistant',
+          chat_id: currentChatId, role: 'assistant',
           content: assistantMsg.content,
           media_url: assistantMsg.media_url,
           media_type: assistantMsg.media_type
         });
-      } catch (e) {}
+      } catch(e) {}
       renderMessages();
       autoSpeakLast();
       return;
     }
 
-    // ============ Parse SSE stream ============
     const reader = response.body.getReader();
     const decoder = new TextDecoder('utf-8');
     let buffer = '';
@@ -1839,14 +2472,10 @@ async function sendMessage() {
       const { value, done } = await reader.read();
       if (done) break;
       buffer += decoder.decode(value, { stream: true });
-
-      // SSE events separated by \n\n
       const events = buffer.split('\n\n');
-      buffer = events.pop(); // keep last incomplete
-
+      buffer = events.pop();
       for (const evt of events) {
-        const lines = evt.split('\n');
-        for (const line of lines) {
+        for (const line of evt.split('\n')) {
           if (!line.startsWith('data:')) continue;
           const data = line.slice(5).trim();
           if (!data || data === '[DONE]') continue;
@@ -1855,32 +2484,27 @@ async function sendMessage() {
             const delta = parsed?.choices?.[0]?.delta?.content;
             if (delta) {
               fullText += delta;
-              if (bubbleEl) {
-                bubbleEl.innerHTML =
-                  escapeHtml(fullText).replace(/\n/g, '<br>');
-                container.scrollTop = container.scrollHeight;
-              }
+              if (bubbleEl) bubbleEl.innerHTML = renderMarkdown(fullText);
+              container.scrollTop = container.scrollHeight;
             }
-          } catch (e) { /* partial json */ }
+          } catch(e) {}
         }
       }
     }
 
     if (bubbleEl) bubbleEl.classList.remove('streaming');
+    if (!fullText) fullText = 'No response.';
 
-    // Save final message
     const assistantMsg = { role: 'assistant', content: fullText };
     messages.push(assistantMsg);
-
     try {
       await supabaseClient.from('ai_messages').insert({
         chat_id: currentChatId,
         role: 'assistant',
         content: fullText,
-        media_url: null,
-        media_type: null
+        media_url: null, media_type: null
       });
-    } catch (e) {}
+    } catch(e) {}
 
     renderMessages();
     autoSpeakLast();
@@ -1897,6 +2521,45 @@ async function sendMessage() {
     document.getElementById('chatInput').focus();
     container.scrollTop = container.scrollHeight;
   }
+}
+
+async function handleEditResend(newText) {
+  const idx = editingMessageIndex;
+  const originalMsg = messages[idx];
+  if (!originalMsg) return;
+
+  // Update the user message
+  originalMsg.content = newText;
+
+  // Truncate everything after this user message
+  messages = messages.slice(0, idx + 1);
+  renderMessages();
+
+  cancelEdit();
+
+  // Update DB: delete all messages after this one, update this message
+  try {
+    const { data: dbMsgs } = await supabaseClient
+      .from('ai_messages').select('id, role, content, created_at')
+      .eq('chat_id', currentChatId)
+      .order('created_at', { ascending: true });
+
+    if (dbMsgs && dbMsgs[idx]) {
+      // Update the edited message
+      await supabaseClient.from('ai_messages')
+        .update({ content: newText })
+        .eq('id', dbMsgs[idx].id);
+
+      // Delete everything after
+      const toDelete = dbMsgs.slice(idx + 1).map(m => m.id);
+      if (toDelete.length > 0) {
+        await supabaseClient.from('ai_messages').delete().in('id', toDelete);
+      }
+    }
+  } catch (e) { console.warn('[Edit] DB sync failed:', e); }
+
+  // Resend
+  await resendFromIndex(idx);
 }
 
 /* ============================================================
@@ -1928,6 +2591,56 @@ function handleKey(e) {
 function quickAsk(text) {
   document.getElementById('chatInput').value = text;
   sendMessage();
+}
+
+/* ============================================================
+   MESSAGE ACTIONS MENU (long-press)
+   ============================================================ */
+function openMsgActions(index) {
+  const overlay = document.getElementById('msgActionsOverlay');
+  const menu = document.getElementById('msgActionsMenu');
+  const msg = messages[index];
+  if (!msg) return;
+
+  const isUser = msg.role === 'user';
+  let items = [];
+
+  if (isUser) {
+    items = [
+      { icon: 'fa-pen', label: 'Edit & resend', action: () => editMessage(index) },
+      { icon: 'fa-copy', label: 'Copy', action: () => copyMessage(index) },
+    ];
+  } else {
+    items = [
+      { icon: 'fa-redo', label: 'Regenerate', action: () => regenerateMessage(index) },
+      { icon: 'fa-copy', label: 'Copy', action: () => copyMessage(index) },
+      { icon: 'fa-volume-up', label: 'Read aloud', action: () => {
+        const btn = document.querySelector(`.reply-actions[data-index="${index}"] .speak-btn`);
+        speakMessage(index, btn);
+      }},
+      { icon: 'fa-share', label: 'Share', action: () => shareMessage(index) },
+    ];
+  }
+
+  menu.innerHTML = items.map((it, i) => `
+    <button class="msg-action-item" data-action="${i}">
+      <i class="fas ${it.icon}"></i> ${it.label}
+    </button>
+  `).join('');
+
+  menu.querySelectorAll('button').forEach((btn, i) => {
+    btn.onclick = () => {
+      overlay.classList.remove('active');
+      items[i].action();
+    };
+  });
+
+  overlay.classList.add('active');
+}
+
+function closeMsgActions(e) {
+  if (e && e.target && e.target.id !== 'msgActionsOverlay') return;
+  document.getElementById('msgActionsOverlay').classList.remove('active');
 }
 
 /* ============================================================
