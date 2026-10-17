@@ -1,41 +1,72 @@
 {
+  "id": "/",
   "name": "Arizona AI — Earn While You Share",
   "short_name": "Arizona AI",
   "description": "AI-powered social platform by Huzni's Family. Post, earn, chat, and create with AI.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "orientation": "portrait",
   "background_color": "#050a14",
   "theme_color": "#050a14",
   "lang": "en",
   "dir": "ltr",
   "categories": ["social", "productivity", "entertainment"],
-  "prefer_related_applications": false,
+  "prefer_related_applications": true,
+  "related_applications": [
+    {
+      "platform": "play",
+      "id": "com.a1arizonan.app",
+      "url": "https://play.google.com/store/apps/details?id=com.a1arizonan.app"
+    }
+  ],
   "icons": [
     {
-      "src": "/icon.png",
+      "src": "/icon-192.png.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon.png",
+      "src": "/icon-512.png.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon.png",
+      "src": "/icon-192.png.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/icon.png",
+      "src": "/icon-512.png.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/icon-512.png.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Arizona AI Feed"
+    },
+    {
+      "src": "/icon-192.png.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Arizona AI Mobile"
     }
   ],
   "shortcuts": [
@@ -44,21 +75,21 @@
       "short_name": "AI Chat",
       "description": "Talk to AI.Arizonan",
       "url": "/AI.Arizonan.html",
-      "icons": [{ "src": "/icon.png", "sizes": "192x192", "type": "image/png" }]
+      "icons": [{ "src": "/icon-192.png.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "Messages",
       "short_name": "Messages",
       "description": "Open your chats",
       "url": "/chats.html",
-      "icons": [{ "src": "/icon.png", "sizes": "192x192", "type": "image/png" }]
+      "icons": [{ "src": "/icon-192.png.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "Post Something",
       "short_name": "Post",
       "description": "Create a new post",
       "url": "/Post.html",
-      "icons": [{ "src": "/icon.png", "sizes": "192x192", "type": "image/png" }]
+      "icons": [{ "src": "/icon-192.png.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }
