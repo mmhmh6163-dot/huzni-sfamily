@@ -10,7 +10,100 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
-  /* Extra styles for this page only */
+  /* ================= PAGE SPECIFIC STYLES ================= */
+  body {
+    background: radial-gradient(circle at 50% 0%, #1a0f0a 0%, #0a0a0a 60%);
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  /* ===== TOP BRAND BOX ===== */
+  .top-brand-box {
+    max-width: 420px;
+    margin: 24px auto 10px;
+    display: flex;
+    justify-content: center;
+    animation: floatIn 0.8s ease-out;
+  }
+  .brand-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 107, 53, 0.25);
+    padding: 10px 20px 10px 10px;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .brand-link:hover {
+    background: rgba(255, 107, 53, 0.1);
+    border-color: rgba(255, 107, 53, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(255, 107, 53, 0.15);
+  }
+  .brand-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #000;
+    border: 2px solid rgba(255, 107, 53, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .brand-icon-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+  }
+  .brand-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.5px;
+  }
+  .brand-sub {
+    font-size: 11px;
+    color: var(--az-accent, #ffb20f);
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  @keyframes floatIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== WELCOME HEADER ===== */
+  .welcome-header {
+    text-align: center;
+    margin-bottom: 24px;
+    padding: 0 16px;
+  }
+  .welcome-header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff, #ffb20f);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 8px;
+  }
+  .welcome-header p {
+    color: var(--az-text-secondary, #9ca3af);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ===== HINTS & ALERTS ===== */
   .reg-hint{font-size:12.5px;line-height:1.5;margin-top:6px;min-height:18px;color:var(--az-text-secondary,#9ca3af)}
   .reg-hint.ok{color:#34d399}
   .reg-hint.bad{color:#f87171}
@@ -30,6 +123,87 @@
   .reg-optional{font-weight:400;opacity:.7;font-size:12px}
   #regReferral{text-transform:uppercase;letter-spacing:1px}
   .reg-hp{position:absolute;inset-inline-start:-9999px;width:1px;height:1px;overflow:hidden}
+
+  /* ===== FORM STYLING IMPROVEMENTS ===== */
+  .form-card {
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+    border-radius: 20px;
+    padding: 24px;
+    max-width: 420px;
+    margin: 0 auto 40px;
+  }
+  .form-card h2 {
+    display: none; /* Replaced by welcome-header */
+  }
+  .form-sub {
+    display: none;
+  }
+  .form-field label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--az-text-secondary, #9ca3af);
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: block;
+  }
+  .form-field input {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 14px;
+    color: #fff;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .form-field input:focus {
+    outline: none;
+    border-color: var(--az-primary, #ff6b35);
+    background: rgba(0,0,0,0.6);
+  }
+  .btn-primary-full {
+    background: linear-gradient(135deg, #ff6b35, #ffb20f);
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    box-shadow: 0 8px 24px rgba(255, 107, 53, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-top: 8px;
+  }
+  .btn-primary-full:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(255, 107, 53, 0.4);
+  }
+  .btn-primary-full:active {
+    transform: translateY(0);
+  }
+  .form-switch {
+    text-align: center;
+    font-size: 13px;
+    color: var(--az-text-secondary, #9ca3af);
+    margin-top: 20px;
+  }
+  .form-switch a {
+    color: var(--az-accent, #ffb20f);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .form-switch a:hover {
+    text-decoration: underline;
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .reg-meter span{transition:none}
+    .top-brand-box{animation:none}
+    .btn-primary-full{transition:none}
+  }
 </style>
 </head>
 <body>
@@ -41,11 +215,28 @@
 
 <div id="app-header"></div>
 
-<main>
-  <div class="form-card">
-    <h2>Create Account</h2>
-    <p class="form-sub">Start earning today — it's free</p>
+<!-- ===== NEW TOP BRAND BOX ===== -->
+<div class="top-brand-box">
+  <a href="index.html" class="brand-link" title="Back to Home">
+    <div class="brand-icon-wrapper">
+      <!-- The link you provided, fixed with the proper image extension -->
+      <img src="/icon-192.png" alt="Arizona AI Logo" onerror="this.src='/icon.png'">
+    </div>
+    <div class="brand-text">
+      <span class="brand-title">ARIZONA AI</span>
+      <span class="brand-sub">Earn While You Share</span>
+    </div>
+  </a>
+</div>
 
+<main>
+  <!-- ===== NEW WELCOME HEADER ===== -->
+  <div class="welcome-header">
+    <h1>Create Your Free Account</h1>
+    <p>Join the community, post content, and earn money for your activity.</p>
+  </div>
+
+  <div class="form-card">
     <div class="form-alert error"   id="regError"   role="alert"></div>
     <div class="form-alert success" id="regSuccess" role="status"></div>
 
@@ -109,11 +300,10 @@
       Already have an account? <a href="login.html">Sign in</a>
     </p>
 
-    <div class="card" style="margin-top:24px; padding:16px;">
-      <p style="font-size:13px; color:var(--az-text-secondary); line-height:1.7;">
+    <div class="card" style="margin-top:20px; padding:14px; background:rgba(255,178,15,0.05); border:1px solid rgba(255,178,15,0.15);">
+      <p style="font-size:12px; color:var(--az-text-secondary); line-height:1.6; margin:0; text-align:center;">
         <i class="fas fa-envelope" style="color:var(--az-accent);"></i>
-        After signing up, we'll send a confirmation link to your email.
-        <strong>You must click it before you can log in.</strong>
+        We'll send a confirmation link to your email. Click it to activate your account.
       </p>
     </div>
   </div>
