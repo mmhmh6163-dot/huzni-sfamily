@@ -8,6 +8,29 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="style.css">
+
+<style>
+  /* Extra styles for this page only */
+  .reg-hint{font-size:12.5px;line-height:1.5;margin-top:6px;min-height:18px;color:var(--az-text-secondary,#9ca3af)}
+  .reg-hint.ok{color:#34d399}
+  .reg-hint.bad{color:#f87171}
+  .reg-hint.wait{color:#fbbf24}
+  .form-field .reg-pass-wrap{position:relative}
+  .form-field .reg-pass-wrap input{padding-inline-end:46px;width:100%;box-sizing:border-box}
+  .reg-eye{position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);background:none;border:0;
+           color:var(--az-text-secondary,#9ca3af);cursor:pointer;padding:10px;font-size:15px}
+  .reg-eye:hover{color:var(--az-text,#fff)}
+  .reg-eye:focus-visible{outline:2px solid var(--az-primary,#ff6b35);border-radius:8px}
+  .reg-meter{display:flex;gap:4px;margin-top:8px}
+  .reg-meter span{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.12);transition:background .2s}
+  .reg-meter[data-level="1"] span:nth-child(-n+1){background:#f87171}
+  .reg-meter[data-level="2"] span:nth-child(-n+2){background:#fbbf24}
+  .reg-meter[data-level="3"] span:nth-child(-n+3){background:#a3e635}
+  .reg-meter[data-level="4"] span:nth-child(-n+4){background:#34d399}
+  .reg-optional{font-weight:400;opacity:.7;font-size:12px}
+  #regReferral{text-transform:uppercase;letter-spacing:1px}
+  .reg-hp{position:absolute;inset-inline-start:-9999px;width:1px;height:1px;overflow:hidden}
+</style>
 </head>
 <body>
 
@@ -23,32 +46,58 @@
     <h2>Create Account</h2>
     <p class="form-sub">Start earning today — it's free</p>
 
-    <div class="form-alert error"   id="regError"></div>
-    <div class="form-alert success" id="regSuccess"></div>
+    <div class="form-alert error"   id="regError"   role="alert"></div>
+    <div class="form-alert success" id="regSuccess" role="status"></div>
 
     <form id="registerForm" onsubmit="return doRegister(event)">
       <div class="form-field">
-        <label>Username</label>
+        <label for="regUsername">Username</label>
         <input type="text" id="regUsername" placeholder="yourname" required
-               minlength="3" maxlength="30" autocomplete="username">
+               minlength="3" maxlength="30" autocomplete="username" aria-describedby="regUserHint">
+        <div class="reg-hint" id="regUserHint" aria-live="polite"></div>
       </div>
 
       <div class="form-field">
-        <label>Email</label>
+        <label for="regEmail">Email</label>
         <input type="email" id="regEmail" placeholder="you@example.com"
                required autocomplete="email">
       </div>
 
       <div class="form-field">
-        <label>Password</label>
-        <input type="password" id="regPassword" placeholder="At least 6 characters"
-               required minlength="6" autocomplete="new-password">
+        <label for="regPassword">Password</label>
+        <div class="reg-pass-wrap">
+          <input type="password" id="regPassword" placeholder="At least 6 characters"
+                 required minlength="6" autocomplete="new-password" aria-describedby="regPassHint">
+          <button type="button" class="reg-eye" onclick="togglePass('regPassword', this)" aria-label="Show password">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="reg-meter" id="regMeter" data-level="0"><span></span><span></span><span></span><span></span></div>
+        <div class="reg-hint" id="regPassHint" aria-live="polite"></div>
       </div>
 
       <div class="form-field">
-        <label>Confirm Password</label>
-        <input type="password" id="regConfirm" placeholder="Repeat password"
-               required minlength="6" autocomplete="new-password">
+        <label for="regConfirm">Confirm Password</label>
+        <div class="reg-pass-wrap">
+          <input type="password" id="regConfirm" placeholder="Repeat password"
+                 required minlength="6" autocomplete="new-password" aria-describedby="regConfirmHint">
+          <button type="button" class="reg-eye" onclick="togglePass('regConfirm', this)" aria-label="Show password">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="reg-hint" id="regConfirmHint" aria-live="polite"></div>
+      </div>
+
+      <div class="form-field">
+        <label for="regReferral">Reference number <span class="reg-optional">(optional)</span></label>
+        <input type="text" id="regReferral" placeholder="Invite code from a friend" maxlength="16"
+               autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="regRefHint">
+        <div class="reg-hint" id="regRefHint" aria-live="polite"></div>
+      </div>
+
+      <!-- Honeypot: real users never see or fill this -->
+      <div class="reg-hp" aria-hidden="true">
+        <label>Website <input type="text" id="regWebsite" tabindex="-1" autocomplete="off"></label>
       </div>
 
       <button type="submit" class="btn-primary-full" id="regBtn">
@@ -74,21 +123,173 @@
 
 <script src="auth.js"></script>
 <script>
-  // Redirect if already signed in
-  document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-      if (currentUser) window.location.href = 'index.html';
-    }, 300);
-  });
+  const $ = (id) => document.getElementById(id);
+  const REF_KEY = 'az_ref';
+  let refTimer = null, refSeq = 0, userTimer = null, userSeq = 0;
 
+  /* ---------- Redirect if already signed in ---------- */
+  function redirectIfSignedIn() {
+    if (typeof currentUser !== 'undefined' && currentUser) window.location.href = 'index.html';
+  }
+  document.addEventListener('auth-ready', redirectIfSignedIn);
+  document.addEventListener('DOMContentLoaded', () => setTimeout(redirectIfSignedIn, 300));
+
+  /* ---------- Small helpers ---------- */
+  function setHint(id, kind, text) {
+    const el = $(id);
+    el.className = 'reg-hint' + (kind ? ' ' + kind : '');
+    el.textContent = text || '';
+  }
+  function showAlert(type, content) {
+    hideAlerts();
+    const el = $(type === 'error' ? 'regError' : 'regSuccess');
+    if (type === 'error') el.textContent = content; else el.innerHTML = content;
+    el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  function hideAlerts() {
+    $('regError').style.display   = 'none';
+    $('regSuccess').style.display = 'none';
+  }
+  function friendlyError(err) {
+    const m = (err && err.message) || '';
+    if (/already (been )?registered/i.test(m)) return 'This email is already registered. Try signing in instead.';
+    if ((err && err.status === 429) || /rate limit|too many/i.test(m)) return 'Too many attempts. Please wait a few minutes and try again.';
+    if (/invalid.*email|email.*invalid/i.test(m)) return 'Please enter a valid email address.';
+    return m || 'Registration failed. Try again.';
+  }
+  function togglePass(id, btn) {
+    const input = $(id);
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    btn.innerHTML = '<i class="fas ' + (show ? 'fa-eye-slash' : 'fa-eye') + '"></i>';
+    btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+  }
+
+  /* ---------- Reference number ---------- */
+  function normalizeRef(v) { return String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+
+  async function lookupReferral(code) {
+    if (!code) return { state: 'empty' };
+    if (!/^[A-Z0-9]{6,12}$/.test(code)) return { state: 'badformat' };
+    try {
+      const { data, error } = await supabaseClient.rpc('check_referral_code', { p_code: code });
+      if (error) throw error;
+      return data ? { state: 'valid', inviter: String(data) } : { state: 'invalid' };
+    } catch (e) {
+      return { state: 'unknown' };   // could not check: do not block signup
+    }
+  }
+  function showReferralState(r) {
+    if (r.state === 'empty')          setHint('regRefHint', '', 'Got an invite? Enter the reference number (optional).');
+    else if (r.state === 'badformat') setHint('regRefHint', 'bad', 'Reference numbers use 6–12 letters and numbers.');
+    else if (r.state === 'valid')     setHint('regRefHint', 'ok', '✓ Valid — invited by @' + r.inviter);
+    else if (r.state === 'invalid')   setHint('regRefHint', 'bad', '✗ This reference number was not found.');
+    else                              setHint('regRefHint', 'wait', 'Couldn’t verify it right now — we’ll still try to apply it.');
+  }
+  function onReferralInput() {
+    clearTimeout(refTimer);
+    const code = normalizeRef($('regReferral').value);
+    const seq = ++refSeq;
+    if (!code) return showReferralState({ state: 'empty' });
+    if (code.length < 6) return setHint('regRefHint', '', 'Keep typing… reference numbers have 6–12 characters.');
+    if (code.length > 12) return showReferralState({ state: 'badformat' });
+    setHint('regRefHint', 'wait', 'Checking…');
+    refTimer = setTimeout(async () => {
+      const r = await lookupReferral(code);
+      if (seq === refSeq) showReferralState(r);
+    }, 450);
+  }
+
+  /* ---------- Username ---------- */
+  async function lookupUsername(name) {
+    try {
+      const { data, error } = await supabaseClient.rpc('username_available', { p_username: name });
+      if (!error && typeof data === 'boolean') return data ? 'free' : 'taken';
+    } catch (_) {}
+    try {
+      const { data } = await supabaseClient.from('profiles').select('id').eq('username', name).maybeSingle();
+      return data ? 'taken' : 'free';
+    } catch (_) { return 'unknown'; }
+  }
+  function onUsernameInput() {
+    clearTimeout(userTimer);
+    const name = $('regUsername').value.trim();
+    const seq = ++userSeq;
+    if (!name) return setHint('regUserHint', '', '');
+    if (name.length < 3) return setHint('regUserHint', '', 'At least 3 characters.');
+    if (!/^[a-zA-Z0-9_]+$/.test(name)) return setHint('regUserHint', 'bad', 'Letters, numbers and _ only.');
+    setHint('regUserHint', 'wait', 'Checking availability…');
+    userTimer = setTimeout(async () => {
+      const s = await lookupUsername(name);
+      if (seq !== userSeq) return;
+      if (s === 'free')       setHint('regUserHint', 'ok', '✓ @' + name + ' is available');
+      else if (s === 'taken') setHint('regUserHint', 'bad', '✗ That username is already taken.');
+      else                    setHint('regUserHint', '', '');
+    }, 450);
+  }
+
+  /* ---------- Password ---------- */
+  function onPasswordInput() {
+    const p = $('regPassword').value;
+    if (!p) {
+      $('regMeter').dataset.level = '0';
+      setHint('regPassHint', '', '');
+    } else {
+      let s = 0;
+      if (p.length >= 6) s++;
+      if (p.length >= 10) s++;
+      if (/[a-z]/.test(p) && /[A-Z]/.test(p)) s++;
+      if (/\d/.test(p)) s++;
+      if (/[^A-Za-z0-9]/.test(p)) s++;
+      const lvl = s <= 1 ? 1 : s === 2 ? 2 : s === 3 ? 3 : 4;
+      $('regMeter').dataset.level = String(lvl);
+      setHint('regPassHint', lvl <= 1 ? 'bad' : lvl === 2 ? 'wait' : 'ok',
+        ['', 'Weak', 'Okay', 'Good', 'Strong'][lvl] + (lvl <= 2 ? ' — add length, numbers or symbols.' : ''));
+    }
+    onConfirmInput();
+  }
+  function onConfirmInput() {
+    const p = $('regPassword').value, c = $('regConfirm').value;
+    if (!c) return setHint('regConfirmHint', '', '');
+    if (p === c) setHint('regConfirmHint', 'ok', '✓ Passwords match');
+    else         setHint('regConfirmHint', 'bad', '✗ Passwords do not match');
+  }
+
+  function resetHints() {
+    $('regMeter').dataset.level = '0';
+    ['regUserHint', 'regPassHint', 'regConfirmHint'].forEach((id) => setHint(id, '', ''));
+    showReferralState({ state: 'empty' });
+  }
+
+  /* ---------- Wire up + prefill from invite link (?ref=CODE) ---------- */
+  $('regUsername').addEventListener('input', onUsernameInput);
+  $('regPassword').addEventListener('input', onPasswordInput);
+  $('regConfirm').addEventListener('input', onConfirmInput);
+  $('regReferral').addEventListener('input', onReferralInput);
+
+  (function initReferral() {
+    let code = normalizeRef(new URLSearchParams(location.search).get('ref'));
+    try {
+      if (code) sessionStorage.setItem(REF_KEY, code);
+      else code = sessionStorage.getItem(REF_KEY) || '';
+    } catch (_) {}
+    if (code) $('regReferral').value = code;
+    onReferralInput();
+  })();
+
+  /* ---------- Register ---------- */
   async function doRegister(e) {
     e.preventDefault();
     hideAlerts();
 
-    const username = document.getElementById('regUsername').value.trim();
-    const email    = document.getElementById('regEmail').value.trim();
-    const password = document.getElementById('regPassword').value;
-    const confirm  = document.getElementById('regConfirm').value;
+    if ($('regWebsite').value) return false;   // honeypot filled: bot
+
+    const username = $('regUsername').value.trim();
+    const email    = $('regEmail').value.trim();
+    const password = $('regPassword').value;
+    const confirmPw = $('regConfirm').value;
+    const refCode  = normalizeRef($('regReferral').value);
 
     // Client-side validation
     if (username.length < 3)         return showAlert('error', 'Username must be at least 3 characters.');
@@ -96,52 +297,70 @@
     if (!/^[a-zA-Z0-9_]+$/.test(username))
                                      return showAlert('error', 'Username can only contain letters, numbers and _');
     if (password.length < 6)         return showAlert('error', 'Password must be at least 6 characters.');
-    if (password !== confirm)        return showAlert('error', 'Passwords do not match.');
+    if (password !== confirmPw)      return showAlert('error', 'Passwords do not match.');
 
-    const btn = document.getElementById('regBtn');
+    const btn = $('regBtn');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Creating account…';
 
     try {
-      // Check username is not taken
-      const { data: existing } = await supabaseClient
-        .from('profiles')
-        .select('id')
-        .eq('username', username)
-        .maybeSingle();
+      // Reference number must be valid if one was entered
+      let inviter = '';
+      if (refCode) {
+        const r = await lookupReferral(refCode);
+        showReferralState(r);
+        if (r.state === 'badformat' || r.state === 'invalid') {
+          throw new Error('That reference number is not valid. Fix it or clear the field to continue without one.');
+        }
+        if (r.state === 'valid') inviter = r.inviter;
+      }
 
-      if (existing) {
+      // Check username is not taken
+      if ((await lookupUsername(username)) === 'taken') {
         throw new Error('That username is already taken.');
       }
 
-      // Sign up
+      // Sign up (the reference number travels with the signup; the database records it)
+      const meta = { username: username, name: username };
+      if (refCode) meta.referral_code = refCode;
+
       const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
         options: {
-          data: {
-            username: username,
-            name:     username
-          },
-          emailRedirectTo: window.location.origin + '/huzni-sfamily/login.html'
+          data: meta,
+          emailRedirectTo: window.location.origin + '/login.html' // FIXED FOR CUSTOM DOMAIN
         }
       });
 
       if (error) throw error;
 
-      // Note: profile + wallet are auto-created by the DB trigger
-      // when the user confirms their email.
+      // Supabase hides "already registered" by returning a user with no identities
+      if (data && data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+        throw new Error('This email is already registered. Try signing in instead.');
+      }
+
+      try { sessionStorage.removeItem(REF_KEY); } catch (_) {}
+
+      if (data && data.session) {   // email confirmation is switched off
+        showAlert('success', '🎉 Account created! Taking you in…');
+        btn.innerHTML = '<i class="fas fa-check"></i> Done';
+        setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+        return false;
+      }
 
       showAlert('success',
         '🎉 Account created! We sent a confirmation link to <strong>' + escapeHtml(email) +
-        '</strong>. Click it, then <a href="login.html" style="color:#7ee8d0;font-weight:700;">sign in</a>.'
+        '</strong>. Click it, then <a href="login.html" style="color:#7ee8d0;font-weight:700;">sign in</a>.' +
+        (inviter ? '<br>🤝 You joined with <strong>@' + escapeHtml(inviter) + '</strong>’s reference number.' : '')
       );
 
-      document.getElementById('registerForm').reset();
+      $('registerForm').reset();
+      resetHints();
       btn.innerHTML = '<i class="fas fa-check"></i> Check your email';
 
     } catch (err) {
-      showAlert('error', err.message || 'Registration failed. Try again.');
+      showAlert('error', friendlyError(err));
       btn.disabled = false;
       btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Free Account';
       return false;
@@ -150,16 +369,8 @@
     return false;
   }
 
-  function showAlert(type, html) {
-    hideAlerts();
-    const el = document.getElementById(type === 'error' ? 'regError' : 'regSuccess');
-    el.innerHTML = html;
-    el.style.display = 'block';
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-  function hideAlerts() {
-    document.getElementById('regError').style.display   = 'none';
-    document.getElementById('regSuccess').style.display = 'none';
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
 </script>
 </body>
