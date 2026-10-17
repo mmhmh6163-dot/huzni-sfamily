@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.aiarizonan.app", 
+    "sha256_cert_fingerprints": ["F3:3B:0D:99:F1:48:23:44:1C:5C:73:5F:5D:93:58:97:02:37:17:42:CC:65:43:90:3A:EF:16:9B:A5:1C:45:07]
+  }
+}]
