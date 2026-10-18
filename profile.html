@@ -43,7 +43,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 .topbar .icon-btn:hover { background:rgba(255,255,255,.08); }
 .topbar .title { font-size:16px; font-weight:700; color:var(--az-text); }
 
-/* ==================== TIKTOK-STYLE HEADER WITH ARIZONA PALETTE ==================== */
+/* ==================== PROFILE HEADER ==================== */
 .profile-header-tt {
   max-width:640px; margin:0 auto;
   padding:16px 20px 8px;
@@ -64,7 +64,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 .profile-avatar img { width:100%; height:100%; object-fit:cover; }
 .profile-avatar:active { transform:scale(.96); }
 
-/* Rotating Story Ring */
 .profile-avatar-wrap.has-story .profile-avatar { box-shadow:0 0 0 3px transparent; }
 .profile-avatar-wrap.has-story::before {
   content:''; position:absolute; inset:-4px; border-radius:50%;
@@ -129,14 +128,19 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   width:42px; flex:0 0 42px; height:40px; padding:0; border-radius:10px;
 }
 
-/* Bio & Meta */
+/* Bio & Meta (Updated Layout) */
+.profile-bio-container {
+  max-width:480px; width:100%;
+  display:flex; flex-direction:column; align-items:center;
+  gap:6px; margin-bottom:14px;
+}
 .profile-bio-tt {
   font-size:14px; line-height:1.45; color:#eee;
-  max-width:480px; margin-bottom:8px; white-space:pre-wrap;
+  white-space:pre-wrap;
 }
 .profile-meta-tt {
   font-size:12px; color:var(--az-text-secondary);
-  display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-bottom:12px;
+  display:flex; flex-wrap:wrap; justify-content:center; gap:12px;
 }
 .profile-meta-tt span { display:inline-flex; align-items:center; gap:4px; }
 
@@ -175,7 +179,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   display:inline-flex; align-items:center; gap:5px;
 }
 
-/* Wallet Card (Under Referral) */
+/* Wallet Card */
 .wallet-card-tt {
   width:100%; max-width:580px; margin:0 auto 16px;
   background:linear-gradient(135deg, rgba(255,107,53,.15), rgba(255,178,15,.08));
@@ -196,7 +200,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   text-decoration:none; display:inline-flex; align-items:center; gap:6px;
 }
 
-/* ==================== STRIPS (Stories & Tribes) ==================== */
+/* ==================== STRIPS ==================== */
 .section-strip {
   max-width:580px; width:100%; margin:0 auto 16px;
 }
@@ -268,7 +272,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   font-size:9px; font-weight:800; border-radius:10px; padding:1px 6px;
 }
 
-/* ==================== GRID ==================== */
+/* ==================== GRID (FIXED VIDEO PREVIEW) ==================== */
 .profile-grid {
   max-width:640px; margin:0 auto;
   display:grid; grid-template-columns:repeat(3, 1fr);
@@ -278,7 +282,10 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   position:relative; aspect-ratio:9/16;
   background:#111; overflow:hidden; cursor:pointer;
 }
-.grid-item img, .grid-item video { width:100%; height:100%; object-fit:cover; display:block; }
+.grid-item img, .grid-item video { 
+  width:100%; height:100%; object-fit:cover; display:block; 
+  pointer-events:none;
+}
 .grid-item .badge-pinned {
   position:absolute; top:6px; left:6px;
   background:var(--az-accent); color:#000;
@@ -290,6 +297,13 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   font-size:11px; font-weight:700; color:#fff;
   display:flex; align-items:center; gap:4px;
   text-shadow:0 1px 4px rgba(0,0,0,.9);
+}
+/* Play icon overlay for videos */
+.grid-item .video-play-icon {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  color:rgba(255,255,255,.85); font-size:24px;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+  z-index:2; pointer-events:none;
 }
 
 /* ==================== WALL COMMENTS ==================== */
@@ -326,7 +340,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 .wall-comment .wtext { font-size:13px; color:#ddd; margin-top:3px; word-break:break-word; }
 .wall-comment .wtime { font-size:11px; color:var(--az-text-secondary); margin-top:4px; }
 
-/* ==================== 📱 FULLSCREEN VERTICAL SWIPE FEED ==================== */
+/* ==================== 📱 FULLSCREEN SWIPE FEED (VIDEO CONTROLS FIX) ==================== */
 .tiktok-feed-modal {
   display:none; position:fixed; inset:0;
   background:#000; z-index:4000;
@@ -349,7 +363,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   background:#000; overflow:hidden;
 }
 .tiktok-post-slide video, .tiktok-post-slide img {
-  width:100%; height:100%; object-fit:cover;
+  width:100%; height:100%; object-fit:contain; /* Changed to contain so video is fully visible */
 }
 .tiktok-side-actions {
   position:absolute; right:14px; bottom:80px;
@@ -513,7 +527,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 <div id="profileMain">
   <div class="profile-header-tt">
     
-    <!-- Avatar (Clicks trigger story if active, otherwise opens photo picker) -->
+    <!-- Avatar -->
     <div class="profile-avatar-wrap" id="avatarWrap" onclick="handleAvatarClick()">
       <div class="profile-avatar" id="avatarDisplay">U</div>
       <div class="camera-badge" id="cameraBtn" style="display:none;" onclick="event.stopPropagation(); triggerAvatarUpload()" title="Change Avatar">
@@ -566,12 +580,14 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
       <button class="btn-action btn-action-secondary btn-action-icon" onclick="shareProfile()"><i class="fas fa-share-nodes"></i></button>
     </div>
 
-    <!-- Bio & Meta -->
-    <div class="profile-bio-tt" id="userBio">Arizona AI member 🏜️</div>
-    <div class="profile-meta-tt" id="profileMetaRow">
-      <span><i class="fas fa-at"></i> <span id="metaUname">user</span></span>
-      <span><i class="fas fa-map-marker-alt"></i> <span id="metaLocation">Not set</span></span>
-      <span><i class="fas fa-calendar"></i> Joined <span id="metaJoined">Oct 2026</span></span>
+    <!-- Bio & Meta (UPDATED LAYOUT) -->
+    <div class="profile-bio-container">
+      <div class="profile-bio-tt" id="userBio">Arizona AI member 🏜️</div>
+      <div class="profile-meta-tt" id="profileMetaRow">
+        <span><i class="fas fa-at"></i> <span id="metaUname">user</span></span>
+        <span><i class="fas fa-map-marker-alt"></i> <span id="metaLocation">Not set</span></span>
+        <span><i class="fas fa-calendar"></i> Joined <span id="metaJoined">Oct 2026</span></span>
+      </div>
     </div>
 
     <!-- Linktree Custom Pills -->
@@ -586,7 +602,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
       <button class="ref-btn" onclick="copyRef()"><i class="fas fa-copy"></i> Copy Code</button>
     </div>
 
-    <!-- Your Balance Card (under referral) -->
+    <!-- Your Balance Card -->
     <div class="wallet-card-tt" id="walletCard">
       <div class="w-info">
         <div class="w-lbl"><i class="fas fa-wallet" style="color:var(--az-accent);"></i> Your Balance</div>
@@ -782,8 +798,8 @@ let storyIdx = 0;
 let storyTimer = null;
 let isFollowing = false;
 let currentTab = 'posts';
-let currentProfileData = null;   // cached full row
-let currentProfileLink = '';     // slug for share
+let currentProfileData = null;   
+let currentProfileLink = '';     
 
 document.addEventListener('DOMContentLoaded', () => {
   const check = setInterval(() => {
@@ -797,15 +813,14 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ==================== INIT + PROFILE LINK RESOLUTION ==================== */
 async function init() {
   const params = new URLSearchParams(window.location.search);
-  const targetUser = params.get('user');        // ?user=<uuid>
-  const targetLink = params.get('u');           // ?u=<profile_link>
+  const targetUser = params.get('user');        
+  const targetLink = params.get('u');           
 
   if (!currentUser && !targetUser && !targetLink) {
     window.location.href = 'login.html';
     return;
   }
 
-  // Resolve ?u= slug to a real user id
   if (targetLink && !targetUser) {
     const { data: p, error } = await supabaseClient
       .from('profiles')
@@ -859,7 +874,6 @@ async function init() {
   }
 }
 
-/* ==================== LOG VIEW ==================== */
 async function logProfileView() {
   try {
     await supabaseClient.rpc('log_profile_view', { p_profile_id: profileId });
@@ -886,7 +900,6 @@ async function loadProfile() {
   document.getElementById('userBio').textContent = p.bio || 'Arizona AI member 🏜️';
   document.getElementById('metaLocation').textContent = p.location || 'Not set';
 
-  // Inline job title (in meta row)
   let jobSpan = document.getElementById('metaJob');
   if (p.job_title) {
     if (!jobSpan) {
@@ -1135,8 +1148,9 @@ function renderPostsGrid() {
     const media = (p.media_urls && p.media_urls[0]) || '';
     const isVideo = /\.(mp4|webm|mov)$/i.test(media);
 
+    // ✅ FIX: Added #t=0.001 to preload the first frame of videos so they aren't black, and added a play icon overlay.
     const mTag = isVideo
-      ? `<video src="${escapeHtml(media)}#t=0.001" preload="metadata" muted></video>`
+      ? `<video src="${escapeHtml(media)}#t=0.001" preload="metadata" muted></video><i class="fas fa-play video-play-icon"></i>`
       : (media ? `<img src="${escapeHtml(media)}" loading="lazy">` : `<div style="padding:14px;font-size:12px;color:#888;">${escapeHtml((p.content||'').slice(0,50))}</div>`);
 
     const pinBadge = p.is_pinned ? `<div class="badge-pinned">📌 Pinned</div>` : '';
@@ -1166,8 +1180,9 @@ function openSwipeFeed(startIdx = 0) {
     const isVideo = /\.(mp4|webm|mov)$/i.test(media);
     const isLiked = userLikedPostIds.has(p.id);
 
+    // ✅ FIX: Added 'controls' attribute to videos in the swipe feed so users have play/pause/speed/volume controls.
     const mediaTag = isVideo
-      ? `<video id="feed-vid-${i}" src="${escapeHtml(media)}" loop playsinline onclick="toggleVideoPlay(this)"></video>`
+      ? `<video id="feed-vid-${i}" src="${escapeHtml(media)}" controls playsinline></video>`
       : (media ? `<img src="${escapeHtml(media)}">` : `<div style="padding:40px;text-align:center;font-size:18px;">${escapeHtml(p.content||'')}</div>`);
 
     const pinBtn = isOwner ? `
@@ -1518,7 +1533,6 @@ function openEdit() {
   const pills = Array.from(document.querySelectorAll('.profile-links-tt a'));
   document.getElementById('editLinks').value = pills.map(pl => `${pl.innerText.trim()}|${pl.href}`).join('\n');
 
-  // Live preview for slug
   const slugInput = document.getElementById('editProfileLink');
   slugInput.oninput = (e) => {
     const cleaned = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
@@ -1548,21 +1562,18 @@ async function saveProfileChanges() {
     return { title: (parts[0]||'').trim(), url: (parts[1]||'').trim() };
   }).filter(x => x.title && x.url) : [];
 
-  // Validate username
   if (!username || username.length < 3) {
     toast('Username must be at least 3 characters');
     btn.disabled = false;
     return;
   }
 
-  // Validate profile_link format
   if (profile_link && profile_link.length < 3) {
     toast('Profile link must be at least 3 characters');
     btn.disabled = false;
     return;
   }
 
-  // Check uniqueness of profile_link
   if (profile_link) {
     const { data: existing } = await supabaseClient
       .from('profiles')
@@ -1577,7 +1588,6 @@ async function saveProfileChanges() {
     }
   }
 
-  // Check uniqueness of username
   const { data: existingUser } = await supabaseClient
     .from('profiles')
     .select('id')
