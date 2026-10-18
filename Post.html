@@ -1543,12 +1543,14 @@ function cancelPost() {
 }
 
 /* ============================================================
-   SHARE
+   SHARE (AMENDED HERE)
    ============================================================ */
 async function shareMyPost() {
   if (!lastPostId) return;
+  
+  // ✅ FIX: Pointing directly to the new post.html?id= link structure
   const basePath = window.location.pathname.replace(/\/[^\/]*$/, '');
-  const url = window.location.origin + basePath + '/index.html?post=' + lastPostId;
+  const url = window.location.origin + basePath + '/post.html?id=' + lastPostId;
 
   if (navigator.share) {
     try {
