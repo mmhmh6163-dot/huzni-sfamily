@@ -12,58 +12,63 @@
 
 <style>
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { margin: 0; padding: 0; background: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-body { padding-top: 54px; padding-bottom: 75px; }
+html, body { margin: 0; padding: 0; background: #0a0a0a; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+body { padding-top: 60px; padding-bottom: 75px; }
 
 :root {
-  --az-primary: #fe2c55;
-  --az-accent: #25f4ee;
-  --az-gradient: linear-gradient(135deg, #fe2c55 0%, #ff0050 100%);
-  --az-card-bg: #141414;
-  --az-border: rgba(255,255,255,0.12);
-  --az-text-secondary: rgba(255,255,255,0.65);
+  --az-primary: #FF6B35;
+  --az-accent: #FFB20F;
+  --az-gradient: linear-gradient(135deg, #FF6B35 0%, #FFB20F 100%);
+  --az-card-bg: #121212;
+  --az-border: rgba(255, 107, 53, 0.25);
+  --az-text-secondary: rgba(255, 255, 255, 0.6);
 }
 
 /* ==================== TOP NAVIGATION ==================== */
 .topbar {
-  position: fixed; top: 0; left: 0; right: 0; height: 54px;
-  background: rgba(0,0,0,0.9); backdrop-filter: blur(15px);
+  position: fixed; top: 0; left: 0; right: 0; height: 58px;
+  background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--az-border);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 16px; z-index: 1000; max-width: 600px; margin: 0 auto;
+  padding: 0 16px; z-index: 1000; max-width: 620px; margin: 0 auto;
 }
-.topbar .icon-btn, .topbar .back {
+.topbar .back, .topbar .icon-btn {
   color: #fff; font-size: 18px; width: 38px; height: 38px;
   display: flex; align-items: center; justify-content: center;
   border-radius: 50%; text-decoration: none; cursor: pointer;
   background: none; border: none;
 }
-.topbar .title { font-size: 16px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 4px; }
+.topbar .icon-btn:hover { background: rgba(255,255,255,0.06); }
+.topbar .title { font-size: 16px; font-weight: 700; color: #fff; }
 
-/* ==================== TIKTOK PROFILE HEADER ==================== */
-.tiktok-header {
-  max-width: 600px; margin: 0 auto;
-  padding: 18px 16px 8px;
+/* ==================== TIKTOK-STYLE HEADER WITH ARIZONA COLORS ==================== */
+.profile-header-tt {
+  max-width: 620px; margin: 0 auto;
+  padding: 16px 20px 8px;
   display: flex; flex-direction: column; align-items: center;
   text-align: center;
 }
 
 .profile-avatar-wrap {
-  position: relative; cursor: pointer; margin-bottom: 10px;
+  position: relative; cursor: pointer; margin-bottom: 12px;
 }
 .profile-avatar {
   width: 96px; height: 96px; border-radius: 50%;
-  background: #222; display: flex; align-items: center; justify-content: center;
-  font-size: 34px; font-weight: 800; color: #fff;
-  border: 2px solid #000; box-shadow: 0 0 0 2px rgba(255,255,255,0.2);
+  background: var(--az-gradient); display: flex; align-items: center; justify-content: center;
+  font-size: 36px; font-weight: 800; color: #fff;
+  border: 3px solid #0a0a0a; box-shadow: 0 0 0 2px var(--az-primary);
   overflow: hidden; transition: transform 0.2s; position: relative; z-index: 1;
 }
 .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.profile-avatar:active { transform: scale(0.96); }
 
-/* Story ring */
+/* Glowing rotating story ring if active story exists */
+.profile-avatar-wrap.has-story .profile-avatar {
+  box-shadow: 0 0 0 3px transparent;
+}
 .profile-avatar-wrap.has-story::before {
   content: ''; position: absolute; inset: -4px; border-radius: 50%;
-  background: conic-gradient(from 0deg, #fe2c55, #25f4ee, #fe2c55);
+  background: conic-gradient(from 0deg, #FF6B35, #FFB20F, #7c3aed, #FF6B35);
   z-index: 0; animation: spinRing 4s linear infinite;
 }
 @keyframes spinRing { to { transform: rotate(360deg); } }
@@ -73,130 +78,199 @@ body { padding-top: 54px; padding-bottom: 75px; }
   background: var(--az-primary); color: #fff;
   width: 28px; height: 28px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 12px; border: 2px solid #000; cursor: pointer; z-index: 10;
+  font-size: 11px; border: 2px solid #0a0a0a; cursor: pointer; z-index: 10;
 }
 
-.tiktok-username {
-  font-size: 18px; font-weight: 700; color: #fff;
+.profile-name-tt {
+  font-size: 19px; font-weight: 800; color: #fff;
   display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin-bottom: 2px;
 }
-.tiktok-handle {
-  font-size: 13px; color: var(--az-text-secondary); margin-bottom: 14px;
+.profile-handle-tt {
+  font-size: 13px; color: var(--az-text-secondary); margin-bottom: 16px;
 }
 
-/* 4-Column Clickable Stats */
-.tiktok-stats {
+/* 4 Clickable Stats Columns */
+.stats-grid-tt {
   display: flex; align-items: center; justify-content: space-around;
-  width: 100%; max-width: 440px; margin-bottom: 16px;
+  width: 100%; max-width: 480px; margin-bottom: 16px;
 }
-.stat-col {
+.stat-box {
   display: flex; flex-direction: column; align-items: center;
-  cursor: pointer; padding: 4px 10px; border-radius: 8px;
-  transition: background 0.15s;
+  cursor: pointer; padding: 6px 12px; border-radius: 10px;
+  transition: all 0.15s;
 }
-.stat-col:hover { background: rgba(255,255,255,0.06); }
-.stat-col .num { font-size: 17px; font-weight: 800; color: #fff; }
-.stat-col .lbl { font-size: 12px; color: var(--az-text-secondary); margin-top: 2px; }
+.stat-box:hover { background: rgba(255,255,255,0.05); }
+.stat-box .num { font-size: 18px; font-weight: 800; color: #fff; }
+.stat-box .lbl { font-size: 12px; color: var(--az-text-secondary); margin-top: 2px; }
 
-/* Action Buttons (Area 1: Story added here) */
-.tiktok-actions {
+/* Action Buttons */
+.actions-row-tt {
   display: flex; align-items: center; justify-content: center;
   gap: 8px; width: 100%; max-width: 480px; margin-bottom: 14px;
 }
-.btn-tt {
-  padding: 10px 14px; border-radius: 8px; font-size: 13px;
-  font-weight: 600; cursor: pointer; border: none;
-  font-family: inherit; display: inline-flex; align-items: center;
-  justify-content: center; gap: 6px; text-decoration: none; flex: 1;
+.btn-action {
+  padding: 10px 16px; border-radius: 10px; font-size: 13px;
+  font-weight: 700; cursor: pointer; border: none; font-family: inherit;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  text-decoration: none; flex: 1; transition: all 0.15s;
 }
-.btn-tt-primary { background: var(--az-primary); color: #fff; }
-.btn-tt-secondary { background: rgba(255,255,255,0.12); color: #fff; }
-.btn-tt-secondary:hover { background: rgba(255,255,255,0.18); }
-.btn-tt-story {
-  background: linear-gradient(135deg, rgba(254,44,85,0.2), rgba(37,244,238,0.15));
-  border: 1px solid rgba(254,44,85,0.4); color: #fff;
+.btn-action-primary { background: var(--az-gradient); color: #fff; }
+.btn-action-secondary {
+  background: rgba(255,255,255,0.08); color: #fff;
+  border: 1px solid rgba(255,255,255,0.12);
 }
-.btn-tt-icon {
-  width: 42px; flex: 0 0 42px; padding: 0; height: 40px; border-radius: 8px;
+.btn-action-secondary:hover { background: rgba(255,255,255,0.14); }
+.btn-action-story {
+  background: linear-gradient(135deg, rgba(255,107,53,0.2), rgba(255,178,15,0.15));
+  border: 1px solid rgba(255,107,53,0.45); color: var(--az-accent);
+}
+.btn-action-icon {
+  width: 42px; flex: 0 0 42px; height: 40px; padding: 0; border-radius: 10px;
 }
 
-/* Bio & Linktree */
-.tiktok-bio {
+/* Bio & Meta */
+.profile-bio-tt {
   font-size: 14px; line-height: 1.45; color: #eee;
-  max-width: 460px; margin-bottom: 10px; white-space: pre-wrap;
+  max-width: 480px; margin-bottom: 8px; white-space: pre-wrap;
 }
-.profile-links {
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
+.profile-meta-tt {
+  font-size: 12px; color: var(--az-text-secondary);
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 12px;
+}
+.profile-meta-tt span { display: inline-flex; align-items: center; gap: 4px; }
+
+/* Linktree Pills */
+.profile-links-tt {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
   margin-bottom: 14px;
 }
-.profile-link-pill {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 5px 12px; border-radius: 16px;
-  background: rgba(37, 244, 238, 0.1); border: 1px solid rgba(37, 244, 238, 0.3);
-  color: var(--az-accent); font-size: 12px; font-weight: 600;
-  text-decoration: none;
+.link-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 20px;
+  background: rgba(255,107,53,0.12); border: 1px solid rgba(255,107,53,0.35);
+  color: var(--az-accent); font-size: 12px; font-weight: 700; text-decoration: none;
 }
+.link-pill:hover { background: rgba(255,107,53,0.22); color: #fff; }
 
 /* Referral Banner */
-.referral-banner {
-  width: 100%; max-width: 480px;
-  background: linear-gradient(90deg, rgba(254,44,85,0.1), rgba(37,244,238,0.08));
-  border: 1px dashed rgba(255,255,255,0.2); border-radius: 10px;
-  padding: 8px 14px; margin-bottom: 10px;
-  display: flex; align-items: center; justify-content: space-between; font-size: 13px;
+.referral-card {
+  width: 100%; max-width: 580px; margin: 0 auto 14px;
+  background: linear-gradient(135deg, rgba(255,178,15,.15), rgba(255,107,53,.1));
+  border: 1px dashed rgba(255,178,15,.45);
+  border-radius: 14px; padding: 12px 16px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
 }
-.referral-banner .code { font-weight: 800; color: var(--az-accent); font-size: 13px; letter-spacing: 0.5px; }
-.referral-banner button {
-  background: rgba(255,255,255,0.12); border: none; color: #fff;
-  padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer;
+.referral-card .ref-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px;
+  color: var(--az-text-secondary); font-weight: 700;
+}
+.referral-card .ref-code {
+  font-size: 16px; font-weight: 800; color: var(--az-accent); margin-top: 2px; letter-spacing: 1px;
+}
+.referral-card .ref-btn {
+  padding: 8px 14px; border-radius: 10px;
+  background: var(--az-gradient); color: #fff;
+  border: none; font-size: 12px; font-weight: 700; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 5px;
 }
 
-/* ==================== 2. WALLET & BALANCE CARD ==================== */
-.wallet-strip {
-  width: 100%; max-width: 480px;
-  background: #111; border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 12px; padding: 12px 16px; margin-bottom: 14px;
+/* Wallet Card (Under Referral) */
+.wallet-card-tt {
+  width: 100%; max-width: 580px; margin: 0 auto 16px;
+  background: linear-gradient(135deg, rgba(255,107,53,0.15), rgba(255,178,15,0.08));
+  border: 1px solid rgba(255,107,53,0.35);
+  border-radius: 16px; padding: 16px 20px;
   display: flex; align-items: center; justify-content: space-between;
 }
-.wallet-strip .left { display: flex; align-items: center; gap: 12px; }
-.wallet-strip .wallet-icon {
-  width: 40px; height: 40px; border-radius: 10px;
-  background: rgba(254,44,85,0.15); color: var(--az-primary);
-  display: flex; align-items: center; justify-content: center; font-size: 18px;
+.wallet-card-tt .w-info .w-lbl {
+  font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--az-text-secondary); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;
 }
-.wallet-strip .bal-lbl { font-size: 11px; text-transform: uppercase; color: var(--az-text-secondary); font-weight: 700; }
-.wallet-strip .bal-val { font-size: 18px; font-weight: 800; color: var(--az-accent); margin-top: 1px; }
-.wallet-strip .btn-wallet {
-  background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.15);
-  padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700;
-  text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
+.wallet-card-tt .w-info .w-val {
+  font-size: 32px; font-weight: 800; color: var(--az-accent); line-height: 1;
 }
+.wallet-card-tt .w-btn {
+  background: var(--az-gradient); color: #fff; border: none;
+  padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 700;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+}
+
+/* ==================== STORIES & TRIBES SECTIONS ==================== */
+.section-strip {
+  max-width: 580px; width: 100%; margin: 0 auto 16px;
+}
+.section-strip .head {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+}
+.section-strip .head h3 {
+  font-size: 13px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 1px;
+  display: flex; align-items: center; gap: 6px; margin: 0;
+}
+.section-strip .head h3 i { color: var(--az-accent); }
+.section-strip .head .action-link {
+  font-size: 12px; color: var(--az-primary); font-weight: 700; cursor: pointer;
+  background: none; border: none; text-decoration: none;
+}
+.horizontal-row {
+  display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.horizontal-row::-webkit-scrollbar { display: none; }
+
+.add-story-tile {
+  width: 78px; height: 106px; border-radius: 12px;
+  border: 2px dashed rgba(255,107,53,0.5); background: rgba(255,107,53,0.06);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; flex-shrink: 0; cursor: pointer; color: var(--az-primary); font-size: 11px; font-weight: 700;
+}
+.story-chip {
+  width: 78px; height: 106px; border-radius: 12px; overflow: hidden;
+  position: relative; flex-shrink: 0; cursor: pointer; background: #111;
+  border: 2px solid rgba(255,255,255,0.08);
+}
+.story-chip img, .story-chip video { width: 100%; height: 100%; object-fit: cover; }
+.story-chip .chip-time {
+  position: absolute; top: 4px; left: 4px; background: rgba(0,0,0,0.7);
+  padding: 2px 6px; border-radius: 6px; font-size: 9px; font-weight: 800;
+}
+
+.tribe-chip {
+  min-width: 135px; max-width: 165px; background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1); border-radius: 14px;
+  padding: 10px 12px; flex-shrink: 0; cursor: pointer; display: flex; gap: 10px; align-items: center;
+}
+.tribe-chip .tav {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--az-gradient); color: #fff;
+  display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; overflow: hidden;
+}
+.tribe-chip .tav img { width: 100%; height: 100%; object-fit: cover; }
+.tribe-chip .tinfo { flex: 1; min-width: 0; }
+.tribe-chip .tname { font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tribe-chip .tsub { font-size: 10px; color: var(--az-text-secondary); margin-top: 2px; }
 
 /* ==================== TABS ==================== */
-.tt-tabs {
-  max-width: 600px; margin: 0 auto;
-  display: flex; border-bottom: 1px solid var(--az-border);
+.profile-tabs {
+  max-width: 620px; margin: 0 auto; display: flex;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
-.tt-tab {
-  flex: 1; padding: 12px 0; background: none; border: none;
-  cursor: pointer; color: var(--az-text-secondary);
-  font-size: 18px; position: relative; display: flex; align-items: center; justify-content: center;
+.profile-tabs .tab-item {
+  flex: 1; padding: 14px 0; background: none; border: none; cursor: pointer;
+  color: var(--az-text-secondary); display: flex; align-items: center; justify-content: center;
+  font-size: 18px; border-bottom: 2px solid transparent; position: relative;
 }
-.tt-tab.active { color: #fff; }
-.tt-tab.active::after {
-  content: ''; position: absolute; bottom: 0; left: 20%; right: 20%;
-  height: 2px; background: #fff;
-}
-.tt-tab .tab-badge {
-  position: absolute; top: 6px; right: 28%;
+.profile-tabs .tab-item.active { color: var(--az-accent); border-bottom-color: var(--az-accent); }
+.tab-badge {
+  position: absolute; top: 8px; right: 28%;
   background: var(--az-primary); color: #fff;
-  font-size: 9px; font-weight: 800; border-radius: 10px;
-  padding: 1px 5px;
+  font-size: 9px; font-weight: 800; border-radius: 10px; padding: 1px 6px;
 }
 
-/* ==================== POSTS GRID (TikTok 3x3) ==================== */
+/* ==================== GRID ==================== */
 .profile-grid {
-  max-width: 600px; margin: 0 auto;
+  max-width: 620px; margin: 0 auto;
   display: grid; grid-template-columns: repeat(3, 1fr);
   gap: 2px; padding: 2px 0;
 }
@@ -204,65 +278,55 @@ body { padding-top: 54px; padding-bottom: 75px; }
   position: relative; aspect-ratio: 9/16;
   background: #111; overflow: hidden; cursor: pointer;
 }
-.grid-item img, .grid-item video {
-  width: 100%; height: 100%; object-fit: cover; display: block;
-}
+.grid-item img, .grid-item video { width: 100%; height: 100%; object-fit: cover; display: block; }
 .grid-item .badge-pinned {
   position: absolute; top: 6px; left: 6px;
-  background: var(--az-primary); color: #fff;
+  background: var(--az-accent); color: #000;
   padding: 2px 6px; border-radius: 4px;
-  font-size: 10px; font-weight: 800; display: flex; align-items: center; gap: 3px; z-index: 2;
+  font-size: 9px; font-weight: 800; display: flex; align-items: center; gap: 3px; z-index: 2;
 }
 .grid-item .views-counter {
   position: absolute; bottom: 6px; left: 6px;
   font-size: 11px; font-weight: 700; color: #fff;
   display: flex; align-items: center; gap: 4px;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-}
-.grid-item .del-btn {
-  position: absolute; top: 6px; right: 6px;
-  background: rgba(0,0,0,0.6); color: #ff4757;
-  border: none; width: 26px; height: 26px; border-radius: 50%;
-  font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-  z-index: 3;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.9);
 }
 
-/* ==================== 💬 WALL / TESTIMONIALS ==================== */
-.wall-container {
-  max-width: 600px; margin: 0 auto; padding: 16px;
+/* ==================== WALL COMMENTS ==================== */
+.wall-wrap {
+  max-width: 620px; margin: 0 auto; padding: 16px;
 }
 .wall-input-box {
-  background: #151515; border: 1px solid var(--az-border);
-  border-radius: 12px; padding: 12px; margin-bottom: 18px;
+  background: #141414; border: 1px solid var(--az-border);
+  border-radius: 14px; padding: 12px; margin-bottom: 16px;
 }
 .wall-input-box textarea {
   width: 100%; min-height: 70px; background: transparent;
-  border: none; color: #fff; font-family: inherit; font-size: 13px;
-  outline: none; resize: vertical;
+  border: none; color: #fff; font-family: inherit; font-size: 13px; outline: none; resize: vertical;
 }
 .wall-input-box button {
   float: right; margin-top: 6px;
-  padding: 6px 16px; border-radius: 20px;
-  background: var(--az-primary); color: #fff;
+  padding: 8px 18px; border-radius: 20px;
+  background: var(--az-gradient); color: #fff;
   border: none; font-weight: 700; font-size: 12px; cursor: pointer;
 }
 .wall-input-box::after { content: ''; display: table; clear: both; }
-.wall-list { display: flex; flex-direction: column; gap: 10px; }
-.wall-card {
-  display: flex; gap: 10px; background: #121212;
-  padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);
+.wall-comment {
+  display: flex; gap: 12px; background: #121212;
+  padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 10px;
 }
-.wall-card .wav {
+.wall-comment .wav {
   width: 36px; height: 36px; border-radius: 50%;
-  background: #333; overflow: hidden; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center; font-weight: 700;
+  background: var(--az-gradient); display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: #fff; overflow: hidden; flex-shrink: 0;
 }
-.wall-card .wav img { width: 100%; height: 100%; object-fit: cover; }
-.wall-card .wauthor { font-size: 13px; font-weight: 700; color: #fff; }
-.wall-card .wtext { font-size: 13px; color: #ddd; margin-top: 3px; word-break: break-word; }
-.wall-card .wtime { font-size: 11px; color: var(--az-text-secondary); margin-top: 4px; }
+.wall-comment .wav img { width: 100%; height: 100%; object-fit: cover; }
+.wall-comment .wauthor { font-size: 13px; font-weight: 700; color: #fff; }
+.wall-comment .wtext { font-size: 13px; color: #ddd; margin-top: 3px; word-break: break-word; }
+.wall-comment .wtime { font-size: 11px; color: var(--az-text-secondary); margin-top: 4px; }
 
-/* ==================== 📱 TIKTOK VERTICAL SWIPE FEED ==================== */
+/* ==================== 📱 FULLSCREEN VERTICAL SWIPE FEED ==================== */
 .tiktok-feed-modal {
   display: none; position: fixed; inset: 0;
   background: #000; z-index: 4000;
@@ -271,8 +335,8 @@ body { padding-top: 54px; padding-bottom: 75px; }
 }
 .tiktok-feed-modal.active { display: block; }
 .tiktok-feed-close {
-  position: fixed; top: 16px; left: 16px;
-  width: 38px; height: 38px; border-radius: 50%;
+  position: fixed; top: 18px; left: 16px;
+  width: 40px; height: 40px; border-radius: 50%;
   background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
   color: #fff; border: none; font-size: 18px;
   display: flex; align-items: center; justify-content: center;
@@ -288,7 +352,7 @@ body { padding-top: 54px; padding-bottom: 75px; }
   width: 100%; height: 100%; object-fit: cover;
 }
 .tiktok-side-actions {
-  position: absolute; right: 12px; bottom: 80px;
+  position: absolute; right: 14px; bottom: 80px;
   display: flex; flex-direction: column; align-items: center; gap: 16px;
   z-index: 4100;
 }
@@ -303,16 +367,48 @@ body { padding-top: 54px; padding-bottom: 75px; }
   font-size: 20px; transition: transform 0.15s;
 }
 .side-btn-wrap .icon-circle:active { transform: scale(0.9); }
-.side-btn-wrap.liked .icon-circle { color: #fe2c55; }
+.side-btn-wrap.liked .icon-circle { color: #ff4757; }
 .side-btn-wrap .label { font-size: 11px; font-weight: 700; margin-top: 4px; }
 .tiktok-bottom-info {
   position: absolute; bottom: 20px; left: 16px; right: 80px;
   color: #fff; z-index: 4100; text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
-.tiktok-bottom-info .uname { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.tiktok-bottom-info .uname { font-size: 15px; font-weight: 800; margin-bottom: 4px; color: var(--az-accent); }
 .tiktok-bottom-info .ucaption { font-size: 13px; line-height: 1.4; max-height: 80px; overflow-y: auto; }
 
-/* ==================== BOTTOM SHEETS & MODALS ==================== */
+/* ==================== STORY VIEWER ==================== */
+.story-viewer {
+  display: none; position: fixed; inset: 0;
+  background: #000; z-index: 4900;
+}
+.story-viewer.active { display: block; }
+.sv-inner { position: relative; width: 100%; height: 100%; max-width: 600px; margin: 0 auto; }
+.sv-progress {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 20;
+  display: flex; gap: 3px; padding: 10px 8px;
+}
+.sv-segment { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden; }
+.sv-segment .fill { height: 100%; background: #fff; width: 0; }
+.sv-header {
+  position: absolute; top: 20px; left: 0; right: 0; padding: 10px 14px;
+  display: flex; align-items: center; gap: 10px; z-index: 15;
+  background: linear-gradient(rgba(0,0,0,0.7), transparent);
+}
+.sv-av {
+  width: 36px; height: 36px; border-radius: 50%; background: var(--az-gradient);
+  display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; overflow: hidden;
+}
+.sv-av img { width: 100%; height: 100%; object-fit: cover; }
+.sv-close {
+  margin-left: auto; background: none; border: none; color: #fff; font-size: 20px; cursor: pointer;
+}
+.sv-body { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.sv-body img, .sv-body video { max-width: 100%; max-height: 100%; object-fit: contain; }
+.sv-tap-left, .sv-tap-right { position: absolute; top: 60px; bottom: 60px; width: 40%; z-index: 10; }
+.sv-tap-left { left: 0; }
+.sv-tap-right { right: 0; }
+
+/* ==================== BOTTOM SHEETS ==================== */
 .modal-sheet {
   display: none; position: fixed; inset: 0;
   background: rgba(0,0,0,0.8); z-index: 5000;
@@ -320,259 +416,281 @@ body { padding-top: 54px; padding-bottom: 75px; }
 }
 .modal-sheet.active { display: flex; }
 .modal-sheet-content {
-  background: #181818; width: 100%; max-width: 500px;
-  border-radius: 16px 16px 0 0; padding: 20px;
+  background: #181818; width: 100%; max-width: 520px;
+  border-radius: 20px 20px 0 0; padding: 22px;
   max-height: 85vh; overflow-y: auto;
 }
-.modal-sheet-content .field { margin-bottom: 12px; }
-.modal-sheet-content label { display: block; font-size: 12px; color: var(--az-text-secondary); margin-bottom: 4px; }
+.modal-sheet-content .field { margin-bottom: 14px; }
+.modal-sheet-content label { display: block; font-size: 12px; color: var(--az-text-secondary); margin-bottom: 5px; text-transform: uppercase; font-weight: 700; }
 .modal-sheet-content input, .modal-sheet-content textarea {
-  width: 100%; padding: 10px 12px; background: #0c0c0c;
-  border: 1px solid var(--az-border); border-radius: 8px; color: #fff;
-  font-family: inherit; font-size: 14px;
+  width: 100%; padding: 12px 14px; background: #0c0c0c;
+  border: 1px solid #333; border-radius: 10px; color: #fff; font-family: inherit; font-size: 14px;
 }
-.modal-btn-row { display: flex; gap: 8px; margin-top: 16px; }
-.modal-btn-row button {
-  flex: 1; padding: 12px; border-radius: 8px;
-  font-size: 14px; font-weight: 700; cursor: pointer; border: none;
-}
-
-/* User List for Followers / Following */
-.user-row {
-  display: flex; align-items: center; gap: 12px;
-  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-.user-row .uav {
-  width: 42px; height: 42px; border-radius: 50%;
-  background: #333; overflow: hidden; display: flex; align-items: center; justify-content: center;
-}
-.user-row .uav img { width: 100%; height: 100%; object-fit: cover; }
-.user-row .uinfo { flex: 1; }
-.user-row .uinfo .uname { font-size: 14px; font-weight: 700; color: #fff; }
-.user-row .uinfo .uhandle { font-size: 12px; color: var(--az-text-secondary); }
-.user-row button {
-  padding: 6px 14px; border-radius: 16px; font-size: 12px;
-  font-weight: 700; cursor: pointer; border: none;
+.modal-sheet-content input:focus, .modal-sheet-content textarea:focus { outline: none; border-color: var(--az-primary); }
+.modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+.modal-actions button {
+  flex: 1; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; border: none; font-size: 14px;
 }
 
-/* Toast */
-.toast-msg {
-  position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
-  background: rgba(255,255,255,0.92); color: #000;
-  padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 700;
-  z-index: 9999; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+/* Follow list row */
+.follow-row {
+  display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
 }
+.follow-row .fav {
+  width: 42px; height: 42px; border-radius: 50%; background: var(--az-gradient);
+  display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; overflow: hidden;
+}
+.follow-row .fav img { width: 100%; height: 100%; object-fit: cover; }
+.follow-row .finfo { flex: 1; }
+.follow-row .fname { font-size: 14px; font-weight: 700; color: #fff; }
+.follow-row .fhandle { font-size: 12px; color: var(--az-text-secondary); }
 
-.empty-view {
-  text-align: center; padding: 60px 20px; color: var(--az-text-secondary);
+/* Mini Toast */
+.toast-mini {
+  position: fixed; top: 75px; left: 50%; transform: translateX(-50%);
+  background: rgba(18, 18, 18, 0.95); border: 1px solid var(--az-primary);
+  color: #fff; padding: 9px 20px; border-radius: 20px; font-size: 13px; font-weight: 700;
+  z-index: 9999; display: none; box-shadow: 0 4px 20px rgba(0,0,0,0.6);
 }
-.empty-view i { font-size: 40px; margin-bottom: 12px; opacity: 0.5; }
 </style>
 </head>
 <body>
 
-<div id="toast" class="toast-msg"></div>
+<div id="toastMini" class="toast-mini"></div>
 
-<!-- ==================== TOP BAR ==================== -->
+<!-- ==================== TOP NAVIGATION ==================== -->
 <header class="topbar">
   <a href="index.html" class="back"><i class="fas fa-chevron-left"></i></a>
-  <span class="title" id="topbarUsername">@user</span>
+  <span class="title" id="topbarTitle">Profile</span>
   <div style="display:flex; gap:4px;">
-    <button class="icon-btn" onclick="shareProfile()"><i class="fas fa-share-nodes"></i></button>
+    <button class="icon-btn" onclick="shareProfile()" title="Share"><i class="fas fa-share-nodes"></i></button>
     <a href="chats.html" class="icon-btn" title="Messages"><i class="fas fa-paper-plane"></i></a>
-    <button class="icon-btn" onclick="openEdit()"><i class="fas fa-bars"></i></button>
+    <button class="icon-btn" onclick="openEdit()" title="Edit"><i class="fas fa-cog"></i></button>
   </div>
 </header>
 
-<!-- Hidden File Pickers -->
+<!-- Hidden Inputs -->
 <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" onchange="handleAvatarSelected(event)">
 <input type="file" id="storyFileInput" accept="image/*,video/*" style="display:none;" onchange="handleStorySelected(event)">
 
-<!-- ==================== TIKTOK PROFILE CONTENT ==================== -->
-<div id="profileContainer">
-  <div class="tiktok-header">
-    <div class="profile-avatar-wrap" id="avatarWrap" onclick="triggerAvatarUpload()">
+<!-- ==================== PROFILE MAIN CONTAINER ==================== -->
+<div id="profileMain">
+  <div class="profile-header-tt">
+    
+    <!-- Avatar (Clicks trigger story if active, otherwise opens photo) -->
+    <div class="profile-avatar-wrap" id="avatarWrap" onclick="handleAvatarClick()">
       <div class="profile-avatar" id="avatarDisplay">U</div>
-      <div class="camera-badge" id="cameraBtn" style="display:none;" title="Change Photo"><i class="fas fa-camera"></i></div>
+      <div class="camera-badge" id="cameraBtn" style="display:none;" onclick="event.stopPropagation(); triggerAvatarUpload()" title="Change Avatar">
+        <i class="fas fa-camera"></i>
+      </div>
     </div>
 
-    <div class="tiktok-username">
+    <div class="profile-name-tt">
       <span id="dispName">User</span>
-      <i class="fas fa-circle-check" id="verifiedIcon" style="color:var(--az-accent); font-size:14px; display:none;"></i>
+      <i class="fas fa-circle-check" id="verifiedIcon" style="color:#3b82f6; font-size:14px; display:none;"></i>
     </div>
-    <div class="tiktok-handle" id="userHandle">@username</div>
+    <div class="profile-handle-tt" id="userHandle">@username</div>
 
     <!-- 4 Clickable Stats Columns -->
-    <div class="tiktok-stats">
-      <div class="stat-col" onclick="openFollowModal('following')">
+    <div class="stats-grid-tt">
+      <div class="stat-box" onclick="openFollowersModal('following')">
         <span class="num" id="statFollowing">0</span>
         <span class="lbl">Following</span>
       </div>
-      <div class="stat-col" onclick="openFollowModal('followers')">
+      <div class="stat-box" onclick="openFollowersModal('followers')">
         <span class="num" id="statFollowers">0</span>
         <span class="lbl">Followers</span>
       </div>
-      <div class="stat-col" onclick="openViewsModal()">
+      <div class="stat-box" onclick="openViewsModal()">
         <span class="num" id="statViews">0</span>
         <span class="lbl">Views</span>
       </div>
-      <div class="stat-col" onclick="scrollToPosts()">
+      <div class="stat-box" onclick="scrollToPosts()">
         <span class="num" id="statPosts">0</span>
         <span class="lbl">Posts</span>
       </div>
     </div>
 
-    <!-- Area 1: Action Buttons With Story Creation for Owner -->
-    <div class="tiktok-actions" id="ownActions">
-      <button class="btn-tt btn-tt-story" onclick="triggerStoryUpload()">
-        <i class="fas fa-plus-circle" style="color:var(--az-primary);"></i> Story
+    <!-- Actions for Profile Owner -->
+    <div class="actions-row-tt" id="ownerActions">
+      <button class="btn-action btn-action-story" onclick="triggerStoryUpload()">
+        <i class="fas fa-plus-circle"></i> Story
       </button>
-      <button class="btn-tt btn-tt-secondary" onclick="openEdit()">Edit profile</button>
-      <button class="btn-tt btn-tt-secondary" onclick="shareProfile()">Share</button>
-      <a href="Post.html" class="btn-tt btn-tt-primary btn-tt-icon" title="Create Post"><i class="fas fa-plus"></i></a>
+      <button class="btn-action btn-action-secondary" onclick="openEdit()">Edit</button>
+      <button class="btn-action btn-action-secondary" onclick="shareProfile()">Share</button>
+      <a href="Post.html" class="btn-action btn-action-primary btn-action-icon" title="Post"><i class="fas fa-plus"></i></a>
     </div>
 
-    <!-- Action Buttons for Visitors -->
-    <div class="tiktok-actions" id="otherActions" style="display:none;">
-      <button class="btn-tt btn-tt-primary" id="btnFollow" onclick="toggleFollow()"><i class="fas fa-user-plus"></i> Follow</button>
-      <a class="btn-tt btn-tt-secondary" id="btnMsg" href="#"><i class="fas fa-paper-plane"></i> Message</a>
-      <button class="btn-tt btn-tt-secondary btn-tt-icon" onclick="shareProfile()"><i class="fas fa-share-nodes"></i></button>
+    <!-- Actions for Visitor -->
+    <div class="actions-row-tt" id="visitorActions" style="display:none;">
+      <button class="btn-action btn-action-primary" id="btnFollow" onclick="toggleFollow()">
+        <i class="fas fa-user-plus"></i> Follow
+      </button>
+      <a class="btn-action btn-action-secondary" id="btnMsg" href="#"><i class="fas fa-paper-plane"></i> Message</a>
+      <button class="btn-action btn-action-secondary btn-action-icon" onclick="shareProfile()"><i class="fas fa-share-nodes"></i></button>
     </div>
 
-    <!-- Bio -->
-    <div class="tiktok-bio" id="userBio">Welcome to my profile! 🏜️</div>
-
-    <!-- Linktree pills -->
-    <div class="profile-links" id="linktreeContainer"></div>
-
-    <!-- Referral Banner -->
-    <div class="referral-banner" id="referralBox">
-      <div>Referral: <span class="code" id="refCode">AZ-CREATOR</span></div>
-      <button onclick="copyRef()"><i class="fas fa-copy"></i> Copy</button>
+    <!-- Bio & Meta -->
+    <div class="profile-bio-tt" id="userBio">Arizona AI member 🏜️</div>
+    <div class="profile-meta-tt">
+      <span><i class="fas fa-at"></i> <span id="metaUname">user</span></span>
+      <span><i class="fas fa-map-marker-alt"></i> <span id="metaLocation">Not set</span></span>
+      <span><i class="fas fa-calendar"></i> Joined <span id="metaJoined">Oct 2026</span></span>
     </div>
 
-    <!-- Area 2: Wallet & Balance Strip Under Referral -->
-    <div class="wallet-strip" id="walletStrip">
-      <div class="left">
-        <div class="wallet-icon"><i class="fas fa-wallet"></i></div>
-        <div>
-          <div class="bal-lbl">Your Balance</div>
-          <div class="bal-val" id="walletBalanceVal">$0.00</div>
-        </div>
+    <!-- Linktree Custom Pills -->
+    <div class="profile-links-tt" id="linksContainer"></div>
+
+    <!-- Referral / Invite & Earn -->
+    <div class="referral-card" id="refCard">
+      <div>
+        <div class="ref-title"><i class="fas fa-gift"></i> Invite & Earn</div>
+        <div class="ref-code" id="refCode">AZ-CREATOR</div>
       </div>
-      <a href="wallets.html" class="btn-wallet">
-        <span>Wallet</span> <i class="fas fa-arrow-right"></i>
-      </a>
+      <button class="ref-btn" onclick="copyRef()"><i class="fas fa-copy"></i> Copy Code</button>
     </div>
+
+    <!-- Your Balance Card (under referral) -->
+    <div class="wallet-card-tt" id="walletCard">
+      <div class="w-info">
+        <div class="w-lbl"><i class="fas fa-wallet" style="color:var(--az-accent);"></i> Your Balance</div>
+        <div class="w-val" id="walletBalanceVal">$0.00</div>
+      </div>
+      <a href="wallets.html" class="w-btn"><i class="fas fa-wallet"></i> Wallet</a>
+    </div>
+
+    <!-- My Stories Row (For Owner) -->
+    <div class="section-strip" id="ownerStoriesStrip" style="display:none;">
+      <div class="head">
+        <h3><i class="fas fa-circle-play"></i> My Stories</h3>
+        <button class="action-link" onclick="triggerStoryUpload()">+ Add New</button>
+      </div>
+      <div class="horizontal-row" id="ownerStoriesRow"></div>
+    </div>
+
+    <!-- My Tribes Strip -->
+    <div class="section-strip" id="tribesStrip" style="display:none;">
+      <div class="head">
+        <h3><i class="fas fa-users" style="color:#5eb8ff;"></i> My Tribes</h3>
+        <a href="chats.html" class="action-link" style="color:#5eb8ff;">See All</a>
+      </div>
+      <div class="horizontal-row" id="tribesRow"></div>
+    </div>
+
   </div>
 
-  <!-- Tabs -->
-  <div class="tt-tabs">
-    <button class="tt-tab active" onclick="switchTab('posts', this)"><i class="fas fa-bars-staggered"></i></button>
-    <button class="tt-tab" onclick="switchTab('reels', this)"><i class="fas fa-play"></i></button>
-    <button class="tt-tab" onclick="switchTab('wall', this)">
+  <!-- Content Tabs -->
+  <div class="profile-tabs">
+    <button class="tab-item active" onclick="switchTab('posts', this)"><i class="fas fa-th"></i></button>
+    <button class="tab-item" onclick="switchTab('reels', this)"><i class="fas fa-play"></i></button>
+    <button class="tab-item" onclick="switchTab('wall', this)">
       <i class="fas fa-comment-dots"></i>
       <span class="tab-badge" id="wallCountBadge" style="display:none;">0</span>
     </button>
   </div>
 
-  <!-- Posts Grid (3x3) -->
+  <!-- Posts 3x3 Grid -->
   <div class="profile-grid" id="postsGrid"></div>
-  <div class="empty-view" id="emptyNotice" style="display:none;">
-    <i class="fas fa-film"></i>
-    <p>No content uploaded yet</p>
+  <div id="emptyNotice" style="text-align:center; padding:60px 20px; color:var(--az-text-secondary); display:none;">
+    <i class="fas fa-film" style="font-size:36px; opacity:.4; margin-bottom:10px;"></i>
+    <div>No posts uploaded yet</div>
   </div>
 
   <!-- Wall Comments Tab -->
-  <div class="wall-container" id="wallSection" style="display:none;">
+  <div class="wall-wrap" id="wallWrap" style="display:none;">
     <div class="wall-input-box">
-      <textarea id="wallInput" placeholder="Leave a comment on this profile..." maxlength="500"></textarea>
-      <button onclick="sendWallComment()"><i class="fas fa-paper-plane"></i> Post</button>
+      <textarea id="wallInput" placeholder="Leave a message on this profile wall..." maxlength="500"></textarea>
+      <button onclick="postWallComment()"><i class="fas fa-paper-plane"></i> Post Message</button>
     </div>
-    <div class="wall-list" id="wallList"></div>
+    <div id="wallList"></div>
   </div>
 </div>
 
 <!-- ==================== 📱 FULLSCREEN VERTICAL SWIPE FEED ==================== -->
-<div class="tiktok-feed-modal" id="tiktokSwipeFeed">
+<div class="tiktok-feed-modal" id="tiktokFeedModal">
   <button class="tiktok-feed-close" onclick="closeSwipeFeed()"><i class="fas fa-times"></i></button>
   <div id="swipeSlidesContainer"></div>
+</div>
+
+<!-- ==================== STORY VIEWER ==================== -->
+<div class="story-viewer" id="storyViewer">
+  <div class="sv-inner">
+    <div class="sv-progress" id="svProgress"></div>
+    <div class="sv-header">
+      <div class="sv-av" id="svAv">U</div>
+      <div style="font-size:13px; font-weight:700;" id="svUname">User</div>
+      <button class="sv-close" onclick="closeStoryViewer()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="sv-body" id="svBody"></div>
+    <div class="sv-tap-left" onclick="storyNav(-1)"></div>
+    <div class="sv-tap-right" onclick="storyNav(1)"></div>
+  </div>
 </div>
 
 <!-- ==================== FOLLOWERS / FOLLOWING MODAL ==================== -->
 <div class="modal-sheet" id="followModal">
   <div class="modal-sheet-content">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-      <h3 style="margin:0;" id="followModalTitle">Followers</h3>
+      <h3 style="margin:0; font-size:16px;" id="followTitle">Followers</h3>
       <button onclick="closeFollowModal()" style="background:none; border:none; color:#fff; font-size:18px; cursor:pointer;"><i class="fas fa-times"></i></button>
     </div>
-    <div id="followListContainer" style="max-height:50vh; overflow-y:auto;"></div>
+    <div id="followList" style="max-height:55vh; overflow-y:auto;"></div>
   </div>
 </div>
 
 <!-- ==================== PROFILE VIEWS MODAL ==================== -->
 <div class="modal-sheet" id="viewsModal">
   <div class="modal-sheet-content" style="text-align:center;">
-    <i class="fas fa-eye" style="font-size:36px; color:var(--az-accent); margin-bottom:10px;"></i>
+    <i class="fas fa-eye" style="font-size:36px; color:var(--az-accent); margin-bottom:12px;"></i>
     <h3 style="margin:0 0 6px;">Profile Views</h3>
-    <div style="font-size:28px; font-weight:800; color:var(--az-primary); margin-bottom:6px;" id="modalViewsCount">0</div>
-    <p style="font-size:13px; color:var(--az-text-secondary); margin-bottom:20px;">Total visits received on this profile.</p>
-    <div class="modal-btn-row">
-      <button style="background:rgba(255,255,255,0.12); color:#fff;" onclick="closeViewsModal()">Close</button>
+    <div style="font-size:32px; font-weight:800; color:var(--az-primary); margin-bottom:8px;" id="modalViewsNum">0</div>
+    <p style="font-size:13px; color:var(--az-text-secondary); margin-bottom:20px;">Total profile visits received.</p>
+    <div class="modal-actions">
+      <button style="background:rgba(255,255,255,0.1); color:#fff;" onclick="closeViewsModal()">Close</button>
     </div>
   </div>
 </div>
 
-<!-- ==================== EDIT PROFILE SHEET ==================== -->
-<div class="modal-sheet" id="editSheet">
+<!-- ==================== EDIT PROFILE MODAL ==================== -->
+<div class="modal-sheet" id="editModal">
   <div class="modal-sheet-content">
-    <h3 style="margin-top:0; text-align:center;">Edit Profile</h3>
-    <div class="field">
-      <label>Display Name</label>
-      <input type="text" id="editDisplayName" maxlength="50">
-    </div>
-    <div class="field">
-      <label>Username</label>
-      <input type="text" id="editUsername" maxlength="30">
-    </div>
-    <div class="field">
-      <label>Bio</label>
-      <textarea id="editBio" maxlength="250" rows="3"></textarea>
-    </div>
+    <h3 style="margin:0 0 16px; text-align:center;">Edit Profile</h3>
+    <div class="field"><label>Display Name</label><input type="text" id="editDisplayName" maxlength="50"></div>
+    <div class="field"><label>Username</label><input type="text" id="editUsername" maxlength="30"></div>
+    <div class="field"><label>Bio</label><textarea id="editBio" maxlength="250" rows="3"></textarea></div>
     <div class="field">
       <label>Custom Links (Format: Title|URL, one per line)</label>
-      <textarea id="editLinks" rows="3" placeholder="YouTube|https://youtube.com/@me&#10;My Store|https://shop.com"></textarea>
+      <textarea id="editLinks" rows="3" placeholder="YouTube|https://youtube.com/@me&#10;Store|https://mystore.com"></textarea>
     </div>
-    <div class="modal-btn-row">
+    <div class="modal-actions">
       <button style="background:rgba(255,255,255,0.1); color:#fff;" onclick="closeEdit()">Cancel</button>
-      <button style="background:var(--az-primary); color:#fff;" id="btnSaveProfile" onclick="saveProfileChanges()">Save</button>
+      <button style="background:var(--az-gradient); color:#fff;" id="saveProfileBtn" onclick="saveProfileChanges()">Save</button>
     </div>
   </div>
 </div>
 
+<!-- ==================== SCRIPTS ==================== -->
 <script src="auth.js"></script>
 <script>
-/* ==================== STATE ==================== */
 let profileId = null;
 let isOwner = false;
-let posts = [];
+let userPosts = [];
+let userStories = [];
+let storyIdx = 0;
+let storyTimer = null;
 let isFollowing = false;
 let currentTab = 'posts';
-let currentSlideIndex = 0;
-let userFollowers = [];
-let userFollowing = [];
 
-/* ==================== INITIALIZATION ==================== */
 document.addEventListener('DOMContentLoaded', () => {
   const check = setInterval(() => {
     if (typeof authReady !== 'undefined' && authReady) {
       clearInterval(check);
-      boot();
+      init();
     }
   }, 100);
 });
 
-async function boot() {
+async function init() {
   const params = new URLSearchParams(window.location.search);
   const targetUser = params.get('user');
 
@@ -585,126 +703,172 @@ async function boot() {
   isOwner = currentUser && profileId === currentUser.id;
 
   if (isOwner) {
-    document.getElementById('ownActions').style.display = 'flex';
-    document.getElementById('otherActions').style.display = 'none';
+    document.getElementById('ownerActions').style.display = 'flex';
+    document.getElementById('visitorActions').style.display = 'none';
     document.getElementById('cameraBtn').style.display = 'flex';
-    document.getElementById('walletStrip').style.display = 'flex';
+    document.getElementById('walletCard').style.display = 'flex';
+    document.getElementById('ownerStoriesStrip').style.display = 'block';
+    document.getElementById('tribesStrip').style.display = 'block';
   } else {
-    document.getElementById('ownActions').style.display = 'none';
-    document.getElementById('otherActions').style.display = 'flex';
+    document.getElementById('ownerActions').style.display = 'none';
+    document.getElementById('visitorActions').style.display = 'flex';
+    document.getElementById('cameraBtn').style.display = 'none';
+    document.getElementById('walletCard').style.display = 'none';
+    document.getElementById('ownerStoriesStrip').style.display = 'none';
+    document.getElementById('tribesStrip').style.display = 'none';
     document.getElementById('btnMsg').href = `chats.html?user=${profileId}`;
-    document.getElementById('walletStrip').style.display = 'none';
     checkFollowState();
     logProfileView();
   }
 
   await loadProfile();
-  await loadWallet();
+  await loadStories();
   await loadPosts();
-  await checkStories();
-}
-
-/* ==================== LOG & LOAD PROFILE ==================== */
-async function logProfileView() {
-  try {
-    await supabaseClient.rpc('log_profile_view', { p_profile_id: profileId });
-  } catch (e) {
-    try {
-      await supabaseClient.from('profiles').update({
-        profile_views: supabaseClient.raw('COALESCE(profile_views, 0) + 1')
-      }).eq('id', profileId);
-    } catch(err) {}
+  if (isOwner) {
+    await loadWallet();
+    await loadTribes();
   }
 }
 
-async function loadProfile() {
-  const { data: p } = await supabaseClient
-    .from('profiles')
-    .select('*')
-    .eq('id', profileId)
-    .maybeSingle();
+/* ==================== LOG VIEW ==================== */
+async function logProfileView() {
+  try {
+    await supabaseClient.rpc('log_profile_view', { p_profile_id: profileId });
+  } catch(e) {}
+}
 
+/* ==================== LOAD PROFILE ==================== */
+async function loadProfile() {
+  const { data: p } = await supabaseClient.from('profiles').select('*').eq('id', profileId).maybeSingle();
   if (!p) return;
 
   const uname = p.username || 'user';
-  document.getElementById('topbarUsername').textContent = '@' + uname;
+  document.getElementById('topbarTitle').textContent = isOwner ? 'Profile' : '@' + uname;
   document.getElementById('userHandle').textContent = '@' + uname;
   document.getElementById('dispName').textContent = p.display_name || uname;
+  document.getElementById('metaUname').textContent = uname;
   document.getElementById('userBio').textContent = p.bio || 'Arizona AI member 🏜️';
+  document.getElementById('metaLocation').textContent = p.location || 'Not set';
+
+  if (p.created_at) {
+    document.getElementById('metaJoined').textContent = new Date(p.created_at).toLocaleDateString('en-US', { month:'short', year:'numeric' });
+  }
 
   document.getElementById('statFollowing').textContent = p.following_count ?? 0;
   document.getElementById('statFollowers').textContent = p.followers_count ?? 0;
   document.getElementById('statPosts').textContent = p.posts_count ?? 0;
   const views = p.profile_views ?? 0;
   document.getElementById('statViews').textContent = views;
-  document.getElementById('modalViewsCount').textContent = views;
+  document.getElementById('modalViewsNum').textContent = views;
 
   if (p.is_verified) {
     document.getElementById('verifiedIcon').style.display = 'inline-block';
   }
 
-  const avEl = document.getElementById('avatarDisplay');
+  const av = document.getElementById('avatarDisplay');
   if (p.avatar_url) {
-    avEl.innerHTML = `<img src="${escapeHtml(p.avatar_url)}" alt="">`;
+    av.innerHTML = `<img src="${escapeHtml(p.avatar_url)}" alt="">`;
   } else {
-    avEl.textContent = uname.charAt(0).toUpperCase();
+    av.textContent = uname.charAt(0).toUpperCase();
   }
 
   const code = p.referral_code || ('AZ-' + uname.toUpperCase().slice(0, 6));
   document.getElementById('refCode').textContent = code;
 
+  // Render linktree pills
   renderLinks(p.links);
 }
 
-/* ==================== WALLET & BALANCE ==================== */
-async function loadWallet() {
-  if (!isOwner) return;
-  try {
-    const { data: w } = await supabaseClient
-      .from('wallets')
-      .select('balance')
-      .eq('user_id', currentUser.id)
-      .maybeSingle();
+function renderLinks(links) {
+  const container = document.getElementById('linksContainer');
+  let arr = [];
+  if (Array.isArray(links)) arr = links;
+  else if (typeof links === 'string' && links.trim()) {
+    try { arr = JSON.parse(links); } catch(e){}
+  }
 
-    if (w) {
-      document.getElementById('walletBalanceVal').textContent = '$' + Number(w.balance || 0).toFixed(2);
-    }
-  } catch(e) {}
+  if (arr.length > 0) {
+    container.innerHTML = arr.map(l => `
+      <a href="${escapeHtml(l.url)}" target="_blank" rel="noopener" class="link-pill">
+        <i class="fas fa-link"></i> ${escapeHtml(l.title)}
+      </a>
+    `).join('');
+    container.style.display = 'flex';
+  } else {
+    container.innerHTML = '';
+    container.style.display = 'none';
+  }
 }
 
-/* ==================== STORY STATUS ==================== */
-async function checkStories() {
+/* ==================== STORIES ==================== */
+async function loadStories() {
   try {
     const { data } = await supabaseClient
       .from('stories')
-      .select('id')
+      .select('*')
       .eq('user_id', profileId)
       .gt('expires_at', new Date().toISOString())
-      .limit(1);
+      .order('created_at', { ascending: true });
 
-    if (data && data.length > 0) {
-      document.getElementById('avatarWrap').classList.add('has-story');
+    userStories = data || [];
+    const wrap = document.getElementById('avatarWrap');
+
+    // If stories exist, light up the glowing story ring
+    if (userStories.length > 0) {
+      wrap.classList.add('has-story');
+    } else {
+      wrap.classList.remove('has-story');
     }
+
+    if (isOwner) renderOwnerStories();
   } catch(e) {}
 }
 
-function triggerStoryUpload() {
-  document.getElementById('storyFileInput').click();
+function handleAvatarClick() {
+  if (userStories.length > 0) {
+    // Open and play stories
+    openStoryViewer(0);
+  } else if (isOwner) {
+    triggerAvatarUpload();
+  }
 }
+
+function renderOwnerStories() {
+  const row = document.getElementById('ownerStoriesRow');
+  if (!row) return;
+
+  row.innerHTML = `
+    <div class="add-story-tile" onclick="triggerStoryUpload()">
+      <i class="fas fa-plus-circle" style="font-size:22px;"></i>
+      <span>Add Story</span>
+    </div>
+    ${userStories.map((s, i) => {
+      const isVid = s.media_type === 'video';
+      const m = isVid ? `<video src="${escapeHtml(s.media_url)}"></video>` : `<img src="${escapeHtml(s.media_url)}">`;
+      const hrsLeft = Math.max(0, Math.round((new Date(s.expires_at) - Date.now()) / 3600000));
+      return `
+        <div class="story-chip" onclick="openStoryViewer(${i})">
+          ${m}
+          <div class="chip-time">${hrsLeft}h</div>
+        </div>
+      `;
+    }).join('')}
+  `;
+}
+
+function triggerStoryUpload() { document.getElementById('storyFileInput').click(); }
 
 async function handleStorySelected(e) {
   const file = e.target.files[0];
   if (!file) return;
 
-  toast('Uploading story...');
+  toast('Uploading story…');
   try {
     const isVideo = file.type.startsWith('video/');
     const ext = file.name.split('.').pop();
     const path = `${currentUser.id}/story-${Date.now()}.${ext}`;
 
-    const { data: up, error: upErr } = await supabaseClient.storage
-      .from('stories')
-      .upload(path, file, { cacheControl: '3600' });
+    const { data: up, error: upErr } = await supabaseClient.storage.from('stories').upload(path, file, { cacheControl:'3600' });
     if (upErr) throw upErr;
 
     const { data: pub } = supabaseClient.storage.from('stories').getPublicUrl(up.path);
@@ -717,36 +881,64 @@ async function handleStorySelected(e) {
       expires_at: expiresAt
     });
 
-    toast('Story posted for 24 hours! 🎉');
-    document.getElementById('avatarWrap').classList.add('has-story');
-  } catch (err) {
-    toast(err.message || 'Story upload failed');
+    toast('Story published for 24 hours! 🎉');
+    await loadStories();
+  } catch(err) {
+    toast(err.message);
   }
 }
 
-/* ==================== CUSTOM LINKTREE LINKS ==================== */
-function renderLinks(links) {
-  const container = document.getElementById('linktreeContainer');
-  let arr = [];
-  if (Array.isArray(links)) arr = links;
-  else if (typeof links === 'string' && links.trim()) {
-    try { arr = JSON.parse(links); } catch(e){}
-  }
-
-  if (arr.length > 0) {
-    container.innerHTML = arr.map(l => `
-      <a href="${escapeHtml(l.url)}" target="_blank" rel="noopener" class="profile-link-pill">
-        <i class="fas fa-link"></i> ${escapeHtml(l.title)}
-      </a>
-    `).join('');
-    container.style.display = 'flex';
-  } else {
-    container.innerHTML = '';
-    container.style.display = 'none';
-  }
+function openStoryViewer(idx) {
+  if (!userStories.length) return;
+  storyIdx = idx;
+  const modal = document.getElementById('storyViewer');
+  modal.classList.add('active');
+  playStoryItem(storyIdx);
 }
 
-/* ==================== POSTS & PINNED SORTING ==================== */
+function playStoryItem(idx) {
+  if (idx < 0 || idx >= userStories.length) { closeStoryViewer(); return; }
+  storyIdx = idx;
+  const s = userStories[idx];
+
+  // Progress Bar
+  const prog = document.getElementById('svProgress');
+  prog.innerHTML = userStories.map((_, i) => `
+    <div class="sv-segment"><div class="fill" style="width:${i < idx ? '100%' : (i === idx ? '0%' : '0%')};" id="seg-${i}"></div></div>
+  `).join('');
+
+  document.getElementById('svUname').textContent = document.getElementById('dispName').textContent;
+  const avImg = document.getElementById('avatarDisplay').querySelector('img');
+  document.getElementById('svAv').innerHTML = avImg ? `<img src="${avImg.src}">` : 'U';
+
+  const body = document.getElementById('svBody');
+  body.innerHTML = s.media_type === 'video'
+    ? `<video src="${escapeHtml(s.media_url)}" autoplay playsinline></video>`
+    : `<img src="${escapeHtml(s.media_url)}">`;
+
+  clearTimeout(storyTimer);
+  const fill = document.getElementById(`seg-${idx}`);
+  if (fill) fill.style.transition = 'width 4.8s linear';
+  setTimeout(() => { if (fill) fill.style.width = '100%'; }, 50);
+
+  storyTimer = setTimeout(() => {
+    storyNav(1);
+  }, 5000);
+}
+
+function storyNav(dir) {
+  const next = storyIdx + dir;
+  if (next < 0 || next >= userStories.length) closeStoryViewer();
+  else playStoryItem(next);
+}
+
+function closeStoryViewer() {
+  clearTimeout(storyTimer);
+  document.getElementById('storyViewer').classList.remove('active');
+  document.getElementById('svBody').innerHTML = '';
+}
+
+/* ==================== POSTS & 📱 VERTICAL SWIPE FEED ==================== */
 async function loadPosts() {
   const grid = document.getElementById('postsGrid');
   grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;"><i class="fas fa-spinner fa-spin"></i></div>';
@@ -760,10 +952,10 @@ async function loadPosts() {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    posts = data || [];
+    userPosts = data || [];
     renderPostsGrid();
   } catch (err) {
-    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:#fe2c55;">${escapeHtml(err.message)}</div>`;
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--az-primary);">${escapeHtml(err.message)}</div>`;
   }
 }
 
@@ -771,9 +963,9 @@ function renderPostsGrid() {
   const grid = document.getElementById('postsGrid');
   const empty = document.getElementById('emptyNotice');
 
-  let list = posts;
+  let list = userPosts;
   if (currentTab === 'reels') {
-    list = posts.filter(p => p.post_type === 'reel' || (p.media_urls && p.media_urls.some(u => /\.(mp4|webm|mov)$/i.test(u))));
+    list = userPosts.filter(p => p.post_type === 'reel' || (p.media_urls && p.media_urls.some(u => /\.(mp4|webm|mov)$/i.test(u))));
   }
 
   if (list.length === 0) {
@@ -787,42 +979,38 @@ function renderPostsGrid() {
     const media = (p.media_urls && p.media_urls[0]) || '';
     const isVideo = /\.(mp4|webm|mov)$/i.test(media);
 
-    const mediaTag = isVideo
+    const mTag = isVideo
       ? `<video src="${escapeHtml(media)}#t=0.001" preload="metadata" muted></video>`
-      : (media ? `<img src="${escapeHtml(media)}" loading="lazy">` : `<div style="padding:10px;font-size:12px;color:#aaa;">${escapeHtml((p.content||'').slice(0,50))}</div>`);
+      : (media ? `<img src="${escapeHtml(media)}" loading="lazy">` : `<div style="padding:14px;font-size:12px;color:#888;">${escapeHtml((p.content||'').slice(0,50))}</div>`);
 
-    const pinBadge = p.is_pinned ? `<div class="badge-pinned"><i class="fas fa-thumbtack"></i> Pinned</div>` : '';
-    const delBtn = isOwner ? `<button class="del-btn" onclick="event.stopPropagation(); deletePost('${p.id}')"><i class="fas fa-trash"></i></button>` : '';
+    const pinBadge = p.is_pinned ? `<div class="badge-pinned">📌 Pinned</div>` : '';
 
     return `
       <div class="grid-item" onclick="openSwipeFeed(${idx})">
-        ${mediaTag}
+        ${mTag}
         ${pinBadge}
-        ${delBtn}
         <div class="views-counter"><i class="fas fa-play"></i> ${p.views_count || 0}</div>
       </div>
     `;
   }).join('');
 }
 
-/* ==================== 📱 TIKTOK VERTICAL SWIPE FEED ==================== */
-function openSwipeFeed(startIndex = 0) {
-  const modal = document.getElementById('tiktokSwipeFeed');
+function openSwipeFeed(startIdx = 0) {
+  const modal = document.getElementById('tiktokFeedModal');
   const container = document.getElementById('swipeSlidesContainer');
 
-  let list = posts;
+  let list = userPosts;
   if (currentTab === 'reels') {
-    list = posts.filter(p => p.post_type === 'reel' || (p.media_urls && p.media_urls.some(u => /\.(mp4|webm|mov)$/i.test(u))));
+    list = userPosts.filter(p => p.post_type === 'reel' || (p.media_urls && p.media_urls.some(u => /\.(mp4|webm|mov)$/i.test(u))));
   }
   if (!list.length) return;
 
-  currentSlideIndex = startIndex;
   container.innerHTML = list.map((p, i) => {
     const media = (p.media_urls && p.media_urls[0]) || '';
     const isVideo = /\.(mp4|webm|mov)$/i.test(media);
 
-    const mediaElem = isVideo
-      ? `<video id="slide-vid-${i}" src="${escapeHtml(media)}" loop playsinline onclick="toggleVideoPlay(this)"></video>`
+    const mediaTag = isVideo
+      ? `<video id="feed-vid-${i}" src="${escapeHtml(media)}" loop playsinline onclick="toggleVideoPlay(this)"></video>`
       : (media ? `<img src="${escapeHtml(media)}">` : `<div style="padding:40px;text-align:center;font-size:18px;">${escapeHtml(p.content||'')}</div>`);
 
     const pinBtn = isOwner ? `
@@ -832,16 +1020,15 @@ function openSwipeFeed(startIndex = 0) {
       </div>` : '';
 
     return `
-      <div class="tiktok-post-slide" id="slide-${i}">
-        ${mediaElem}
+      <div class="tiktok-post-slide" id="feed-slide-${i}">
+        ${mediaTag}
         
-        <!-- TikTok Floating Right Side Actions -->
         <div class="tiktok-side-actions">
           <div class="side-btn-wrap" onclick="likePost('${p.id}', this)">
             <div class="icon-circle"><i class="fas fa-heart"></i></div>
             <span class="label">${p.likes_count || 0}</span>
           </div>
-          <div class="side-btn-wrap" onclick="toast('Comments')">
+          <div class="side-btn-wrap" onclick="toast('Comments section')">
             <div class="icon-circle"><i class="fas fa-comment-dots"></i></div>
             <span class="label">${p.comments_count || 0}</span>
           </div>
@@ -853,7 +1040,7 @@ function openSwipeFeed(startIndex = 0) {
         </div>
 
         <div class="tiktok-bottom-info">
-          <div class="uname">@${escapeHtml(document.getElementById('topbarUsername').textContent.replace('@',''))}</div>
+          <div class="uname">@${escapeHtml(document.getElementById('metaUname').textContent)}</div>
           <div class="ucaption">${escapeHtml(p.content || '')}</div>
         </div>
       </div>
@@ -864,17 +1051,16 @@ function openSwipeFeed(startIndex = 0) {
   document.body.style.overflow = 'hidden';
 
   setTimeout(() => {
-    const target = document.getElementById(`slide-${startIndex}`);
-    if (target) target.scrollIntoView();
-    playSlideVideo(startIndex);
+    const el = document.getElementById(`feed-slide-${startIdx}`);
+    if (el) el.scrollIntoView();
+    playSlide(startIdx);
   }, 50);
 
-  setupIntersectionObserver();
+  setupSlideObserver();
 }
 
 function closeSwipeFeed() {
-  const modal = document.getElementById('tiktokSwipeFeed');
-  modal.classList.remove('active');
+  document.getElementById('tiktokFeedModal').classList.remove('active');
   document.body.style.overflow = '';
   document.querySelectorAll('.tiktok-post-slide video').forEach(v => v.pause());
 }
@@ -884,172 +1070,90 @@ function toggleVideoPlay(video) {
   else video.pause();
 }
 
-function playSlideVideo(idx) {
-  document.querySelectorAll('.tiktok-post-slide video').forEach((vid, i) => {
-    if (i === idx) vid.play().catch(()=>{});
-    else vid.pause();
+function playSlide(idx) {
+  document.querySelectorAll('.tiktok-post-slide video').forEach((v, i) => {
+    if (i === idx) v.play().catch(()=>{});
+    else v.pause();
   });
 }
 
-function setupIntersectionObserver() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const idParts = entry.target.id.split('-');
-        const idx = parseInt(idParts[1]);
-        currentSlideIndex = idx;
-        playSlideVideo(idx);
+function setupSlideObserver() {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const idx = parseInt(e.target.id.split('-')[2]);
+        playSlide(idx);
       }
     });
   }, { threshold: 0.6 });
 
-  document.querySelectorAll('.tiktok-post-slide').forEach(slide => observer.observe(slide));
+  document.querySelectorAll('.tiktok-post-slide').forEach(s => obs.observe(s));
 }
 
-/* ==================== 📌 PIN POSTS ==================== */
 async function togglePin(postId, shouldPin) {
   if (!isOwner || !currentUser) return;
   try {
-    const { error } = await supabaseClient
-      .from('posts')
-      .update({ is_pinned: shouldPin })
-      .eq('id', postId)
-      .eq('user_id', currentUser.id);
-
-    if (error) throw error;
+    await supabaseClient.from('posts').update({ is_pinned: shouldPin }).eq('id', postId).eq('user_id', currentUser.id);
     toast(shouldPin ? 'Pinned to top 📌' : 'Unpinned');
     closeSwipeFeed();
     await loadPosts();
-  } catch (err) {
-    toast(err.message);
-  }
-}
-
-async function deletePost(postId) {
-  if (!confirm('Delete this post?')) return;
-  try {
-    await supabaseClient.from('posts').delete().eq('id', postId).eq('user_id', currentUser.id);
-    posts = posts.filter(p => p.id !== postId);
-    renderPostsGrid();
-    toast('Post deleted');
-  } catch(err) {
-    toast(err.message);
-  }
+  } catch(e) { toast(e.message); }
 }
 
 async function likePost(postId, btn) {
-  if (!currentUser) { toast('Sign in to like'); return; }
+  if (!currentUser) { toast('Please sign in'); return; }
   try {
     await supabaseClient.from('likes').insert({ user_id: currentUser.id, post_id: postId });
     btn.classList.add('liked');
     toast('Liked ❤️');
-  } catch (e) {
+  } catch(e) {
     await supabaseClient.from('likes').delete().eq('user_id', currentUser.id).eq('post_id', postId);
     btn.classList.remove('liked');
     toast('Unliked');
   }
 }
 
-/* ==================== FOLLOWERS / FOLLOWING MODAL ==================== */
-async function openFollowModal(type) {
-  const modal = document.getElementById('followModal');
-  const title = document.getElementById('followModalTitle');
-  const container = document.getElementById('followListContainer');
-
-  title.textContent = type === 'followers' ? 'Followers' : 'Following';
-  container.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin"></i></div>';
-  modal.classList.add('active');
-
-  try {
-    const idField = type === 'followers' ? 'follower_id' : 'following_id';
-    const matchField = type === 'followers' ? 'following_id' : 'follower_id';
-
-    const { data: rows } = await supabaseClient
-      .from('follows')
-      .select(`${idField}`)
-      .eq(matchField, profileId);
-
-    const ids = (rows || []).map(r => r[idField]);
-    if (ids.length === 0) {
-      container.innerHTML = `<div style="text-align:center;padding:30px;color:var(--az-text-secondary);">No ${type} yet</div>`;
-      return;
-    }
-
-    const { data: users } = await supabaseClient
-      .from('profiles')
-      .select('id, username, display_name, avatar_url')
-      .in('id', ids);
-
-    container.innerHTML = (users || []).map(u => {
-      const name = u.display_name || u.username || 'User';
-      const av = u.avatar_url ? `<img src="${escapeHtml(u.avatar_url)}">` : name.charAt(0).toUpperCase();
-
-      return `
-        <div class="user-row" onclick="window.location.href='profile.html?user=${u.id}'" style="cursor:pointer;">
-          <div class="uav">${av}</div>
-          <div class="uinfo">
-            <div class="uname">${escapeHtml(name)}</div>
-            <div class="uhandle">@${escapeHtml(u.username||'user')}</div>
-          </div>
-          <button style="background:rgba(255,255,255,0.12); color:#fff;">View</button>
-        </div>
-      `;
-    }).join('');
-  } catch (err) {
-    container.innerHTML = `<div style="color:#fe2c55;text-align:center;">${escapeHtml(err.message)}</div>`;
-  }
-}
-
-function closeFollowModal() {
-  document.getElementById('followModal').classList.remove('active');
-}
-
-/* ==================== VIEWS MODAL ==================== */
-function openViewsModal() {
-  document.getElementById('viewsModal').classList.add('active');
-}
-function closeViewsModal() {
-  document.getElementById('viewsModal').classList.remove('active');
-}
-
-function scrollToPosts() {
-  switchTab('posts', document.querySelectorAll('.tt-tab')[0]);
-  document.getElementById('postsGrid').scrollIntoView({ behavior: 'smooth' });
-}
-
-/* ==================== 💬 WALL COMMENTS ==================== */
+/* ==================== 💬 WALL COMMENTS (RESILIENT) ==================== */
 async function loadWall() {
   const list = document.getElementById('wallList');
   list.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin"></i></div>';
 
   try {
-    const { data, error } = await supabaseClient
+    const { data: comments, error } = await supabaseClient
       .from('profile_comments')
-      .select('*, profiles:user_id(username, display_name, avatar_url)')
+      .select('*')
       .eq('profile_id', profileId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
 
-    const count = data ? data.length : 0;
+    const count = comments ? comments.length : 0;
     const badge = document.getElementById('wallCountBadge');
     if (count > 0) {
       badge.textContent = count;
       badge.style.display = 'block';
     }
 
-    if (!data || data.length === 0) {
-      list.innerHTML = '<div style="text-align:center;padding:20px;color:#888;">No comments yet. Say something!</div>';
+    if (!comments || comments.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:30px;color:var(--az-text-secondary);">No messages on wall yet.</div>';
       return;
     }
 
-    list.innerHTML = data.map(c => {
-      const p = c.profiles || {};
+    // Load author profiles
+    const userIds = [...new Set(comments.map(c => c.user_id).filter(Boolean))];
+    let pMap = {};
+    if (userIds.length > 0) {
+      const { data: profs } = await supabaseClient.from('profiles').select('id, username, display_name, avatar_url').in('id', userIds);
+      if (profs) profs.forEach(p => { pMap[p.id] = p; });
+    }
+
+    list.innerHTML = comments.map(c => {
+      const p = pMap[c.user_id] || {};
       const name = p.display_name || p.username || 'User';
       const av = p.avatar_url ? `<img src="${escapeHtml(p.avatar_url)}">` : name.charAt(0).toUpperCase();
 
       return `
-        <div class="wall-card">
+        <div class="wall-comment">
           <div class="wav">${av}</div>
           <div style="flex:1;">
             <div class="wauthor">${escapeHtml(name)}</div>
@@ -1059,13 +1163,13 @@ async function loadWall() {
         </div>
       `;
     }).join('');
-  } catch (err) {
-    list.innerHTML = `<div style="color:#fe2c55;text-align:center;">${escapeHtml(err.message)}</div>`;
+  } catch(err) {
+    list.innerHTML = `<div style="color:var(--az-primary);text-align:center;">${escapeHtml(err.message)}</div>`;
   }
 }
 
-async function sendWallComment() {
-  if (!currentUser) { toast('Please log in'); return; }
+async function postWallComment() {
+  if (!currentUser) { toast('Please sign in'); return; }
   const input = document.getElementById('wallInput');
   const text = input.value.trim();
   if (!text) return;
@@ -1077,24 +1181,47 @@ async function sendWallComment() {
       content: text
     });
     if (error) throw error;
+
     input.value = '';
-    toast('Comment posted 💬');
+    toast('Message posted 💬');
     await loadWall();
-  } catch (err) {
-    toast(err.message);
-  }
+  } catch(err) { toast(err.message); }
 }
 
-/* ==================== FOLLOW / UNFOLLOW ==================== */
+/* ==================== WALLET & TRIBES ==================== */
+async function loadWallet() {
+  try {
+    const { data: w } = await supabaseClient.from('wallets').select('balance').eq('user_id', currentUser.id).maybeSingle();
+    if (w) {
+      document.getElementById('walletBalanceVal').textContent = '$' + Number(w.balance || 0).toFixed(2);
+    }
+  } catch(e) {}
+}
+
+async function loadTribes() {
+  try {
+    const { data } = await supabaseClient.rpc('get_my_tribes', { p_user_id: currentUser.id });
+    const row = document.getElementById('tribesRow');
+    if (!data || !data.length) {
+      row.innerHTML = `<div class="tribe-chip" onclick="window.location.href='chats.html'"><div class="tav"><i class="fas fa-plus"></i></div><div class="tinfo"><div class="tname">Join Tribe</div><div class="tsub">Discover</div></div></div>`;
+      return;
+    }
+    row.innerHTML = data.slice(0, 6).map(t => `
+      <div class="tribe-chip" onclick="window.location.href='chats.html?tribe=${t.id}'">
+        <div class="tav">${t.avatar_url ? `<img src="${escapeHtml(t.avatar_url)}">` : (t.name||'T').charAt(0).toUpperCase()}</div>
+        <div class="tinfo">
+          <div class="tname">${escapeHtml(t.name)}</div>
+          <div class="tsub">${t.member_count || 0} members</div>
+        </div>
+      </div>
+    `).join('');
+  } catch(e) {}
+}
+
+/* ==================== FOLLOW / MODALS ==================== */
 async function checkFollowState() {
   if (!currentUser) return;
-  const { data } = await supabaseClient
-    .from('follows')
-    .select('follower_id')
-    .eq('follower_id', currentUser.id)
-    .eq('following_id', profileId)
-    .maybeSingle();
-
+  const { data } = await supabaseClient.from('follows').select('follower_id').eq('follower_id', currentUser.id).eq('following_id', profileId).maybeSingle();
   isFollowing = !!data;
   updateFollowBtn();
 }
@@ -1103,65 +1230,90 @@ function updateFollowBtn() {
   const btn = document.getElementById('btnFollow');
   if (!btn) return;
   if (isFollowing) {
-    btn.className = 'btn-tt btn-tt-secondary';
+    btn.className = 'btn-action btn-action-secondary';
     btn.innerHTML = '<i class="fas fa-check"></i> Following';
   } else {
-    btn.className = 'btn-tt btn-tt-primary';
+    btn.className = 'btn-action btn-action-primary';
     btn.innerHTML = '<i class="fas fa-user-plus"></i> Follow';
   }
 }
 
 async function toggleFollow() {
   if (!currentUser) { toast('Please sign in'); return; }
-  const btn = document.getElementById('btnFollow');
-  btn.disabled = true;
-
   try {
     if (isFollowing) {
-      await supabaseClient.from('follows').delete()
-        .eq('follower_id', currentUser.id)
-        .eq('following_id', profileId);
+      await supabaseClient.from('follows').delete().eq('follower_id', currentUser.id).eq('following_id', profileId);
       isFollowing = false;
       toast('Unfollowed');
     } else {
-      await supabaseClient.from('follows').insert({
-        follower_id: currentUser.id,
-        following_id: profileId
-      });
+      await supabaseClient.from('follows').insert({ follower_id: currentUser.id, following_id: profileId });
       isFollowing = true;
       toast('Following ✅');
     }
     updateFollowBtn();
     const { data: p } = await supabaseClient.from('profiles').select('followers_count').eq('id', profileId).single();
     if (p) document.getElementById('statFollowers').textContent = p.followers_count ?? 0;
-  } catch (err) {
-    toast(err.message);
-  } finally {
-    btn.disabled = false;
-  }
+  } catch(e) { toast(e.message); }
 }
 
-/* ==================== EDIT PROFILE & LINKS ==================== */
+async function openFollowersModal(type) {
+  const modal = document.getElementById('followModal');
+  const title = document.getElementById('followTitle');
+  const list = document.getElementById('followList');
+
+  title.textContent = type === 'followers' ? 'Followers' : 'Following';
+  list.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin"></i></div>';
+  modal.classList.add('active');
+
+  try {
+    const idField = type === 'followers' ? 'follower_id' : 'following_id';
+    const matchField = type === 'followers' ? 'following_id' : 'follower_id';
+
+    const { data: rows } = await supabaseClient.from('follows').select(idField).eq(matchField, profileId);
+    const ids = (rows || []).map(r => r[idField]);
+
+    if (!ids.length) {
+      list.innerHTML = `<div style="text-align:center;padding:30px;color:var(--az-text-secondary);">No ${type} yet.</div>`;
+      return;
+    }
+
+    const { data: users } = await supabaseClient.from('profiles').select('id, username, display_name, avatar_url').in('id', ids);
+    list.innerHTML = (users || []).map(u => `
+      <div class="follow-row" onclick="window.location.href='profile.html?user=${u.id}'" style="cursor:pointer;">
+        <div class="fav">${u.avatar_url ? `<img src="${escapeHtml(u.avatar_url)}">` : (u.username||'U').charAt(0).toUpperCase()}</div>
+        <div class="finfo">
+          <div class="fname">${escapeHtml(u.display_name || u.username)}</div>
+          <div class="fhandle">@${escapeHtml(u.username||'user')}</div>
+        </div>
+      </div>
+    `).join('');
+  } catch(e) { list.innerHTML = `<div style="color:var(--az-primary);">${escapeHtml(e.message)}</div>`; }
+}
+
+function closeFollowModal() { document.getElementById('followModal').classList.remove('active'); }
+function openViewsModal() { document.getElementById('viewsModal').classList.add('active'); }
+function closeViewsModal() { document.getElementById('viewsModal').classList.remove('active'); }
+function scrollToPosts() {
+  switchTab('posts', document.querySelectorAll('.tab-item')[0]);
+  document.getElementById('postsGrid').scrollIntoView({ behavior:'smooth' });
+}
+
+/* ==================== EDIT PROFILE ==================== */
 function openEdit() {
   if (!isOwner) return;
-  const p = currentProfile || {};
   document.getElementById('editDisplayName').value = document.getElementById('dispName').textContent || '';
-  document.getElementById('editUsername').value = document.getElementById('userHandle').textContent.replace('@','') || '';
+  document.getElementById('editUsername').value = document.getElementById('metaUname').textContent || '';
   document.getElementById('editBio').value = document.getElementById('userBio').textContent || '';
 
-  let arr = [];
-  if (Array.isArray(p.links)) arr = p.links;
-  else if (typeof p.links === 'string' && p.links.trim()) {
-    try { arr = JSON.parse(p.links); } catch(e){}
-  }
-  document.getElementById('editLinks').value = arr.map(l => `${l.title || ''}|${l.url || ''}`).join('\n');
+  const pills = Array.from(document.querySelectorAll('.profile-links-tt a'));
+  document.getElementById('editLinks').value = pills.map(p => `${p.innerText.trim()}|${p.href}`).join('\n');
 
-  document.getElementById('editSheet').classList.add('active');
+  document.getElementById('editModal').classList.add('active');
 }
-function closeEdit() { document.getElementById('editSheet').classList.remove('active'); }
+function closeEdit() { document.getElementById('editModal').classList.remove('active'); }
 
 async function saveProfileChanges() {
-  const btn = document.getElementById('btnSaveProfile');
+  const btn = document.getElementById('saveProfileBtn');
   btn.disabled = true;
 
   const display_name = document.getElementById('editDisplayName').value.trim();
@@ -1169,65 +1321,52 @@ async function saveProfileChanges() {
   const bio = document.getElementById('editBio').value.trim();
 
   const rawLinks = document.getElementById('editLinks').value.trim();
-  const links = rawLinks ? rawLinks.split('\n').map(line => {
-    const parts = line.split('|');
-    return { title: (parts[0] || '').trim(), url: (parts[1] || '').trim() };
-  }).filter(l => l.title && l.url) : [];
+  const links = rawLinks ? rawLinks.split('\n').map(l => {
+    const p = l.split('|');
+    return { title: (p[0]||'').trim(), url: (p[1]||'').trim() };
+  }).filter(x => x.title && x.url) : [];
 
   try {
-    const { error } = await supabaseClient.from('profiles').update({
-      display_name, username, bio, links
-    }).eq('id', currentUser.id);
-
+    const { error } = await supabaseClient.from('profiles').update({ display_name, username, bio, links }).eq('id', currentUser.id);
     if (error) throw error;
     closeEdit();
-    toast('Profile saved ✅');
+    toast('Profile updated ✅');
     await loadProfile();
-  } catch (err) {
-    toast(err.message);
-  } finally {
-    btn.disabled = false;
-  }
+  } catch(e) { toast(e.message); }
+  finally { btn.disabled = false; }
 }
 
 /* ==================== AVATAR UPLOAD ==================== */
-function triggerAvatarUpload() {
-  if (!isOwner) return;
-  document.getElementById('avatarFileInput').click();
-}
+function triggerAvatarUpload() { document.getElementById('avatarFileInput').click(); }
 
 async function handleAvatarSelected(e) {
   const file = e.target.files[0];
   if (!file) return;
 
-  toast('Uploading photo...');
+  toast('Updating photo…');
   try {
     const ext = file.name.split('.').pop();
     const path = `${currentUser.id}/avatar-${Date.now()}.${ext}`;
 
-    const { data: up, error: upErr } = await supabaseClient.storage
-      .from('avatars')
-      .upload(path, file, { upsert: true });
+    const { data: up, error: upErr } = await supabaseClient.storage.from('avatars').upload(path, file, { upsert:true });
     if (upErr) throw upErr;
 
     const { data: pub } = supabaseClient.storage.from('avatars').getPublicUrl(up.path);
     await supabaseClient.from('profiles').update({ avatar_url: pub.publicUrl }).eq('id', currentUser.id);
 
-    toast('Avatar updated!');
+    toast('Avatar updated ✅');
     document.getElementById('avatarDisplay').innerHTML = `<img src="${pub.publicUrl}">`;
-  } catch (err) {
-    toast(err.message);
-  }
+  } catch(err) { toast(err.message); }
 }
 
 /* ==================== HELPERS ==================== */
 function switchTab(tab, btn) {
   currentTab = tab;
-  document.querySelectorAll('.tt-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
 
   const grid = document.getElementById('postsGrid');
-  const wall = document.getElementById('wallSection');
+  const wall = document.getElementById('wallWrap');
 
   if (tab === 'wall') {
     grid.style.display = 'none';
@@ -1242,21 +1381,18 @@ function switchTab(tab, btn) {
 
 function shareProfile() {
   const url = window.location.href;
-  if (navigator.share) {
-    navigator.share({ title: 'Profile', url }).catch(()=>{});
-  } else {
-    navigator.clipboard.writeText(url).then(() => toast('Link copied to clipboard 📋'));
-  }
+  if (navigator.share) navigator.share({ title:'Profile', url }).catch(()=>{});
+  else navigator.clipboard.writeText(url).then(() => toast('Link copied! 📋'));
 }
 
-function sharePost(postId) {
-  const url = `${window.location.origin}/index.html?post=${postId}`;
+function sharePost(id) {
+  const url = `${window.location.origin}/index.html?post=${id}`;
   navigator.clipboard.writeText(url).then(() => toast('Post link copied! 📋'));
 }
 
 function copyRef() {
   const code = document.getElementById('refCode').textContent;
-  navigator.clipboard.writeText(code).then(() => toast('Referral code copied!'));
+  navigator.clipboard.writeText(code).then(() => toast('Referral code copied! 🎁'));
 }
 
 function escapeHtml(s) {
@@ -1264,7 +1400,7 @@ function escapeHtml(s) {
 }
 
 function toast(msg) {
-  const el = document.getElementById('toast');
+  const el = document.getElementById('toastMini');
   el.textContent = msg;
   el.style.display = 'block';
   clearTimeout(window._tTimer);
