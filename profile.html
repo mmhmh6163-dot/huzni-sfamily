@@ -1280,7 +1280,7 @@ async function likePost(postId, btn) {
   }
 
   try {
-    const { data, error } = await supabaseClient.rpc('toggle_post_like', {
+    const { data, error } = await supabaseClient.rpc('toggle_post_like_v2', {
       p_post_id: postId
     });
 
