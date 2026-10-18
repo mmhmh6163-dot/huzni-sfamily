@@ -19,16 +19,15 @@ body { padding-top: 54px; padding-bottom: 75px; }
   --az-primary: #fe2c55;
   --az-accent: #25f4ee;
   --az-gradient: linear-gradient(135deg, #fe2c55 0%, #ff0050 100%);
-  --az-text: #ffffff;
-  --az-text-secondary: rgba(255,255,255,0.65);
-  --az-card-bg: #121212;
+  --az-card-bg: #141414;
   --az-border: rgba(255,255,255,0.12);
+  --az-text-secondary: rgba(255,255,255,0.65);
 }
 
 /* ==================== TOP NAVIGATION ==================== */
 .topbar {
   position: fixed; top: 0; left: 0; right: 0; height: 54px;
-  background: rgba(0,0,0,0.85); backdrop-filter: blur(15px);
+  background: rgba(0,0,0,0.9); backdrop-filter: blur(15px);
   border-bottom: 1px solid var(--az-border);
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 16px; z-index: 1000; max-width: 600px; margin: 0 auto;
@@ -41,16 +40,16 @@ body { padding-top: 54px; padding-bottom: 75px; }
 }
 .topbar .title { font-size: 16px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 4px; }
 
-/* ==================== TIKTOK-STYLE PROFILE HEADER ==================== */
+/* ==================== TIKTOK PROFILE HEADER ==================== */
 .tiktok-header {
   max-width: 600px; margin: 0 auto;
-  padding: 20px 16px 8px;
+  padding: 18px 16px 8px;
   display: flex; flex-direction: column; align-items: center;
   text-align: center;
 }
 
 .profile-avatar-wrap {
-  position: relative; cursor: pointer; margin-bottom: 12px;
+  position: relative; cursor: pointer; margin-bottom: 10px;
 }
 .profile-avatar {
   width: 96px; height: 96px; border-radius: 50%;
@@ -61,10 +60,7 @@ body { padding-top: 54px; padding-bottom: 75px; }
 }
 .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-/* Story ring around avatar */
-.profile-avatar-wrap.has-story .profile-avatar {
-  box-shadow: 0 0 0 2px transparent;
-}
+/* Story ring */
 .profile-avatar-wrap.has-story::before {
   content: ''; position: absolute; inset: -4px; border-radius: 50%;
   background: conic-gradient(from 0deg, #fe2c55, #25f4ee, #fe2c55);
@@ -75,39 +71,40 @@ body { padding-top: 54px; padding-bottom: 75px; }
 .profile-avatar-wrap .camera-badge {
   position: absolute; bottom: 2px; right: 2px;
   background: var(--az-primary); color: #fff;
-  width: 26px; height: 26px; border-radius: 50%;
+  width: 28px; height: 28px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 11px; border: 2px solid #000; cursor: pointer; z-index: 10;
+  font-size: 12px; border: 2px solid #000; cursor: pointer; z-index: 10;
 }
 
 .tiktok-username {
   font-size: 18px; font-weight: 700; color: #fff;
   display: flex; align-items: center; justify-content: center; gap: 6px;
-  margin-bottom: 2px;
 }
 .tiktok-handle {
   font-size: 13px; color: var(--az-text-secondary); margin-bottom: 14px;
 }
 
-/* TikTok 4-Column Stats Row (Following, Followers, Views, Posts) */
+/* 4-Column Clickable Stats */
 .tiktok-stats {
-  display: flex; align-items: center; justify-content: center;
-  gap: 22px; width: 100%; margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: space-around;
+  width: 100%; max-width: 440px; margin-bottom: 16px;
 }
 .stat-col {
   display: flex; flex-direction: column; align-items: center;
-  cursor: pointer; min-width: 55px;
+  cursor: pointer; padding: 4px 10px; border-radius: 8px;
+  transition: background 0.15s;
 }
+.stat-col:hover { background: rgba(255,255,255,0.06); }
 .stat-col .num { font-size: 17px; font-weight: 800; color: #fff; }
-.stat-col .lbl { font-size: 12px; color: var(--az-text-secondary); margin-top: 1px; }
+.stat-col .lbl { font-size: 12px; color: var(--az-text-secondary); margin-top: 2px; }
 
-/* Action Buttons (Edit, Share, Follow, Message) */
+/* Action Buttons (Area 1: Story added here) */
 .tiktok-actions {
   display: flex; align-items: center; justify-content: center;
-  gap: 8px; width: 100%; max-width: 380px; margin-bottom: 14px;
+  gap: 8px; width: 100%; max-width: 480px; margin-bottom: 14px;
 }
 .btn-tt {
-  padding: 10px 18px; border-radius: 6px; font-size: 14px;
+  padding: 10px 14px; border-radius: 8px; font-size: 13px;
   font-weight: 600; cursor: pointer; border: none;
   font-family: inherit; display: inline-flex; align-items: center;
   justify-content: center; gap: 6px; text-decoration: none; flex: 1;
@@ -115,18 +112,22 @@ body { padding-top: 54px; padding-bottom: 75px; }
 .btn-tt-primary { background: var(--az-primary); color: #fff; }
 .btn-tt-secondary { background: rgba(255,255,255,0.12); color: #fff; }
 .btn-tt-secondary:hover { background: rgba(255,255,255,0.18); }
+.btn-tt-story {
+  background: linear-gradient(135deg, rgba(254,44,85,0.2), rgba(37,244,238,0.15));
+  border: 1px solid rgba(254,44,85,0.4); color: #fff;
+}
 .btn-tt-icon {
-  width: 40px; flex: 0 0 40px; padding: 0; height: 40px; border-radius: 6px;
+  width: 42px; flex: 0 0 42px; padding: 0; height: 40px; border-radius: 8px;
 }
 
-/* Bio & Meta */
+/* Bio & Linktree */
 .tiktok-bio {
   font-size: 14px; line-height: 1.45; color: #eee;
-  max-width: 440px; margin-bottom: 8px; white-space: pre-wrap;
+  max-width: 460px; margin-bottom: 10px; white-space: pre-wrap;
 }
 .profile-links {
   display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 .profile-link-pill {
   display: inline-flex; align-items: center; gap: 5px;
@@ -136,18 +137,39 @@ body { padding-top: 54px; padding-bottom: 75px; }
   text-decoration: none;
 }
 
-/* Referral banner (own profile) */
+/* Referral Banner */
 .referral-banner {
-  width: 100%; max-width: 500px;
-  background: linear-gradient(90deg, rgba(254,44,85,0.12), rgba(37,244,238,0.12));
-  border: 1px dashed rgba(255,255,255,0.2); border-radius: 8px;
-  padding: 8px 12px; margin-bottom: 14px;
-  display: flex; align-items: center; justify-content: space-between; font-size: 12px;
+  width: 100%; max-width: 480px;
+  background: linear-gradient(90deg, rgba(254,44,85,0.1), rgba(37,244,238,0.08));
+  border: 1px dashed rgba(255,255,255,0.2); border-radius: 10px;
+  padding: 8px 14px; margin-bottom: 10px;
+  display: flex; align-items: center; justify-content: space-between; font-size: 13px;
 }
-.referral-banner .code { font-weight: 800; color: var(--az-accent); font-size: 13px; }
+.referral-banner .code { font-weight: 800; color: var(--az-accent); font-size: 13px; letter-spacing: 0.5px; }
 .referral-banner button {
   background: rgba(255,255,255,0.12); border: none; color: #fff;
-  padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;
+  padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer;
+}
+
+/* ==================== 2. WALLET & BALANCE CARD ==================== */
+.wallet-strip {
+  width: 100%; max-width: 480px;
+  background: #111; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px; padding: 12px 16px; margin-bottom: 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.wallet-strip .left { display: flex; align-items: center; gap: 12px; }
+.wallet-strip .wallet-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: rgba(254,44,85,0.15); color: var(--az-primary);
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.wallet-strip .bal-lbl { font-size: 11px; text-transform: uppercase; color: var(--az-text-secondary); font-weight: 700; }
+.wallet-strip .bal-val { font-size: 18px; font-weight: 800; color: var(--az-accent); margin-top: 1px; }
+.wallet-strip .btn-wallet {
+  background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.15);
+  padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
 }
 
 /* ==================== TABS ==================== */
@@ -162,11 +184,17 @@ body { padding-top: 54px; padding-bottom: 75px; }
 }
 .tt-tab.active { color: #fff; }
 .tt-tab.active::after {
-  content: ''; position: absolute; bottom: 0; left: 25%; right: 25%;
+  content: ''; position: absolute; bottom: 0; left: 20%; right: 20%;
   height: 2px; background: #fff;
 }
+.tt-tab .tab-badge {
+  position: absolute; top: 6px; right: 28%;
+  background: var(--az-primary); color: #fff;
+  font-size: 9px; font-weight: 800; border-radius: 10px;
+  padding: 1px 5px;
+}
 
-/* ==================== POSTS GRID (3x3 TikTok Style) ==================== */
+/* ==================== POSTS GRID (TikTok 3x3) ==================== */
 .profile-grid {
   max-width: 600px; margin: 0 auto;
   display: grid; grid-template-columns: repeat(3, 1fr);
@@ -234,7 +262,7 @@ body { padding-top: 54px; padding-bottom: 75px; }
 .wall-card .wtext { font-size: 13px; color: #ddd; margin-top: 3px; word-break: break-word; }
 .wall-card .wtime { font-size: 11px; color: var(--az-text-secondary); margin-top: 4px; }
 
-/* ==================== 📱 TIKTOK FULLSCREEN VERTICAL SWIPE FEED ==================== */
+/* ==================== 📱 TIKTOK VERTICAL SWIPE FEED ==================== */
 .tiktok-feed-modal {
   display: none; position: fixed; inset: 0;
   background: #000; z-index: 4000;
@@ -244,13 +272,12 @@ body { padding-top: 54px; padding-bottom: 75px; }
 .tiktok-feed-modal.active { display: block; }
 .tiktok-feed-close {
   position: fixed; top: 16px; left: 16px;
-  width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
   color: #fff; border: none; font-size: 18px;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; z-index: 4500;
 }
-
 .tiktok-post-slide {
   position: relative; width: 100%; height: 100vh; height: 100dvh;
   scroll-snap-align: start; scroll-snap-stop: always;
@@ -260,11 +287,9 @@ body { padding-top: 54px; padding-bottom: 75px; }
 .tiktok-post-slide video, .tiktok-post-slide img {
   width: 100%; height: 100%; object-fit: cover;
 }
-
-/* TikTok Overlay Side Controls */
 .tiktok-side-actions {
-  position: absolute; right: 12px; bottom: 90px;
-  display: flex; flex-direction: column; align-items: center; gap: 18px;
+  position: absolute; right: 12px; bottom: 80px;
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
   z-index: 4100;
 }
 .side-btn-wrap {
@@ -273,15 +298,13 @@ body { padding-top: 54px; padding-bottom: 75px; }
 }
 .side-btn-wrap .icon-circle {
   width: 44px; height: 44px; border-radius: 50%;
-  background: rgba(255,255,255,0.12); backdrop-filter: blur(8px);
+  background: rgba(255,255,255,0.15); backdrop-filter: blur(8px);
   display: flex; align-items: center; justify-content: center;
   font-size: 20px; transition: transform 0.15s;
 }
 .side-btn-wrap .icon-circle:active { transform: scale(0.9); }
 .side-btn-wrap.liked .icon-circle { color: #fe2c55; }
 .side-btn-wrap .label { font-size: 11px; font-weight: 700; margin-top: 4px; }
-
-/* TikTok Slide Bottom Info */
 .tiktok-bottom-info {
   position: absolute; bottom: 20px; left: 16px; right: 80px;
   color: #fff; z-index: 4100; text-shadow: 0 1px 3px rgba(0,0,0,0.8);
@@ -289,10 +312,10 @@ body { padding-top: 54px; padding-bottom: 75px; }
 .tiktok-bottom-info .uname { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
 .tiktok-bottom-info .ucaption { font-size: 13px; line-height: 1.4; max-height: 80px; overflow-y: auto; }
 
-/* Modal Bottom Sheets */
+/* ==================== BOTTOM SHEETS & MODALS ==================== */
 .modal-sheet {
   display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,0.75); z-index: 5000;
+  background: rgba(0,0,0,0.8); z-index: 5000;
   align-items: flex-end; justify-content: center;
 }
 .modal-sheet.active { display: flex; }
@@ -314,6 +337,24 @@ body { padding-top: 54px; padding-bottom: 75px; }
   font-size: 14px; font-weight: 700; cursor: pointer; border: none;
 }
 
+/* User List for Followers / Following */
+.user-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.user-row .uav {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: #333; overflow: hidden; display: flex; align-items: center; justify-content: center;
+}
+.user-row .uav img { width: 100%; height: 100%; object-fit: cover; }
+.user-row .uinfo { flex: 1; }
+.user-row .uinfo .uname { font-size: 14px; font-weight: 700; color: #fff; }
+.user-row .uinfo .uhandle { font-size: 12px; color: var(--az-text-secondary); }
+.user-row button {
+  padding: 6px 14px; border-radius: 16px; font-size: 12px;
+  font-weight: 700; cursor: pointer; border: none;
+}
+
 /* Toast */
 .toast-msg {
   position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
@@ -332,25 +373,27 @@ body { padding-top: 54px; padding-bottom: 75px; }
 
 <div id="toast" class="toast-msg"></div>
 
-<!-- ==================== TOP NAVIGATION ==================== -->
+<!-- ==================== TOP BAR ==================== -->
 <header class="topbar">
   <a href="index.html" class="back"><i class="fas fa-chevron-left"></i></a>
   <span class="title" id="topbarUsername">@user</span>
   <div style="display:flex; gap:4px;">
     <button class="icon-btn" onclick="shareProfile()"><i class="fas fa-share-nodes"></i></button>
+    <a href="chats.html" class="icon-btn" title="Messages"><i class="fas fa-paper-plane"></i></a>
     <button class="icon-btn" onclick="openEdit()"><i class="fas fa-bars"></i></button>
   </div>
 </header>
 
 <!-- Hidden File Pickers -->
 <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" onchange="handleAvatarSelected(event)">
+<input type="file" id="storyFileInput" accept="image/*,video/*" style="display:none;" onchange="handleStorySelected(event)">
 
 <!-- ==================== TIKTOK PROFILE CONTENT ==================== -->
 <div id="profileContainer">
   <div class="tiktok-header">
     <div class="profile-avatar-wrap" id="avatarWrap" onclick="triggerAvatarUpload()">
       <div class="profile-avatar" id="avatarDisplay">U</div>
-      <div class="camera-badge" id="cameraBtn" style="display:none;"><i class="fas fa-camera"></i></div>
+      <div class="camera-badge" id="cameraBtn" style="display:none;" title="Change Photo"><i class="fas fa-camera"></i></div>
     </div>
 
     <div class="tiktok-username">
@@ -359,37 +402,41 @@ body { padding-top: 54px; padding-bottom: 75px; }
     </div>
     <div class="tiktok-handle" id="userHandle">@username</div>
 
-    <!-- 4-Column Stat Counter (Following, Followers, Views, Posts) -->
+    <!-- 4 Clickable Stats Columns -->
     <div class="tiktok-stats">
-      <div class="stat-col" onclick="toast('Following list')">
+      <div class="stat-col" onclick="openFollowModal('following')">
         <span class="num" id="statFollowing">0</span>
         <span class="lbl">Following</span>
       </div>
-      <div class="stat-col" onclick="toast('Followers list')">
+      <div class="stat-col" onclick="openFollowModal('followers')">
         <span class="num" id="statFollowers">0</span>
         <span class="lbl">Followers</span>
       </div>
-      <div class="stat-col" title="Total Profile Views">
+      <div class="stat-col" onclick="openViewsModal()">
         <span class="num" id="statViews">0</span>
         <span class="lbl">Views</span>
       </div>
-      <div class="stat-col">
+      <div class="stat-col" onclick="scrollToPosts()">
         <span class="num" id="statPosts">0</span>
         <span class="lbl">Posts</span>
       </div>
     </div>
 
-    <!-- TikTok Buttons: Edit profile / Share or Follow / Message -->
+    <!-- Area 1: Action Buttons With Story Creation for Owner -->
     <div class="tiktok-actions" id="ownActions">
+      <button class="btn-tt btn-tt-story" onclick="triggerStoryUpload()">
+        <i class="fas fa-plus-circle" style="color:var(--az-primary);"></i> Story
+      </button>
       <button class="btn-tt btn-tt-secondary" onclick="openEdit()">Edit profile</button>
-      <button class="btn-tt btn-tt-secondary" onclick="shareProfile()">Share profile</button>
+      <button class="btn-tt btn-tt-secondary" onclick="shareProfile()">Share</button>
       <a href="Post.html" class="btn-tt btn-tt-primary btn-tt-icon" title="Create Post"><i class="fas fa-plus"></i></a>
     </div>
 
+    <!-- Action Buttons for Visitors -->
     <div class="tiktok-actions" id="otherActions" style="display:none;">
       <button class="btn-tt btn-tt-primary" id="btnFollow" onclick="toggleFollow()"><i class="fas fa-user-plus"></i> Follow</button>
-      <a class="btn-tt btn-tt-secondary" id="btnMsg" href="#"><i class="fas fa-comment"></i> Message</a>
-      <button class="btn-tt btn-tt-secondary btn-tt-icon" onclick="shareProfile()"><i class="fas fa-share"></i></button>
+      <a class="btn-tt btn-tt-secondary" id="btnMsg" href="#"><i class="fas fa-paper-plane"></i> Message</a>
+      <button class="btn-tt btn-tt-secondary btn-tt-icon" onclick="shareProfile()"><i class="fas fa-share-nodes"></i></button>
     </div>
 
     <!-- Bio -->
@@ -398,21 +445,38 @@ body { padding-top: 54px; padding-bottom: 75px; }
     <!-- Linktree pills -->
     <div class="profile-links" id="linktreeContainer"></div>
 
-    <!-- Referral banner (own profile) -->
-    <div class="referral-banner" id="referralBox" style="display:none;">
-      <div>Referral: <span class="code" id="refCode">AZ-USER</span></div>
+    <!-- Referral Banner -->
+    <div class="referral-banner" id="referralBox">
+      <div>Referral: <span class="code" id="refCode">AZ-CREATOR</span></div>
       <button onclick="copyRef()"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+
+    <!-- Area 2: Wallet & Balance Strip Under Referral -->
+    <div class="wallet-strip" id="walletStrip">
+      <div class="left">
+        <div class="wallet-icon"><i class="fas fa-wallet"></i></div>
+        <div>
+          <div class="bal-lbl">Your Balance</div>
+          <div class="bal-val" id="walletBalanceVal">$0.00</div>
+        </div>
+      </div>
+      <a href="wallets.html" class="btn-wallet">
+        <span>Wallet</span> <i class="fas fa-arrow-right"></i>
+      </a>
     </div>
   </div>
 
-  <!-- Content Tabs -->
+  <!-- Tabs -->
   <div class="tt-tabs">
     <button class="tt-tab active" onclick="switchTab('posts', this)"><i class="fas fa-bars-staggered"></i></button>
     <button class="tt-tab" onclick="switchTab('reels', this)"><i class="fas fa-play"></i></button>
-    <button class="tt-tab" onclick="switchTab('wall', this)"><i class="fas fa-comment-dots"></i></button>
+    <button class="tt-tab" onclick="switchTab('wall', this)">
+      <i class="fas fa-comment-dots"></i>
+      <span class="tab-badge" id="wallCountBadge" style="display:none;">0</span>
+    </button>
   </div>
 
-  <!-- Posts Grid (TikTok-Style 3 Columns) -->
+  <!-- Posts Grid (3x3) -->
   <div class="profile-grid" id="postsGrid"></div>
   <div class="empty-view" id="emptyNotice" style="display:none;">
     <i class="fas fa-film"></i>
@@ -429,13 +493,37 @@ body { padding-top: 54px; padding-bottom: 75px; }
   </div>
 </div>
 
-<!-- ==================== 📱 TIKTOK VERTICAL SWIPE FEED MODAL ==================== -->
+<!-- ==================== 📱 FULLSCREEN VERTICAL SWIPE FEED ==================== -->
 <div class="tiktok-feed-modal" id="tiktokSwipeFeed">
   <button class="tiktok-feed-close" onclick="closeSwipeFeed()"><i class="fas fa-times"></i></button>
   <div id="swipeSlidesContainer"></div>
 </div>
 
-<!-- ==================== EDIT PROFILE BOTTOM SHEET ==================== -->
+<!-- ==================== FOLLOWERS / FOLLOWING MODAL ==================== -->
+<div class="modal-sheet" id="followModal">
+  <div class="modal-sheet-content">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <h3 style="margin:0;" id="followModalTitle">Followers</h3>
+      <button onclick="closeFollowModal()" style="background:none; border:none; color:#fff; font-size:18px; cursor:pointer;"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="followListContainer" style="max-height:50vh; overflow-y:auto;"></div>
+  </div>
+</div>
+
+<!-- ==================== PROFILE VIEWS MODAL ==================== -->
+<div class="modal-sheet" id="viewsModal">
+  <div class="modal-sheet-content" style="text-align:center;">
+    <i class="fas fa-eye" style="font-size:36px; color:var(--az-accent); margin-bottom:10px;"></i>
+    <h3 style="margin:0 0 6px;">Profile Views</h3>
+    <div style="font-size:28px; font-weight:800; color:var(--az-primary); margin-bottom:6px;" id="modalViewsCount">0</div>
+    <p style="font-size:13px; color:var(--az-text-secondary); margin-bottom:20px;">Total visits received on this profile.</p>
+    <div class="modal-btn-row">
+      <button style="background:rgba(255,255,255,0.12); color:#fff;" onclick="closeViewsModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== EDIT PROFILE SHEET ==================== -->
 <div class="modal-sheet" id="editSheet">
   <div class="modal-sheet-content">
     <h3 style="margin-top:0; text-align:center;">Edit Profile</h3>
@@ -471,6 +559,8 @@ let posts = [];
 let isFollowing = false;
 let currentTab = 'posts';
 let currentSlideIndex = 0;
+let userFollowers = [];
+let userFollowing = [];
 
 /* ==================== INITIALIZATION ==================== */
 document.addEventListener('DOMContentLoaded', () => {
@@ -498,26 +588,27 @@ async function boot() {
     document.getElementById('ownActions').style.display = 'flex';
     document.getElementById('otherActions').style.display = 'none';
     document.getElementById('cameraBtn').style.display = 'flex';
-    document.getElementById('referralBox').style.display = 'flex';
+    document.getElementById('walletStrip').style.display = 'flex';
   } else {
     document.getElementById('ownActions').style.display = 'none';
     document.getElementById('otherActions').style.display = 'flex';
     document.getElementById('btnMsg').href = `chats.html?user=${profileId}`;
+    document.getElementById('walletStrip').style.display = 'none';
     checkFollowState();
-    // 📊 Increment Profile Views
     logProfileView();
   }
 
   await loadProfile();
+  await loadWallet();
   await loadPosts();
+  await checkStories();
 }
 
-/* ==================== LOG PROFILE VIEW ==================== */
+/* ==================== LOG & LOAD PROFILE ==================== */
 async function logProfileView() {
   try {
     await supabaseClient.rpc('log_profile_view', { p_profile_id: profileId });
   } catch (e) {
-    // Fallback if direct update needed
     try {
       await supabaseClient.from('profiles').update({
         profile_views: supabaseClient.raw('COALESCE(profile_views, 0) + 1')
@@ -526,7 +617,6 @@ async function logProfileView() {
   }
 }
 
-/* ==================== LOAD PROFILE DATA ==================== */
 async function loadProfile() {
   const { data: p } = await supabaseClient
     .from('profiles')
@@ -545,7 +635,9 @@ async function loadProfile() {
   document.getElementById('statFollowing').textContent = p.following_count ?? 0;
   document.getElementById('statFollowers').textContent = p.followers_count ?? 0;
   document.getElementById('statPosts').textContent = p.posts_count ?? 0;
-  document.getElementById('statViews').textContent = p.profile_views ?? 0;
+  const views = p.profile_views ?? 0;
+  document.getElementById('statViews').textContent = views;
+  document.getElementById('modalViewsCount').textContent = views;
 
   if (p.is_verified) {
     document.getElementById('verifiedIcon').style.display = 'inline-block';
@@ -558,14 +650,81 @@ async function loadProfile() {
     avEl.textContent = uname.charAt(0).toUpperCase();
   }
 
-  // Referral code
-  const code = p.referral_code || ('AZ-' + uname.toUpperCase().slice(0, 5));
+  const code = p.referral_code || ('AZ-' + uname.toUpperCase().slice(0, 6));
   document.getElementById('refCode').textContent = code;
 
-  // 🔗 Render Custom Links (Linktree)
   renderLinks(p.links);
 }
 
+/* ==================== WALLET & BALANCE ==================== */
+async function loadWallet() {
+  if (!isOwner) return;
+  try {
+    const { data: w } = await supabaseClient
+      .from('wallets')
+      .select('balance')
+      .eq('user_id', currentUser.id)
+      .maybeSingle();
+
+    if (w) {
+      document.getElementById('walletBalanceVal').textContent = '$' + Number(w.balance || 0).toFixed(2);
+    }
+  } catch(e) {}
+}
+
+/* ==================== STORY STATUS ==================== */
+async function checkStories() {
+  try {
+    const { data } = await supabaseClient
+      .from('stories')
+      .select('id')
+      .eq('user_id', profileId)
+      .gt('expires_at', new Date().toISOString())
+      .limit(1);
+
+    if (data && data.length > 0) {
+      document.getElementById('avatarWrap').classList.add('has-story');
+    }
+  } catch(e) {}
+}
+
+function triggerStoryUpload() {
+  document.getElementById('storyFileInput').click();
+}
+
+async function handleStorySelected(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  toast('Uploading story...');
+  try {
+    const isVideo = file.type.startsWith('video/');
+    const ext = file.name.split('.').pop();
+    const path = `${currentUser.id}/story-${Date.now()}.${ext}`;
+
+    const { data: up, error: upErr } = await supabaseClient.storage
+      .from('stories')
+      .upload(path, file, { cacheControl: '3600' });
+    if (upErr) throw upErr;
+
+    const { data: pub } = supabaseClient.storage.from('stories').getPublicUrl(up.path);
+    const expiresAt = new Date(Date.now() + 24 * 3600 * 1000).toISOString();
+
+    await supabaseClient.from('stories').insert({
+      user_id: currentUser.id,
+      media_url: pub.publicUrl,
+      media_type: isVideo ? 'video' : 'image',
+      expires_at: expiresAt
+    });
+
+    toast('Story posted for 24 hours! 🎉');
+    document.getElementById('avatarWrap').classList.add('has-story');
+  } catch (err) {
+    toast(err.message || 'Story upload failed');
+  }
+}
+
+/* ==================== CUSTOM LINKTREE LINKS ==================== */
 function renderLinks(links) {
   const container = document.getElementById('linktreeContainer');
   let arr = [];
@@ -593,7 +752,6 @@ async function loadPosts() {
   grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;"><i class="fas fa-spinner fa-spin"></i></div>';
 
   try {
-    // Order pinned posts first, then created_at
     const { data, error } = await supabaseClient
       .from('posts')
       .select('*')
@@ -647,7 +805,7 @@ function renderPostsGrid() {
   }).join('');
 }
 
-/* ==================== 📱 TIKTOK FULLSCREEN VERTICAL SWIPE FEED ==================== */
+/* ==================== 📱 TIKTOK VERTICAL SWIPE FEED ==================== */
 function openSwipeFeed(startIndex = 0) {
   const modal = document.getElementById('tiktokSwipeFeed');
   const container = document.getElementById('swipeSlidesContainer');
@@ -677,13 +835,13 @@ function openSwipeFeed(startIndex = 0) {
       <div class="tiktok-post-slide" id="slide-${i}">
         ${mediaElem}
         
-        <!-- TikTok Floating Right Bar -->
+        <!-- TikTok Floating Right Side Actions -->
         <div class="tiktok-side-actions">
           <div class="side-btn-wrap" onclick="likePost('${p.id}', this)">
             <div class="icon-circle"><i class="fas fa-heart"></i></div>
             <span class="label">${p.likes_count || 0}</span>
           </div>
-          <div class="side-btn-wrap" onclick="toast('Comments open')">
+          <div class="side-btn-wrap" onclick="toast('Comments')">
             <div class="icon-circle"><i class="fas fa-comment-dots"></i></div>
             <span class="label">${p.comments_count || 0}</span>
           </div>
@@ -694,7 +852,6 @@ function openSwipeFeed(startIndex = 0) {
           </div>
         </div>
 
-        <!-- Slide Caption Bottom -->
         <div class="tiktok-bottom-info">
           <div class="uname">@${escapeHtml(document.getElementById('topbarUsername').textContent.replace('@',''))}</div>
           <div class="ucaption">${escapeHtml(p.content || '')}</div>
@@ -706,7 +863,6 @@ function openSwipeFeed(startIndex = 0) {
   modal.classList.add('active');
   document.body.style.overflow = 'hidden';
 
-  // Scroll to selected post slide
   setTimeout(() => {
     const target = document.getElementById(`slide-${startIndex}`);
     if (target) target.scrollIntoView();
@@ -720,10 +876,7 @@ function closeSwipeFeed() {
   const modal = document.getElementById('tiktokSwipeFeed');
   modal.classList.remove('active');
   document.body.style.overflow = '';
-  // Stop all playing videos
-  document.querySelectorAll('.tiktok-post-slide video').forEach(v => {
-    v.pause();
-  });
+  document.querySelectorAll('.tiktok-post-slide video').forEach(v => v.pause());
 }
 
 function toggleVideoPlay(video) {
@@ -753,7 +906,7 @@ function setupIntersectionObserver() {
   document.querySelectorAll('.tiktok-post-slide').forEach(slide => observer.observe(slide));
 }
 
-/* ==================== PIN / UNPIN POST ==================== */
+/* ==================== 📌 PIN POSTS ==================== */
 async function togglePin(postId, shouldPin) {
   if (!isOwner || !currentUser) return;
   try {
@@ -791,11 +944,77 @@ async function likePost(postId, btn) {
     btn.classList.add('liked');
     toast('Liked ❤️');
   } catch (e) {
-    // If already liked, remove like
     await supabaseClient.from('likes').delete().eq('user_id', currentUser.id).eq('post_id', postId);
     btn.classList.remove('liked');
     toast('Unliked');
   }
+}
+
+/* ==================== FOLLOWERS / FOLLOWING MODAL ==================== */
+async function openFollowModal(type) {
+  const modal = document.getElementById('followModal');
+  const title = document.getElementById('followModalTitle');
+  const container = document.getElementById('followListContainer');
+
+  title.textContent = type === 'followers' ? 'Followers' : 'Following';
+  container.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin"></i></div>';
+  modal.classList.add('active');
+
+  try {
+    const idField = type === 'followers' ? 'follower_id' : 'following_id';
+    const matchField = type === 'followers' ? 'following_id' : 'follower_id';
+
+    const { data: rows } = await supabaseClient
+      .from('follows')
+      .select(`${idField}`)
+      .eq(matchField, profileId);
+
+    const ids = (rows || []).map(r => r[idField]);
+    if (ids.length === 0) {
+      container.innerHTML = `<div style="text-align:center;padding:30px;color:var(--az-text-secondary);">No ${type} yet</div>`;
+      return;
+    }
+
+    const { data: users } = await supabaseClient
+      .from('profiles')
+      .select('id, username, display_name, avatar_url')
+      .in('id', ids);
+
+    container.innerHTML = (users || []).map(u => {
+      const name = u.display_name || u.username || 'User';
+      const av = u.avatar_url ? `<img src="${escapeHtml(u.avatar_url)}">` : name.charAt(0).toUpperCase();
+
+      return `
+        <div class="user-row" onclick="window.location.href='profile.html?user=${u.id}'" style="cursor:pointer;">
+          <div class="uav">${av}</div>
+          <div class="uinfo">
+            <div class="uname">${escapeHtml(name)}</div>
+            <div class="uhandle">@${escapeHtml(u.username||'user')}</div>
+          </div>
+          <button style="background:rgba(255,255,255,0.12); color:#fff;">View</button>
+        </div>
+      `;
+    }).join('');
+  } catch (err) {
+    container.innerHTML = `<div style="color:#fe2c55;text-align:center;">${escapeHtml(err.message)}</div>`;
+  }
+}
+
+function closeFollowModal() {
+  document.getElementById('followModal').classList.remove('active');
+}
+
+/* ==================== VIEWS MODAL ==================== */
+function openViewsModal() {
+  document.getElementById('viewsModal').classList.add('active');
+}
+function closeViewsModal() {
+  document.getElementById('viewsModal').classList.remove('active');
+}
+
+function scrollToPosts() {
+  switchTab('posts', document.querySelectorAll('.tt-tab')[0]);
+  document.getElementById('postsGrid').scrollIntoView({ behavior: 'smooth' });
 }
 
 /* ==================== 💬 WALL COMMENTS ==================== */
@@ -811,6 +1030,13 @@ async function loadWall() {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
+
+    const count = data ? data.length : 0;
+    const badge = document.getElementById('wallCountBadge');
+    if (count > 0) {
+      badge.textContent = count;
+      badge.style.display = 'block';
+    }
 
     if (!data || data.length === 0) {
       list.innerHTML = '<div style="text-align:center;padding:20px;color:#888;">No comments yet. Say something!</div>';
@@ -923,7 +1149,6 @@ function openEdit() {
   document.getElementById('editUsername').value = document.getElementById('userHandle').textContent.replace('@','') || '';
   document.getElementById('editBio').value = document.getElementById('userBio').textContent || '';
 
-  // Parse links
   let arr = [];
   if (Array.isArray(p.links)) arr = p.links;
   else if (typeof p.links === 'string' && p.links.trim()) {
@@ -999,7 +1224,7 @@ async function handleAvatarSelected(e) {
 function switchTab(tab, btn) {
   currentTab = tab;
   document.querySelectorAll('.tt-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
 
   const grid = document.getElementById('postsGrid');
   const wall = document.getElementById('wallSection');
