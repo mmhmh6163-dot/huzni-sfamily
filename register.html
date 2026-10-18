@@ -2,660 +2,566 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Profile — Arizona AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account — Arizona AI</title>
 
-<!-- Dynamic Open Graph Tags for Profile Sharing -->
-<meta property="og:type" content="profile">
-<meta property="og:title" id="ogTitle" content="Arizona AI Profile">
-<meta property="og:description" id="ogDesc" content="Check out this profile on Arizona AI">
-<meta property="og:image" id="ogImage" content="https://aiarizonan.com/icon-512.png">
-<meta property="og:url" id="ogUrl" content="https://aiarizonan.com/profile.html">
-
-<link rel="icon" type="image/png" href="/icon.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="style.css">
 
 <style>
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { margin: 0; padding: 0; }
-body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  /* ================= PAGE SPECIFIC STYLES ================= */
+  body {
+    background: radial-gradient(circle at 50% 0%, #1a0f0a 0%, #0a0a0a 60%);
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
 
-/* ==================== TOP BAR ==================== */
-.topbar {
-  position:fixed; top:0; left:0; right:0; height:60px;
-  background:rgba(10,10,10,.97); backdrop-filter:blur(12px);
-  border-bottom:1px solid rgba(255,107,53,.25);
-  display:flex; align-items:center; justify-content:space-between;
-  padding:0 16px; z-index:1000; max-width:640px; margin:0 auto;
-}
-.topbar .back, .topbar .icon-btn {
-  color:var(--az-text); font-size:19px;
-  width:40px; height:40px;
-  display:flex; align-items:center; justify-content:center;
-  border-radius:50%; text-decoration:none; cursor:pointer;
-  background:none; border:none;
-}
-.topbar .icon-btn:hover { background:rgba(255,255,255,.06); }
-.topbar .title { font-size:16px; font-weight:700; color:var(--az-text); }
+  /* ===== TOP BRAND BOX ===== */
+  .top-brand-box {
+    max-width: 420px;
+    margin: 24px auto 10px;
+    display: flex;
+    justify-content: center;
+    animation: floatIn 0.8s ease-out;
+  }
+  .brand-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 107, 53, 0.25);
+    padding: 10px 20px 10px 10px;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .brand-link:hover {
+    background: rgba(255, 107, 53, 0.1);
+    border-color: rgba(255, 107, 53, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(255, 107, 53, 0.15);
+  }
+  .brand-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #000;
+    border: 2px solid rgba(255, 107, 53, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .brand-icon-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+  }
+  .brand-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.5px;
+  }
+  .brand-sub {
+    font-size: 11px;
+    color: var(--az-accent, #ffb20f);
+    font-weight: 600;
+    margin-top: 2px;
+  }
 
-/* ==================== PROFILE HEADER ==================== */
-.profile-header { max-width:640px; margin:0 auto; padding:24px 20px 16px; }
-.profile-top { display:flex; align-items:center; gap:24px; margin-bottom:16px; }
+  @keyframes floatIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-.profile-avatar-wrap { position:relative; flex-shrink:0; cursor:pointer; }
-.profile-avatar {
-  width:92px; height:92px; border-radius:50%;
-  background:var(--az-gradient);
-  display:flex; align-items:center; justify-content:center;
-  font-size:34px; font-weight:800; color:#fff;
-  border:3px solid #0a0a0a;
-  box-shadow:0 0 0 3px var(--az-primary);
-  overflow:hidden; transition: transform .2s; position:relative; z-index:1;
-}
-.profile-avatar:active { transform:scale(.95); }
-.profile-avatar img { width:100%; height:100%; object-fit:cover; }
+  /* ===== WELCOME HEADER ===== */
+  .welcome-header {
+    text-align: center;
+    margin-bottom: 24px;
+    padding: 0 16px;
+  }
+  .welcome-header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff, #ffb20f);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 8px;
+  }
+  .welcome-header p {
+    color: var(--az-text-secondary, #9ca3af);
+    font-size: 14px;
+    line-height: 1.5;
+  }
 
-/* Story ring around avatar */
-.profile-avatar-wrap.has-story .profile-avatar { box-shadow: 0 0 0 3px transparent, 0 0 0 3px #FF6B35; }
-.profile-avatar-wrap.has-story::before {
-  content: ''; position: absolute; inset: -3px; border-radius: 50%;
-  background: conic-gradient(from 0deg, #FF6B35, #FFB20F, #7c3aed, #FF6B35);
-  z-index: 0; animation: storyRingSpin 4s linear infinite;
-}
-@keyframes storyRingSpin { to { transform: rotate(360deg); } }
-.profile-avatar-wrap.has-boosted-story::before {
-  background: conic-gradient(from 0deg, #FFB20F, #7c3aed, #5eb8ff, #FFB20F);
-  animation: storyRingSpin 2s linear infinite, boostGlow 2s ease-in-out infinite;
-}
-@keyframes boostGlow { 0%,100% { filter: drop-shadow(0 0 6px rgba(255,178,15,.7)); } 50% { filter: drop-shadow(0 0 16px rgba(124,58,237,.9)); } }
+  /* ===== HINTS & ALERTS ===== */
+  .reg-hint{font-size:12.5px;line-height:1.5;margin-top:6px;min-height:18px;color:var(--az-text-secondary,#9ca3af)}
+  .reg-hint.ok{color:#34d399}
+  .reg-hint.bad{color:#f87171}
+  .reg-hint.wait{color:#fbbf24}
+  .form-field .reg-pass-wrap{position:relative}
+  .form-field .reg-pass-wrap input{padding-inline-end:46px;width:100%;box-sizing:border-box}
+  .reg-eye{position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);background:none;border:0;
+           color:var(--az-text-secondary,#9ca3af);cursor:pointer;padding:10px;font-size:15px}
+  .reg-eye:hover{color:var(--az-text,#fff)}
+  .reg-eye:focus-visible{outline:2px solid var(--az-primary,#ff6b35);border-radius:8px}
+  .reg-meter{display:flex;gap:4px;margin-top:8px}
+  .reg-meter span{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.12);transition:background .2s}
+  .reg-meter[data-level="1"] span:nth-child(-n+1){background:#f87171}
+  .reg-meter[data-level="2"] span:nth-child(-n+2){background:#fbbf24}
+  .reg-meter[data-level="3"] span:nth-child(-n+3){background:#a3e635}
+  .reg-meter[data-level="4"] span:nth-child(-n+4){background:#34d399}
+  .reg-optional{font-weight:400;opacity:.7;font-size:12px}
+  #regReferral{text-transform:uppercase;letter-spacing:1px}
+  .reg-hp{position:absolute;inset-inline-start:-9999px;width:1px;height:1px;overflow:hidden}
 
-.profile-avatar-wrap .camera {
-  position:absolute; bottom:2px; right:2px;
-  background:var(--az-primary); color:#fff;
-  width:28px; height:28px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  font-size:12px; border:2px solid #0a0a0a; cursor:pointer; z-index:10;
-}
-.profile-avatar-wrap .verified-badge {
-  position:absolute; top:2px; right:2px;
-  background:#3b82f6; color:#fff;
-  width:24px; height:24px; border-radius:50%;
-  display:none; align-items:center; justify-content:center;
-  font-size:12px; border:2px solid #0a0a0a; z-index:11;
-}
-.profile-avatar-wrap .verified-badge.show { display:flex; }
+  /* ===== FORM STYLING IMPROVEMENTS ===== */
+  .form-card {
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+    border-radius: 20px;
+    padding: 24px;
+    max-width: 420px;
+    margin: 0 auto 40px;
+  }
+  .form-card h2 {
+    display: none; /* Replaced by welcome-header */
+  }
+  .form-sub {
+    display: none;
+  }
+  .form-field label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--az-text-secondary, #9ca3af);
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: block;
+  }
+  .form-field input {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 14px;
+    color: #fff;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .form-field input:focus {
+    outline: none;
+    border-color: var(--az-primary, #ff6b35);
+    background: rgba(0,0,0,0.6);
+  }
+  .btn-primary-full {
+    background: linear-gradient(135deg, #ff6b35, #ffb20f);
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    box-shadow: 0 8px 24px rgba(255, 107, 53, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-top: 8px;
+  }
+  .btn-primary-full:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(255, 107, 53, 0.4);
+  }
+  .btn-primary-full:active {
+    transform: translateY(0);
+  }
+  .form-switch {
+    text-align: center;
+    font-size: 13px;
+    color: var(--az-text-secondary, #9ca3af);
+    margin-top: 20px;
+  }
+  .form-switch a {
+    color: var(--az-accent, #ffb20f);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .form-switch a:hover {
+    text-decoration: underline;
+  }
 
-.add-story-btn {
-  position:absolute; bottom:-4px; right:-4px;
-  width:34px; height:34px; border-radius:50%;
-  background:linear-gradient(135deg,#FF6B35,#FFB20F);
-  color:#fff; border:3px solid #0a0a0a;
-  display:flex; align-items:center; justify-content:center;
-  font-size:14px; font-weight:800; cursor:pointer; z-index:12;
-  box-shadow: 0 4px 12px rgba(255,107,53,.4); transition: transform .15s;
-}
-.add-story-btn:active { transform:scale(.9); }
-
-.profile-stats { flex:1; display:flex; justify-content:space-around; text-align:center; }
-.profile-stats .stat { cursor:pointer; padding:4px 8px; border-radius:8px; }
-.profile-stats .stat:hover { background:rgba(255,255,255,.04); }
-.profile-stats .stat .num { font-size:18px; font-weight:800; color:var(--az-text); }
-.profile-stats .stat .lbl { font-size:12px; color:var(--az-text-secondary); margin-top:2px; }
-
-.profile-name { padding:0 20px 16px; max-width:640px; margin:0 auto; }
-.profile-name h1 { font-size:17px; font-weight:700; color:var(--az-text); display:flex; align-items:center; gap:6px; }
-.profile-name h1 .verified { color:#3b82f6; font-size:14px; }
-.profile-name .bio { margin-top:6px; font-size:14px; line-height:1.5; color:var(--az-text); white-space:pre-wrap; }
-.profile-name .meta { margin-top:8px; font-size:13px; color:var(--az-text-secondary); display:flex; flex-wrap:wrap; gap:12px; }
-.profile-name .meta span { display:flex; align-items:center; gap:5px; }
-
-/* ==================== NEW: CUSTOM LINKS ==================== */
-.profile-links { margin-top:10px; display:flex; flex-wrap:wrap; gap:8px; }
-.profile-link-item { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); padding:6px 12px; border-radius:20px; font-size:12px; color:var(--az-accent); text-decoration:none; font-weight:700; }
-.profile-link-item:hover { background:rgba(255,107,53,.1); }
-
-/* ==================== STORIES ==================== */
-.my-stories { max-width:640px; margin:0 auto 16px; padding:0 20px; }
-.my-stories .head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-.my-stories .head h3 { font-size:13px; font-weight:800; color:var(--az-text); text-transform:uppercase; display:flex; align-items:center; gap:6px; }
-.my-stories .row { display:flex; gap:10px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none; }
-.my-stories .row::-webkit-scrollbar { display:none; }
-.story-tile { width:80px; height:110px; border-radius:12px; overflow:hidden; position:relative; flex-shrink:0; cursor:pointer; border:2px solid rgba(255,255,255,.08); background:#111; }
-.story-tile img, .story-tile video { width:100%; height:100%; object-fit:cover; }
-.story-tile .expiry { position:absolute; top:4px; left:4px; background:rgba(0,0,0,.7); border-radius:8px; padding:2px 6px; font-size:9px; font-weight:800; color:#fff; }
-.story-tile .stats { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent, rgba(0,0,0,.85)); padding:14px 6px 5px; display:flex; justify-content:space-between; font-size:9px; color:#fff; font-weight:700; }
-.story-tile .delete-btn, .story-tile .boost-btn { position:absolute; top:4px; right:4px; width:22px; height:22px; border-radius:50%; border:none; font-size:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; opacity:0; z-index:3; }
-.story-tile:hover .delete-btn, .story-tile:hover .boost-btn { opacity:1; }
-.story-tile .delete-btn { background:rgba(255,71,87,.9); color:#fff; }
-.story-tile .boost-btn { right:28px; background:linear-gradient(135deg,#5eb8ff,#7c3aed); color:#fff; }
-.my-stories .add-tile { width:80px; height:110px; border-radius:12px; border:2px dashed rgba(255,107,53,.5); background:rgba(255,107,53,.06); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; flex-shrink:0; cursor:pointer; color:var(--az-primary); font-size:11px; font-weight:700; }
-
-/* ==================== WALLET & TRIBES ==================== */
-.wallet-card { max-width:640px; margin:0 20px 20px; background:linear-gradient(135deg,rgba(255,107,53,.15),rgba(255,178,15,.08)); border:1px solid rgba(255,107,53,.35); border-radius:16px; padding:18px; }
-.wallet-card .label { font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--az-text-secondary); margin-bottom:6px; }
-.wallet-card .balance { font-size:34px; font-weight:800; color:var(--az-accent); line-height:1; }
-.wallet-card .row { display:flex; gap:20px; margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,107,53,.25); }
-.wallet-card .row .col { flex:1; }
-.wallet-card .row .col .n { font-size:15px; font-weight:700; color:var(--az-text); }
-.wallet-card .row .col .l { font-size:11px; color:var(--az-text-secondary); text-transform:uppercase; letter-spacing:.5px; }
-.wallet-card .actions { display:flex; gap:10px; margin-top:16px; }
-.wallet-card .actions a { flex:1; text-align:center; padding:11px; border-radius:10px; text-decoration:none; font-weight:600; font-size:13px; border:1px solid rgba(255,178,15,.4); color:var(--az-accent); }
-.wallet-card .actions a.primary { background:var(--az-gradient); color:#fff; border:none; }
-.my-tribes { max-width:640px; margin:0 auto 20px; padding:0 20px; }
-.my-tribes .head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-.my-tribes .head h3 { font-size:13px; font-weight:800; color:var(--az-text); text-transform:uppercase; display:flex; align-items:center; gap:6px; }
-.my-tribes .row { display:flex; gap:10px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none; }
-.tribe-chip { min-width:130px; max-width:160px; background:rgba(94,184,255,.06); border:1px solid rgba(94,184,255,.2); border-radius:14px; padding:12px; flex-shrink:0; cursor:pointer; display:flex; gap:10px; align-items:center; }
-.tribe-chip .tav { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#7c3aed,#5eb8ff); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:16px; flex-shrink:0; overflow:hidden; }
-.tribe-chip .tinfo { flex:1; min-width:0; }
-.tribe-chip .tinfo .tname { font-size:13px; font-weight:700; color:var(--az-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.tribe-chip .tinfo .tsub { font-size:10px; color:var(--az-text-secondary); margin-top:2px; }
-
-/* ==================== ACTIONS & TABS ==================== */
-.profile-actions { max-width:640px; margin:0 auto 20px; padding:0 20px; display:flex; gap:8px; }
-.profile-actions button, .profile-actions a { flex:1; padding:10px 6px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:10px; color:var(--az-text); font-size:12px; font-weight:600; cursor:pointer; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:5px; font-family:inherit; }
-.profile-tabs { max-width:640px; margin:0 auto; display:flex; border-top:1px solid rgba(255,255,255,.08); border-bottom:1px solid rgba(255,255,255,.08); }
-.profile-tabs .tab { flex:1; padding:14px 0; background:none; border:none; cursor:pointer; color:var(--az-text-secondary); display:flex; align-items:center; justify-content:center; font-size:20px; border-bottom:2px solid transparent; }
-.profile-tabs .tab.active { color:var(--az-text); border-bottom-color:var(--az-text); }
-
-/* ==================== GRID ==================== */
-.profile-grid { max-width:640px; margin:0 auto; display:grid; grid-template-columns:repeat(3,1fr); gap:2px; padding:2px 0; }
-.grid-item { position:relative; aspect-ratio:1/1; background:#111; overflow:hidden; cursor:pointer; }
-.grid-item img, .grid-item video { width:100%; height:100%; object-fit:cover; display:block; }
-.grid-item .overlay { position:absolute; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; gap:14px; color:#fff; font-weight:700; font-size:13px; flex-wrap:wrap; padding:8px; }
-.grid-item:hover .overlay { display:flex; }
-.grid-item .del-post { position:absolute; top:6px; right:6px; width:28px; height:28px; border-radius:50%; background:rgba(255,71,87,.9); color:#fff; border:none; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; opacity:0; z-index:5; }
-.grid-item:hover .del-post { opacity:1; }
-.pin-icon { position: absolute; top: 6px; left: 6px; color: #fff; font-size: 14px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); z-index: 5;}
-
-/* ==================== NEW: WALL COMMENTS ==================== */
-.wall-container { max-width:640px; margin:0 auto; padding:16px; display:none; }
-.wall-container.active { display:block; }
-.wall-input-box { display:flex; gap:8px; margin-bottom:16px; }
-.wall-input-box input { flex:1; padding:12px; border-radius:10px; border:1px solid #333; background:#0a0a0a; color:#fff; font-family:inherit; }
-.wall-input-box button { padding:0 20px; background:var(--az-gradient); color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer; }
-.wall-comment { display:flex; gap:12px; margin-bottom:16px; }
-.wall-comment .av { width:40px; height:40px; border-radius:50%; background:var(--az-gradient); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; flex-shrink:0;}
-.wall-comment .av img { width:100%; height:100%; border-radius:50%; object-fit:cover; }
-.wall-comment .content { background:rgba(255,255,255,.05); padding:10px 14px; border-radius:12px; border-top-left-radius:2px; flex:1; font-size:14px; }
-.wall-comment .name { font-weight:700; font-size:12px; color:var(--az-accent); margin-bottom:4px;}
-
-/* ==================== NEW: INSTAGRAM ACTIONS & REFERRAL ==================== */
-.insta-actions { display:flex; gap:8px; padding: 0 20px 16px; max-width:640px; margin: 0 auto;}
-.insta-actions button, .insta-actions a { flex:1; padding:10px; border-radius:10px; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; text-decoration:none; border:none; font-family:inherit; }
-.btn-follow { background:var(--az-gradient); color:#fff; }
-.btn-following { background:rgba(255,255,255,.1); color:#fff; border:1px solid rgba(255,255,255,.2) !important; }
-.btn-message { background:rgba(255,255,255,.1); color:#fff; border:1px solid rgba(255,255,255,.2) !important; }
-
-.referral-card { max-width:640px; margin:0 20px 20px; background:linear-gradient(135deg, rgba(255,107,53,.1), rgba(255,178,15,.05)); border:1px solid rgba(255,178,15,.3); border-radius:16px; padding:16px; display:flex; align-items:center; gap:12px; }
-.referral-card .icon { width:44px; height:44px; border-radius:12px; background:var(--az-gradient); color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px; }
-.referral-card .info { flex:1; }
-.referral-card .info .title { font-size:13px; color:var(--az-text-secondary); text-transform:uppercase; font-weight:700; }
-.referral-card .info .code { font-size:20px; font-weight:800; color:#fff; letter-spacing:1px; margin-top:2px;}
-.referral-card .copy-btn { background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); color:#fff; padding:10px 16px; border-radius:10px; font-weight:700; font-size:13px; cursor:pointer; }
-
-/* ==================== MODALS & TOASTS ==================== */
-.modal-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:2000; align-items:flex-end; justify-content:center; }
-.modal-backdrop.active { display:flex; }
-.modal-content { background:#151515; width:100%; max-width:640px; border-top-left-radius:20px; border-top-right-radius:20px; padding:20px; max-height:90vh; overflow-y:auto; }
-.modal-content .handle { width:40px; height:4px; background:#333; border-radius:2px; margin:0 auto 16px; }
-.modal-content h3 { text-align:center; color:var(--az-accent); margin-bottom:18px; font-size:17px; }
-.modal-actions { display:flex; gap:10px; margin-top:16px; }
-.modal-actions button { flex:1; padding:13px; border-radius:12px; font-weight:700; cursor:pointer; font-size:14px; }
-.modal-actions .cancel { background:transparent; border:1px solid #333; color:#fff; }
-.modal-actions .primary { background:var(--az-gradient); border:none; color:#fff; }
-.toast-mini { position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(20px); background:rgba(10,10,10,.98); border:1px solid rgba(255,107,53,.4); color:#fff; padding:10px 18px; border-radius:22px; font-size:13px; font-weight:600; z-index:9999; opacity:0; pointer-events:none; transition:all .25s ease; }
-.toast-mini.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  @media (prefers-reduced-motion:reduce){
+    .reg-meter span{transition:none}
+    .top-brand-box{animation:none}
+    .btn-primary-full{transition:none}
+  }
 </style>
 </head>
 <body>
 
-<div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
-<input type="file" id="avatarInput" accept="image/*" style="display:none;">
-<input type="file" id="storyFileInput" accept="image/*,video/*" style="display:none;">
-
-<header class="topbar" id="topbar" style="display:none;">
-  <a href="index.html" class="back"><i class="fas fa-arrow-left"></i></a>
-  <span class="title" id="topbarTitle">Profile</span>
-  <div style="display:flex; gap:4px;">
-    <button class="icon-btn" onclick="openEdit()" title="Settings"><i class="fas fa-cog"></i></button>
-    <a href="logout.html" class="icon-btn"><i class="fas fa-sign-out-alt"></i></a>
-  </div>
-</header>
-
-<div id="profileContent" style="display:none;">
-  <div class="profile-header">
-    <div class="profile-top">
-      <div class="profile-avatar-wrap" id="avatarWrap">
-        <div class="profile-avatar" id="avatar">U</div>
-        <div class="camera" id="cameraBtn" onclick="triggerAvatarPick()" style="display:none;"><i class="fas fa-camera"></i></div>
-      </div>
-      <div class="profile-stats">
-        <div class="stat"><div class="num" id="statPosts">0</div><div class="lbl">Posts</div></div>
-        <div class="stat"><div class="num" id="statFollowers">0</div><div class="lbl">Followers</div></div>
-        <!-- NEW: Views Counter -->
-        <div class="stat"><div class="num" id="statViews">0</div><div class="lbl">Views</div></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="profile-name">
-    <h1><span id="displayName">User</span></h1>
-    <div class="bio" id="bio">Arizona AI member 🏜️</div>
-    <!-- NEW: Custom Links -->
-    <div class="profile-links" id="profileLinks"></div>
-  </div>
-
-  <!-- NEW: Insta Actions (Show on other profiles) -->
-  <div class="insta-actions" id="otherUserActions" style="display:none;">
-    <button id="followBtn" class="btn-follow" onclick="toggleFollow()"><i class="fas fa-plus"></i> Follow</button>
-    <a href="#" id="messageBtn" class="btn-message"><i class="far fa-paper-plane"></i> Message</a>
-  </div>
-
-  <!-- NEW: Referral Card (Show on own profile) -->
-  <div class="referral-card" id="referralCard" style="display:none;">
-    <div class="icon"><i class="fas fa-gift"></i></div>
-    <div class="info">
-      <div class="title">Your Invite Code</div>
-      <div class="code" id="refCodeDisplay">LOADING...</div>
-    </div>
-    <button class="copy-btn" onclick="copyRefCode()"><i class="fas fa-copy"></i> Copy</button>
-  </div>
-
-  <!-- MY STORIES -->
-  <div class="my-stories" id="myStoriesWrap" style="display:none;">
-    <div class="head"><h3><i class="fas fa-circle-play"></i> My Stories</h3><button class="see-all" onclick="openStoryUploadModal()">+ Add New</button></div>
-    <div class="row" id="myStoriesRow"></div>
-  </div>
-
-  <!-- MY TRIBES -->
-  <div class="my-tribes" id="myTribesWrap" style="display:none;">
-    <div class="head"><h3><i class="fas fa-users"></i> My Tribes</h3><button class="see-all" onclick="window.location.href='chats.html'">See All</button></div>
-    <div class="row" id="myTribesRow"></div>
-  </div>
-
-  <!-- WALLET -->
-  <div class="wallet-card" id="walletCard">
-    <div class="label"><i class="fas fa-wallet"></i> Your Balance</div>
-    <div class="balance" id="walletBalance">$0.00</div>
-    <div class="row">
-      <div class="col"><div class="n" id="walletEarned">$0.00</div><div class="l">Total Earned</div></div>
-      <div class="col"><div class="n" id="walletSpent">$0.00</div><div class="l">Total Spent</div></div>
-    </div>
-    <div class="actions">
-      <a href="wallets.html" class="primary"><i class="fas fa-wallet"></i> Wallet</a>
-      <a href="offers.html"><i class="fas fa-gift"></i> Offers</a>
-    </div>
-  </div>
-
-  <!-- Actions -->
-  <div class="profile-actions" id="profileActions">
-    <button onclick="openEdit()"><i class="fas fa-pen"></i> Edit</button>
-    <button onclick="openStoryUploadModal()"><i class="fas fa-circle-plus"></i> Story</button>
-    <a href="Post.html"><i class="fas fa-plus-circle"></i> Post</a>
-  </div>
-
-  <!-- Tabs -->
-  <div class="profile-tabs">
-    <button class="tab active" onclick="switchTab('posts', this)"><i class="fas fa-th"></i></button>
-    <button class="tab" onclick="switchTab('reels', this)"><i class="fas fa-video"></i></button>
-    <!-- NEW: WALL TAB -->
-    <button class="tab" onclick="switchTab('wall', this)"><i class="fas fa-comment-dots"></i></button>
-  </div>
-
-  <!-- POSTS GRID -->
-  <div class="profile-grid" id="postsGrid"></div>
-
-  <!-- NEW: WALL COMMENTS SECTION -->
-  <div class="wall-container" id="wallContainer">
-    <div class="wall-input-box">
-      <input type="text" id="wallInput" placeholder="Leave a message for this user...">
-      <button onclick="postWallComment()">Send</button>
-    </div>
-    <div id="wallCommentsList"></div>
-  </div>
+<div id="loadingOverlay" class="loading-overlay">
+  <div class="loader"></div>
+  <p style="margin-top:20px;">Loading…</p>
 </div>
 
-<!-- EDIT MODAL -->
-<div class="modal-backdrop" id="editModal">
-  <div class="modal-content">
-    <div class="handle"></div>
-    <h3>Edit Profile</h3>
-    <div class="form-field" style="margin-bottom:14px;"><label>Display Name</label><input type="text" id="editDisplayName" style="width:100%; padding:12px; border-radius:10px; border:1px solid #333; background:#0a0a0a; color:#fff;"></div>
-    <div class="form-field" style="margin-bottom:14px;"><label>Bio</label><textarea id="editBio" style="width:100%; padding:12px; border-radius:10px; border:1px solid #333; background:#0a0a0a; color:#fff;"></textarea></div>
-    <!-- NEW: Links Editor -->
-    <div class="form-field"><label>Links (Title|URL, comma separated)</label><input type="text" id="editLinks" style="width:100%; padding:12px; border-radius:10px; border:1px solid #333; background:#0a0a0a; color:#fff;" placeholder="YouTube|https://youtube.com, Store|https://store.com"></div>
-    <div class="modal-actions">
-      <button class="cancel" onclick="closeEdit()">Cancel</button>
-      <button class="primary" onclick="saveProfile()">Save</button>
+<div id="app-header"></div>
+
+<!-- ===== NEW TOP BRAND BOX ===== -->
+<div class="top-brand-box">
+  <a href="index.html" class="brand-link" title="Back to Home">
+    <div class="brand-icon-wrapper">
+      <!-- The link you provided, fixed with the proper image extension -->
+      <img src="/icon-192.png" alt="Arizona AI Logo" onerror="this.src='/icon.png'">
     </div>
-  </div>
+    <div class="brand-text">
+      <span class="brand-title">ARIZONA AI</span>
+      <span class="brand-sub">Earn While You Share</span>
+    </div>
+  </a>
 </div>
 
-<div id="toastMini" class="toast-mini"></div>
+<main>
+  <!-- ===== NEW WELCOME HEADER ===== -->
+  <div class="welcome-header">
+    <h1>Create Your Free Account</h1>
+    <p>Join the community, post content, and earn money for your activity.</p>
+  </div>
+
+  <div class="form-card">
+    <div class="form-alert error"   id="regError"   role="alert"></div>
+    <div class="form-alert success" id="regSuccess" role="status"></div>
+
+    <form id="registerForm" onsubmit="return doRegister(event)">
+      <div class="form-field">
+        <label for="regUsername">Username</label>
+        <input type="text" id="regUsername" placeholder="yourname" required
+               minlength="3" maxlength="30" autocomplete="username" aria-describedby="regUserHint">
+        <div class="reg-hint" id="regUserHint" aria-live="polite"></div>
+      </div>
+
+      <div class="form-field">
+        <label for="regEmail">Email</label>
+        <input type="email" id="regEmail" placeholder="you@example.com"
+               required autocomplete="email">
+      </div>
+
+      <div class="form-field">
+        <label for="regPassword">Password</label>
+        <div class="reg-pass-wrap">
+          <input type="password" id="regPassword" placeholder="At least 6 characters"
+                 required minlength="6" autocomplete="new-password" aria-describedby="regPassHint">
+          <button type="button" class="reg-eye" onclick="togglePass('regPassword', this)" aria-label="Show password">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="reg-meter" id="regMeter" data-level="0"><span></span><span></span><span></span><span></span></div>
+        <div class="reg-hint" id="regPassHint" aria-live="polite"></div>
+      </div>
+
+      <div class="form-field">
+        <label for="regConfirm">Confirm Password</label>
+        <div class="reg-pass-wrap">
+          <input type="password" id="regConfirm" placeholder="Repeat password"
+                 required minlength="6" autocomplete="new-password" aria-describedby="regConfirmHint">
+          <button type="button" class="reg-eye" onclick="togglePass('regConfirm', this)" aria-label="Show password">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="reg-hint" id="regConfirmHint" aria-live="polite"></div>
+      </div>
+
+      <div class="form-field">
+        <label for="regReferral">Reference number <span class="reg-optional">(optional)</span></label>
+        <input type="text" id="regReferral" placeholder="Invite code from a friend" maxlength="16"
+               autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="regRefHint">
+        <div class="reg-hint" id="regRefHint" aria-live="polite"></div>
+      </div>
+
+      <!-- Honeypot: real users never see or fill this -->
+      <div class="reg-hp" aria-hidden="true">
+        <label>Website <input type="text" id="regWebsite" tabindex="-1" autocomplete="off"></label>
+      </div>
+
+      <button type="submit" class="btn-primary-full" id="regBtn">
+        <i class="fas fa-user-plus"></i> Create Free Account
+      </button>
+    </form>
+
+    <p class="form-switch">
+      Already have an account? <a href="login.html">Sign in</a>
+    </p>
+
+    <div class="card" style="margin-top:20px; padding:14px; background:rgba(255,178,15,0.05); border:1px solid rgba(255,178,15,0.15);">
+      <p style="font-size:12px; color:var(--az-text-secondary); line-height:1.6; margin:0; text-align:center;">
+        <i class="fas fa-envelope" style="color:var(--az-accent);"></i>
+        We'll send a confirmation link to your email. Click it to activate your account.
+      </p>
+    </div>
+  </div>
+</main>
+
+<div id="app-footer"></div>
 
 <script src="auth.js"></script>
 <script>
-let viewedUserId = null;
-let isOwnProfile = false;
-let userPosts = [];
-let currentTab = 'posts';
-let isFollowing = false;
+  const $ = (id) => document.getElementById(id);
+  const REF_KEY = 'az_ref';
+  let refTimer = null, refSeq = 0, userTimer = null, userSeq = 0;
 
-document.addEventListener('DOMContentLoaded', () => {
-  const check = setInterval(() => {
-    if (typeof authReady !== 'undefined' && authReady) {
-      clearInterval(check);
-      initProfile();
+  /* ---------- Redirect if already signed in ---------- */
+  function redirectIfSignedIn() {
+    if (typeof currentUser !== 'undefined' && currentUser) window.location.href = 'index.html';
+  }
+  document.addEventListener('auth-ready', redirectIfSignedIn);
+  document.addEventListener('DOMContentLoaded', () => setTimeout(redirectIfSignedIn, 300));
+
+  /* ---------- Small helpers ---------- */
+  function setHint(id, kind, text) {
+    const el = $(id);
+    el.className = 'reg-hint' + (kind ? ' ' + kind : '');
+    el.textContent = text || '';
+  }
+  function showAlert(type, content) {
+    hideAlerts();
+    const el = $(type === 'error' ? 'regError' : 'regSuccess');
+    if (type === 'error') el.textContent = content; else el.innerHTML = content;
+    el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  function hideAlerts() {
+    $('regError').style.display   = 'none';
+    $('regSuccess').style.display = 'none';
+  }
+  function friendlyError(err) {
+    const m = (err && err.message) || '';
+    if (/already (been )?registered/i.test(m)) return 'This email is already registered. Try signing in instead.';
+    if ((err && err.status === 429) || /rate limit|too many/i.test(m)) return 'Too many attempts. Please wait a few minutes and try again.';
+    if (/invalid.*email|email.*invalid/i.test(m)) return 'Please enter a valid email address.';
+    return m || 'Registration failed. Try again.';
+  }
+  function togglePass(id, btn) {
+    const input = $(id);
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    btn.innerHTML = '<i class="fas ' + (show ? 'fa-eye-slash' : 'fa-eye') + '"></i>';
+    btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+  }
+
+  /* ---------- Reference number ---------- */
+  function normalizeRef(v) { return String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+
+  async function lookupReferral(code) {
+    if (!code) return { state: 'empty' };
+    if (!/^[A-Z0-9]{6,12}$/.test(code)) return { state: 'badformat' };
+    try {
+      const { data, error } = await supabaseClient.rpc('check_referral_code', { p_code: code });
+      if (error) throw error;
+      return data ? { state: 'valid', inviter: String(data) } : { state: 'invalid' };
+    } catch (e) {
+      return { state: 'unknown' };   // could not check: do not block signup
     }
-  }, 100);
-});
-
-async function initProfile() {
-  const params = new URLSearchParams(window.location.search);
-  const urlUserId = params.get('user');
-  if (!currentUser && !urlUserId) { window.location.href = 'login.html'; return; }
-
-  viewedUserId = urlUserId || currentUser.id;
-  isOwnProfile = currentUser && viewedUserId === currentUser.id;
-
-  document.getElementById('topbar').style.display = 'flex';
-  document.getElementById('profileContent').style.display = 'block';
-
-  if (isOwnProfile) {
-    document.getElementById('referralCard').style.display = 'flex';
-    document.getElementById('profileActions').style.display = 'flex';
-    document.getElementById('cameraBtn').style.display = 'flex';
-    document.getElementById('myStoriesWrap').style.display = 'block';
-    document.getElementById('myTribesWrap').style.display = 'block';
-  } else {
-    document.getElementById('otherUserActions').style.display = 'flex';
-    document.getElementById('cameraBtn').style.display = 'none';
-    document.getElementById('messageBtn').href = `chats.html?user=${viewedUserId}`;
+  }
+  function showReferralState(r) {
+    if (r.state === 'empty')          setHint('regRefHint', '', 'Got an invite? Enter the reference number (optional).');
+    else if (r.state === 'badformat') setHint('regRefHint', 'bad', 'Reference numbers use 6–12 letters and numbers.');
+    else if (r.state === 'valid')     setHint('regRefHint', 'ok', '✓ Valid — invited by @' + r.inviter);
+    else if (r.state === 'invalid')   setHint('regRefHint', 'bad', '✗ This reference number was not found.');
+    else                              setHint('regRefHint', 'wait', 'Couldn’t verify it right now — we’ll still try to apply it.');
+  }
+  function onReferralInput() {
+    clearTimeout(refTimer);
+    const code = normalizeRef($('regReferral').value);
+    const seq = ++refSeq;
+    if (!code) return showReferralState({ state: 'empty' });
+    if (code.length < 6) return setHint('regRefHint', '', 'Keep typing… reference numbers have 6–12 characters.');
+    if (code.length > 12) return showReferralState({ state: 'badformat' });
+    setHint('regRefHint', 'wait', 'Checking…');
+    refTimer = setTimeout(async () => {
+      const r = await lookupReferral(code);
+      if (seq === refSeq) showReferralState(r);
+    }, 450);
   }
 
-  // Log View
-  if (!isOwnProfile && currentUser) {
-    supabaseClient.rpc('log_profile_view', { p_profile_id: viewedUserId }).catch(()=>{});
+  /* ---------- Username ---------- */
+  async function lookupUsername(name) {
+    try {
+      const { data, error } = await supabaseClient.rpc('username_available', { p_username: name });
+      if (!error && typeof data === 'boolean') return data ? 'free' : 'taken';
+    } catch (_) {}
+    try {
+      const { data } = await supabaseClient.from('profiles').select('id').eq('username', name).maybeSingle();
+      return data ? 'taken' : 'free';
+    } catch (_) { return 'unknown'; }
+  }
+  function onUsernameInput() {
+    clearTimeout(userTimer);
+    const name = $('regUsername').value.trim();
+    const seq = ++userSeq;
+    if (!name) return setHint('regUserHint', '', '');
+    if (name.length < 3) return setHint('regUserHint', '', 'At least 3 characters.');
+    if (!/^[a-zA-Z0-9_]+$/.test(name)) return setHint('regUserHint', 'bad', 'Letters, numbers and _ only.');
+    setHint('regUserHint', 'wait', 'Checking availability…');
+    userTimer = setTimeout(async () => {
+      const s = await lookupUsername(name);
+      if (seq !== userSeq) return;
+      if (s === 'free')       setHint('regUserHint', 'ok', '✓ @' + name + ' is available');
+      else if (s === 'taken') setHint('regUserHint', 'bad', '✗ That username is already taken.');
+      else                    setHint('regUserHint', '', '');
+    }, 450);
   }
 
-  await loadProfileData();
-  await loadUserPosts();
-  await checkIfFollowing();
-  await loadWallComments();
-}
-
-async function loadProfileData() {
-  const { data: prof } = await supabaseClient.from('profiles').select('*').eq('id', viewedUserId).maybeSingle();
-  const { data: wall } = await supabaseClient.from('wallets').select('*').eq('user_id', viewedUserId).maybeSingle();
-  if (!prof) { showToast('User not found'); return; }
-
-  const name = prof.username || 'user';
-  const display = prof.display_name || name;
-  const initial = name.charAt(0).toUpperCase();
-
-  document.getElementById('avatar').innerHTML = prof.avatar_url ? `<img src="${prof.avatar_url}">` : initial;
-  document.getElementById('displayName').textContent = display;
-  document.getElementById('bio').textContent = prof.bio || 'Arizona AI member 🏜️';
-  document.getElementById('statPosts').textContent = prof.posts_count || 0;
-  document.getElementById('statFollowers').textContent = prof.followers_count || 0;
-  document.getElementById('statViews').textContent = prof.profile_views || 0;
-  document.getElementById('topbarTitle').textContent = isOwnProfile ? 'Profile' : '@' + name;
-
-  if (isOwnProfile) {
-    document.getElementById('refCodeDisplay').textContent = prof.referral_code || 'NO CODE';
-    document.getElementById('walletBalance').textContent = '$' + Number(wall?.balance || 0).toFixed(2);
-    document.getElementById('walletEarned').textContent = '$' + Number(wall?.total_earned || 0).toFixed(2);
-    document.getElementById('walletSpent').textContent = '$' + Number(wall?.total_spent || 0).toFixed(2);
-  }
-
-  // Render Custom Links
-  const linksContainer = document.getElementById('profileLinks');
-  linksContainer.innerHTML = '';
-  if (prof.links && Array.isArray(prof.links)) {
-    prof.links.forEach(link => {
-      if(link.title && link.url) {
-        linksContainer.innerHTML += `<a href="${link.url}" target="_blank" class="profile-link-item"><i class="fas fa-link"></i> ${link.title}</a>`;
-      }
-    });
-  }
-
-  document.getElementById('ogTitle').content = `${display} (@${name}) — Arizona AI`;
-  document.getElementById('ogDesc').content = prof.bio || 'Check out my profile on Arizona AI!';
-  if (prof.avatar_url) document.getElementById('ogImage').content = prof.avatar_url;
-  document.getElementById('ogUrl').content = window.location.href;
-}
-
-async function loadUserPosts() {
-  const grid = document.getElementById('postsGrid');
-  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#666;"><i class="fas fa-circle-notch fa-spin"></i></div>';
-
-  // Sort by is_pinned first!
-  const { data, error } = await supabaseClient
-    .from('posts')
-    .select('*')
-    .eq('user_id', viewedUserId)
-    .order('is_pinned', { ascending: false })
-    .order('created_at', { ascending: false });
-    
-  if (error) { grid.innerHTML = 'Error loading posts'; return; }
-  userPosts = data || [];
-  renderGrid();
-}
-
-async function checkIfFollowing() {
-  if (!currentUser || isOwnProfile) return;
-  const { data } = await supabaseClient.from('follows').select('id').eq('follower_id', currentUser.id).eq('following_id', viewedUserId).maybeSingle();
-  isFollowing = !!data;
-  updateFollowButton();
-}
-
-function updateFollowButton() {
-  const btn = document.getElementById('followBtn');
-  if (isFollowing) {
-    btn.className = 'btn-following';
-    btn.innerHTML = '<i class="fas fa-check"></i> Following';
-  } else {
-    btn.className = 'btn-follow';
-    btn.innerHTML = '<i class="fas fa-plus"></i> Follow';
-  }
-}
-
-async function toggleFollow() {
-  if (!currentUser) return;
-  const btn = document.getElementById('followBtn');
-  btn.disabled = true;
-  try {
-    if (isFollowing) {
-      await supabaseClient.from('follows').delete().eq('follower_id', currentUser.id).eq('following_id', viewedUserId);
-      isFollowing = false;
-      showToast('Unfollowed');
+  /* ---------- Password ---------- */
+  function onPasswordInput() {
+    const p = $('regPassword').value;
+    if (!p) {
+      $('regMeter').dataset.level = '0';
+      setHint('regPassHint', '', '');
     } else {
-      await supabaseClient.from('follows').insert({ follower_id: currentUser.id, following_id: viewedUserId });
-      isFollowing = true;
-      showToast('Following ✅');
+      let s = 0;
+      if (p.length >= 6) s++;
+      if (p.length >= 10) s++;
+      if (/[a-z]/.test(p) && /[A-Z]/.test(p)) s++;
+      if (/\d/.test(p)) s++;
+      if (/[^A-Za-z0-9]/.test(p)) s++;
+      const lvl = s <= 1 ? 1 : s === 2 ? 2 : s === 3 ? 3 : 4;
+      $('regMeter').dataset.level = String(lvl);
+      setHint('regPassHint', lvl <= 1 ? 'bad' : lvl === 2 ? 'wait' : 'ok',
+        ['', 'Weak', 'Okay', 'Good', 'Strong'][lvl] + (lvl <= 2 ? ' — add length, numbers or symbols.' : ''));
     }
-    updateFollowButton();
-    loadProfileData(); 
-  } catch (err) { showToast(err.message); }
-  finally { btn.disabled = false; }
-}
-
-function renderGrid() {
-  const grid = document.getElementById('postsGrid');
-  if (userPosts.length === 0) {
-    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#666;">No posts yet</div>`;
-    return;
+    onConfirmInput();
+  }
+  function onConfirmInput() {
+    const p = $('regPassword').value, c = $('regConfirm').value;
+    if (!c) return setHint('regConfirmHint', '', '');
+    if (p === c) setHint('regConfirmHint', 'ok', '✓ Passwords match');
+    else         setHint('regConfirmHint', 'bad', '✗ Passwords do not match');
   }
 
-  grid.innerHTML = userPosts.map(post => {
-    const media = post.media_urls?.[0];
-    const isVideo = media?.match(/\.(mp4|webm|mov)$/i);
-    const html = isVideo ? `<video src="${media}" muted></video>` : `<img src="${media}">`;
-    
-    const pin = post.is_pinned ? `<div class="pin-icon"><i class="fas fa-thumbtack"></i></div>` : '';
+  function resetHints() {
+    $('regMeter').dataset.level = '0';
+    ['regUserHint', 'regPassHint', 'regConfirmHint'].forEach((id) => setHint(id, '', ''));
+    showReferralState({ state: 'empty' });
+  }
 
-    return `
-      <div class="grid-item" onclick="togglePin('${post.id}', ${post.is_pinned})">
-        ${media ? html : `<div style="padding:10px;font-size:12px;">${(post.content||'').slice(0,50)}</div>`}
-        ${pin}
-        <div class="overlay"><span><i class="fas fa-heart"></i> ${post.likes_count || 0}</span></div>
-      </div>
-    `;
-  }).join('');
-}
+  /* ---------- Wire up + prefill from invite link (?ref=CODE) ---------- */
+  $('regUsername').addEventListener('input', onUsernameInput);
+  $('regPassword').addEventListener('input', onPasswordInput);
+  $('regConfirm').addEventListener('input', onConfirmInput);
+  $('regReferral').addEventListener('input', onReferralInput);
 
-// NEW: Pin Toggle
-async function togglePin(postId, isPinned) {
-  if (!isOwnProfile) { showToast('View Post'); return; }
-  const action = isPinned ? 'unpin' : 'pin';
-  if (!confirm(`Do you want to ${action} this post?`)) return;
+  (function initReferral() {
+    let code = normalizeRef(new URLSearchParams(location.search).get('ref'));
+    try {
+      if (code) sessionStorage.setItem(REF_KEY, code);
+      else code = sessionStorage.getItem(REF_KEY) || '';
+    } catch (_) {}
+    if (code) $('regReferral').value = code;
+    onReferralInput();
+  })();
 
-  try {
-    if (!isPinned) {
-      await supabaseClient.from('posts').update({ is_pinned: false }).eq('user_id', currentUser.id);
+  /* ---------- Register ---------- */
+  async function doRegister(e) {
+    e.preventDefault();
+    hideAlerts();
+
+    if ($('regWebsite').value) return false;   // honeypot filled: bot
+
+    const username = $('regUsername').value.trim();
+    const email    = $('regEmail').value.trim();
+    const password = $('regPassword').value;
+    const confirmPw = $('regConfirm').value;
+    const refCode  = normalizeRef($('regReferral').value);
+
+    // Client-side validation
+    if (username.length < 3)         return showAlert('error', 'Username must be at least 3 characters.');
+    if (username.length > 30)        return showAlert('error', 'Username must be under 30 characters.');
+    if (!/^[a-zA-Z0-9_]+$/.test(username))
+                                     return showAlert('error', 'Username can only contain letters, numbers and _');
+    if (password.length < 6)         return showAlert('error', 'Password must be at least 6 characters.');
+    if (password !== confirmPw)      return showAlert('error', 'Passwords do not match.');
+
+    const btn = $('regBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Creating account…';
+
+    try {
+      // Reference number must be valid if one was entered
+      let inviter = '';
+      if (refCode) {
+        const r = await lookupReferral(refCode);
+        showReferralState(r);
+        if (r.state === 'badformat' || r.state === 'invalid') {
+          throw new Error('That reference number is not valid. Fix it or clear the field to continue without one.');
+        }
+        if (r.state === 'valid') inviter = r.inviter;
+      }
+
+      // Check username is not taken
+      if ((await lookupUsername(username)) === 'taken') {
+        throw new Error('That username is already taken.');
+      }
+
+      // Sign up (the reference number travels with the signup; the database records it)
+      const meta = { username: username, name: username };
+      if (refCode) meta.referral_code = refCode;
+
+      const { data, error } = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options: {
+          data: meta,
+          emailRedirectTo: window.location.origin + '/login.html' // FIXED FOR CUSTOM DOMAIN
+        }
+      });
+
+      if (error) throw error;
+
+      // Supabase hides "already registered" by returning a user with no identities
+      if (data && data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+        throw new Error('This email is already registered. Try signing in instead.');
+      }
+
+      try { sessionStorage.removeItem(REF_KEY); } catch (_) {}
+
+      if (data && data.session) {   // email confirmation is switched off
+        showAlert('success', '🎉 Account created! Taking you in…');
+        btn.innerHTML = '<i class="fas fa-check"></i> Done';
+        setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+        return false;
+      }
+
+      showAlert('success',
+        '🎉 Account created! We sent a confirmation link to <strong>' + escapeHtml(email) +
+        '</strong>. Click it, then <a href="login.html" style="color:#7ee8d0;font-weight:700;">sign in</a>.' +
+        (inviter ? '<br>🤝 You joined with <strong>@' + escapeHtml(inviter) + '</strong>’s reference number.' : '')
+      );
+
+      $('registerForm').reset();
+      resetHints();
+      btn.innerHTML = '<i class="fas fa-check"></i> Check your email';
+
+    } catch (err) {
+      showAlert('error', friendlyError(err));
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Free Account';
+      return false;
     }
-    await supabaseClient.from('posts').update({ is_pinned: !isPinned }).eq('id', postId);
-    showToast(`Post ${action}ned!`);
-    loadUserPosts();
-  } catch (err) { showToast(err.message); }
-}
 
-function switchTab(tab, el) {
-  currentTab = tab;
-  document.querySelectorAll('.profile-tabs .tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  
-  if (tab === 'posts' || tab === 'reels') {
-    document.getElementById('postsGrid').style.display = 'grid';
-    document.getElementById('wallContainer').classList.remove('active');
-  } else if (tab === 'wall') {
-    document.getElementById('postsGrid').style.display = 'none';
-    document.getElementById('wallContainer').classList.add('active');
-  }
-}
-
-/* ==================== NEW: WALL COMMENTS ==================== */
-async function loadWallComments() {
-  const list = document.getElementById('wallCommentsList');
-  if (!list) return;
-  list.innerHTML = '<div style="text-align:center;padding:20px;color:#666;">Loading...</div>';
-
-  const { data } = await supabaseClient
-    .from('profile_comments')
-    .select('*, author:profiles!profile_comments_author_id_fkey(username, avatar_url)')
-    .eq('profile_id', viewedUserId)
-    .order('created_at', { ascending: false });
-
-  if (!data || data.length === 0) {
-    list.innerHTML = '<div style="text-align:center;padding:20px;color:#666;">No messages yet. Be the first!</div>';
-    return;
+    return false;
   }
 
-  list.innerHTML = data.map(c => {
-    const av = c.author.avatar_url ? `<img src="${c.author.avatar_url}">` : c.author.username.charAt(0).toUpperCase();
-    return `
-      <div class="wall-comment">
-        <div class="av">${av}</div>
-        <div class="content">
-          <div class="name">@${c.author.username}</div>
-          <div>${c.content}</div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-async function postWallComment() {
-  if (!currentUser) return;
-  const input = document.getElementById('wallInput');
-  const text = input.value.trim();
-  if (!text) return;
-
-  try {
-    await supabaseClient.from('profile_comments').insert({
-      profile_id: viewedUserId,
-      author_id: currentUser.id,
-      content: text
-    });
-    input.value = '';
-    loadWallComments();
-  } catch (err) { showToast(err.message); }
-}
-
-/* ==================== REFERRAL & SHARE ==================== */
-function copyRefCode() {
-  const code = document.getElementById('refCodeDisplay').textContent;
-  navigator.clipboard.writeText(code).then(() => showToast('Referral code copied! 📋'));
-}
-
-/* ==================== AVATAR & EDIT ==================== */
-function triggerAvatarPick() {
-  if (!isOwnProfile) return;
-  document.getElementById('avatarInput').click();
-}
-
-document.getElementById('avatarInput').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const btn = document.getElementById('cameraBtn');
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-  
-  try {
-    const path = `${currentUser.id}/avatar-${Date.now()}.jpg`;
-    await supabaseClient.storage.from('avatars').upload(path, file);
-    const { data } = supabaseClient.storage.from('avatars').getPublicUrl(path);
-    await supabaseClient.from('profiles').update({ avatar_url: data.publicUrl }).eq('id', currentUser.id);
-    document.getElementById('avatar').innerHTML = `<img src="${data.publicUrl}">`;
-    showToast('Photo updated ✅');
-  } catch(err) { showToast(err.message); }
-  finally { btn.innerHTML = '<i class="fas fa-camera"></i>'; }
-});
-
-function openEdit() {
-  if (!isOwnProfile) return;
-  document.getElementById('editDisplayName').value = document.getElementById('displayName').textContent;
-  document.getElementById('editBio').value = document.getElementById('bio').textContent;
-  document.getElementById('editLinks').value = "";
-  document.getElementById('editModal').classList.add('active');
-}
-
-function closeEdit() { document.getElementById('editModal').classList.remove('active'); }
-
-async function saveProfile() {
-  const btn = document.getElementById('saveBtn');
-  if(btn) btn.disabled = true;
-  
-  const display_name = document.getElementById('editDisplayName').value;
-  const bio = document.getElementById('editBio').value;
-  
-  const linksInput = document.getElementById('editLinks').value;
-  const linksArray = linksInput.split(',').map(l => {
-    const [title, url] = l.split('|');
-    if(title && url) return { title: title.trim(), url: url.trim() };
-    return null;
-  }).filter(Boolean);
-
-  try {
-    await supabaseClient.from('profiles').update({ display_name, bio, links: linksArray }).eq('id', currentUser.id);
-    document.getElementById('displayName').textContent = display_name;
-    document.getElementById('bio').textContent = bio;
-    closeEdit();
-    loadProfileData();
-    showToast('Profile updated ✅');
-  } catch(err) { showToast(err.message); }
-  finally { if(btn) btn.innerHTML = 'Save'; }
-}
-
-function showToast(msg) {
-  const el = document.getElementById('toastMini');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(window._toastT);
-  window._toastT = setTimeout(() => el.classList.remove('show'), 2200);
-}
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
 </script>
 </body>
 </html>
