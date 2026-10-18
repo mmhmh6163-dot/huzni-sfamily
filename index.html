@@ -608,42 +608,323 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
 }
 .ig-bottom-nav .bnav-avatar img { width:100%; height:100%; object-fit:cover; }
 
-/* ==================== FULLSCREEN VIEWER ==================== */
-.fs-viewer {
-  display:none; position:fixed; inset:0;
-  background:rgba(0,0,0,.98); z-index:3000;
-  align-items:center; justify-content:center;
+/* ==================== TIKTOK / REELS VERTICAL VIEWER ==================== */
+.tt-viewer {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 2800;
+  overflow: hidden;
+  touch-action: pan-y;
 }
-.fs-viewer.active { display:flex; }
-.fs-viewer img, .fs-viewer video {
-  max-width:100vw; max-height:100vh;
-  object-fit:contain; animation:fsIn .25s ease;
+.tt-viewer.active {
+  display: block;
 }
-@keyframes fsIn { from { opacity:0; transform:scale(.92); } }
-.fs-viewer .close-btn {
-  position:absolute; top:20px; right:20px;
-  width:44px; height:44px; border-radius:50%;
-  background:rgba(255,255,255,.12); color:#fff;
-  border:none; font-size:22px; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  backdrop-filter:blur(8px); z-index:10;
+.tt-slider {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
-.fs-viewer .nav-btn {
-  position:absolute; top:50%; transform:translateY(-50%);
-  width:50px; height:50px; border-radius:50%;
-  background:rgba(255,255,255,.12); color:#fff;
-  border:none; font-size:22px; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  backdrop-filter:blur(8px); z-index:10;
+.tt-slider::-webkit-scrollbar { display: none; }
+
+.tt-slide {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #050a14;
+  overflow: hidden;
 }
-.fs-viewer .nav-btn.prev { left:16px; }
-.fs-viewer .nav-btn.next { right:16px; }
-.fs-viewer .counter {
-  position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
-  color:#fff; font-size:13px; font-weight:600;
-  background:rgba(255,255,255,.12);
-  padding:6px 14px; border-radius:20px;
-  backdrop-filter:blur(8px); z-index:10;
+
+.tt-media-wrap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+.tt-media-wrap img,
+.tt-media-wrap video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Gradient overlay for text legibility */
+.tt-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,0.45) 0%,
+    rgba(0,0,0,0) 25%,
+    rgba(0,0,0,0) 60%,
+    rgba(10,10,10,0.88) 100%
+  );
+  z-index: 2;
+}
+
+/* Big double-tap heart pop inside reels */
+.tt-dbl-heart {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-size: 110px;
+  color: #ff4757;
+  filter: drop-shadow(0 0 30px rgba(255, 71, 87, 0.95));
+  pointer-events: none;
+  z-index: 20;
+}
+.tt-dbl-heart.pop {
+  animation: dblHeartPop .85s ease forwards;
+}
+
+/* Pause icon watermark toggle */
+.tt-pause-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: rgba(10,10,10,0.65);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 32px;
+  pointer-events: none;
+  z-index: 15;
+  transition: transform .2s ease, opacity .2s ease;
+  opacity: 0;
+}
+.tt-pause-indicator.show {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+/* Top control header */
+.tt-topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 20px;
+  padding-top: calc(16px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+  pointer-events: auto;
+}
+.tt-btn-round {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(10,10,10,0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,107,53,0.3);
+  color: #fff;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all .2s;
+}
+.tt-btn-round:active {
+  transform: scale(0.92);
+}
+.tt-top-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(10,10,10,0.5);
+  backdrop-filter: blur(10px);
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,178,15,0.3);
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+.tt-top-brand img {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+}
+
+/* Right TikTok Rail */
+.tt-actions-rail {
+  position: absolute;
+  right: 14px;
+  bottom: calc(40px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  z-index: 10;
+  pointer-events: auto;
+}
+.tt-rail-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: inherit;
+}
+.tt-rail-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  padding: 2px;
+  background: var(--az-gradient);
+  position: relative;
+  margin-bottom: 8px;
+}
+.tt-rail-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #0a0a0a;
+}
+.tt-rail-avatar .initial {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #0a0a0a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 800;
+}
+.tt-rail-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(10,10,10,0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #fff;
+  transition: transform .15s ease, background .2s ease;
+}
+.tt-rail-item:active .tt-rail-btn {
+  transform: scale(0.88);
+}
+.tt-rail-item.liked .tt-rail-btn {
+  color: #ff4757;
+  border-color: rgba(255,71,87,0.5);
+  background: rgba(255,71,87,0.2);
+}
+.tt-rail-item.saved .tt-rail-btn {
+  color: var(--az-accent);
+  border-color: var(--az-accent);
+}
+.tt-rail-item.boost-btn .tt-rail-btn {
+  color: #5eb8ff;
+  border-color: #5eb8ff;
+  background: rgba(94,184,255,0.2);
+}
+.tt-rail-count {
+  font-size: 11px;
+  font-weight: 700;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  letter-spacing: .3px;
+}
+
+/* Bottom Information block */
+.tt-bottom-info {
+  position: absolute;
+  left: 16px;
+  bottom: calc(26px + env(safe-area-inset-bottom));
+  right: 80px;
+  z-index: 10;
+  color: #fff;
+  pointer-events: auto;
+}
+.tt-user-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.tt-username {
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  text-decoration: none;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+}
+.tt-verified {
+  color: #3b82f6;
+  font-size: 13px;
+}
+.tt-boost-tag {
+  background: linear-gradient(135deg, #5eb8ff, #7c3aed);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.tt-caption {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.95);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: all .2s;
+  cursor: pointer;
+}
+.tt-caption.expanded {
+  -webkit-line-clamp: unset;
+  display: block;
+}
+.tt-sound-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--az-accent);
+  background: rgba(10,10,10,0.5);
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,178,15,0.25);
 }
 
 /* ==================== STORY VIEWER ==================== */
@@ -757,7 +1038,7 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
 /* ==================== COMMENTS MODAL ==================== */
 .comments-modal {
   display:none; position:fixed; inset:0;
-  background:rgba(0,0,0,.85); z-index:2000;
+  background:rgba(0,0,0,.85); z-index:3500;
   align-items:flex-end; justify-content:center;
 }
 .comments-modal.active { display:flex; }
@@ -823,7 +1104,7 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
 /* ==================== POST VIEWERS MODAL ==================== */
 .viewers-modal {
   display:none; position:fixed; inset:0;
-  background:rgba(0,0,0,.85); z-index:2050;
+  background:rgba(0,0,0,.85); z-index:3500;
   align-items:flex-end; justify-content:center;
 }
 .viewers-modal.active { display:flex; }
@@ -867,7 +1148,7 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
 /* ==================== POST OPTIONS MODAL ==================== */
 .post-options-modal {
   display:none; position:fixed; inset:0;
-  background:rgba(0,0,0,.7); z-index:2200;
+  background:rgba(0,0,0,.7); z-index:3600;
   align-items:flex-end; justify-content:center;
 }
 .post-options-modal.active { display:flex; }
@@ -916,7 +1197,7 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
 /* ==================== BOOST MODAL ==================== */
 .boost-modal {
   display:none; position:fixed; inset:0;
-  background:rgba(0,0,0,.88); z-index:2500;
+  background:rgba(0,0,0,.88); z-index:3700;
   align-items:flex-end; justify-content:center;
 }
 .boost-modal.active { display:flex; }
@@ -1237,13 +1518,22 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
   </a>
 </nav>
 
-<!-- ==================== FULLSCREEN VIEWER ==================== -->
-<div class="fs-viewer" id="fsViewer">
-  <button class="close-btn" onclick="closeFs()"><i class="fas fa-times"></i></button>
-  <button class="nav-btn prev" id="fsPrev" onclick="fsNav(-1)"><i class="fas fa-chevron-left"></i></button>
-  <button class="nav-btn next" id="fsNext" onclick="fsNav(1)"><i class="fas fa-chevron-right"></i></button>
-  <div id="fsContent"></div>
-  <div class="counter" id="fsCounter">1 / 1</div>
+<!-- ==================== TIKTOK / REELS VERTICAL VIEWER ==================== -->
+<div class="tt-viewer" id="ttViewer">
+  <div class="tt-topbar">
+    <button class="tt-btn-round" onclick="closeTtViewer()" aria-label="Close viewer">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <div class="tt-top-brand">
+      <img src="/icon.png" alt="Arizona AI">
+      <span>Arizona AI</span>
+    </div>
+    <button class="tt-btn-round" id="ttSoundToggle" onclick="toggleTtSound()" aria-label="Mute/Unmute">
+      <i class="fas fa-volume-up" id="ttSoundIcon"></i>
+    </button>
+  </div>
+  
+  <div class="tt-slider" id="ttSlider"></div>
 </div>
 
 <!-- ==================== STORY VIEWER ==================== -->
@@ -1448,8 +1738,6 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
    STATE
    ============================================================ */
 let currentPostId = null;
-let currentMediaList = [];
-let currentMediaIndex = 0;
 let likedPosts = new Set();
 let savedPosts = new Set();
 let storiesByUser = [];
@@ -1483,6 +1771,11 @@ const viewedPosts = new Set();
 const shownBoostedIds = new Set();
 
 let boostStats = null;
+
+/* TikTok Viewer State */
+let ttObserver = null;
+let ttActiveIndex = 0;
+let ttIsMuted = false;
 
 /* ============================================================
    TRANSLATIONS
@@ -1781,6 +2074,9 @@ async function loadMoreFeed(replace = false) {
 
     observeVisiblePosts();
     setupVideoAutopause();
+    if (document.getElementById('ttViewer').classList.contains('active')) {
+      appendTtSlides(pageData);
+    }
   } catch (err) {
     console.error('[Feed]', err);
     const loader = document.getElementById('feedLoader');
@@ -1802,7 +2098,6 @@ async function fetchPostsForMode() {
   const nowIso = new Date().toISOString();
   const selectFields = `*, profiles:user_id (username, display_name, avatar_url, is_verified)`;
 
-  // ---------- BOOSTED ----------
   if (currentFeedMode === 'boosted') {
     const { data, error } = await supabaseClient
       .from('posts')
@@ -1818,7 +2113,6 @@ async function fetchPostsForMode() {
     return data || [];
   }
 
-  // ---------- FOR YOU ----------
   if (currentFeedMode === 'for-you') {
     const { data: normals, error: nErr } = await supabaseClient
       .from('posts')
@@ -1848,7 +2142,6 @@ async function fetchPostsForMode() {
     return mergeBoosted(normals || [], freshBoosts);
   }
 
-  // ---------- FOLLOWING ----------
   if (currentFeedMode === 'following') {
     const followIds = [...followingIds];
 
@@ -1887,9 +2180,6 @@ async function fetchPostsForMode() {
   return [];
 }
 
-/* ============================================================
-   MERGE BOOSTED
-   ============================================================ */
 function mergeBoosted(normals, boosts) {
   const boostIds = new Set(boosts.map(b => b.id));
   const cleanNormals = normals.filter(n => !boostIds.has(n.id));
@@ -1943,9 +2233,9 @@ function renderPost(post) {
   const mediaUrls = Array.isArray(post.media_urls) ? post.media_urls : [];
   const mediaHtml = mediaUrls.map((url, idx) => {
     if (/\.(mp4|webm|ogg|mov)$/i.test(url)) {
-      return `<video src="${escapeHtml(url)}" controls playsinline preload="metadata"></video>`;
+      return `<video src="${escapeHtml(url)}" controls playsinline preload="metadata" onclick="event.stopPropagation(); openTtViewer('${post.id}')"></video>`;
     }
-    return `<img src="${escapeHtml(url)}" alt="Post image" loading="lazy" decoding="async" onclick="openFs('${post.id}', ${idx})" onerror="this.style.display='none'">`;
+    return `<img src="${escapeHtml(url)}" alt="Post image" loading="lazy" decoding="async" onclick="openTtViewer('${post.id}')" onerror="this.style.display='none'">`;
   }).join('');
 
   const isLiked = likedPosts.has(post.id);
@@ -2035,6 +2325,238 @@ function renderPost(post) {
 }
 
 /* ============================================================
+   TIKTOK / REELS VERTICAL VIEWER IMPLEMENTATION
+   ============================================================ */
+function buildTtSlideHtml(post) {
+  const prof = post.profiles || {};
+  const name = prof.display_name || prof.username || 'User';
+  const uname = prof.username || 'user';
+  const isVerified = prof.is_verified;
+  const isLiked = likedPosts.has(post.id);
+  const isSaved = savedPosts.has(post.id);
+  const isOwnPost = currentUser && post.user_id === currentUser.id;
+
+  const now = Date.now();
+  const expiresAt = post.boost_expires_at ? new Date(post.boost_expires_at).getTime() : 0;
+  const isBoosted = post.is_boosted && expiresAt > now;
+
+  const mediaUrls = Array.isArray(post.media_urls) ? post.media_urls : [];
+  const primaryMedia = mediaUrls[0] || '';
+  const isVideo = /\.(mp4|webm|ogg|mov)$/i.test(primaryMedia);
+
+  const avatarMarkup = prof.avatar_url
+    ? `<img src="${escapeHtml(prof.avatar_url)}" alt="${escapeHtml(name)}" onerror="this.style.display='none'">`
+    : `<div class="initial">${escapeHtml(name.charAt(0).toUpperCase())}</div>`;
+
+  return `
+    <div class="tt-slide" data-id="${post.id}" data-user-id="${post.user_id}">
+      <div class="tt-media-wrap" onclick="toggleTtPlayPause(this)" ondblclick="doubleTapLike('${post.id}')">
+        ${isVideo
+          ? `<video src="${escapeHtml(primaryMedia)}" playsinline loop preload="auto" ${ttIsMuted ? 'muted' : ''}></video>`
+          : `<img src="${escapeHtml(primaryMedia)}" alt="Post image" decoding="async">`
+        }
+      </div>
+
+      <div class="tt-gradient-overlay"></div>
+      <div class="tt-dbl-heart" id="tt-dblheart-${post.id}"><i class="fas fa-heart"></i></div>
+      <div class="tt-pause-indicator"><i class="fas fa-play"></i></div>
+
+      <!-- Right TikTok actions rail -->
+      <aside class="tt-actions-rail">
+        <a href="profile.html?user=${post.user_id}" class="tt-rail-avatar" title="${escapeHtml(name)}">
+          ${avatarMarkup}
+        </a>
+
+        <button class="tt-rail-item ${isLiked ? 'liked' : ''}" id="tt-likebtn-${post.id}" onclick="toggleLike('${post.id}', this)" aria-label="Like post">
+          <div class="tt-rail-btn"><i class="${isLiked ? 'fas' : 'far'} fa-heart"></i></div>
+          <span class="tt-rail-count" id="tt-likes-${post.id}">${post.likes_count || 0}</span>
+        </button>
+
+        <button class="tt-rail-item" onclick="openComments('${post.id}')" aria-label="Comments">
+          <div class="tt-rail-btn"><i class="far fa-comment-dots"></i></div>
+          <span class="tt-rail-count" id="tt-comments-${post.id}">${post.comments_count || 0}</span>
+        </button>
+
+        <button class="tt-rail-item ${isSaved ? 'saved' : ''}" id="tt-savebtn-${post.id}" onclick="toggleSave('${post.id}', this)" aria-label="Bookmark">
+          <div class="tt-rail-btn"><i class="${isSaved ? 'fas' : 'far'} fa-bookmark"></i></div>
+          <span class="tt-rail-count">Save</span>
+        </button>
+
+        <button class="tt-rail-item" onclick="sharePost('${post.id}')" aria-label="Share">
+          <div class="tt-rail-btn"><i class="fas fa-share"></i></div>
+          <span class="tt-rail-count" id="tt-shares-${post.id}">${post.shares_count || 0}</span>
+        </button>
+
+        ${isOwnPost ? `
+          <button class="tt-rail-item boost-btn" onclick="openBoost('${post.id}')" aria-label="Boost">
+            <div class="tt-rail-btn"><i class="fas fa-rocket"></i></div>
+            <span class="tt-rail-count">Boost</span>
+          </button>
+        ` : ''}
+      </aside>
+
+      <!-- Bottom post info -->
+      <div class="tt-bottom-info">
+        <div class="tt-user-row">
+          <a href="profile.html?user=${post.user_id}" class="tt-username">@${escapeHtml(uname)}</a>
+          ${isVerified ? '<i class="fas fa-circle-check tt-verified"></i>' : ''}
+          ${isBoosted ? '<span class="tt-boost-tag">⚡ Boosted</span>' : ''}
+        </div>
+        ${post.content ? `
+          <div class="tt-caption" onclick="this.classList.toggle('expanded')">
+            ${escapeHtml(post.content)}
+          </div>
+        ` : ''}
+        <div class="tt-sound-badge">
+          <i class="fas fa-music"></i>
+          <span>Arizona AI Original Audio</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function openTtViewer(postId) {
+  const viewer = document.getElementById('ttViewer');
+  const slider = document.getElementById('ttSlider');
+  const mediaPosts = currentFeedPosts.filter(p => Array.isArray(p.media_urls) && p.media_urls.length > 0);
+
+  if (mediaPosts.length === 0) return;
+
+  slider.innerHTML = mediaPosts.map(p => buildTtSlideHtml(p)).join('');
+  viewer.classList.add('active');
+  document.body.style.overflow = 'hidden';
+
+  const targetIndex = mediaPosts.findIndex(p => p.id === postId);
+  const initialIdx = targetIndex >= 0 ? targetIndex : 0;
+
+  setupTtIntersectionObserver();
+
+  setTimeout(() => {
+    const slides = slider.querySelectorAll('.tt-slide');
+    if (slides[initialIdx]) {
+      slides[initialIdx].scrollIntoView({ behavior: 'auto' });
+      handleTtSlideActive(slides[initialIdx]);
+    }
+  }, 60);
+}
+
+function appendTtSlides(newPosts) {
+  const slider = document.getElementById('ttSlider');
+  if (!slider) return;
+  const newMediaPosts = (newPosts || []).filter(p => Array.isArray(p.media_urls) && p.media_urls.length > 0);
+  if (newMediaPosts.length === 0) return;
+  slider.insertAdjacentHTML('beforeend', newMediaPosts.map(p => buildTtSlideHtml(p)).join(''));
+  if (ttObserver) {
+    slider.querySelectorAll('.tt-slide').forEach(s => ttObserver.observe(s));
+  }
+}
+
+function closeTtViewer() {
+  const viewer = document.getElementById('ttViewer');
+  const slider = document.getElementById('ttSlider');
+  if (ttObserver) {
+    ttObserver.disconnect();
+    ttObserver = null;
+  }
+  // Pause all videos
+  slider.querySelectorAll('video').forEach(v => {
+    v.pause();
+    v.currentTime = 0;
+  });
+  slider.innerHTML = '';
+  viewer.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function setupTtIntersectionObserver() {
+  if (ttObserver) ttObserver.disconnect();
+  const slider = document.getElementById('ttSlider');
+  ttObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const video = entry.target.querySelector('video');
+      const postId = entry.target.dataset.id;
+      const userId = entry.target.dataset.userId;
+
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.65) {
+        handleTtSlideActive(entry.target);
+        if (postId && !viewedPosts.has(postId)) {
+          viewedPosts.add(postId);
+          logPostView(postId, userId);
+        }
+      } else {
+        if (video) {
+          try { video.pause(); } catch(e){}
+        }
+      }
+    });
+  }, {
+    root: slider,
+    threshold: 0.65
+  });
+
+  slider.querySelectorAll('.tt-slide').forEach(slide => ttObserver.observe(slide));
+}
+
+function handleTtSlideActive(slideEl) {
+  const video = slideEl.querySelector('video');
+  if (video) {
+    video.muted = ttIsMuted;
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // Autoplay policy fallback: mute and retry
+        video.muted = true;
+        video.play().catch(() => {});
+      });
+    }
+  }
+}
+
+function toggleTtPlayPause(mediaWrap) {
+  const video = mediaWrap.querySelector('video');
+  if (!video) return;
+  const indicator = mediaWrap.parentElement.querySelector('.tt-pause-indicator');
+  if (video.paused) {
+    video.play();
+    if (indicator) {
+      indicator.innerHTML = '<i class="fas fa-play"></i>';
+      indicator.classList.remove('show');
+    }
+  } else {
+    video.pause();
+    if (indicator) {
+      indicator.innerHTML = '<i class="fas fa-pause"></i>';
+      indicator.classList.add('show');
+      setTimeout(() => indicator.classList.remove('show'), 900);
+    }
+  }
+}
+
+function toggleTtSound() {
+  ttIsMuted = !ttIsMuted;
+  const icon = document.getElementById('ttSoundIcon');
+  if (icon) {
+    icon.className = ttIsMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+  }
+  const slider = document.getElementById('ttSlider');
+  if (slider) {
+    slider.querySelectorAll('video').forEach(v => {
+      v.muted = ttIsMuted;
+    });
+  }
+  showToast(ttIsMuted ? 'Muted 🔇' : 'Sound On 🔊');
+}
+
+// Backward compatibility alias for any existing openFs triggers
+function openFs(postId, idx) {
+  openTtViewer(postId);
+}
+function closeFs() {
+  closeTtViewer();
+}
+
+/* ============================================================
    POST OPTIONS
    ============================================================ */
 function openPostOptions(postId, isOwnPost) {
@@ -2067,6 +2589,7 @@ async function postOptAction(action) {
       await supabaseClient.from('posts').delete().eq('id', postId).eq('user_id', currentUser.id);
       showToast('Post deleted 🗑️');
       document.querySelector(`article[data-id="${postId}"]`)?.remove();
+      document.querySelector(`.tt-slide[data-id="${postId}"]`)?.remove();
     } catch (err) { showToast(err.message); }
   }
 }
@@ -2079,7 +2602,8 @@ async function reportPost(postId) {
 }
 
 /* ============================================================
-   VIEWERS   ============================================================ */
+   VIEWERS
+   ============================================================ */
 async function openViewers(postId) {
   if (!currentUser) { showToast('Sign in first'); return; }
   const modal = document.getElementById('viewersModal');
@@ -2129,30 +2653,28 @@ function closeViewers() {
 }
 
 /* ============================================================
-   LIKE / DOUBLE-TAP — with rollback
+   LIKE / DOUBLE-TAP — Synchronized with TikTok Rail
    ============================================================ */
 async function toggleLike(postId, btn) {
   if (!currentUser) { showToast('Sign in to like'); return; }
-  const icon = btn.querySelector('i');
   const isLiked = likedPosts.has(postId);
+  
+  // UI optimistic update
+  updateLikeUi(postId, !isLiked);
+
   try {
     if (isLiked) {
       await supabaseClient.from('likes').delete().eq('user_id', currentUser.id).eq('post_id', postId);
       likedPosts.delete(postId);
-      btn.classList.remove('liked');
-      icon.className = 'far fa-heart';
     } else {
       await supabaseClient.from('likes').insert({ user_id: currentUser.id, post_id: postId });
       likedPosts.add(postId);
-      btn.classList.add('liked');
-      btn.classList.add('like-anim');
-      icon.className = 'fas fa-heart';
-      setTimeout(() => btn.classList.remove('like-anim'), 400);
       if (navigator.vibrate) navigator.vibrate(15);
     }
     await refreshPostCounters(postId);
   } catch (err) {
-    // Rollback UI state if request fails
+    // Rollback
+    updateLikeUi(postId, isLiked);
     if (isLiked) likedPosts.add(postId);
     else likedPosts.delete(postId);
     showToast(err.message);
@@ -2160,28 +2682,62 @@ async function toggleLike(postId, btn) {
   }
 }
 
+function updateLikeUi(postId, liked) {
+  const feedBtn = document.getElementById('likebtn-' + postId);
+  if (feedBtn) {
+    const icon = feedBtn.querySelector('i');
+    if (liked) {
+      feedBtn.classList.add('liked', 'like-anim');
+      if (icon) icon.className = 'fas fa-heart';
+      setTimeout(() => feedBtn.classList.remove('like-anim'), 400);
+    } else {
+      feedBtn.classList.remove('liked');
+      if (icon) icon.className = 'far fa-heart';
+    }
+  }
+
+  const ttBtn = document.getElementById('tt-likebtn-' + postId);
+  if (ttBtn) {
+    const icon = ttBtn.querySelector('i');
+    if (liked) {
+      ttBtn.classList.add('liked');
+      if (icon) icon.className = 'fas fa-heart';
+    } else {
+      ttBtn.classList.remove('liked');
+      if (icon) icon.className = 'far fa-heart';
+    }
+  }
+}
+
 async function doubleTapLike(postId) {
+  // Pop animation in standard feed
   const heart = document.getElementById('dblheart-' + postId);
   if (heart) {
     heart.classList.remove('pop');
     void heart.offsetWidth;
     heart.classList.add('pop');
   }
+
+  // Pop animation in TikTok viewer
+  const ttHeart = document.getElementById('tt-dblheart-' + postId);
+  if (ttHeart) {
+    ttHeart.classList.remove('pop');
+    void ttHeart.offsetWidth;
+    ttHeart.classList.add('pop');
+  }
+
   if (!currentUser) { showToast('Sign in to like'); return; }
   if (likedPosts.has(postId)) return;
 
-  const btn = document.getElementById('likebtn-' + postId);
+  updateLikeUi(postId, true);
   try {
     await supabaseClient.from('likes').insert({ user_id: currentUser.id, post_id: postId });
     likedPosts.add(postId);
-    if (btn) {
-      btn.classList.add('liked');
-      btn.querySelector('i').className = 'fas fa-heart';
-    }
     if (navigator.vibrate) navigator.vibrate(20);
     await refreshPostCounters(postId);
   } catch (err) {
-    if (likedPosts.has(postId)) likedPosts.delete(postId);
+    updateLikeUi(postId, false);
+    likedPosts.delete(postId);
   }
 }
 
@@ -2190,24 +2746,51 @@ async function doubleTapLike(postId) {
    ============================================================ */
 async function toggleSave(postId, btn) {
   if (!currentUser) { showToast('Sign in to save'); return; }
-  if (!btn) btn = document.getElementById('savebtn-' + postId);
   const isSaved = savedPosts.has(postId);
+  
+  updateSaveUi(postId, !isSaved);
+
   try {
     if (isSaved) {
       await supabaseClient.from('saved_posts').delete().eq('user_id', currentUser.id).eq('post_id', postId);
       savedPosts.delete(postId);
-      if (btn) { btn.classList.remove('saved'); btn.querySelector('i').className = 'far fa-bookmark'; }
       showToast('Removed from saved');
     } else {
       await supabaseClient.from('saved_posts').insert({ user_id: currentUser.id, post_id: postId });
       savedPosts.add(postId);
-      if (btn) { btn.classList.add('saved'); btn.querySelector('i').className = 'fas fa-bookmark'; }
       showToast('Saved ✅');
     }
   } catch (err) {
+    updateSaveUi(postId, isSaved);
     if (isSaved) savedPosts.add(postId);
     else savedPosts.delete(postId);
     showToast(err.message);
+  }
+}
+
+function updateSaveUi(postId, saved) {
+  const feedBtn = document.getElementById('savebtn-' + postId);
+  if (feedBtn) {
+    const icon = feedBtn.querySelector('i');
+    if (saved) {
+      feedBtn.classList.add('saved');
+      if (icon) icon.className = 'fas fa-bookmark';
+    } else {
+      feedBtn.classList.remove('saved');
+      if (icon) icon.className = 'far fa-bookmark';
+    }
+  }
+
+  const ttBtn = document.getElementById('tt-savebtn-' + postId);
+  if (ttBtn) {
+    const icon = ttBtn.querySelector('i');
+    if (saved) {
+      ttBtn.classList.add('saved');
+      if (icon) icon.className = 'fas fa-bookmark';
+    } else {
+      ttBtn.classList.remove('saved');
+      if (icon) icon.className = 'far fa-bookmark';
+    }
   }
 }
 
@@ -2259,6 +2842,7 @@ async function refreshPostCounters(postId) {
       .eq('id', postId).single();
     if (!data) return;
 
+    // Normal feed sync
     const likesEl    = document.getElementById('likes-' + postId);
     const commentsEl = document.getElementById('comments-count-' + postId);
     const sharesEl   = document.getElementById('shares-count-' + postId);
@@ -2270,6 +2854,15 @@ async function refreshPostCounters(postId) {
     if (sharesEl)   sharesEl.innerHTML   = `<i class="far fa-paper-plane"></i> ${data.shares_count || 0}`;
     if (viewsEl)    viewsEl.innerHTML    = `<i class="far fa-eye"></i> ${data.views_count || 0}`;
     if (previewEl)  previewEl.textContent = t('view-comments').replace('{n}', data.comments_count || 0);
+
+    // TikTok Viewer rail sync
+    const ttLikes    = document.getElementById('tt-likes-' + postId);
+    const ttComments = document.getElementById('tt-comments-' + postId);
+    const ttShares   = document.getElementById('tt-shares-' + postId);
+
+    if (ttLikes)    ttLikes.textContent = data.likes_count || 0;
+    if (ttComments) ttComments.textContent = data.comments_count || 0;
+    if (ttShares)   ttShares.textContent = data.shares_count || 0;
   } catch (e) {}
 }
 
@@ -2378,7 +2971,6 @@ function setupPullToRefresh() {
     const deltaY = y - startY;
     const deltaX = x - startX;
 
-    // Only trigger if more vertical than horizontal
     if (Math.abs(deltaY) < Math.abs(deltaX)) return;
 
     if (deltaY > 10 && window.scrollY === 0) {
@@ -2405,11 +2997,11 @@ function setupPullToRefresh() {
     }
   });
 
-  // Cleanup on unload
   window.addEventListener('beforeunload', () => {
     if (realtimeFeedChannel) supabaseClient.removeChannel(realtimeFeedChannel);
     if (viewObserver) viewObserver.disconnect();
     if (videoObserver) videoObserver.disconnect();
+    if (ttObserver) ttObserver.disconnect();
   });
 }
 
@@ -2450,7 +3042,7 @@ async function showNewPosts() {
 }
 
 /* ============================================================
-   STORIES — FIXED viewer_id
+   STORIES
    ============================================================ */
 async function loadStories() {
   try {
@@ -2484,7 +3076,6 @@ async function loadStories() {
     map.forEach(g => g.stories.reverse());
     storiesByUser = Array.from(map.values());
 
-    // ⚠️ FIX: Uses viewer_id (not user_id)
     if (currentUser) {
       try {
         const { data: views } = await supabaseClient
@@ -2664,7 +3255,6 @@ function closeStoryViewer() {
   renderStories();
 }
 
-// ⚠️ FIX: uses viewer_id
 async function logStoryView(storyId) {
   if (!currentUser) return;
   try {
@@ -2672,9 +3262,7 @@ async function logStoryView(storyId) {
       story_id: storyId,
       viewer_id: currentUser.id
     }).select().maybeSingle();
-  } catch (e) {
-    // Ignore duplicates
-  }
+  } catch (e) {}
   try {
     await supabaseClient.rpc('increment_story_views', { p_story_id: storyId });
   } catch (e) {}
@@ -2736,43 +3324,6 @@ async function shareCurrentStory() {
     try { await navigator.share({ title: 'Arizona AI Story', text: story.caption || 'Check this out!', url }); return; } catch(e){}
   }
   try { await navigator.clipboard.writeText(url); showToast('Link copied 📋'); } catch {}
-}
-
-/* ============================================================
-   FULLSCREEN VIEWER
-   ============================================================ */
-function openFs(postId, idx) {
-  const postEl = document.querySelector(`article[data-id="${postId}"]`);
-  if (!postEl) return;
-  const mediaEls = postEl.querySelectorAll('.ig-post-media img, .ig-post-media video');
-  currentMediaList = Array.from(mediaEls).map(el => ({ src: el.src, isVideo: el.tagName === 'VIDEO' }));
-  currentMediaIndex = idx || 0;
-  renderFs();
-  document.getElementById('fsViewer').classList.add('active');
-}
-
-function renderFs() {
-  const content = document.getElementById('fsContent');
-  const counter = document.getElementById('fsCounter');
-  const item = currentMediaList[currentMediaIndex];
-  if (!item) return;
-  content.innerHTML = item.isVideo
-    ? `<video src="${escapeHtml(item.src)}" controls autoplay playsinline></video>`
-    : `<img src="${escapeHtml(item.src)}" alt="Full size image">`;
-  counter.textContent = `${currentMediaIndex + 1} / ${currentMediaList.length}`;
-  const showNav = currentMediaList.length > 1;
-  document.getElementById('fsPrev').style.display = showNav ? 'flex' : 'none';
-  document.getElementById('fsNext').style.display = showNav ? 'flex' : 'none';
-}
-
-function fsNav(dir) {
-  currentMediaIndex = (currentMediaIndex + dir + currentMediaList.length) % currentMediaList.length;
-  renderFs();
-}
-
-function closeFs() {
-  document.getElementById('fsViewer').classList.remove('active');
-  document.getElementById('fsContent').innerHTML = '';
 }
 
 /* ============================================================
@@ -2965,17 +3516,12 @@ function showToast(msg) {
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    if (document.getElementById('fsViewer').classList.contains('active')) closeFs();
+    if (document.getElementById('ttViewer').classList.contains('active')) closeTtViewer();
     if (document.getElementById('storyViewer').classList.contains('active')) closeStoryViewer();
     if (document.getElementById('commentsModal').classList.contains('active')) closeComments();
     if (document.getElementById('viewersModal').classList.contains('active')) closeViewers();
     if (document.getElementById('boostModal').classList.contains('active')) closeBoost();
     if (document.getElementById('postOptionsModal').classList.contains('active')) closePostOptions();
-  }
-  const v = document.getElementById('fsViewer');
-  if (v && v.classList.contains('active')) {
-    if (e.key === 'ArrowLeft') fsNav(-1);
-    if (e.key === 'ArrowRight') fsNav(1);
   }
 });
 </script>
