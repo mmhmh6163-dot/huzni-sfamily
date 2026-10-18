@@ -3,1576 +3,327 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Create — Arizona AI</title>
+<title>View Post — Arizona AI</title>
 
-<link rel="icon" type="image/jpeg" href="arizonan%20png%20icon.jpeg">
+<!-- Dynamic Open Graph Tags for sharing individual posts -->
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Arizona AI">
+<meta property="og:title" id="ogTitle" content="Arizona AI Post">
+<meta property="og:description" id="ogDesc" content="Check out this post on Arizona AI">
+<meta property="og:image" id="ogImage" content="https://aiarizonan.com/icon.png">
+<meta property="og:url" id="ogUrl" content="https://aiarizonan.com/post.html">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" id="twTitle" content="Arizona AI Post">
+<meta name="twitter:description" id="twDesc" content="Check out this post on Arizona AI">
+<meta name="twitter:image" id="twImage" content="https://aiarizonan.com/icon.png">
+
+<link rel="icon" type="image/png" href="/icon.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="style.css">
 
 <style>
+/* ==================== BASE ==================== */
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; padding: 0; }
-body { background:#0a0a0a; padding-top:60px; padding-bottom:30px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); padding-bottom:calc(70px + env(safe-area-inset-bottom)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
 
 /* ==================== TOP BAR ==================== */
-.create-topbar {
-  position:fixed; top:0; left:0; right:0; height:60px;
-  background:rgba(10,10,10,.97); backdrop-filter:blur(12px);
-  border-bottom:1px solid rgba(255,107,53,.25);
-  display:flex; align-items:center; justify-content:space-between;
-  padding:0 16px; z-index:1000; max-width:640px; margin:0 auto;
-}
-.create-topbar .back {
-  color:var(--az-text); font-size:20px; text-decoration:none;
-  width:40px; height:40px;
-  display:flex; align-items:center; justify-content:center; border-radius:50%;
-  background:none; border:none; cursor:pointer;
-}
-.create-topbar .back:hover { background:rgba(255,255,255,.06); }
-.create-topbar .title { font-size:16px; font-weight:700; color:var(--az-text); }
-.create-topbar .share {
-  background:var(--az-gradient); color:#fff; border:none;
-  padding:8px 18px; border-radius:20px;
-  font-size:13px; font-weight:700; cursor:pointer;
-  display:flex; align-items:center; gap:6px;
-  transition:transform .15s;
-}
-.create-topbar .share:active { transform:scale(.96); }
-.create-topbar .share:disabled { opacity:.6; cursor:not-allowed; }
+.topbar { position:fixed; top:0; left:0; right:0; height:calc(60px + env(safe-area-inset-top)); padding-top:env(safe-area-inset-top); background:rgba(10,10,10,.97); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,107,53,.25); display:flex; align-items:center; justify-content:space-between; padding-left:16px; padding-right:16px; z-index:1000; max-width:640px; margin:0 auto; }
+.topbar .back, .topbar .icon-btn { color:var(--az-text); font-size:19px; width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:50%; text-decoration:none; cursor:pointer; background:none; border:none; }
+.topbar .icon-btn:hover { background:rgba(255,255,255,.06); }
+.topbar .title { font-size:16px; font-weight:700; color:var(--az-text); }
 
-/* ==================== MODE TABS ==================== */
-.mode-tabs {
-  max-width:640px; margin:14px auto 0;
-  padding:0 16px;
-  display:flex; gap:6px;
-}
-.mode-tabs .mtab {
-  flex:1; padding:11px 8px;
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:12px;
-  color:var(--az-text-secondary);
-  font-size:12.5px; font-weight:700;
-  cursor:pointer; font-family:inherit;
-  display:flex; align-items:center; justify-content:center; gap:6px;
-  transition:all .15s;
-}
-.mode-tabs .mtab.active {
-  background:rgba(255,107,53,.15);
-  border-color:var(--az-primary);
-  color:var(--az-accent);
-}
-.mode-tabs .mtab i { font-size:13px; }
+/* ==================== POST CARD ==================== */
+.post-card { max-width:640px; margin:0 auto; background:rgba(255,255,255,.03); border-bottom:1px solid rgba(255,255,255,.06); }
+.post-head { display:flex; align-items:center; gap:12px; padding:12px 16px; }
+.post-head .avatar { width:38px; height:38px; border-radius:50%; background:var(--az-gradient); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:15px; flex-shrink:0; text-decoration:none; overflow:hidden; }
+.post-head .avatar img { width:100%; height:100%; object-fit:cover; }
+.post-head .meta { flex:1; min-width:0; }
+.post-head .meta .name { font-weight:700; font-size:14px; color:var(--az-text); display:flex; align-items:center; gap:5px; text-decoration:none; }
+.post-head .meta .name .verified { color:#3b82f6; font-size:12px; }
+.post-head .meta .sub { font-size:11px; color:var(--az-text-secondary); }
 
-/* ==================== EARN BANNER ==================== */
-.earn-banner {
-  max-width:640px; margin:16px auto 0;
-  padding:14px 18px;
-  background:linear-gradient(135deg, rgba(0,184,148,.12), rgba(255,178,15,.08));
-  border:1px solid rgba(0,184,148,.35);
-  border-radius:14px;
-  display:flex; align-items:center; gap:12px;
-}
-.earn-banner i { font-size:22px; color:#00b894; flex-shrink:0; }
-.earn-banner .text { flex:1; font-size:13px; color:var(--az-text); line-height:1.45; }
-.earn-banner .text strong { color:#00b894; }
-.earn-banner.capped {
-  background:linear-gradient(135deg, rgba(255,118,117,.12), rgba(255,118,117,.05));
-  border-color:rgba(255,118,117,.35);
-}
-.earn-banner.capped i { color:#ff7675; }
-.earn-banner.capped .text strong { color:#ff7675; }
+.post-media { width:100%; background:#000; display:flex; align-items:center; justify-content:center; max-height:620px; overflow:hidden; position:relative; }
+.post-media img, .post-media video { width:100%; height:auto; max-height:620px; object-fit:contain; display:block; }
+.post-media .watermark { position:absolute; bottom:12px; right:12px; display:flex; align-items:center; gap:5px; font-size:10px; color:rgba(255,255,255,.85); background:rgba(0,0,0,.5); padding:4px 10px; border-radius:12px; font-weight:700; pointer-events:none; }
+.post-media .watermark img { width:14px; height:14px; border-radius:3px; }
 
-/* ==================== UPLOAD ZONE ==================== */
-.upload-zone { max-width:640px; margin:16px auto; padding:0 16px; }
-.upload-box {
-  border:2px dashed rgba(255,107,53,0.4);
-  border-radius:16px; padding:40px 20px;
-  text-align:center; cursor:pointer;
-  transition:all .2s ease;
-  background:rgba(255,255,255,0.02);
-}
-.upload-box:hover, .upload-box.dragover {
-  border-color:var(--az-primary);
-  background:rgba(255,107,53,0.06);
-}
-.upload-box i {
-  font-size:42px; color:var(--az-accent);
-  margin-bottom:12px; display:block;
-}
-.upload-box h3 { font-size:16px; color:var(--az-text); margin-bottom:6px; }
-.upload-box p { font-size:13px; color:var(--az-text-secondary); }
+.post-body { padding:10px 16px 14px; }
+.post-caption { font-size:14px; line-height:1.5; color:var(--az-text); margin-top:6px; word-wrap:break-word; }
+.post-caption .cap-user { font-weight:700; margin-right:6px; }
 
-/* ==================== PREVIEWS ==================== */
-.previews {
-  display:grid; grid-template-columns:repeat(3, 1fr);
-  gap:8px; margin-top:14px;
-}
-.preview-item {
-  position:relative; aspect-ratio:1 / 1;
-  border-radius:10px; overflow:hidden; background:#111;
-}
-.preview-item img, .preview-item video {
-  width:100%; height:100%; object-fit:cover; display:block;
-}
-.preview-item .remove {
-  position:absolute; top:6px; right:6px;
-  background:rgba(0,0,0,.75); color:#fff;
-  width:26px; height:26px; border-radius:50%;
-  border:none; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  font-size:12px;
-  z-index:5;
-}
-.preview-item .type-badge {
-  position:absolute; bottom:6px; left:6px;
-  background:rgba(0,0,0,.7); color:#fff;
-  padding:2px 8px; border-radius:10px;
-  font-size:10px; font-weight:600;
-}
-.preview-item .watermark {
-  position:absolute; bottom:6px; right:6px;
-  display:flex; align-items:center; gap:4px;
-  font-size:9px; color:rgba(255,255,255,.85);
-  background:rgba(0,0,0,.5);
-  padding:2px 6px; border-radius:8px;
-  font-weight:700;
-}
-.preview-item .watermark img {
-  width:10px; height:10px; border-radius:2px;
-}
-.preview-item .reorder-btns {
-  position:absolute; top:6px; left:6px;
-  display:flex; gap:4px;
-}
-.preview-item .reorder-btns button {
-  background:rgba(0,0,0,.7); color:#fff;
-  width:22px; height:22px; border-radius:6px;
-  border:none; cursor:pointer;
-  font-size:10px;
-  display:flex; align-items:center; justify-content:center;
-}
+.post-actions { display:flex; align-items:center; gap:16px; padding:8px 16px 6px; }
+.action-btn { background:none; border:none; color:var(--az-text); font-size:22px; cursor:pointer; padding:4px; display:flex; align-items:center; transition:transform .15s ease; }
+.action-btn:hover { transform:scale(1.1); }
+.action-btn.liked { color:var(--az-primary); }
+.action-btn.saved { color:var(--az-accent); }
+.action-btn.save { margin-left:auto; }
 
-/* ==================== FORM ==================== */
-.create-form { max-width:640px; margin:0 auto; padding:0 16px 30px; }
-.create-form .field { margin-bottom:18px; }
-.create-form label {
-  display:block; font-size:12px;
-  color:var(--az-text-secondary);
-  margin-bottom:6px;
-  text-transform:uppercase; letter-spacing:.5px;
-  font-weight:700;
-}
-.create-form textarea {
-  width:100%; min-height:130px;
-  padding:14px;
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:12px;
-  color:var(--az-text); font-size:15px;
-  font-family:inherit; resize:vertical;
-}
-.create-form textarea:focus { outline:none; border-color:var(--az-primary); }
-.create-form .counter {
-  text-align:right; font-size:11px;
-  color:var(--az-text-secondary); margin-top:4px;
-}
-.caption-tools {
-  display:flex; gap:6px; margin-top:8px;
-  flex-wrap:wrap;
-}
-.caption-tool {
-  padding:6px 11px; border-radius:16px;
-  background:rgba(94,184,255,.1);
-  border:1px solid rgba(94,184,255,.25);
-  color:#5eb8ff; font-size:11px; font-weight:700;
-  cursor:pointer; font-family:inherit;
-  display:flex; align-items:center; gap:5px;
-}
-.caption-tool:active { transform:scale(.96); }
-.caption-tool.ai {
-  background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(94,184,255,.1));
-  border-color:rgba(124,58,237,.4);
-  color:#a855f7;
-}
+.post-likes { padding:2px 16px 4px; font-size:13px; font-weight:700; color:var(--az-text); }
+.post-stats { padding:0 16px 6px; display:flex; gap:14px; font-size:12px; color:var(--az-text-secondary); }
+.post-stats span { display:flex; align-items:center; gap:4px; }
+.post-time { padding:4px 16px 12px; font-size:10px; color:var(--az-text-secondary); text-transform:uppercase; letter-spacing:.5px; }
 
-/* ==================== POST TYPE ==================== */
-.type-grid {
-  display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;
-}
-.type-btn {
-  padding:12px 8px;
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:10px;
-  color:var(--az-text-secondary);
-  cursor:pointer; font-size:12px; font-weight:600;
-  display:flex; flex-direction:column;
-  align-items:center; gap:4px;
-  transition:all .2s;
-  font-family:inherit;
-}
-.type-btn i { font-size:18px; }
-.type-btn.active {
-  background:rgba(255,107,53,0.15);
-  border-color:var(--az-primary);
-  color:var(--az-accent);
-}
+/* ==================== COMMENTS ==================== */
+.comments-section { max-width:640px; margin:16px auto; padding:0 16px; }
+.comments-section h3 { font-size:14px; font-weight:700; color:var(--az-text); margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+.comment-row { display:flex; gap:10px; padding:8px 0; }
+.comment-row .cav { width:32px; height:32px; border-radius:50%; background:var(--az-gradient); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:13px; flex-shrink:0; overflow:hidden; }
+.comment-row .cav img { width:100%; height:100%; object-fit:cover; }
+.comment-row .ctext { flex:1; }
+.comment-row .ctext .cname { font-size:12px; font-weight:700; color:var(--az-text); margin-bottom:2px; }
+.comment-row .ctext .cbody { font-size:13px; color:var(--az-text); line-height:1.4; }
+.comment-row .ctext .ctime { font-size:10px; color:var(--az-text-secondary); margin-top:3px; }
 
-/* ==================== SELECT ==================== */
-.az-select {
-  width:100%; padding:12px 14px; border-radius:10px;
-  background:#0a0a0a; border:1px solid #333; color:#fff;
-  font-size:14px; font-family:inherit; cursor:pointer;
-}
-.az-select:focus { outline:none; border-color:var(--az-primary); }
-
-/* ==================== TOGGLES (Post to Tribe, Add as Story, Boost) ==================== */
-.toggle-row {
-  display:flex; align-items:center; gap:12px;
-  padding:14px 16px;
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:12px;
-  margin-bottom:10px;
-  cursor:pointer;
-}
-.toggle-row .t-icon {
-  width:38px; height:38px; border-radius:10px;
-  background:linear-gradient(135deg,#7c3aed,#5eb8ff);
-  display:flex; align-items:center; justify-content:center;
-  color:#fff; font-size:17px; flex-shrink:0;
-}
-.toggle-row .t-icon.gold { background:linear-gradient(135deg,#FF6B35,#FFB20F); }
-.toggle-row .t-icon.green { background:linear-gradient(135deg,#00b894,#00cec9); }
-.toggle-row .t-text { flex:1; }
-.toggle-row .t-text .t-title {
-  font-size:14px; font-weight:700; color:var(--az-text);
-}
-.toggle-row .t-text .t-sub {
-  font-size:11px; color:var(--az-text-secondary); margin-top:2px;
-}
-.toggle-row .switch {
-  width:46px; height:26px; border-radius:13px;
-  background:#333; position:relative;
-  transition:background .2s;
-  flex-shrink:0;
-}
-.toggle-row .switch::after {
-  content:''; position:absolute; top:3px; left:3px;
-  width:20px; height:20px; border-radius:50%;
-  background:#fff;
-  transition:transform .2s;
-}
-.toggle-row.on .switch { background:var(--az-primary); }
-.toggle-row.on .switch::after { transform:translateX(20px); }
-
-/* Sub-panel inside toggle */
-.sub-panel {
-  display:none;
-  padding:12px 16px;
-  background:rgba(94,184,255,.06);
-  border:1px solid rgba(94,184,255,.2);
-  border-radius:12px;
-  margin-top:-4px; margin-bottom:10px;
-}
-.sub-panel.active { display:block; }
-.sub-panel label {
-  font-size:11px; color:var(--az-text-secondary);
-  text-transform:uppercase; letter-spacing:.5px;
-  font-weight:700; margin-bottom:8px; display:block;
-}
-
-/* Tribe picker */
-.tribe-pick-list { display:flex; flex-direction:column; gap:8px; max-height:220px; overflow-y:auto; }
-.tribe-pick-item {
-  display:flex; align-items:center; gap:10px;
-  padding:10px 12px; border-radius:10px;
-  background:rgba(255,255,255,.04);
-  cursor:pointer;
-  border:1px solid transparent;
-}
-.tribe-pick-item.selected {
-  background:rgba(255,107,53,.12);
-  border-color:var(--az-primary);
-}
-.tribe-pick-item .tpav {
-  width:38px; height:38px; border-radius:50%;
-  background:linear-gradient(135deg,#7c3aed,#5eb8ff);
-  display:flex; align-items:center; justify-content:center;
-  color:#fff; font-weight:700; font-size:15px;
-  overflow:hidden; flex-shrink:0;
-}
-.tribe-pick-item .tpav img { width:100%; height:100%; object-fit:cover; }
-.tribe-pick-item .tinfo { flex:1; min-width:0; }
-.tribe-pick-item .tinfo .tname {
-  font-size:13px; font-weight:700; color:var(--az-text);
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-.tribe-pick-item .tinfo .tsub {
-  font-size:11px; color:var(--az-text-secondary); margin-top:2px;
-}
-.tribe-pick-item .tcheck {
-  width:22px; height:22px; border-radius:50%;
-  border:2px solid rgba(255,255,255,.2);
-  display:flex; align-items:center; justify-content:center;
-  font-size:11px; color:#fff; flex-shrink:0;
-}
-.tribe-pick-item.selected .tcheck {
-  background:var(--az-primary); border-color:var(--az-primary);
-}
-
-/* Boost options inside sub-panel */
-.boost-grid {
-  display:grid; grid-template-columns:repeat(2,1fr);
-  gap:8px;
-}
-.boost-opt-sm {
-  padding:10px;
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:10px;
-  cursor:pointer;
-  text-align:center;
-}
-.boost-opt-sm.selected {
-  background:rgba(94,184,255,.15);
-  border-color:#5eb8ff;
-}
-.boost-opt-sm .b-price {
-  font-size:15px; font-weight:800; color:#5eb8ff;
-}
-.boost-opt-sm .b-dur {
-  font-size:10px; color:var(--az-text-secondary); margin-top:2px;
-}
-
-/* Story extra options */
-.story-opts .row {
-  display:flex; gap:6px; margin-bottom:10px;
-}
-.story-opts .row input,
-.story-opts .row select {
-  flex:1; padding:10px 12px;
-  background:#0a0a0a; border:1px solid #333;
-  border-radius:10px; color:#fff; font-size:13px;
-  font-family:inherit;
-}
-
-/* ==================== PROGRESS ==================== */
-.upload-progress {
-  display:none;
-  max-width:640px; margin:20px auto 0;
-  padding:0 16px;
-}
-.upload-progress.active { display:block; }
-.progress-bar {
-  height:8px;
-  background:rgba(255,255,255,0.08);
-  border-radius:4px; overflow:hidden;
-}
-.progress-fill {
-  height:100%;
-  background:var(--az-gradient);
-  width:0%;
-  transition:width .3s ease;
-  border-radius:4px;
-}
-.progress-text {
-  text-align:center; font-size:12px;
-  color:var(--az-text-secondary);
-  margin-top:8px;
-}
-
-/* ==================== SUCCESS ==================== */
-.success-screen {
-  display:none;
-  max-width:440px; margin:40px auto;
-  padding:32px 24px; text-align:center;
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(0,184,148,.35);
-  border-radius:20px;
-}
-.success-screen.active { display:block; }
-.success-screen i.success-icon {
-  font-size:60px; color:#00b894;
-  margin-bottom:16px; display:block;
-  animation:pop .4s ease;
-}
-@keyframes pop { from { transform:scale(0); } }
-.success-screen h2 { color:var(--az-text); margin-bottom:8px; font-size:22px; }
-.success-screen p { color:var(--az-text-secondary); font-size:14px; line-height:1.6; margin-bottom:20px; }
-.success-screen .earned-box {
-  background:linear-gradient(135deg, rgba(0,184,148,.15), rgba(255,178,15,.1));
-  border:1px solid rgba(0,184,148,.4);
-  border-radius:14px; padding:16px; margin-bottom:20px;
-}
-.success-screen .earned-box .amount {
-  font-size:26px; font-weight:800;
-  color:#00b894; line-height:1; margin-bottom:4px;
-}
-.success-screen .earned-box .lbl {
-  font-size:12px; color:var(--az-text-secondary);
-  text-transform:uppercase; letter-spacing:.5px;
-}
-.success-screen .earned-box .new-balance {
-  font-size:13px; color:#5eb8ff;
-  font-weight:700; margin-top:10px; padding-top:10px;
-  border-top:1px solid rgba(0,184,148,.25);
-}
-.success-screen .remaining {
-  font-size:12px; color:var(--az-text-secondary);
-  margin-top:8px;
-}
-.success-screen .bonus-badges {
-  display:flex; flex-wrap:wrap; gap:6px; justify-content:center;
-  margin-bottom:16px;
-}
-.success-screen .bonus-badge {
-  padding:6px 12px; border-radius:16px;
-  font-size:11px; font-weight:700;
-  background:rgba(94,184,255,.12);
-  border:1px solid rgba(94,184,255,.3);
-  color:#5eb8ff;
-  display:flex; align-items:center; gap:5px;
-}
-.success-screen .bonus-badge.story { background:rgba(255,178,15,.12); border-color:rgba(255,178,15,.3); color:var(--az-accent); }
-.success-screen .bonus-badge.tribe { background:rgba(124,58,237,.12); border-color:rgba(124,58,237,.3); color:#a855f7; }
-.success-screen .bonus-badge.boost { background:rgba(255,107,53,.12); border-color:rgba(255,107,53,.3); color:var(--az-primary); }
-
-.success-screen .actions { display:flex; gap:10px; flex-direction:column; }
-.success-screen .actions a,
-.success-screen .actions button {
-  padding:13px; border-radius:12px;
-  font-weight:700; font-size:14px;
-  text-decoration:none; cursor:pointer;
-  border:none; font-family:inherit;
-  display:flex; align-items:center; justify-content:center; gap:8px;
-}
-.success-screen .actions .primary { background:var(--az-gradient); color:#fff; }
-.success-screen .actions .outline {
-  background:transparent; color:var(--az-primary);
-  border:1px solid var(--az-primary);
-}
-
-/* ==================== AUTH WALL ==================== */
-.auth-wall {
-  max-width:440px; margin:60px auto;
-  padding:32px 24px; text-align:center;
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,107,53,.25);
-  border-radius:20px;
-}
-.auth-wall i { font-size:48px; color:var(--az-primary); margin-bottom:14px; }
-.auth-wall h2 { color:var(--az-text); margin-bottom:8px; }
-.auth-wall p { color:var(--az-text-secondary); font-size:14px; margin-bottom:20px; }
-.auth-wall a {
-  display:block; padding:13px; border-radius:12px;
-  text-decoration:none; font-weight:700; margin-bottom:10px;
-}
-.auth-wall a.primary { background:var(--az-gradient); color:#fff; }
+.add-comment { max-width:640px; margin:0 auto; padding:12px 16px; padding-bottom:calc(12px + env(safe-area-inset-bottom)); border-top:1px solid rgba(255,255,255,.08); display:flex; gap:8px; background:rgba(10,10,10,.95); position:sticky; bottom:0; z-index:100; }
+.add-comment input { flex:1; padding:11px 14px; background:#1a1a1a; border:1px solid #333; border-radius:22px; color:#fff; font-size:13px; font-family:inherit; }
+.add-comment input:focus { outline:none; border-color:var(--az-primary); }
+.add-comment button { padding:0 18px; background:var(--az-gradient); color:#fff; border:none; border-radius:22px; font-weight:700; font-size:13px; cursor:pointer; }
 
 /* ==================== TOAST ==================== */
-.toast-mini {
-  position:fixed; bottom:100px; left:50%;
-  transform:translateX(-50%) translateY(20px);
-  background:rgba(10,10,10,.98);
-  border:1px solid rgba(255,107,53,.4);
-  color:#fff; padding:10px 18px;
-  border-radius:22px; font-size:13px; font-weight:600;
-  z-index:9999; opacity:0; pointer-events:none;
-  transition:all .25s ease;
-  max-width:90%; text-align:center;
-  box-shadow:0 10px 40px rgba(0,0,0,.5);
-}
+.toast-mini { position:fixed; bottom:calc(100px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%) translateY(20px); background:rgba(10,10,10,.98); border:1px solid rgba(255,107,53,.4); color:#fff; padding:10px 18px; border-radius:22px; font-size:13px; font-weight:600; z-index:9999; opacity:0; pointer-events:none; transition:all .25s ease; max-width:90%; text-align:center; }
 .toast-mini.show { opacity:1; transform:translateX(-50%) translateY(0); }
-
-.spinner {
-  display:inline-block; width:14px; height:14px;
-  border:2px solid rgba(255,255,255,.3);
-  border-radius:50%; border-top-color:#fff;
-  animation:spin .7s linear infinite;
-  margin-right:6px; vertical-align:middle;
-}
-@keyframes spin { 100% { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 
 <div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
 
-<!-- ==================== TOP BAR ==================== -->
-<header class="create-topbar" id="topbar" style="display:none;">
-  <button class="back" onclick="cancelPost()"><i class="fas fa-times"></i></button>
-  <span class="title" id="topTitle">New Post</span>
-  <button class="share" id="shareBtn" onclick="submitPost()">
-    <i class="fas fa-share"></i> Share
-  </button>
+<header class="topbar">
+  <a href="index.html" class="back"><i class="fas fa-arrow-left"></i></a>
+  <span class="title">Post</span>
+  <button class="icon-btn" onclick="sharePost()" title="Share"><i class="fas fa-share-alt"></i></button>
 </header>
 
-<!-- ==================== AUTH WALL ==================== -->
 <div id="authWall" style="display:none;">
-  <div class="auth-wall">
-    <i class="fas fa-lock"></i>
-    <h2>Sign in to post</h2>
-    <p>Please log in to share your content with the community.</p>
-    <a href="login.html" class="primary">Sign In</a>
-    <a href="register.html" style="border:1px solid var(--az-primary); color:var(--az-primary);">Create Account</a>
+  <div style="text-align:center;padding:40px;">
+    <h2 style="color:#fff;">Sign in to view</h2>
+    <a href="login.html" style="color:var(--az-primary);font-weight:700;display:block;margin-top:16px;">Sign In</a>
   </div>
 </div>
 
-<!-- ==================== CREATE ==================== -->
-<div id="createContent" style="display:none;">
+<main id="postContent" style="display:none;">
+  <div class="post-card" id="postCard"></div>
+  <div class="comments-section" id="commentsSection"></div>
+</main>
 
-  <!-- Mode Tabs -->
-  <div class="mode-tabs">
-    <button class="mtab active" data-mode="post" onclick="switchMode('post', this)">
-      <i class="fas fa-image"></i> Post
-    </button>
-    <button class="mtab" data-mode="story" onclick="switchMode('story', this)">
-      <i class="fas fa-circle-play"></i> Story
-    </button>
-  </div>
-
-  <!-- Earn banner (only shows for post mode) -->
-  <div class="earn-banner" id="earnBanner">
-    <i class="fas fa-coins" id="earnIcon"></i>
-    <div class="text" id="earnBannerText">
-      <strong>Earn $0.001</strong> per post · Loading status…
-    </div>
-  </div>
-
-  <!-- Upload zone -->
-  <div class="upload-zone">
-    <div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()">
-      <i class="fas fa-cloud-arrow-up"></i>
-      <h3 id="uploadTitle">Tap to upload</h3>
-      <p id="uploadSub">Images & videos · Up to 50 MB per file</p>
-    </div>
-    <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display:none;">
-    <div class="previews" id="previews"></div>
-  </div>
-
-  <!-- Upload progress -->
-  <div class="upload-progress" id="uploadProgress">
-    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="progress-text" id="progressText">Uploading…</div>
-  </div>
-
-  <!-- Form -->
-  <div class="create-form" id="postForm">
-
-    <!-- Caption -->
-    <div class="field">
-      <label>Caption</label>
-      <textarea id="caption" maxlength="2200"
-                placeholder="Write a caption… #hashtags @mentions"
-                oninput="updateCounter()"></textarea>
-      <div class="counter"><span id="charCount">0</span> / 2200</div>
-      <div class="caption-tools" id="captionTools">
-        <button class="caption-tool ai" onclick="aiCaptionSuggest()">
-          <i class="fas fa-wand-magic-sparkles"></i> AI Caption
-        </button>
-        <button class="caption-tool" onclick="aiHashtagSuggest()">
-          <i class="fas fa-hashtag"></i> Hashtags
-        </button>
-        <button class="caption-tool" onclick="aiEmojiSuggest()">
-          <i class="fas fa-smile"></i> Emojis
-        </button>
-        <button class="caption-tool" onclick="clearCaption()">
-          <i class="fas fa-eraser"></i> Clear
-        </button>
-      </div>
-    </div>
-
-    <!-- Post Type -->
-    <div class="field" id="typeField">
-      <label>Post Type</label>
-      <div class="type-grid">
-        <button class="type-btn active" data-type="post" onclick="selectType('post', this)">
-          <i class="fas fa-image"></i> Post
-        </button>
-        <button class="type-btn" data-type="short" onclick="selectType('short', this)">
-          <i class="fas fa-bolt"></i> Short
-        </button>
-        <button class="type-btn" data-type="reel" onclick="selectType('reel', this)">
-          <i class="fas fa-video"></i> Reel
-        </button>
-        <button class="type-btn" data-type="note" onclick="selectType('note', this)">
-          <i class="fas fa-note-sticky"></i> Note
-        </button>
-      </div>
-    </div>
-
-    <!-- Visibility -->
-    <div class="field">
-      <label>Visibility</label>
-      <select id="visibility" class="az-select">
-        <option value="public">🌍 Public — Everyone</option>
-        <option value="followers">👥 Followers Only</option>
-        <option value="private">🔒 Private — Only Me</option>
-      </select>
-    </div>
-
-    <!-- ============ POST TO TRIBE ============ -->
-    <div class="toggle-row" id="tribeToggle" onclick="toggleTribePanel()">
-      <div class="t-icon"><i class="fas fa-users"></i></div>
-      <div class="t-text">
-        <div class="t-title">Post to a Tribe</div>
-        <div class="t-sub">Share privately with a tribe you belong to</div>
-      </div>
-      <div class="switch"></div>
-    </div>
-    <div class="sub-panel" id="tribePanel">
-      <label>Choose a Tribe</label>
-      <div class="tribe-pick-list" id="tribePickList">
-        <div style="text-align:center;padding:16px;color:var(--az-text-secondary);font-size:12px;">
-          <i class="fas fa-circle-notch fa-spin"></i> Loading tribes…
-        </div>
-      </div>
-    </div>
-
-    <!-- ============ ADD AS STORY ============ -->
-    <div class="toggle-row" id="storyToggle" onclick="toggleStoryPanel()">
-      <div class="t-icon gold"><i class="fas fa-circle-play"></i></div>
-      <div class="t-text">
-        <div class="t-title">Also add as Story</div>
-        <div class="t-sub">Appears in stories for 24 hours</div>
-      </div>
-      <div class="switch"></div>
-    </div>
-    <div class="sub-panel story-opts" id="storyPanel">
-      <label>Story Options</label>
-      <div class="row">
-        <select id="storyVisibility" class="az-select" style="flex:1;">
-          <option value="public">🌍 Everyone</option>
-          <option value="followers">👥 Followers only</option>
-          <option value="close">⭐ Close friends</option>
-        </select>
-      </div>
-      <div class="row">
-        <select id="storyReplies" class="az-select" style="flex:1;">
-          <option value="true">✅ Allow replies</option>
-          <option value="false">🚫 No replies</option>
-        </select>
-      </div>
-      <div class="row">
-        <input type="text" id="storyCaption" placeholder="Story caption (optional)" maxlength="150">
-      </div>
-    </div>
-
-    <!-- ============ BOOST ON PUBLISH ============ -->
-    <div class="toggle-row" id="boostToggle" onclick="toggleBoostPanel()">
-      <div class="t-icon"><i class="fas fa-rocket"></i></div>
-      <div class="t-text">
-        <div class="t-title">Boost this post</div>
-        <div class="t-sub" id="boostSub">Get more reach immediately</div>
-      </div>
-      <div class="switch"></div>
-    </div>
-    <div class="sub-panel" id="boostPanel">
-      <label>Choose Duration</label>
-      <div class="boost-grid">
-        <div class="boost-opt-sm" data-b="24h" data-p="0.99" onclick="selectBoostSm(this)">
-          <div class="b-price">$0.99</div>
-          <div class="b-dur">24 hours</div>
-        </div>
-        <div class="boost-opt-sm selected" data-b="3d" data-p="2.49" onclick="selectBoostSm(this)">
-          <div class="b-price">$2.49</div>
-          <div class="b-dur">3 days ⭐</div>
-        </div>
-        <div class="boost-opt-sm" data-b="7d" data-p="4.99" onclick="selectBoostSm(this)">
-          <div class="b-price">$4.99</div>
-          <div class="b-dur">7 days</div>
-        </div>
-        <div class="boost-opt-sm" data-b="14d" data-p="8.99" onclick="selectBoostSm(this)">
-          <div class="b-price">$8.99</div>
-          <div class="b-dur">14 days</div>
-        </div>
-      </div>
-      <div style="margin-top:12px;font-size:12px;color:var(--az-text-secondary);text-align:center;">
-        Wallet: <strong style="color:var(--az-accent);" id="boostWallet">$0.00</strong>
-        &nbsp;·&nbsp;
-        Cost: <strong style="color:#5eb8ff;" id="boostCostSm">$2.49</strong>
-      </div>
-    </div>
-
-    <!-- ============ SCHEDULE (optional) ============ -->
-    <div class="toggle-row" id="scheduleToggle" onclick="toggleSchedulePanel()">
-      <div class="t-icon green"><i class="fas fa-clock"></i></div>
-      <div class="t-text">
-        <div class="t-title">Schedule for later</div>
-        <div class="t-sub">Publish automatically at a future time</div>
-      </div>
-      <div class="switch"></div>
-    </div>
-    <div class="sub-panel" id="schedulePanel">
-      <label>Publish At</label>
-      <input type="datetime-local" id="scheduleTime" class="az-select">
-    </div>
-
-  </div>
+<div class="add-comment" id="addCommentBar" style="display:none;">
+  <input type="text" id="commentInput" placeholder="Add a comment…" maxlength="500">
+  <button onclick="submitComment()">Post</button>
 </div>
 
-<!-- ==================== SUCCESS ==================== -->
-<div class="success-screen" id="successScreen">
-  <i class="fas fa-check-circle success-icon"></i>
-  <h2>Posted Successfully! 🎉</h2>
-  <p id="successMsg">Your post is now live on Arizona AI.</p>
-
-  <div class="bonus-badges" id="bonusBadges"></div>
-
-  <div class="earned-box" id="earnedBox">
-    <div class="amount" id="earnedAmount">+$0.001</div>
-    <div class="lbl" id="earnedLabel">Earned from this post</div>
-    <div class="new-balance" id="newBalance" style="display:none;"></div>
-    <div class="remaining" id="earnedRemaining"></div>
-  </div>
-
-  <div class="actions">
-    <a href="index.html" class="primary"><i class="fas fa-home"></i> View Feed</a>
-    <button class="outline" onclick="resetForm()"><i class="fas fa-plus"></i> Create Another</button>
-    <button class="outline" onclick="shareMyPost()" id="shareMyPostBtn" style="display:none;">
-      <i class="fas fa-share"></i> Share Post Link
-    </button>
-  </div>
-</div>
-
-<!-- ==================== TOAST ==================== -->
-<div class="toast-mini" id="toastMini"></div>
+<div id="toastMini" class="toast-mini"></div>
 
 <script src="auth.js"></script>
 <script>
-/* ============================================================
-   STATE
-   ============================================================ */
-let selectedFiles = [];
-let selectedType  = 'post';
-let lastPostId    = null;
-let currentMode   = 'post'; // 'post' | 'story'
+let currentPostId = null;
 
-let earnStatus = { count:0, cap:100, remaining:100, reached:false };
-
-// Tribe
-let myTribes = [];
-let selectedTribeId = null;
-let tribeEnabled = false;
-
-// Story
-let storyEnabled = false;
-
-// Boost
-let boostEnabled = false;
-let selectedBoost = { duration: '3d', price: 2.49 };
-
-// Schedule
-let scheduleEnabled = false;
-
-// AI caption
-let aiSuggesting = false;
-
-/* ============================================================
-   INIT
-   ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
   const check = setInterval(() => {
     if (typeof authReady !== 'undefined' && authReady) {
       clearInterval(check);
-      init();
+      initPost();
     }
   }, 100);
 });
 
-function init() {
-  if (!currentUser) {
-    document.getElementById('authWall').style.display = 'block';
-    return;
-  }
-  document.getElementById('topbar').style.display = 'flex';
-  document.getElementById('createContent').style.display = 'block';
-
-  const box = document.getElementById('uploadBox');
-  box.addEventListener('dragover', e => { e.preventDefault(); box.classList.add('dragover'); });
-  box.addEventListener('dragleave', () => box.classList.remove('dragover'));
-  box.addEventListener('drop', e => {
-    e.preventDefault();
-    box.classList.remove('dragover');
-    handleFiles(e.dataTransfer.files);
-  });
-  document.getElementById('fileInput').addEventListener('change', e => handleFiles(e.target.files));
-
-  // Update boost wallet display
-  const w = document.getElementById('boostWallet');
-  if (w) w.textContent = '$' + Number(currentWallet?.balance ?? 0).toFixed(2);
-
-  loadEarnStatus();
-  loadMyTribes();
-
-  // Deep link: Post.html?mode=story
+async function initPost() {
   const params = new URLSearchParams(window.location.search);
-  if (params.get('mode') === 'story') {
-    switchMode('story', document.querySelector('.mtab[data-mode="story"]'));
-  }
-}
+  currentPostId = params.get('id') || params.get('post');
 
-/* ============================================================
-   MODE SWITCH
-   ============================================================ */
-function switchMode(mode, el) {
-  currentMode = mode;
-  document.querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
-  if (el) el.classList.add('active');
-
-  const topTitle    = document.getElementById('topTitle');
-  const earnBanner  = document.getElementById('earnBanner');
-  const typeField   = document.getElementById('typeField');
-  const storyToggle = document.getElementById('storyToggle');
-  const storyPanel  = document.getElementById('storyPanel');
-  const uploadTitle = document.getElementById('uploadTitle');
-  const uploadSub   = document.getElementById('uploadSub');
-
-  if (mode === 'story') {
-    topTitle.textContent = 'New Story';
-    earnBanner.style.display = 'none';
-    typeField.style.display = 'none';
-    storyToggle.style.display = 'none';
-    storyPanel.classList.remove('active');
-    storyEnabled = false;
-    uploadTitle.textContent = 'Tap to add your story';
-    uploadSub.textContent = 'Image or video · 24h visibility';
-  } else {
-    topTitle.textContent = 'New Post';
-    earnBanner.style.display = 'flex';
-    typeField.style.display = 'block';
-    storyToggle.style.display = 'flex';
-    uploadTitle.textContent = 'Tap to upload';
-    uploadSub.textContent = 'Images & videos · Up to 50 MB per file';
-  }
-}
-
-/* ============================================================
-   EARN STATUS
-   ============================================================ */
-async function loadEarnStatus() {
-  try {
-    const { data, error } = await supabaseClient.rpc('get_post_earning_status', {
-      p_user_id: currentUser.id
-    });
-    if (error) throw error;
-    if (data) earnStatus = data;
-    updateEarnBanner();
-  } catch (e) {
-    console.warn('Status fetch failed:', e);
-  }
-}
-
-function updateEarnBanner() {
-  const banner = document.getElementById('earnBanner');
-  const text   = document.getElementById('earnBannerText');
-  const icon   = document.getElementById('earnIcon');
-  if (!banner) return;
-
-  if (earnStatus.reached) {
-    banner.classList.add('capped');
-    icon.className = 'fas fa-exclamation-circle';
-    text.innerHTML = `
-      <strong>🚫 Daily earning limit reached</strong><br>
-      Maxed at <strong>$${(earnStatus.cap * 0.001).toFixed(3)}</strong> today.
-      Resets at midnight UTC. Your posts still work!
-    `;
-  } else {
-    banner.classList.remove('capped');
-    icon.className = 'fas fa-coins';
-    text.innerHTML = `
-      <strong>Earn $0.001</strong> per post 🎉<br>
-      ${earnStatus.remaining} of ${earnStatus.cap} earning posts remaining today
-    `;
-  }
-}
-
-/* ============================================================
-   FILES
-   ============================================================ */
-function handleFiles(files) {
-  for (const file of files) {
-    if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) continue;
-    if (file.size > 50 * 1024 * 1024) { showToast(`${file.name} is over 50 MB`); continue; }
-    if (selectedFiles.length >= 10) { showToast('Max 10 files per post'); break; }
-    selectedFiles.push(file);
-  }
-  renderPreviews();
-}
-
-function renderPreviews() {
-  const container = document.getElementById('previews');
-  container.innerHTML = '';
-  selectedFiles.forEach((file, index) => {
-    const div = document.createElement('div');
-    div.className = 'preview-item';
-    const isVideo = file.type.startsWith('video/');
-    const url = URL.createObjectURL(file);
-
-    div.innerHTML = `
-      ${isVideo ? `<video src="${url}" muted></video>` : `<img src="${url}" alt="">`}
-      <span class="type-badge">${isVideo ? 'VIDEO' : 'IMAGE'}</span>
-      <div class="watermark"><img src="arizonan%20png%20icon.jpeg" alt=""> Arizona AI</div>
-      ${selectedFiles.length > 1 ? `
-        <div class="reorder-btns">
-          ${index > 0 ? `<button onclick="event.stopPropagation(); moveFile(${index}, -1)"><i class="fas fa-arrow-left"></i></button>` : ''}
-          ${index < selectedFiles.length - 1 ? `<button onclick="event.stopPropagation(); moveFile(${index}, 1)"><i class="fas fa-arrow-right"></i></button>` : ''}
-        </div>` : ''}
-      <button class="remove" onclick="removeFile(${index})"><i class="fas fa-times"></i></button>
-    `;
-    container.appendChild(div);
-  });
-}
-
-function removeFile(index) {
-  selectedFiles.splice(index, 1);
-  renderPreviews();
-}
-
-function moveFile(index, dir) {
-  const target = index + dir;
-  if (target < 0 || target >= selectedFiles.length) return;
-  [selectedFiles[index], selectedFiles[target]] = [selectedFiles[target], selectedFiles[index]];
-  renderPreviews();
-}
-
-function selectType(type, el) {
-  selectedType = type;
-  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-}
-
-function updateCounter() {
-  const len = document.getElementById('caption').value.length;
-  document.getElementById('charCount').textContent = len;
-}
-
-/* ============================================================
-   AI CAPTION ASSIST
-   ============================================================ */
-async function aiCaptionSuggest() {
-  if (aiSuggesting) return;
-  aiSuggesting = true;
-  const btn = event?.target?.closest('.caption-tool');
-  const old = btn?.innerHTML;
-  if (btn) btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Thinking…';
-
-  try {
-    const { data, error } = await supabaseClient.functions.invoke('ai-chat', {
-      body: {
-        messages: [{
-          role: 'user',
-          content: 'Write a short, catchy Instagram-style caption (max 150 chars) for a social media post. Only return the caption text, no quotes, no explanation.'
-        }]
-      }
-    });
-    if (error) throw error;
-    const caption = (data?.reply || '').trim().replace(/^["']|["']$/g, '');
-    if (caption) {
-      document.getElementById('caption').value = caption;
-      updateCounter();
-      showToast('✨ Caption suggested!');
-    } else {
-      throw new Error('Empty response');
-    }
-  } catch (err) {
-    console.warn(err);
-    // Fallback to local suggestions
-    const fallbacks = [
-      'Living my best life today ✨',
-      'Just another day in paradise 🌵',
-      'Making memories that last forever 💫',
-      'New post, who dis? 🔥',
-      'Chasing dreams and sunsets 🌅'
-    ];
-    const pick = fallbacks[Math.floor(Math.random() * fallbacks.length)];
-    document.getElementById('caption').value = pick;
-    updateCounter();
-    showToast('✨ Caption suggested!');
-  } finally {
-    if (btn) btn.innerHTML = old;
-    aiSuggesting = false;
-  }
-}
-
-function aiHashtagSuggest() {
-  const tags = ['#ArizonaAI', '#desertlife', '#trending', '#vibes', '#explore', '#creator', '#earn', '#family'];
-  const pick = tags.sort(() => 0.5 - Math.random()).slice(0, 5).join(' ');
-  const ta = document.getElementById('caption');
-  ta.value = (ta.value + ' ' + pick).trim();
-  updateCounter();
-  showToast('🏷️ Hashtags added');
-}
-
-function aiEmojiSuggest() {
-  const emojis = ['✨','🔥','💫','🌟','💖','🌵','🏜️','🚀'];
-  const pick = emojis.sort(() => 0.5 - Math.random()).slice(0, 3).join(' ');
-  const ta = document.getElementById('caption');
-  ta.value = (ta.value + ' ' + pick).trim();
-  updateCounter();
-  showToast('😊 Emojis added');
-}
-
-function clearCaption() {
-  document.getElementById('caption').value = '';
-  updateCounter();
-}
-
-/* ============================================================
-   TRIBE TOGGLE
-   ============================================================ */
-function toggleTribePanel() {
-  const row = document.getElementById('tribeToggle');
-  const panel = document.getElementById('tribePanel');
-  tribeEnabled = !tribeEnabled;
-  row.classList.toggle('on', tribeEnabled);
-  panel.classList.toggle('active', tribeEnabled);
-  if (tribeEnabled && myTribes.length === 0) {
-    renderTribePicker();
-  }
-}
-
-async function loadMyTribes() {
-  try {
-    const { data, error } = await supabaseClient.rpc('get_my_tribes', { p_user_id: currentUser.id });
-    if (error) throw error;
-    myTribes = data || [];
-    renderTribePicker();
-  } catch (err) {
-    console.warn('loadMyTribes', err);
-    myTribes = [];
-    renderTribePicker();
-  }
-}
-
-function renderTribePicker() {
-  const list = document.getElementById('tribePickList');
-  if (!list) return;
-
-  if (myTribes.length === 0) {
-    list.innerHTML = `
-      <div style="text-align:center;padding:16px;color:var(--az-text-secondary);font-size:12px;">
-        You're not in any tribe yet.
-        <a href="Friends.html" style="color:var(--az-accent);font-weight:700;text-decoration:none;">Create or join →</a>
-      </div>`;
+  if (!currentPostId) {
+    document.getElementById('authWall').style.display = 'block';
+    document.getElementById('authWall').innerHTML = '<div style="text-align:center;padding:40px;"><h2 style="color:#fff;">Post not found</h2><a href="index.html" style="color:var(--az-primary);font-weight:700;display:block;margin-top:16px;">Go Home</a></div>';
     return;
   }
 
-  list.innerHTML = myTribes.map(t => {
-    const initial = (t.name || 'T').charAt(0).toUpperCase();
-    const av = t.avatar_url ? `<img src="${escapeHtml(t.avatar_url)}" alt="">` : initial;
-    const sel = selectedTribeId === t.id;
+  await loadPost();
+}
+
+async function loadPost() {
+  try {
+    // 1. Fetch the post
+    const { data: post, error } = await supabaseClient
+      .from('posts')
+      .select('*, profiles:user_id(username, display_name, avatar_url, is_verified)')
+      .eq('id', currentPostId)
+      .single();
+
+    if (error || !post) throw new Error('Post not found');
+
+    // 2. Set Dynamic Open Graph Tags for sharing
+    const prof = post.profiles || {};
+    const name = prof.display_name || prof.username || 'User';
+    const uname = prof.username || 'user';
+    const hasMedia = Array.isArray(post.media_urls) && post.media_urls.length > 0;
+    const firstMedia = hasMedia ? post.media_urls[0] : 'https://aiarizonan.com/icon.png';
+    const isVideo = /\.(mp4|webm|ogg|mov)$/i.test(firstMedia);
+    const desc = post.content || `A post by @${uname} on Arizona AI`;
+
+    document.title = `${name} on Arizona AI`;
+    document.getElementById('ogTitle').content = `${name} (@${uname}) — Arizona AI`;
+    document.getElementById('ogDesc').content = desc;
+    document.getElementById('ogImage').content = isVideo ? 'https://aiarizonan.com/icon.png' : firstMedia;
+    document.getElementById('ogUrl').content = window.location.href;
+    
+    document.getElementById('twTitle').content = `${name} (@${uname}) — Arizona AI`;
+    document.getElementById('twDesc').content = desc;
+    document.getElementById('twImage').content = isVideo ? 'https://aiarizonan.com/icon.png' : firstMedia;
+
+    // 3. Render the Post
+    renderPostCard(post);
+
+    // 4. Log view
+    if (currentUser && post.user_id !== currentUser.id) {
+      try { await supabaseClient.rpc('log_post_view', { p_post_id: currentPostId }); } catch(e){}
+    }
+
+    // 5. Load Comments
+    await loadComments();
+
+    document.getElementById('postContent').style.display = 'block';
+    document.getElementById('addCommentBar').style.display = 'flex';
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById('authWall').style.display = 'block';
+    document.getElementById('authWall').innerHTML = '<div style="text-align:center;padding:40px;"><h2 style="color:#fff;">Post not found</h2><p style="color:#888;">It may have been deleted.</p><a href="index.html" style="color:var(--az-primary);font-weight:700;display:block;margin-top:16px;">Go Home</a></div>';
+  }
+}
+
+function renderPostCard(post) {
+  const card = document.getElementById('postCard');
+  const prof = post.profiles || {};
+  const name = prof.display_name || prof.username || 'user';
+  const uname = prof.username || 'user';
+  const initial = name.charAt(0).toUpperCase();
+  const verified = prof.is_verified ? '<i class="fas fa-circle-check verified"></i>' : '';
+  const avatarHtml = prof.avatar_url ? `<img src="${escapeHtml(prof.avatar_url)}">` : initial;
+  const timeAgo = formatTimeAgo(post.created_at);
+
+  const mediaUrls = Array.isArray(post.media_urls) ? post.media_urls : [];
+  const mediaHtml = mediaUrls.map(url => {
+    if (/\.(mp4|webm|ogg|mov)$/i.test(url)) {
+      return `<video src="${escapeHtml(url)}" controls playsinline preload="metadata"></video>`;
+    }
+    return `<img src="${escapeHtml(url)}" alt="Post media">`;
+  }).join('');
+
+  card.innerHTML = `
+    <div class="post-head">
+      <a href="profile.html?user=${post.user_id}" class="avatar">${avatarHtml}</a>
+      <div class="meta">
+        <a href="profile.html?user=${post.user_id}" class="name">${escapeHtml(name)} ${verified}</a>
+        <div class="sub">@${escapeHtml(uname)} · ${timeAgo}</div>
+      </div>
+    </div>
+
+    ${mediaHtml ? `
+      <div class="post-media">
+        ${mediaHtml}
+        <div class="watermark"><img src="/icon.png" alt=""> Arizona AI</div>
+      </div>
+    ` : ''}
+
+    <div class="post-body">
+      ${post.content ? `<div class="post-caption"><span class="cap-user">${escapeHtml(uname)}</span>${escapeHtml(post.content)}</div>` : ''}
+    </div>
+
+    <div class="post-actions">
+      <button class="action-btn" onclick="sharePost()"><i class="far fa-paper-plane"></i></button>
+      <button class="action-btn save" onclick="copyLink()"><i class="far fa-copy"></i></button>
+    </div>
+
+    <div class="post-likes">${post.likes_count || 0} likes</div>
+    
+    <div class="post-stats">
+      <span><i class="far fa-comment"></i> ${post.comments_count || 0}</span>
+      <span><i class="far fa-paper-plane"></i> ${post.shares_count || 0}</span>
+      <span><i class="far fa-eye"></i> ${post.views_count || 0}</span>
+    </div>
+    <div class="post-time">${timeAgo}</div>
+  `;
+}
+
+async function loadComments() {
+  const section = document.getElementById('commentsSection');
+  section.innerHTML = '<div style="text-align:center;padding:20px;color:#666;"><i class="fas fa-circle-notch fa-spin"></i></div>';
+
+  const { data, error } = await supabaseClient
+    .from('comments')
+    .select('*, profiles:user_id(username, display_name, avatar_url)')
+    .eq('post_id', currentPostId)
+    .order('created_at', { ascending: true });
+
+  if (error || !data || data.length === 0) {
+    section.innerHTML = '<div style="text-align:center;padding:20px;color:#666;">No comments yet.</div>';
+    return;
+  }
+
+  section.innerHTML = `<h3><i class="far fa-comment"></i> Comments (${data.length})</h3>` + data.map(c => {
+    const p = c.profiles || {};
+    const cname = p.display_name || p.username || 'user';
+    const cinit = cname.charAt(0).toUpperCase();
+    const cav = p.avatar_url ? `<img src="${escapeHtml(p.avatar_url)}">` : cinit;
     return `
-      <div class="tribe-pick-item ${sel ? 'selected' : ''}" onclick="selectTribe('${t.id}')">
-        <div class="tpav">${av}</div>
-        <div class="tinfo">
-          <div class="tname">${escapeHtml(t.name)}</div>
-          <div class="tsub">${t.member_count || 0} members</div>
+      <div class="comment-row">
+        <div class="cav">${cav}</div>
+        <div class="ctext">
+          <div class="cname">${escapeHtml(cname)}</div>
+          <div class="cbody">${escapeHtml(c.content)}</div>
+          <div class="ctime">${formatTimeAgo(c.created_at)}</div>
         </div>
-        <div class="tcheck">${sel ? '<i class="fas fa-check"></i>' : ''}</div>
       </div>
     `;
   }).join('');
 }
 
-function selectTribe(id) {
-  selectedTribeId = (selectedTribeId === id) ? null : id;
-  renderTribePicker();
-}
-
-/* ============================================================
-   STORY TOGGLE
-   ============================================================ */
-function toggleStoryPanel() {
-  const row = document.getElementById('storyToggle');
-  const panel = document.getElementById('storyPanel');
-  storyEnabled = !storyEnabled;
-  row.classList.toggle('on', storyEnabled);
-  panel.classList.toggle('active', storyEnabled);
-}
-
-/* ============================================================
-   BOOST TOGGLE
-   ============================================================ */
-function toggleBoostPanel() {
-  const row = document.getElementById('boostToggle');
-  const panel = document.getElementById('boostPanel');
-  boostEnabled = !boostEnabled;
-  row.classList.toggle('on', boostEnabled);
-  panel.classList.toggle('active', boostEnabled);
-}
-
-function selectBoostSm(el) {
-  document.querySelectorAll('.boost-opt-sm').forEach(o => o.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedBoost = { duration: el.dataset.b, price: parseFloat(el.dataset.p) };
-  const costEl = document.getElementById('boostCostSm');
-  if (costEl) costEl.textContent = '$' + selectedBoost.price.toFixed(2);
-}
-
-/* ============================================================
-   SCHEDULE TOGGLE
-   ============================================================ */
-function toggleSchedulePanel() {
-  const row = document.getElementById('scheduleToggle');
-  const panel = document.getElementById('schedulePanel');
-  scheduleEnabled = !scheduleEnabled;
-  row.classList.toggle('on', scheduleEnabled);
-  panel.classList.toggle('active', scheduleEnabled);
-  if (scheduleEnabled) {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() + 30);
-    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-    document.getElementById('scheduleTime').value = local;
-  }
-}
-
-/* ============================================================
-   SUBMIT — POST MODE
-   ============================================================ */
-async function submitPost() {
-  if (currentMode === 'story') return submitAsStory();
-
-  const caption = document.getElementById('caption').value.trim();
-  const visibility = document.getElementById('visibility').value;
-
-  if (selectedFiles.length === 0 && !caption) {
-    return showToast('Add media or write a caption');
-  }
-
-  // Tribe check
-  if (tribeEnabled && !selectedTribeId) {
-    return showToast('Please select a tribe');
-  }
-
-  // Boost balance check
-  if (boostEnabled) {
-    const bal = Number(currentWallet?.balance ?? 0);
-    if (bal < selectedBoost.price) {
-      return showToast(`Insufficient balance (need $${selectedBoost.price.toFixed(2)})`);
-    }
-  }
-
-  const btn = document.getElementById('shareBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Posting…';
-
-  const progress     = document.getElementById('uploadProgress');
-  const progressFill = document.getElementById('progressFill');
-  const progressText = document.getElementById('progressText');
-  progress.classList.add('active');
+async function submitComment() {
+  const input = document.getElementById('commentInput');
+  const text = input.value.trim();
+  if (!text) return;
+  if (!currentUser) { showToast('Sign in to comment'); return; }
 
   try {
-    // 1. Upload files
-    const mediaUrls  = [];
-    const mediaTypes = [];
-
-    for (let i = 0; i < selectedFiles.length; i++) {
-      const file = selectedFiles[i];
-      const isVideo = file.type.startsWith('video/');
-      const bucket = isVideo ? 'videos' : 'posts';
-      const ext = (file.name.split('.').pop() || 'bin').toLowerCase();
-      const path = `${currentUser.id}/${Date.now()}-${i}.${ext}`;
-
-      progressText.textContent = `Uploading ${i + 1} of ${selectedFiles.length}…`;
-      progressFill.style.width = `${(i / selectedFiles.length) * 100}%`;
-
-      const { data, error } = await supabaseClient.storage
-        .from(bucket)
-        .upload(path, file, { upsert: false, cacheControl: '3600' });
-      if (error) throw new Error(`Upload failed: ${error.message}`);
-
-      const { data: urlData } = supabaseClient.storage.from(bucket).getPublicUrl(data.path);
-      mediaUrls.push(urlData.publicUrl);
-      mediaTypes.push(isVideo ? 'video' : 'image');
-    }
-
-    progressFill.style.width = '100%';
-    progressText.textContent = 'Saving post…';
-
-    // 2. Insert post
-    const postInsert = {
-      user_id:        currentUser.id,
-      content:        caption,
-      media_urls:     mediaUrls,
-      media_types:    mediaTypes,
-      post_type:      selectedType,
-      visibility:     visibility,
-      likes_count:    0,
-      comments_count: 0,
-      shares_count:   0,
-      views_count:    0
-    };
-
-    // Schedule
-    if (scheduleEnabled) {
-      const when = document.getElementById('scheduleTime').value;
-      if (when) postInsert.scheduled_for = new Date(when).toISOString();
-    }
-
-    const { data: postData, error: dbError } = await supabaseClient
-      .from('posts')
-      .insert(postInsert)
-      .select()
-      .single();
-
-    if (dbError) throw dbError;
-    lastPostId = postData.id;
-
-    // 3. If post to Tribe → also insert into tribe_posts
-    if (tribeEnabled && selectedTribeId) {
-      try {
-        await supabaseClient.from('tribe_posts').insert({
-          tribe_id: selectedTribeId,
-          user_id: currentUser.id,
-          content: caption,
-          media_urls: mediaUrls,
-          media_types: mediaTypes
-        });
-      } catch (e) { console.warn('Tribe insert failed', e); }
-    }
-
-    // 4. If story → create a story
-    if (storyEnabled && mediaUrls.length > 0) {
-      try {
-        const firstUrl = mediaUrls[0];
-        const firstType = mediaTypes[0];
-        const expiresAt = new Date(Date.now() + 24 * 3600 * 1000).toISOString();
-
-        await supabaseClient.from('stories').insert({
-          user_id: currentUser.id,
-          media_url: firstUrl,
-          media_type: firstType,
-          caption: (document.getElementById('storyCaption')?.value || '').trim() || caption || null,
-          visibility: document.getElementById('storyVisibility')?.value || 'public',
-          allow_replies: (document.getElementById('storyReplies')?.value || 'true') === 'true',
-          expires_at: expiresAt
-        });
-      } catch (e) { console.warn('Story insert failed', e); }
-    }
-
-    // 5. If boost → update post + charge wallet
-    if (boostEnabled) {
-      try {
-        const durationMs = { '24h': 864e5, '3d': 2592e5, '7d': 6048e5, '14d': 12096e5 }[selectedBoost.duration];
-        const expiresAt = new Date(Date.now() + durationMs).toISOString();
-
-        await supabaseClient.from('posts').update({
-          is_boosted: true,
-          boost_expires_at: expiresAt
-        }).eq('id', lastPostId);
-
-        const bal = Number(currentWallet?.balance ?? 0);
-        const newBal = bal - selectedBoost.price;
-        const newSpent = Number(currentWallet?.total_spent ?? 0) + selectedBoost.price;
-
-        await supabaseClient.from('wallets').update({
-          balance: newBal,
-          total_spent: newSpent
-        }).eq('user_id', currentUser.id);
-
-        try {
-          await supabaseClient.from('wallet_transactions').insert({
-            user_id: currentUser.id,
-            amount: -selectedBoost.price,
-            type: 'spend',
-            source: 'boost',
-            note: `Boosted post (${selectedBoost.duration}) on create`
-          });
-        } catch (e) {}
-
-        try {
-          await supabaseClient.rpc('log_boost', {
-            p_post_id: lastPostId,
-            p_user_id: currentUser.id,
-            p_duration: selectedBoost.duration,
-            p_price: selectedBoost.price,
-            p_expires_at: expiresAt
-          });
-        } catch (e) {}
-
-        currentWallet.balance = newBal;
-        currentWallet.total_spent = newSpent;
-      } catch (e) { console.warn('Boost failed', e); }
-    }
-
-    // 6. Award earning (post mode only)
-    progressText.textContent = 'Crediting your earnings…';
-
-    let earnedResult = { awarded: false, reason: 'unknown' };
-
-    try {
-      const { data: rpcData, error: rpcErr } = await supabaseClient.rpc('award_post_earning', {
-        p_user_id: currentUser.id
-      });
-      if (rpcErr) throw rpcErr;
-      if (rpcData) earnedResult = rpcData;
-    } catch (rpcFail) {
-      console.warn('[Earn] RPC failed → fallback:', rpcFail);
-      try {
-        const { data: wallet } = await supabaseClient
-          .from('wallets').select('balance, total_earned').eq('user_id', currentUser.id).single();
-        const oldBal = Number(wallet?.balance || 0);
-        const newBal = oldBal + 0.001;
-        const newEarn = Number(wallet?.total_earned || 0) + 0.001;
-        await supabaseClient.from('wallets').update({ balance: newBal, total_earned: newEarn }).eq('user_id', currentUser.id);
-        await supabaseClient.from('wallet_transactions').insert({
-          user_id: currentUser.id, amount: 0.001, type: 'earn',
-          source: 'post_created', note: 'Earned from creating a post', status: 'completed'
-        });
-        earnedResult = {
-          awarded: true, earned: 0.001,
-          old_balance: oldBal, new_balance: newBal,
-          count: (earnStatus.count || 0) + 1, cap: 100,
-          remaining: Math.max(0, 99 - (earnStatus.count || 0))
-        };
-      } catch (fbFail) {
-        console.error('[Earn] Both failed:', fbFail);
-        earnedResult = { awarded: false, reason: 'system_error' };
-      }
-    }
-
-    showSuccessScreen(earnedResult);
-
-    if (typeof loadUserData === 'function') {
-      loadUserData().then(() => {
-        const w = document.getElementById('boostWallet');
-        if (w) w.textContent = '$' + Number(currentWallet?.balance ?? 0).toFixed(2);
-      });
-    }
-
-  } catch (err) {
-    console.error(err);
-    showToast(err.message || 'Failed to post');
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fas fa-share"></i> Share';
-    progress.classList.remove('active');
-  }
-}
-
-/* ============================================================
-   SUBMIT — STORY MODE
-   ============================================================ */
-async function submitAsStory() {
-  if (selectedFiles.length === 0) return showToast('Pick a photo or video first');
-  const file = selectedFiles[0];
-
-  const btn = document.getElementById('shareBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Publishing…';
-
-  const progress     = document.getElementById('uploadProgress');
-  const progressFill = document.getElementById('progressFill');
-  const progressText = document.getElementById('progressText');
-  progress.classList.add('active');
-
-  try {
-    const isVideo = file.type.startsWith('video/');
-    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-    const path = `${currentUser.id}/story-${Date.now()}.${ext}`;
-
-    progressText.textContent = 'Uploading story…';
-    progressFill.style.width = '40%';
-
-    const { data: up, error: upErr } = await supabaseClient.storage
-      .from('stories').upload(path, file, { cacheControl: '3600' });
-    if (upErr) throw upErr;
-
-    const { data: urlData } = supabaseClient.storage.from('stories').getPublicUrl(up.path);
-
-    progressFill.style.width = '80%';
-    progressText.textContent = 'Saving story…';
-
-    const expiresAt = new Date(Date.now() + 24 * 3600 * 1000).toISOString();
-
-    await supabaseClient.from('stories').insert({
+    await supabaseClient.from('comments').insert({
       user_id: currentUser.id,
-      media_url: urlData.publicUrl,
-      media_type: isVideo ? 'video' : 'image',
-      caption: (document.getElementById('storyCaption')?.value || '').trim() || null,
-      visibility: document.getElementById('storyVisibility')?.value || 'public',
-      allow_replies: (document.getElementById('storyReplies')?.value || 'true') === 'true',
-      expires_at: expiresAt
+      post_id: currentPostId,
+      content: text
     });
-
-    progressFill.style.width = '100%';
-    progressText.textContent = 'Published!';
-
-    // Show success (story variant)
-    document.getElementById('createContent').style.display = 'none';
-    document.getElementById('topbar').style.display = 'none';
-    progress.classList.remove('active');
-
-    document.getElementById('successMsg').textContent = 'Your story is live for 24 hours.';
-    document.getElementById('earnedBox').style.display = 'none';
-    document.getElementById('bonusBadges').innerHTML = `
-      <div class="bonus-badge story"><i class="fas fa-circle-play"></i> Story published</div>
-      <div class="bonus-badge"><i class="fas fa-clock"></i> 24h visibility</div>
-    `;
-    document.getElementById('shareMyPostBtn').style.display = 'none';
-    document.getElementById('successScreen').classList.add('active');
-
-  } catch (err) {
-    console.error(err);
-    showToast(err.message || 'Failed to publish story');
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fas fa-share"></i> Share';
-    progress.classList.remove('active');
-  }
+    input.value = '';
+    await loadComments();
+    showToast('Comment added ✅');
+  } catch (err) { showToast(err.message); }
 }
 
-/* ============================================================
-   SUCCESS SCREEN
-   ============================================================ */
-function showSuccessScreen(earned) {
-  document.getElementById('createContent').style.display = 'none';
-  document.getElementById('topbar').style.display = 'none';
-  document.getElementById('uploadProgress').classList.remove('active');
-  document.getElementById('earnedBox').style.display = 'block';
-  document.getElementById('successMsg').textContent = 'Your post is now live on Arizona AI.';
-
-  // Bonus badges
-  const badges = [];
-  if (earned.awarded) badges.push(`<div class="bonus-badge"><i class="fas fa-coins"></i> +$0.001 earned</div>`);
-  if (storyEnabled) badges.push(`<div class="bonus-badge story"><i class="fas fa-circle-play"></i> Added to stories</div>`);
-  if (tribeEnabled && selectedTribeId) badges.push(`<div class="bonus-badge tribe"><i class="fas fa-users"></i> Posted in Tribe</div>`);
-  if (boostEnabled) badges.push(`<div class="bonus-badge boost"><i class="fas fa-rocket"></i> Boosted ${selectedBoost.duration}</div>`);
-  if (scheduleEnabled) badges.push(`<div class="bonus-badge"><i class="fas fa-clock"></i> Scheduled</div>`);
-  document.getElementById('bonusBadges').innerHTML = badges.join('');
-
-  const box        = document.getElementById('earnedBox');
-  const amount     = document.getElementById('earnedAmount');
-  const label      = document.getElementById('earnedLabel');
-  const newBalance = document.getElementById('newBalance');
-  const rem        = document.getElementById('earnedRemaining');
-
-  if (earned.awarded) {
-    box.style.borderColor = 'rgba(0,184,148,.4)';
-    amount.style.color = '#00b894';
-    amount.textContent = '+$0.001';
-    label.textContent = '✅ Earned from this post';
-    if (earned.new_balance !== undefined) {
-      newBalance.style.display = 'block';
-      newBalance.textContent = 'New balance: $' + Number(earned.new_balance).toFixed(4);
-    }
-    if (earned.remaining !== undefined) {
-      rem.textContent = `${earned.remaining} of ${earned.cap || 100} earning posts remaining today`;
-    }
-  } else if (earned.reason === 'daily_cap_reached') {
-    box.style.borderColor = 'rgba(255,178,15,.4)';
-    amount.style.color = '#FFB20F';
-    amount.textContent = 'Daily cap reached';
-    label.textContent = 'Max $0.10 earned today';
-    newBalance.style.display = 'none';
-    rem.textContent = 'Resets at midnight UTC · Your post still counts!';
-  } else {
-    box.style.borderColor = 'rgba(255,118,117,.4)';
-    amount.style.color = '#ff7675';
-    amount.textContent = 'Earning pending';
-    label.textContent = 'Will be credited automatically';
-    newBalance.style.display = 'none';
-    rem.textContent = "Your post is saved. Contact support if balance doesn't update.";
-  }
-
-  if (lastPostId) {
-    document.getElementById('shareMyPostBtn').style.display = 'flex';
-  }
-
-  document.getElementById('successScreen').classList.add('active');
-  loadEarnStatus();
-}
-
-/* ============================================================
-   RESET
-   ============================================================ */
-function resetForm() {
-  selectedFiles = [];
-  selectedType = 'post';
-  currentMode = 'post';
-  selectedTribeId = null;
-  tribeEnabled = false;
-  storyEnabled = false;
-  boostEnabled = false;
-  scheduleEnabled = false;
-
-  document.getElementById('previews').innerHTML = '';
-  document.getElementById('caption').value = '';
-  document.getElementById('charCount').textContent = '0';
-
-  // Reset all toggles
-  ['tribeToggle', 'storyToggle', 'boostToggle', 'scheduleToggle'].forEach(id => {
-    const row = document.getElementById(id);
-    if (row) row.classList.remove('on');
-  });
-  ['tribePanel', 'storyPanel', 'boostPanel', 'schedulePanel'].forEach(id => {
-    const panel = document.getElementById(id);
-    if (panel) panel.classList.remove('active');
-  });
-
-  // Reset mode tabs
-  document.querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
-  const postTab = document.querySelector('.mtab[data-mode="post"]');
-  if (postTab) postTab.classList.add('active');
-  switchMode('post', postTab);
-
-  // Reset type buttons
-  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
-  const first = document.querySelector('.type-btn[data-type="post"]');
-  if (first) first.classList.add('active');
-
-  document.getElementById('successScreen').classList.remove('active');
-  document.getElementById('createContent').style.display = 'block';
-  document.getElementById('topbar').style.display = 'flex';
-  document.getElementById('shareBtn').disabled = false;
-  document.getElementById('shareBtn').innerHTML = '<i class="fas fa-share"></i> Share';
-  document.getElementById('newBalance').style.display = 'none';
-  document.getElementById('bonusBadges').innerHTML = '';
-  lastPostId = null;
-}
-
-/* ============================================================
-   CANCEL
-   ============================================================ */
-function cancelPost() {
-  const hasContent = selectedFiles.length > 0 || document.getElementById('caption').value.trim();
-  if (hasContent && !confirm('Discard this post?')) return;
-  window.location.href = 'index.html';
-}
-
-/* ============================================================
-   SHARE
-   ============================================================ */
-async function shareMyPost() {
-  if (!lastPostId) return;
-  const basePath = window.location.pathname.replace(/\/[^\/]*$/, '');
-  const url = window.location.origin + basePath + '/index.html?post=' + lastPostId;
-
+function sharePost() {
+  const url = window.location.href;
   if (navigator.share) {
-    try {
-      await navigator.share({
-        title: 'Arizona AI',
-        text: 'Check out my new post on Arizona AI!',
-        url: url
-      });
-      return;
-    } catch (e) {}
+    navigator.share({ title: 'Arizona AI Post', text: 'Check out this post!', url });
+  } else {
+    copyLink();
   }
-
-  try {
-    await navigator.clipboard.writeText(url);
-    showToast('Post link copied! 📋');
-  } catch { showToast('Link: ' + url); }
 }
 
-/* ============================================================
-   HELPERS
-   ============================================================ */
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href).then(() => showToast('Link copied! 📋'));
+}
+
+function formatTimeAgo(dateStr) {
+  if (!dateStr) return 'Just now';
+  const dateStr2 = String(dateStr).includes('Z') || String(dateStr).includes('+') ? dateStr : dateStr + 'Z';
+  const then = new Date(dateStr2).getTime();
+  const s = Math.floor((Date.now() - then) / 1000);
+  if (s < 60) return `${s}s ago`;
+  const m = Math.floor(s / 60); if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60); if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24); return `${d}d ago`;
+}
+
 function escapeHtml(s) {
-  return String(s ?? '').replace(/[&<>"']/g, c =>
-    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 function showToast(msg) {
@@ -1582,10 +333,6 @@ function showToast(msg) {
   clearTimeout(window._toastT);
   window._toastT = setTimeout(() => el.classList.remove('show'), 2200);
 }
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') cancelPost();
-});
 </script>
 </body>
 </html>
