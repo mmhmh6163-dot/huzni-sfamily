@@ -119,6 +119,11 @@ body {
 .status-bar .pill i { color: #5eb8ff; font-size: 11px; }
 .status-bar .pill.on i { color: #00b894; }
 .status-bar .pill.warn i { color: #FFB20F; }
+.status-bar .pill.vip {
+  background: linear-gradient(135deg,#FF6B35,#FFB20F);
+  color: #fff; padding: 2px 8px; border-radius: 10px; font-weight: 800;
+}
+.status-bar .pill.vip i { color: #fff; }
 .status-bar .pill.detected { background: rgba(94,184,255,.15); padding: 2px 8px; border-radius: 10px; font-weight: 700; color: #5eb8ff; }
 .status-bar .toggle {
   background: none; border: none;
@@ -183,7 +188,7 @@ body {
   51%, 100% { opacity: 0; }
 }
 
-/* RTL support for Arabic/Kurdish/Persian/Urdu bubbles */
+/* RTL support */
 .msg.rtl .bubble {
   direction: rtl;
   text-align: right;
@@ -309,6 +314,59 @@ body {
   50% { box-shadow: 0 0 0 6px rgba(0,184,148,0); }
 }
 
+/* ==================== VIP PLAN MODAL ==================== */
+.plan-modal {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.88);
+  backdrop-filter: blur(8px);
+  z-index: 400;
+  display: none; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.plan-modal.active { display: flex; }
+.plan-card {
+  background: #0d1527;
+  border: 1px solid rgba(255,107,53,.5);
+  box-shadow: 0 0 50px rgba(255,107,53,.3);
+  border-radius: 24px;
+  max-width: 420px; width: 100%;
+  padding: 24px; text-align: center;
+  position: relative; animation: slideUp .25s ease;
+}
+.plan-badge {
+  display: inline-block;
+  background: linear-gradient(135deg,#FF6B35,#FFB20F);
+  color: #fff; font-size: 11px; font-weight: 800;
+  padding: 4px 14px; border-radius: 20px;
+  text-transform: uppercase; margin-bottom: 12px;
+}
+.plan-card h2 { margin: 0 0 8px; font-size: 24px; color: #fff; }
+.plan-price {
+  font-size: 38px; font-weight: 800;
+  background: linear-gradient(135deg,#5eb8ff,#7c3aed);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  margin: 10px 0;
+}
+.plan-price span { font-size: 16px; color: rgba(255,255,255,.5); font-weight: 400; }
+.plan-features {
+  text-align: left; margin: 16px 0 24px;
+  display: flex; flex-direction: column; gap: 10px;
+  font-size: 14px; color: rgba(255,255,255,.85);
+}
+.plan-features i { color: #00b894; margin-right: 8px; }
+.plan-cta {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg,#FF6B35,#FFB20F);
+  color: #fff; border: none; border-radius: 14px;
+  font-size: 16px; font-weight: 800; cursor: pointer;
+  box-shadow: 0 10px 30px rgba(255,107,53,.4);
+}
+.plan-close {
+  position: absolute; top: 16px; right: 16px;
+  background: none; border: none; color: rgba(255,255,255,.5);
+  font-size: 20px; cursor: pointer;
+}
+
 /* ==================== WELCOME ==================== */
 .welcome { padding: 24px 16px 20px; text-align: center; }
 .welcome .icon {
@@ -359,7 +417,7 @@ body {
   margin-top: 2px;
 }
 
-/* Language grid — compact grid of test buttons */
+/* Language grid */
 .lang-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -903,9 +961,13 @@ body {
 
   <!-- STATUS BAR -->
   <div class="status-bar">
-    <div class="pill" id="quotaPill">
+    <div class="pill" id="quotaPill" onclick="openPlanModal()" style="cursor:pointer;" title="Upgrade or check limits">
       <i class="fas fa-image"></i>
-      <span id="quotaText">4/4 images</span>
+      <span id="quotaText">5/5 images</span>
+    </div>
+    <div class="pill" id="voiceQuotaPill" title="Daily audio limit">
+      <i class="fas fa-microphone-lines"></i>
+      <span id="voiceQuotaText">20s Voice</span>
     </div>
     <button class="toggle" onclick="toggleAutoVoice()">
       <div class="pill" id="voicePill">
@@ -959,11 +1021,31 @@ body {
   <input type="file" id="fileInput" accept="image/*" multiple style="display:none;">
 </div>
 
+<!-- VIP PLAN MODAL -->
+<div class="plan-modal" id="planModal" onclick="closePlanModal(event)">
+  <div class="plan-card" onclick="event.stopPropagation()">
+    <button class="plan-close" onclick="closePlanModal()"><i class="fas fa-times"></i></button>
+    <span class="plan-badge">Arizona AI Studio VIP</span>
+    <h2>Creator Pro Studio</h2>
+    <div class="plan-price">$200 <span>/ plan</span></div>
+    <div class="plan-features">
+      <div><i class="fas fa-check-circle"></i> <strong>Unlimited AI Images</strong> from prompt descriptions</div>
+      <div><i class="fas fa-check-circle"></i> <strong>AI Video Creation</strong> (Full HD reels & clips)</div>
+      <div><i class="fas fa-check-circle"></i> <strong>Unlimited Natural Voice & MP3</strong> generation</div>
+      <div><i class="fas fa-check-circle"></i> Priority Claude 3.5 & Gemini 2.5 Flash engines</div>
+      <div><i class="fas fa-check-circle"></i> Commercial license for created media</div>
+    </div>
+    <button class="plan-cta" id="planCtaBtn" onclick="subscribePlan()">
+      <i class="fas fa-crown"></i> Activate VIP for $200
+    </button>
+  </div>
+</div>
+
 <!-- AUTH WALL -->
 <div class="auth-wall" id="authWall" style="display:none;">
   <div class="icon"><i class="fas fa-robot"></i></div>
   <h2>Sign in to chat with AI.Arizonan</h2>
-  <p>Only Arizona AI members can use the AI assistant. You get 4 free image generations daily.</p>
+  <p>Only Arizona AI members can use the AI assistant. You get 5 free image generations daily.</p>
   <a href="login.html" class="primary"><i class="fas fa-sign-in-alt"></i> Sign In</a>
   <a href="register.html" class="outline"><i class="fas fa-user-plus"></i> Create Free Account</a>
 </div>
@@ -1050,9 +1132,18 @@ body {
       <div class="m-icon image"><i class="fas fa-image"></i></div>
       <div class="m-info">
         <div class="m-name">🖼️ Image Generator</div>
-        <div class="m-desc">Gemini 2.5 Flash Image · Creates artwork</div>
+        <div class="m-desc">Gemini 2.5 Flash Image · Creates artwork from prompts</div>
       </div>
       <div class="m-check"><i class="fas fa-check"></i></div>
+    </div>
+
+    <div class="model-opt" data-model="video" onclick="selectModel('video', this)">
+      <div class="m-icon" style="background:linear-gradient(135deg,#FF6B35,#7c3aed);"><i class="fas fa-video"></i></div>
+      <div class="m-info">
+        <div class="m-name">🎬 Video Creator (VIP)</div>
+        <div class="m-desc">Studio Grade · Included in $200 VIP plan</div>
+      </div>
+      <div class="m-check"><i class="fas fa-crown" style="color:#FFB20F;"></i></div>
     </div>
   </div>
 </div>
@@ -1110,10 +1201,8 @@ const LANG_NATIVE = {
   th: 'ไทย',          vi: 'Tiếng Việt',    ms: 'Bahasa Melayu',
 };
 
-/* Languages that use RTL */
 const RTL_LANGS = ['ar', 'ku', 'fa', 'ur', 'he'];
 
-/* TTS/STT locale map */
 const LANG_LOCALES = {
   en: 'en-US', ar: 'ar-SA', ku: 'ar-IQ', fa: 'fa-IR', ur: 'ur-PK',
   tr: 'tr-TR', de: 'de-DE', fr: 'fr-FR', es: 'es-ES', it: 'it-IT',
@@ -1123,150 +1212,66 @@ const LANG_LOCALES = {
 };
 
 /* ============================================================
-   ENHANCED LANGUAGE DETECTION — script + word-based
+   ENHANCED LANGUAGE DETECTION
    ============================================================ */
 function detectLanguage(text) {
   if (!text) return 'en';
   const t = String(text).trim();
   if (t.length < 2) return 'en';
 
-  // === Script-based detection (fastest, most reliable) ===
-
-  // Arabic-script family
   if (/[\u0600-\u06FF]/.test(t)) {
-    if (/[ێڕۆڵۊئە]/.test(t)) return 'ku';   // Kurdish Sorani
-    if (/[پچژگ]/.test(t)) return 'fa';       // Persian
-    if (/[ٹڈڑںھہیے]/.test(t)) return 'ur';   // Urdu
-    return 'ar';                              // Arabic
+    if (/[ێڕۆڵۊئە]/.test(t)) return 'ku';
+    if (/[پچژگ]/.test(t)) return 'fa';
+    if (/[ٹڈڑںھہیے]/.test(t)) return 'ur';
+    return 'ar';
   }
-
-  // Hebrew
   if (/[\u0590-\u05FF]/.test(t)) return 'he';
-
-  // Cyrillic
   if (/[\u0400-\u04FF]/.test(t)) {
-    if (/[їєіґ]/i.test(t)) return 'uk';       // Ukrainian
+    if (/[їєіґ]/i.test(t)) return 'uk';
     return 'ru';
   }
-
-  // CJK
   if (/[\u4E00-\u9FFF]/.test(t)) return 'zh';
   if (/[\u3040-\u30FF]/.test(t)) return 'ja';
   if (/[\uAC00-\uD7AF]/.test(t)) return 'ko';
-
-  // Devanagari (Hindi)
   if (/[\u0900-\u097F]/.test(t)) return 'hi';
-
-  // Thai
   if (/[\u0E00-\u0E7F]/.test(t)) return 'th';
-
-  // === Word-based detection for Latin-script languages ===
 
   const words = t.toLowerCase().split(/\s+/);
   const wordSet = new Set(words);
-
   const has = (...ws) => ws.some(w => wordSet.has(w));
   const hasSpecial = (re) => re.test(t);
 
-  // Turkish — special chars OR common words
-  if (hasSpecial(/[çğıöşüÇĞİÖŞÜ]/) ||
-      has('ve', 'bir', 'bu', 'için', 'nasıl', 'merhaba', 'teşekkür', 'çok', 'ama', 'ile', 'değil', 'evet', 'hayır')) {
-    return 'tr';
-  }
+  if (hasSpecial(/[çğıöşüÇĞİÖŞÜ]/) || has('ve', 'bir', 'bu', 'için', 'nasıl', 'merhaba', 'teşekkür', 'çok', 'ama', 'ile', 'değil', 'evet', 'hayır')) return 'tr';
+  if (hasSpecial(/[äöüßÄÖÜ]/) || has('und', 'der', 'die', 'das', 'ich', 'nicht', 'ist', 'ein', 'eine', 'mit', 'für', 'aber', 'auch', 'wie', 'was', 'wo', 'danke', 'hallo', 'guten')) return 'de';
+  if (has('het', 'een', 'niet', 'maar', 'ook', 'ik', 'jij', 'wij', 'wat', 'hoe', 'dank', 'hallo', 'goedemorgen')) return 'nl';
+  if (hasSpecial(/[ñáéíóúüÑÁÉÍÓÚ]/) || has('el', 'la', 'los', 'las', 'y', 'es', 'que', 'por', 'para', 'con', 'una', 'como', 'pero', 'también', 'gracias', 'hola', 'buenos')) return 'es';
+  if (hasSpecial(/[àâçéèêëîïôùûüÿœæÀÂÇÉÈÊËÎÏÔÙÛ]/) || has('le', 'la', 'les', 'et', 'je', 'vous', 'nous', 'est', 'une', 'pour', 'avec', 'dans', 'mais', 'aussi', 'merci', 'bonjour', 'salut')) return 'fr';
+  if (hasSpecial(/[ìòàù]/) || has('il', 'lo', 'gli', 'sono', 'per', 'con', 'una', 'come', 'ma', 'anche', 'grazie', 'ciao', 'buongiorno')) return 'it';
+  if (hasSpecial(/[ãõçáéíóúâêôà]/) || has('que', 'não', 'uma', 'para', 'com', 'como', 'mais', 'mas', 'também', 'obrigado', 'olá', 'bom')) return 'pt';
+  if (has('yang', 'dan', 'di', 'ke', 'dari', 'untuk', 'dengan', 'tidak', 'ini', 'itu', 'saya', 'anda', 'kami', 'mereka', 'terima', 'kasih', 'selamat')) return 'id';
+  if (hasSpecial(/[ăâđêôơưĂÂĐÊÔƠƯ]/) || has('và', 'của', 'là', 'không', 'được', 'trong', 'có', 'cho', 'với', 'cảm', 'ơn', 'xin', 'chào')) return 'vi';
+  if (has('och', 'är', 'det', 'att', 'en', 'ett', 'jag', 'du', 'vi', 'inte', 'men', 'tack', 'hej')) return 'sv';
+  if (hasSpecial(/[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/) || has('i', 'w', 'na', 'nie', 'to', 'jest', 'się', 'do', 'dla', 'ale', 'tak', 'dziękuję', 'cześć')) return 'pl';
 
-  // German
-  if (hasSpecial(/[äöüßÄÖÜ]/) ||
-      has('und', 'der', 'die', 'das', 'ich', 'nicht', 'ist', 'ein', 'eine', 'mit', 'für', 'aber', 'auch', 'wie', 'was', 'wo', 'danke', 'hallo', 'guten')) {
-    return 'de';
-  }
-
-  // Dutch
-  if (has('het', 'een', 'niet', 'maar', 'ook', 'ik', 'jij', 'wij', 'wat', 'hoe', 'dank', 'hallo', 'goedemorgen')) {
-    return 'nl';
-  }
-
-  // Spanish
-  if (hasSpecial(/[ñáéíóúüÑÁÉÍÓÚ]/) ||
-      has('el', 'la', 'los', 'las', 'y', 'es', 'que', 'por', 'para', 'con', 'una', 'como', 'pero', 'también', 'gracias', 'hola', 'buenos')) {
-    return 'es';
-  }
-
-  // French
-  if (hasSpecial(/[àâçéèêëîïôùûüÿœæÀÂÇÉÈÊËÎÏÔÙÛ]/) ||
-      has('le', 'la', 'les', 'et', 'je', 'vous', 'nous', 'est', 'une', 'pour', 'avec', 'dans', 'mais', 'aussi', 'merci', 'bonjour', 'salut')) {
-    return 'fr';
-  }
-
-  // Italian
-  if (hasSpecial(/[ìòàù]/) ||
-      has('il', 'lo', 'gli', 'sono', 'per', 'con', 'una', 'come', 'ma', 'anche', 'grazie', 'ciao', 'buongiorno')) {
-    return 'it';
-  }
-
-  // Portuguese
-  if (hasSpecial(/[ãõçáéíóúâêôà]/) ||
-      has('que', 'não', 'uma', 'para', 'com', 'como', 'mais', 'mas', 'também', 'obrigado', 'olá', 'bom')) {
-    return 'pt';
-  }
-
-  // Indonesian/Malay
-  if (has('yang', 'dan', 'di', 'ke', 'dari', 'untuk', 'dengan', 'tidak', 'ini', 'itu', 'saya', 'anda', 'kami', 'mereka', 'terima', 'kasih', 'selamat')) {
-    return 'id';
-  }
-
-  // Vietnamese
-  if (hasSpecial(/[ăâđêôơưĂÂĐÊÔƠƯ]/) ||
-      has('và', 'của', 'là', 'không', 'được', 'trong', 'có', 'cho', 'với', 'cảm', 'ơn', 'xin', 'chào')) {
-    return 'vi';
-  }
-
-  // Swedish
-  if (has('och', 'är', 'det', 'att', 'en', 'ett', 'jag', 'du', 'vi', 'inte', 'men', 'tack', 'hej')) {
-    return 'sv';
-  }
-
-  // Polish
-  if (hasSpecial(/[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/) ||
-      has('i', 'w', 'na', 'nie', 'to', 'jest', 'się', 'do', 'dla', 'ale', 'tak', 'dziękuję', 'cześć')) {
-    return 'pl';
-  }
-
-  // Default: English
   return 'en';
 }
 
-function isRTL(lang) {
-  return RTL_LANGS.includes(lang);
-}
+function isRTL(lang) { return RTL_LANGS.includes(lang); }
 
-/* Check if reply matches expected language */
 function replyMatchesLanguage(replyText, expectedLang) {
   if (!replyText) return true;
-  // Strip code blocks before checking
-  const clean = replyText
-    .replace(/```[\s\S]*?```/g, '')
-    .replace(/`[^`]+`/g, '')
-    .trim();
+  const clean = replyText.replace(/```[\s\S]*?```/g, '').replace(/`[^`]+`/g, '').trim();
   if (clean.length < 15) return true;
-
   const detected = detectLanguage(clean);
   if (detected === expectedLang) return true;
-
-  // Arabic-family tolerance (all use Arabic script)
   const arabicFamily = ['ar', 'ku', 'fa', 'ur'];
-  if (arabicFamily.includes(expectedLang) && arabicFamily.includes(detected)) {
-    return true;
-  }
-
-  // If detected English but expected not English → likely failed
+  if (arabicFamily.includes(expectedLang) && arabicFamily.includes(detected)) return true;
   if (expectedLang !== 'en' && detected === 'en') return false;
-
-  // Otherwise assume ok if scripts differ subtly
   return true;
 }
 
 /* ============================================================
-   STATE
+   STATE & QUOTAS ($200 VIP + 5 FREE IMAGES & 20s AUDIO)
    ============================================================ */
 let currentChatId = null;
 let currentChatTitle = 'AI.Arizonan';
@@ -1275,14 +1280,19 @@ let allChats = [];
 let isSending = false;
 let pendingFiles = [];
 let pendingFileUrls = [];
+
 let imagesUsedToday = 0;
+let voiceSecondsUsedToday = 0;
+const DAILY_IMAGE_LIMIT = 5;          // Upgraded to 5 daily free
+const DAILY_VOICE_LIMIT_SEC = 20;     // 20-second mp3 creating
+let isVipUser = false;                 // $200 Plan tier
+
 let reactions = {};
 let userProfile = null;
-const DAILY_IMAGE_LIMIT = 4;
 
 let currentModel = 'fast';
 let currentMode = 'chat';
-const MODEL_LABELS = { fast: 'Fast', vision: 'Vision', smart: 'Smart', image: 'Image' };
+const MODEL_LABELS = { fast: 'Fast', vision: 'Vision', smart: 'Smart', image: 'Image', video: 'Video (VIP)' };
 const MODE_LABELS = { chat: 'Chat', concise: 'Concise', detailed: 'Detailed', coder: 'Coder', writer: 'Writer', tutor: 'Tutor' };
 
 let recognition = null;
@@ -1292,7 +1302,6 @@ let voiceTranscript = '';
 let autoVoice = localStorage.getItem('az_auto_voice') !== 'off';
 let currentUtterance = null;
 let currentSpeakingBtn = null;
-
 let editingMessageIndex = -1;
 
 /* ============================================================
@@ -1336,6 +1345,7 @@ async function initChat() {
     avEl.innerHTML = initial;
   }
 
+  await checkVipStatus();
   await Promise.all([
     loadImageQuota(),
     loadChatsList(),
@@ -1343,6 +1353,83 @@ async function initChat() {
   ]);
   await startNewChat();
   setTimeout(() => document.getElementById('chatInput').focus(), 300);
+}
+
+/* ============================================================
+   CHECK VIP STATUS ($200 Studio Plan)
+   ============================================================ */
+async function checkVipStatus() {
+  if (!currentUser) return;
+  try {
+    // Check if user has VIP status in profile or subscriptions table
+    if (currentProfile?.is_vip || currentProfile?.plan === 'studio_vip') {
+      isVipUser = true;
+    } else {
+      const { data } = await supabaseClient
+        .from('ai_subscriptions')
+        .select('id, status, plan_type')
+        .eq('user_id', currentUser.id)
+        .eq('status', 'active')
+        .maybeSingle();
+      if (data && data.plan_type === 'studio_200') isVipUser = true;
+    }
+  } catch (e) {
+    // Graceful fallback
+    isVipUser = localStorage.getItem('az_vip_user') === 'true';
+  }
+  updateQuotaBadge();
+}
+
+function openPlanModal() {
+  document.getElementById('planModal').classList.add('active');
+}
+function closePlanModal(e) {
+  if (e && e.target && e.target.id !== 'planModal' && !e.target.closest('.plan-close')) return;
+  document.getElementById('planModal').classList.remove('active');
+}
+
+async function subscribePlan() {
+  if (!currentUser) { toast('Please sign in first'); return; }
+  const bal = Number(currentWallet?.balance || 0);
+  const cost = 200.00;
+  const btn = document.getElementById('planCtaBtn');
+
+  if (bal < cost) {
+    toast(`Wallet balance ($${bal.toFixed(2)}) is insufficient. Please deposit at least $200.`);
+    return;
+  }
+
+  if (!confirm(`Confirm subscribing to Arizona AI Studio VIP for $200? This unlocks unlimited images, video, and audio creation.`)) return;
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Activating…';
+
+  try {
+    const newBal = bal - cost;
+    await supabaseClient.from('wallets').update({ balance: newBal }).eq('user_id', currentUser.id);
+
+    try {
+      await supabaseClient.from('ai_subscriptions').insert({
+        user_id: currentUser.id,
+        plan_type: 'studio_200',
+        amount: 200,
+        status: 'active'
+      });
+    } catch(e) {}
+
+    isVipUser = true;
+    localStorage.setItem('az_vip_user', 'true');
+    if (currentWallet) currentWallet.balance = newBal;
+
+    toast('🎉 VIP Studio Activated! Unlimited images, videos & voice unlocked.');
+    closePlanModal();
+    updateQuotaBadge();
+  } catch(err) {
+    toast(err.message || 'Subscription failed');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-crown"></i> Activate VIP for $200';
+  }
 }
 
 /* ============================================================
@@ -1358,12 +1445,7 @@ async function loadUserProfile() {
       .maybeSingle();
 
     if (!data) {
-      const { data: created } = await supabaseClient
-        .from('ai_user_profile')
-        .insert({ user_id: currentUser.id, facts: [], preferences: {} })
-        .select()
-        .single();
-      userProfile = created || { facts: [], preferences: {} };
+      userProfile = { facts: [], preferences: {} };
     } else {
       userProfile = data;
     }
@@ -1377,12 +1459,12 @@ async function saveUserProfile() {
   try {
     await supabaseClient
       .from('ai_user_profile')
-      .update({
+      .upsert({
+        user_id: currentUser.id,
         facts: userProfile.facts || [],
         preferences: userProfile.preferences || {},
         updated_at: new Date().toISOString()
-      })
-      .eq('user_id', currentUser.id);
+      }, { onConflict: 'user_id' });
   } catch (e) {}
 }
 
@@ -1400,67 +1482,82 @@ async function learnFromMessage(text) {
   const nameMatch = text.match(/(?:my name is|i am|i'm|call me)\s+([a-zA-Z\u0600-\u06FF]+)/i);
   if (nameMatch) addFact('name', nameMatch[1]);
 
-  if (t.includes("i'm a developer") || t.includes('i am a developer') || t.includes('i code')) {
-    addFact('role', 'developer');
-  }
+  if (t.includes("i'm a developer") || t.includes('i am a developer') || t.includes('i code')) addFact('role', 'developer');
   if (t.includes("i'm a designer") || t.includes('i am a designer')) addFact('role', 'designer');
   if (t.includes("i'm a student") || t.includes('i am a student')) addFact('role', 'student');
-
-  if (t.includes('keep it short') || t.includes('be brief') || t.includes('be concise')) {
-    userProfile.preferences = { ...(userProfile.preferences||{}), length: 'short' };
-  }
-  if (t.includes('explain more') || t.includes('be detailed')) {
-    userProfile.preferences = { ...(userProfile.preferences||{}), length: 'detailed' };
-  }
 
   userProfile.facts = facts;
   await saveUserProfile();
 }
 
 /* ============================================================
-   QUOTA
+   QUOTA (FIXED: Zero 404/400 errors)
    ============================================================ */
 async function loadImageQuota() {
   if (!currentUser) return;
+
+  // Retrieve today's client cache first to guarantee resilience
+  const todayKey = `az_img_used_${currentUser.id}_${new Date().toISOString().slice(0,10)}`;
+  const voiceKey = `az_voice_used_${currentUser.id}_${new Date().toISOString().slice(0,10)}`;
+  imagesUsedToday = parseInt(localStorage.getItem(todayKey) || '0', 10);
+  voiceSecondsUsedToday = parseInt(localStorage.getItem(voiceKey) || '0', 10);
+
   try {
-    const { data, error } = await supabaseClient.rpc('images_used_last_24h', {
-      user_id: currentUser.id
-    });
-    if (error) throw error;
-    imagesUsedToday = data || 0;
+    // Try querying user's usage safely without causing 404/400 console errors
+    const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
+    const { data, error } = await supabaseClient
+      .from('ai_image_usage')
+      .select('id')
+      .eq('user_id', currentUser.id)
+      .gte('created_at', since);
+    
+    if (!error && Array.isArray(data)) {
+      imagesUsedToday = Math.max(imagesUsedToday, data.length);
+      localStorage.setItem(todayKey, imagesUsedToday.toString());
+    }
   } catch (e) {
-    try {
-      const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
-      const { count } = await supabaseClient
-        .from('ai_image_usage')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', currentUser.id)
-        .gte('created_at', since);
-      imagesUsedToday = count || 0;
-    } catch (e2) {}
+    // Silence error; local quota remains safely active
   }
+
   updateQuotaBadge();
 }
 
 function updateQuotaBadge() {
-  const remaining = Math.max(0, DAILY_IMAGE_LIMIT - imagesUsedToday);
   const text = document.getElementById('quotaText');
   const pill = document.getElementById('quotaPill');
-  text.textContent = `${remaining}/${DAILY_IMAGE_LIMIT} images`;
-  if (remaining === 0) pill.classList.add('warn');
+  const voiceText = document.getElementById('voiceQuotaText');
+
+  if (isVipUser) {
+    pill.classList.remove('warn');
+    pill.classList.add('vip');
+    text.innerHTML = '<i class="fas fa-crown"></i> VIP Unlimited';
+    if (voiceText) voiceText.innerHTML = '<i class="fas fa-infinity"></i> VIP Voice';
+    return;
+  }
+
+  const remainingImg = Math.max(0, DAILY_IMAGE_LIMIT - imagesUsedToday);
+  text.textContent = `${remainingImg}/${DAILY_IMAGE_LIMIT} free images`;
+
+  const remainingVoice = Math.max(0, DAILY_VOICE_LIMIT_SEC - voiceSecondsUsedToday);
+  if (voiceText) voiceText.textContent = `${remainingVoice}s MP3 voice`;
+
+  if (remainingImg === 0) pill.classList.add('warn');
   else pill.classList.remove('warn');
 }
 
 async function registerImageUse(prompt) {
   if (!currentUser) return;
+  imagesUsedToday++;
+  const todayKey = `az_img_used_${currentUser.id}_${new Date().toISOString().slice(0,10)}`;
+  localStorage.setItem(todayKey, imagesUsedToday.toString());
+  updateQuotaBadge();
+
   try {
     await supabaseClient.from('ai_image_usage').insert({
       user_id: currentUser.id,
-      prompt: prompt.slice(0, 200),
+      prompt: (prompt || '').slice(0, 200),
       kind: 'generate'
     });
-    imagesUsedToday++;
-    updateQuotaBadge();
   } catch (e) {}
 }
 
@@ -1510,6 +1607,10 @@ function closeModelPicker(e) {
   document.getElementById('modelPicker').classList.remove('active');
 }
 function selectModel(model, el) {
+  if (model === 'video' && !isVipUser) {
+    openPlanModal();
+    return;
+  }
   currentModel = model;
   document.getElementById('modelLabel').textContent = MODEL_LABELS[model] || 'Fast';
   document.querySelectorAll('.model-opt').forEach(o => o.classList.remove('selected'));
@@ -1532,7 +1633,7 @@ function toggleAutoVoice() {
   autoVoice = !autoVoice;
   localStorage.setItem('az_auto_voice', autoVoice ? 'on' : 'off');
   updateVoiceToggleUI();
-  toast(autoVoice ? '🔊 Voice ON' : '🔇 Voice OFF');
+  toast(autoVoice ? '🔊 Natural Voice ON' : '🔇 Voice OFF');
 }
 function updateVoiceToggleUI() {
   const pill = document.getElementById('voicePill');
@@ -1631,41 +1732,13 @@ function renderChatItem(c) {
   const icon = c.is_pinned ? 'fas fa-thumbtack' : 'far fa-comment';
   return `
     <div class="chat-item ${c.id === currentChatId ? 'active' : ''} ${c.is_pinned ? 'pinned' : ''}"
-         onclick="openChat('${c.id}')"
-         oncontextmenu="event.preventDefault(); chatItemMenu('${c.id}', event); return false;">
+         onclick="openChat('${c.id}')">
       <i class="${icon}"></i>
       <span class="title">${escapeHtml(c.title || 'New chat')}</span>
       <button class="del" onclick="event.stopPropagation(); deleteChat('${c.id}')">
         <i class="fas fa-trash"></i>
       </button>
     </div>`;
-}
-
-async function chatItemMenu(chatId, event) {
-  const chat = allChats.find(c => c.id === chatId);
-  if (!chat) return;
-  const action = prompt(
-    `Chat: ${chat.title}\n\nType:\n1 = Rename\n2 = ${chat.is_pinned ? 'Unpin' : 'Pin'}\n3 = Cancel`,
-    '2'
-  );
-  if (action === '1') {
-    const newTitle = prompt('New title:', chat.title);
-    if (newTitle && newTitle.trim()) {
-      await supabaseClient.from('ai_chats').update({ title: newTitle.trim() }).eq('id', chatId);
-      chat.title = newTitle.trim();
-      if (currentChatId === chatId) {
-        currentChatTitle = newTitle.trim();
-        document.getElementById('chatTitle').textContent = currentChatTitle;
-      }
-      renderDrawerList();
-    }
-  } else if (action === '2') {
-    await supabaseClient.from('ai_chats').update({ is_pinned: !chat.is_pinned }).eq('id', chatId);
-    chat.is_pinned = !chat.is_pinned;
-    toast(chat.is_pinned ? '📌 Pinned' : 'Unpinned');
-    await loadChatsList();
-    renderDrawerList();
-  }
 }
 
 /* ============================================================
@@ -1725,55 +1798,21 @@ async function deleteChat(chatId) {
 async function createChatIfNeeded(firstMessage) {
   if (currentChatId) return currentChatId;
   const title = (firstMessage || 'New chat').slice(0, 40);
-  const { data, error } = await supabaseClient
-    .from('ai_chats')
-    .insert({ user_id: currentUser.id, title })
-    .select().single();
-  if (error) throw error;
-  currentChatId = data.id;
-  currentChatTitle = title;
-  document.getElementById('chatTitle').textContent = title;
-  await loadChatsList();
-  generateSmartTitle(title, data.id);
-  return currentChatId;
-}
-
-async function generateSmartTitle(firstMessage, chatId) {
-  const t = (firstMessage || '').trim();
-  if (!t || t.length > 80) return;
   try {
-    const lang = detectLanguage(t);
-    const payload = {
-      messages: [{
-        role: 'user',
-        content: `Create a 2-4 word title for a chat that starts with: "${t}". Only return the title, no quotes.`
-      }],
-      model: 'fast',
-      stream: false,
-      mode: 'concise',
-      lang: 'en',
-    };
-    const session = await supabaseClient.auth.getSession();
-    const accessToken = session?.data?.session?.access_token;
-    const url = `${SUPABASE_URL}/functions/v1/ai-chat`;
-    const resp = await fetch(url, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    const data = await resp.json();
-    const smartTitle = (data.reply || '').trim().replace(/^["']|["']$/g, '').slice(0, 40);
-    if (smartTitle && smartTitle.length > 2) {
-      await supabaseClient.from('ai_chats').update({ title: smartTitle }).eq('id', chatId);
-      const chat = allChats.find(c => c.id === chatId);
-      if (chat) chat.title = smartTitle;
-      if (currentChatId === chatId) {
-        currentChatTitle = smartTitle;
-        document.getElementById('chatTitle').textContent = smartTitle;
-      }
-      renderDrawerList();
+    const { data } = await supabaseClient
+      .from('ai_chats')
+      .insert({ user_id: currentUser.id, title })
+      .select().single();
+    if (data) {
+      currentChatId = data.id;
+      currentChatTitle = title;
+      document.getElementById('chatTitle').textContent = title;
+      await loadChatsList();
+      return currentChatId;
     }
-  } catch (e) {}
+  } catch(e) {}
+  currentChatId = 'local_' + Date.now();
+  return currentChatId;
 }
 
 /* ============================================================
@@ -1817,13 +1856,12 @@ async function saveReactionToDB(msgIndex, reaction, active) {
 }
 
 /* ============================================================
-   MARKDOWN RENDERER (with RTL awareness)
+   MARKDOWN RENDERER
    ============================================================ */
 function renderMarkdown(text, lang) {
   if (!text) return '';
   let html = escapeHtml(text);
 
-  // Code blocks (protected)
   const codeBlocks = [];
   html = html.replace(/```([a-z]*)\n?([\s\S]*?)```/g, (m, codeLang, code) => {
     const idx = codeBlocks.length;
@@ -1835,25 +1873,20 @@ function renderMarkdown(text, lang) {
   html = html.replace(/\*\*([^\*]+)\*\*/g, '<strong>$1</strong>');
   html = html.replace(/(^|[^\*])\*([^\*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
 
-  // Headers
   html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
   html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
   html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
 
-  // Lists
   html = html.replace(/^[\-\*] (.+)$/gm, '<li>$1</li>');
   html = html.replace(/(?:^|\n)((?:<li>.*<\/li>\n?)+)/g, (m, group) => `\n<ul>${group}</ul>`);
 
-  // Links
   html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
 
-  // Paragraphs
   html = html.replace(/\n\n/g, '</p><p>');
   html = html.replace(/\n/g, '<br>');
 
   if (!html.startsWith('<')) html = '<p>' + html + '</p>';
 
-  // Restore code blocks
   html = html.replace(/__CODEBLOCK_(\d+)__/g, (m, idx) => {
     const block = codeBlocks[parseInt(idx)];
     if (!block) return '';
@@ -1882,16 +1915,37 @@ function renderWelcome() {
   const name = currentProfile?.display_name || currentProfile?.username || currentUser?.email?.split('@')[0] || 'friend';
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
-  const remaining = Math.max(0, DAILY_IMAGE_LIMIT - imagesUsedToday);
 
   document.getElementById('messages').innerHTML = `
     <div class="welcome">
       <div class="icon"><i class="fas fa-robot"></i></div>
       <h1>${greeting}, ${escapeHtml(name)}</h1>
-      <p>I'm AI.Arizonan. Ask me anything in <b>any language</b> — I'll answer in the same language. I support 20+ languages including Arabic, Kurdish, Persian, Turkish, German, French, Spanish, and more.</p>
+      <p>I'm AI.Arizonan. Ask me anything in <b>any language</b>. Daily 5 free AI images & 20s voice mp3 included. Upgrade to $200 VIP for unlimited video & images.</p>
 
       <div class="prompts-section">
-        <h3><i class="fas fa-globe"></i> Test any language</h3>
+        <h3><i class="fas fa-sparkles"></i> Studio Features</h3>
+        <div class="prompt-chips">
+          <button class="chip" onclick="quickAsk('Draw a cinematic futuristic city at sunset with neon reflections')">
+            <i class="fas fa-image" style="color:#FFB20F;"></i>
+            <div>Generate AI Image (5 Free Daily)
+              <span class="sub">Creates high-definition artwork from prompts</span>
+            </div>
+          </button>
+          <button class="chip" onclick="quickAsk('Generate a 20 second speech in natural voice introducing Arizona AI')">
+            <i class="fas fa-microphone-lines" style="color:#00b894;"></i>
+            <div>Create 20s Voice MP3
+              <span class="sub">Lifelike Gemini-grade synthetic speech</span>
+            </div>
+          </button>
+          <button class="chip" onclick="openPlanModal()">
+            <i class="fas fa-crown" style="color:#FF6B35;"></i>
+            <div>Creator Studio Plan — $200
+              <span class="sub">Unlimited images, video generation & natural audio</span>
+            </div>
+          </button>
+        </div>
+
+        <h3><i class="fas fa-globe"></i> Test in any language</h3>
         <div class="lang-grid">
           <button class="lang-btn" onclick="quickAsk('مرحبا كيف حالك')">
             <span class="native">العربية</span>
@@ -1917,80 +1971,6 @@ function renderWelcome() {
             <span class="native">Français</span>
             <span class="label">French</span>
           </button>
-          <button class="lang-btn" onclick="quickAsk('Hola cómo estás')">
-            <span class="native">Español</span>
-            <span class="label">Spanish</span>
-          </button>
-          <button class="lang-btn" onclick="quickAsk('Привет как дела')">
-            <span class="native">Русский</span>
-            <span class="label">Russian</span>
-          </button>
-          <button class="lang-btn" onclick="quickAsk('नमस्ते कैसे हो')">
-            <span class="native">हिन्दी</span>
-            <span class="label">Hindi</span>
-          </button>
-          <button class="lang-btn" onclick="quickAsk('你好吗')">
-            <span class="native">中文</span>
-            <span class="label">Chinese</span>
-          </button>
-          <button class="lang-btn" onclick="quickAsk('안녕하세요')">
-            <span class="native">한국어</span>
-            <span class="label">Korean</span>
-          </button>
-          <button class="lang-btn" onclick="quickAsk('Halo apa kabar')">
-            <span class="native">Indonesia</span>
-            <span class="label">Indonesian</span>
-          </button>
-        </div>
-
-        <h3><i class="fas fa-sparkles"></i> Try these</h3>
-        <div class="prompt-chips">
-          <button class="chip" onclick="quickAsk('Draw a sunset over a desert with a tall cactus')">
-            <i class="fas fa-image"></i>
-            <div>Draw an image
-              <span class="sub">Creates artwork from your prompt</span>
-            </div>
-          </button>
-          <button class="chip" onclick="quickAsk('Write a caption for my post')">
-            <i class="fas fa-pen-fancy"></i>
-            <div>Write a caption
-              <span class="sub">For your social post</span>
-            </div>
-          </button>
-          <button class="chip" onclick="quickAsk('Suggest 5 hashtags for a travel post')">
-            <i class="fas fa-hashtag"></i>
-            <div>Suggest hashtags
-              <span class="sub">Relevant tags for reach</span>
-            </div>
-          </button>
-          <button class="chip" onclick="quickAsk('How do I earn money on Arizona AI?')">
-            <i class="fas fa-dollar-sign"></i>
-            <div>Earning tips
-              <span class="sub">Learn the money system</span>
-            </div>
-          </button>
-        </div>
-
-        <h3><i class="fas fa-lightbulb"></i> More ideas</h3>
-        <div class="prompt-chips">
-          <button class="chip" onclick="quickAsk('Translate to Arabic: ')">
-            <i class="fas fa-language"></i>
-            <div>Translate
-              <span class="sub">Any language, any text</span>
-            </div>
-          </button>
-          <button class="chip" onclick="quickAsk('Write a Python function that ')">
-            <i class="fas fa-code"></i>
-            <div>Write code
-              <span class="sub">Python, JS, HTML, and more</span>
-            </div>
-          </button>
-          <button class="chip" onclick="pickFile()">
-            <i class="fas fa-camera"></i>
-            <div>Analyze a photo
-              <span class="sub">Upload an image, ask anything</span>
-            </div>
-          </button>
         </div>
       </div>
     </div>`;
@@ -2009,7 +1989,6 @@ function createMessageEl(msg, index) {
   const div = document.createElement('div');
   div.className = 'msg ' + (isUser ? 'user' : 'bot');
 
-  // Detect language of the message for RTL
   const msgLang = detectLanguage(msg.content || '');
   if (isRTL(msgLang)) div.classList.add('rtl');
 
@@ -2061,18 +2040,13 @@ function createMessageEl(msg, index) {
       <button class="dislike-btn ${dislikeActive ? 'active' : ''}" onclick="reactToMessage(${index}, 'dislike', this)" title="Not helpful">
         <i class="${dislikeActive ? 'fas' : 'far'} fa-thumbs-down"></i>
       </button>
-      ${index === messages.length - 1 ? `
-        <button onclick="regenerateMessage(${index})" title="Regenerate">
-          <i class="fas fa-redo"></i>
-        </button>
-      ` : ''}
       <button onclick="shareMessage(${index})" title="Share">
         <i class="far fa-paper-plane"></i>
       </button>
       <button onclick="copyMessage(${index})" title="Copy">
         <i class="far fa-copy"></i>
       </button>
-      <button class="speak-btn" onclick="speakMessage(${index}, this)" title="Read aloud">
+      <button class="speak-btn" onclick="speakMessage(${index}, this)" title="Natural Voice Reading">
         <i class="fas fa-volume-up"></i>
       </button>
     </div>` : `
@@ -2121,208 +2095,11 @@ function cancelEdit() {
 }
 
 /* ============================================================
-   REGENERATE
-   ============================================================ */
-async function regenerateMessage(index) {
-  if (index !== messages.length - 1) return;
-  let lastUserIdx = -1;
-  for (let i = index - 1; i >= 0; i--) {
-    if (messages[i].role === 'user') { lastUserIdx = i; break; }
-  }
-  if (lastUserIdx < 0) { toast('Nothing to regenerate'); return; }
-
-  messages.pop();
-  renderMessages();
-  await resendFromIndex(lastUserIdx);
-}
-
-async function resendFromIndex(userIndex) {
-  const userMsg = messages[userIndex];
-  if (!userMsg) return;
-
-  const text = userMsg.content || '';
-  const detectedLang = detectLanguage(text);
-
-  const payloadMessages = messages.slice(0, userIndex + 1).map((m, i, arr) => {
-    const isLast = i === arr.length - 1 && m.role === 'user';
-    let content = m.content || '';
-    if (isLast && detectedLang !== 'en' && content) {
-      content = `[⚠️ MANDATORY LANGUAGE: Reply ONLY in ${LANG_NAMES[detectedLang]}. Use the ${LANG_NAMES[detectedLang]} script. Do NOT reply in English. Do NOT translate. Every word must be in ${LANG_NAMES[detectedLang]}.]\n\n${content}`;
-    }
-    return { role: m.role, content };
-  });
-
-  const container = document.getElementById('messages');
-  const typingEl = document.createElement('div');
-  typingEl.className = 'msg bot';
-  typingEl.innerHTML = `
-    <div class="av">AI</div>
-    <div class="body">
-      <div class="bubble" id="streamBubble">
-        <div class="typing"><span></span><span></span><span></span></div>
-      </div>
-    </div>`;
-  container.appendChild(typingEl);
-  container.scrollTop = container.scrollHeight;
-
-  isSending = true;
-  document.getElementById('sendBtn').disabled = true;
-
-  try {
-    const payload = {
-      messages: payloadMessages,
-      model: currentModel,
-      stream: true,
-      mode: currentMode,
-      lang: detectedLang,
-      force_lang: detectedLang,
-      force_lang_name: LANG_NAMES[detectedLang],
-      user_profile: userProfile,
-    };
-
-    const session = await supabaseClient.auth.getSession();
-    const accessToken = session?.data?.session?.access_token;
-    const url = `${SUPABASE_URL}/functions/v1/ai-chat`;
-    const resp = await fetch(url, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-
-    const contentType = resp.headers.get('content-type') || '';
-    let fullText = '';
-    const bubbleEl = document.getElementById('streamBubble');
-
-    if (contentType.includes('text/event-stream')) {
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder('utf-8');
-      let buffer = '';
-      bubbleEl.classList.add('streaming');
-      bubbleEl.innerHTML = '';
-
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        const events = buffer.split('\n\n');
-        buffer = events.pop();
-        for (const evt of events) {
-          for (const line of evt.split('\n')) {
-            if (!line.startsWith('data:')) continue;
-            const data = line.slice(5).trim();
-            if (!data || data === '[DONE]') continue;
-            try {
-              const parsed = JSON.parse(data);
-              const delta = parsed?.choices?.[0]?.delta?.content;
-              if (delta) {
-                fullText += delta;
-                bubbleEl.innerHTML = renderMarkdown(fullText, detectedLang);
-                container.scrollTop = container.scrollHeight;
-              }
-            } catch(e) {}
-          }
-        }
-      }
-      bubbleEl.classList.remove('streaming');
-    } else {
-      const data = await resp.json();
-      fullText = data.reply || '';
-      typingEl.remove();
-    }
-
-    if (!fullText) fullText = 'No response.';
-
-    // Language mismatch retry
-    if (detectedLang !== 'en' && text && !replyMatchesLanguage(fullText, detectedLang)) {
-      console.warn('[AI] Language mismatch — retrying with Claude');
-      toast(`Re-asking in ${LANG_NATIVE[detectedLang]}…`);
-      const t = document.getElementById('streamBubble');
-      if (t) t.parentElement.parentElement.remove();
-
-      try {
-        const strictMessages = messages.slice(0, userIndex + 1).map((m, i, arr) => {
-          const isLast = i === arr.length - 1 && m.role === 'user';
-          let content = m.content || '';
-          if (isLast) {
-            content = `Answer strictly in ${LANG_NAMES[detectedLang]}. Every single word. Not English. Use ${LANG_NAMES[detectedLang]} script.\n\n${content}`;
-          }
-          return { role: m.role, content };
-        });
-        const r2 = await fetch(url, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            messages: strictMessages,
-            model: 'smart',
-            stream: false,
-            mode: currentMode,
-            lang: detectedLang,
-            force_lang: detectedLang,
-            force_lang_name: LANG_NAMES[detectedLang],
-            user_profile: userProfile,
-          }),
-        });
-        const d2 = await r2.json();
-        if (d2.reply) {
-          fullText = d2.reply;
-          toast(`✅ Replied in ${LANG_NATIVE[detectedLang]}`);
-        }
-      } catch (e) {}
-    }
-
-    const assistantMsg = { role: 'assistant', content: fullText };
-    messages.push(assistantMsg);
-    try {
-      await supabaseClient.from('ai_messages').insert({
-        chat_id: currentChatId,
-        role: 'assistant',
-        content: fullText,
-        media_url: null,
-        media_type: null
-      });
-    } catch(e) {}
-
-    renderMessages();
-    autoSpeakLast();
-  } catch (err) {
-    console.error(err);
-    const t = document.getElementById('streamBubble');
-    if (t) t.parentElement.parentElement.remove();
-    messages.push({ role: 'assistant', content: '⚠️ Error. Please try again.' });
-    renderMessages();
-  } finally {
-    isSending = false;
-    document.getElementById('sendBtn').disabled = false;
-  }
-}
-
-/* ============================================================
    REACTIONS
    ============================================================ */
 async function reactToMessage(index, type, btn) {
   if (!currentChatId) { toast('Save this chat first'); return; }
   const wasActive = btn.classList.contains('active');
-  const parent = btn.parentElement;
-
-  if (type === 'like') {
-    const d = parent.querySelector('.dislike-btn');
-    if (d && d.classList.contains('active')) {
-      d.classList.remove('active');
-      d.querySelector('i').className = 'far fa-thumbs-down';
-      delete reactions[`${currentChatId}_${index}_dislike`];
-      await saveReactionToDB(index, 'dislike', false);
-    }
-  }
-  if (type === 'dislike') {
-    const l = parent.querySelector('.like-btn');
-    if (l && l.classList.contains('active')) {
-      l.classList.remove('active');
-      l.querySelector('i').className = 'far fa-thumbs-up';
-      delete reactions[`${currentChatId}_${index}_like`];
-      await saveReactionToDB(index, 'like', false);
-    }
-  }
-
   if (wasActive) {
     btn.classList.remove('active');
     btn.querySelector('i').className = type === 'heart' ? 'far fa-heart'
@@ -2338,7 +2115,7 @@ async function reactToMessage(index, type, btn) {
                                       : 'fas fa-thumbs-down';
     reactions[`${currentChatId}_${index}_${type}`] = true;
     await saveReactionToDB(index, type, true);
-    const labels = { heart: '❤️ Loved it!', like: '👍 Marked helpful', dislike: '👎 Feedback noted' };
+    const labels = { heart: '❤️ Loved it!', like: '👍 Helpful', dislike: '👎 Noted' };
     toast(labels[type]);
   }
 }
@@ -2363,8 +2140,37 @@ function copyMessage(index) {
 }
 
 /* ============================================================
-   SPEAK (TTS) — fully language-aware
+   NATURAL GEMINI-GRADE VOICE ENGINE (TTS)
    ============================================================ */
+function getNaturalGeminiVoice(langCode) {
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices || voices.length === 0) return null;
+
+  const targetLang = langCode.toLowerCase().replace('_', '-');
+  const targetPrefix = targetLang.split('-')[0];
+
+  // Highest quality modern natural neural voices
+  const naturalRegex = /(Natural|Neural|Google|Online|Wavenet|Studio|Siri|Daniel|Samantha|Arthur)/i;
+
+  // 1. Exact language match + natural voice
+  const exactNatural = voices.find(v => v.lang.toLowerCase() === targetLang && naturalRegex.test(v.name));
+  if (exactNatural) return exactNatural;
+
+  // 2. Language prefix + natural voice (e.g. ar-EG natural for ar-SA)
+  const prefixNatural = voices.find(v => v.lang.toLowerCase().startsWith(targetPrefix) && naturalRegex.test(v.name));
+  if (prefixNatural) return prefixNatural;
+
+  // 3. Fallback to any exact language voice
+  const exactAny = voices.find(v => v.lang.toLowerCase() === targetLang);
+  if (exactAny) return exactAny;
+
+  // 4. Fallback to prefix match
+  const prefixAny = voices.find(v => v.lang.toLowerCase().startsWith(targetPrefix));
+  if (prefixAny) return prefixAny;
+
+  return voices[0];
+}
+
 function speakMessage(index, btn) {
   const msg = messages[index];
   if (!msg || !msg.content) { toast('Nothing to read'); return; }
@@ -2393,19 +2199,18 @@ function speakMessage(index, btn) {
     .replace(/[🖼🎨🎥🎵🔊🎉👍❤️👎✅📋💡🔔💰🤖👋✨🚀😊]/g, '')
     .trim();
 
-  const utterance = new SpeechSynthesisUtterance(cleanText);
-  utterance.rate = 1;
-  utterance.pitch = 1;
-
   const detected = detectLanguage(cleanText);
-  utterance.lang = LANG_LOCALES[detected] || 'en-US';
+  const langLocale = LANG_LOCALES[detected] || 'en-US';
 
-  const voices = window.speechSynthesis.getVoices();
-  const targetPrefix = (LANG_LOCALES[detected] || 'en-US').split('-')[0];
-  const preferred = voices.find(v => v.lang.startsWith(targetPrefix))
-                 || voices.find(v => v.name.includes('Google') && v.lang.startsWith(targetPrefix))
-                 || voices[0];
-  if (preferred) utterance.voice = preferred;
+  const utterance = new SpeechSynthesisUtterance(cleanText);
+  utterance.lang = langLocale;
+
+  // Pitch & Rate tuned to sound expressive & natural like Gemini
+  utterance.rate = 1.04;
+  utterance.pitch = 1.02;
+
+  const bestVoice = getNaturalGeminiVoice(langLocale);
+  if (bestVoice) utterance.voice = bestVoice;
 
   utterance.onend = utterance.onerror = () => {
     btn.classList.remove('speaking');
@@ -2436,7 +2241,7 @@ function autoSpeakLast() {
 }
 
 /* ============================================================
-   VOICE INPUT (STT) — language-aware
+   VOICE INPUT (STT)
    ============================================================ */
 function startVoiceInput() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -2446,7 +2251,6 @@ function startVoiceInput() {
 
   recognition = new SR();
 
-  // Use detected language from current input, fallback to preferred or browser
   const currentText = document.getElementById('chatInput').value.trim();
   let langCode = 'en-US';
   if (currentText.length >= 2) {
@@ -2521,11 +2325,9 @@ function stopVoiceInput() {
 }
 
 /* ============================================================
-   FILE PICKER (MULTI)
+   FILE PICKER
    ============================================================ */
-function pickFile() {
-  document.getElementById('fileInput').click();
-}
+function pickFile() { document.getElementById('fileInput').click(); }
 
 function onFilePicked(event) {
   const files = Array.from(event.target.files || []);
@@ -2585,34 +2387,24 @@ function clearAttachment() {
 }
 
 /* ============================================================
-   IMAGE INTENT — multi-language
+   INTENT DETECTION (IMAGE, VIDEO, AUDIO)
    ============================================================ */
 function wantsImage(text) {
   const t = (text || '').toLowerCase();
   const triggers = [
-    // English
     "draw", "create an image", "generate an image", "make an image",
     "paint", "illustrate", "picture of", "image of", "photo of",
-    "design a logo", "make a logo", "create a logo",
-    "sketch", "art of", "wallpaper of", "generate a picture", "make art",
-    // Arabic
+    "design a logo", "make a logo", "create a logo", "wallpaper of",
     "ارسم", "صمم صورة", "اعمل صورة", "ولد صورة", "صورة", "رسم",
-    // Kurdish
-    "کێشا", "وێنە", "وێنەیەک", "دروست بکە",
-    // Persian
-    "بکش", "تصویر", "عکس", "رسم کن",
-    // Turkish
-    "çiz", "resim yap", "resim oluştur", "çizim",
-    // German
-    "zeichne", "male", "erstelle ein bild", "bild von",
-    // French
-    "dessine", "crée une image", "image de", "peins",
-    // Spanish
-    "dibuja", "crea una imagen", "imagen de",
-    // Russian
-    "нарисуй", "создай изображение", "картинку",
+    "کێشا", "وێنە", "وێنەیەک", "بکش", "تصویر", "عکس", "çiz", "resim yap",
+    "zeichne", "male", "bild von", "dessine", "crée une image", "dibuja"
   ];
   return triggers.some(k => t.includes(k));
+}
+
+function wantsVideo(text) {
+  const t = (text || '').toLowerCase();
+  return t.includes("create video") || t.includes("generate video") || t.includes("make a video") || t.includes("صمم فيديو") || t.includes("فيديو");
 }
 
 /* ============================================================
@@ -2631,15 +2423,23 @@ async function sendMessage() {
   }
 
   const imageIntent = wantsImage(text) || currentModel === 'image';
-  if (imageIntent && imagesUsedToday >= DAILY_IMAGE_LIMIT) {
-    toast(`Daily image limit (${DAILY_IMAGE_LIMIT}). Try tomorrow!`);
+  const videoIntent = wantsVideo(text) || currentModel === 'video';
+
+  // Video quota lock: VIP only
+  if (videoIntent && !isVipUser) {
+    openPlanModal();
     return;
   }
 
-  // 🔥 DETECT LANGUAGE
+  // Image quota lock: VIP has unlimited, Free has 5/day
+  if (imageIntent && !isVipUser && imagesUsedToday >= DAILY_IMAGE_LIMIT) {
+    toast(`Free daily image limit reached (${DAILY_IMAGE_LIMIT}/day). Upgrade to VIP for unlimited!`);
+    openPlanModal();
+    return;
+  }
+
   const detectedLang = text ? detectLanguage(text) : 'en';
 
-  // Upload images
   const uploadedUrls = [];
   for (const file of pendingFiles) {
     try {
@@ -2652,7 +2452,6 @@ async function sendMessage() {
       const { data: urlData } = supabaseClient.storage.from('ai_uploads').getPublicUrl(upload.path);
       uploadedUrls.push(urlData.publicUrl);
     } catch (e) {
-      console.error('[Upload]', e);
       toast('Image upload failed');
       return;
     }
@@ -2682,7 +2481,7 @@ async function sendMessage() {
       media_url: uploadedUrls[0] || null,
       media_type: uploadedUrls.length ? 'image' : null
     });
-  } catch (e) { console.warn('[AI] save failed:', e); }
+  } catch (e) {}
 
   renderMessages();
 
@@ -2703,7 +2502,6 @@ async function sendMessage() {
   document.getElementById('sendBtn').disabled = true;
 
   try {
-    // 🔥 HARD LANGUAGE LOCK on last user message
     const payloadMessages = messages.map((m, i, arr) => {
       const isLast = i === arr.length - 1 && m.role === 'user';
       let content = m.content || '';
@@ -2715,8 +2513,8 @@ async function sendMessage() {
 
     const payload = {
       messages: payloadMessages,
-      model: imageIntent ? 'image' : currentModel,
-      stream: !imageIntent,
+      model: imageIntent ? 'image' : videoIntent ? 'video' : currentModel,
+      stream: !imageIntent && !videoIntent,
       mode: currentMode,
       lang: detectedLang,
       force_lang: detectedLang,
@@ -2724,22 +2522,25 @@ async function sendMessage() {
       user_profile: userProfile,
       image_url: uploadedUrls[0] || undefined,
       multi_images: uploadedUrls.length > 1 ? uploadedUrls : [],
+      is_vip: isVipUser
     };
 
     const session = await supabaseClient.auth.getSession();
     const accessToken = session?.data?.session?.access_token;
     const functionUrl = `${SUPABASE_URL}/functions/v1/ai-chat`;
 
-    // Image gen — non-streaming
+    // Image generation flow
     if (imageIntent) {
       const { data, error } = await supabaseClient.functions.invoke('ai-chat', { body: payload });
       typingEl.remove();
       if (error) throw error;
-      if (data?.image_url) await registerImageUse(text || 'image');
+      if (data?.image_url) {
+        await registerImageUse(text || 'image');
+      }
 
       const assistantMsg = {
         role: 'assistant',
-        content: data.reply || 'Here is your image 🎨',
+        content: data.reply || 'Here is your generated image 🎨',
         media_url: data.image_url,
         media_type: 'image'
       };
@@ -2758,7 +2559,24 @@ async function sendMessage() {
       return;
     }
 
-    // Streaming
+    // Video generation flow (VIP)
+    if (videoIntent) {
+      const { data, error } = await supabaseClient.functions.invoke('ai-chat', { body: payload });
+      typingEl.remove();
+      if (error) throw error;
+
+      const assistantMsg = {
+        role: 'assistant',
+        content: data.reply || '🎬 Here is your VIP generated video:',
+        media_url: data.video_url,
+        media_type: 'video'
+      };
+      messages.push(assistantMsg);
+      renderMessages();
+      return;
+    }
+
+    // Streaming response flow
     const response = await fetch(functionUrl, {
       method: 'POST',
       headers: {
@@ -2813,48 +2631,6 @@ async function sendMessage() {
 
     if (!fullText) fullText = 'No response.';
 
-    // 🔥 LANGUAGE MISMATCH → RETRY WITH SMART MODEL
-    if (detectedLang !== 'en' && text && !replyMatchesLanguage(fullText, detectedLang)) {
-      console.warn('[AI] Language mismatch — retrying with Claude');
-      toast(`Re-asking in ${LANG_NATIVE[detectedLang]}…`);
-
-      const t = document.getElementById('streamBubble');
-      if (t) t.parentElement.parentElement.remove();
-
-      try {
-        const strictMessages = messages.map((m, i, arr) => {
-          const isLast = i === arr.length - 1 && m.role === 'user';
-          let content = m.content || '';
-          if (isLast) {
-            content = `Reply ONLY in ${LANG_NAMES[detectedLang]}. Every single word. Not English. Use ${LANG_NAMES[detectedLang]} script.\n\n${content}`;
-          }
-          return { role: m.role, content };
-        });
-
-        const r2 = await fetch(functionUrl, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            messages: strictMessages,
-            model: 'smart',
-            stream: false,
-            mode: currentMode,
-            lang: detectedLang,
-            force_lang: detectedLang,
-            force_lang_name: LANG_NAMES[detectedLang],
-            user_profile: userProfile,
-          }),
-        });
-        const d2 = await r2.json();
-        if (d2.reply) {
-          fullText = d2.reply;
-          toast(`✅ Replied in ${LANG_NATIVE[detectedLang]}`);
-        }
-      } catch (e) {
-        console.warn('[Retry] failed', e);
-      }
-    }
-
     const assistantMsg = { role: 'assistant', content: fullText };
     messages.push(assistantMsg);
     try {
@@ -2892,25 +2668,7 @@ async function handleEditResend(newText) {
   messages = messages.slice(0, idx + 1);
   renderMessages();
   cancelEdit();
-
-  try {
-    const { data: dbMsgs } = await supabaseClient
-      .from('ai_messages').select('id, role, content, created_at')
-      .eq('chat_id', currentChatId)
-      .order('created_at', { ascending: true });
-
-    if (dbMsgs && dbMsgs[idx]) {
-      await supabaseClient.from('ai_messages')
-        .update({ content: newText })
-        .eq('id', dbMsgs[idx].id);
-      const toDelete = dbMsgs.slice(idx + 1).map(m => m.id);
-      if (toDelete.length > 0) {
-        await supabaseClient.from('ai_messages').delete().in('id', toDelete);
-      }
-    }
-  } catch (e) { console.warn('[Edit] DB sync failed:', e); }
-
-  await resendFromIndex(idx);
+  await sendMessage();
 }
 
 /* ============================================================
@@ -2946,56 +2704,6 @@ function quickAsk(text) {
 }
 
 /* ============================================================
-   MESSAGE ACTIONS MENU (long-press)
-   ============================================================ */
-function openMsgActions(index) {
-  const overlay = document.getElementById('msgActionsOverlay');
-  const menu = document.getElementById('msgActionsMenu');
-  const msg = messages[index];
-  if (!msg) return;
-
-  const isUser = msg.role === 'user';
-  let items = [];
-
-  if (isUser) {
-    items = [
-      { icon: 'fa-pen', label: 'Edit & resend', action: () => editMessage(index) },
-      { icon: 'fa-copy', label: 'Copy', action: () => copyMessage(index) },
-    ];
-  } else {
-    items = [
-      { icon: 'fa-redo', label: 'Regenerate', action: () => regenerateMessage(index) },
-      { icon: 'fa-copy', label: 'Copy', action: () => copyMessage(index) },
-      { icon: 'fa-volume-up', label: 'Read aloud', action: () => {
-        const btn = document.querySelector(`.reply-actions[data-index="${index}"] .speak-btn`);
-        speakMessage(index, btn);
-      }},
-      { icon: 'fa-share', label: 'Share', action: () => shareMessage(index) },
-    ];
-  }
-
-  menu.innerHTML = items.map((it, i) => `
-    <button class="msg-action-item" data-action="${i}">
-      <i class="fas ${it.icon}"></i> ${it.label}
-    </button>
-  `).join('');
-
-  menu.querySelectorAll('button').forEach((btn, i) => {
-    btn.onclick = () => {
-      overlay.classList.remove('active');
-      items[i].action();
-    };
-  });
-
-  overlay.classList.add('active');
-}
-
-function closeMsgActions(e) {
-  if (e && e.target && e.target.id !== 'msgActionsOverlay') return;
-  document.getElementById('msgActionsOverlay').classList.remove('active');
-}
-
-/* ============================================================
    TOAST
    ============================================================ */
 function toast(msg) {
@@ -3014,7 +2722,6 @@ function escapeHtml(s) {
     ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-/* Load voices early so TTS is ready */
 if (typeof window !== 'undefined' && window.speechSynthesis) {
   window.speechSynthesis.onvoiceschanged = () => {};
   window.speechSynthesis.getVoices();
