@@ -19,9 +19,9 @@ body { padding-top: 60px; padding-bottom: 75px; }
   --az-primary: #FF6B35;
   --az-accent: #FFB20F;
   --az-gradient: linear-gradient(135deg, #FF6B35 0%, #FFB20F 100%);
-  --az-card-bg: #121212;
+  --az-card-bg: #141414;
   --az-border: rgba(255, 107, 53, 0.25);
-  --az-text-secondary: rgba(255, 255, 255, 0.6);
+  --az-text-secondary: rgba(255, 255, 255, 0.65);
 }
 
 /* ==================== TOP NAVIGATION ==================== */
@@ -38,10 +38,10 @@ body { padding-top: 60px; padding-bottom: 75px; }
   border-radius: 50%; text-decoration: none; cursor: pointer;
   background: none; border: none;
 }
-.topbar .icon-btn:hover { background: rgba(255,255,255,0.06); }
+.topbar .icon-btn:hover { background: rgba(255,255,255,0.08); }
 .topbar .title { font-size: 16px; font-weight: 700; color: #fff; }
 
-/* ==================== TIKTOK-STYLE HEADER WITH ARIZONA COLORS ==================== */
+/* ==================== TIKTOK-STYLE HEADER WITH ARIZONA PALETTE ==================== */
 .profile-header-tt {
   max-width: 620px; margin: 0 auto;
   padding: 16px 20px 8px;
@@ -62,10 +62,8 @@ body { padding-top: 60px; padding-bottom: 75px; }
 .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .profile-avatar:active { transform: scale(0.96); }
 
-/* Glowing rotating story ring if active story exists */
-.profile-avatar-wrap.has-story .profile-avatar {
-  box-shadow: 0 0 0 3px transparent;
-}
+/* Rotating Story Ring */
+.profile-avatar-wrap.has-story .profile-avatar { box-shadow: 0 0 0 3px transparent; }
 .profile-avatar-wrap.has-story::before {
   content: ''; position: absolute; inset: -4px; border-radius: 50%;
   background: conic-gradient(from 0deg, #FF6B35, #FFB20F, #7c3aed, #FF6B35);
@@ -90,7 +88,7 @@ body { padding-top: 60px; padding-bottom: 75px; }
   font-size: 13px; color: var(--az-text-secondary); margin-bottom: 16px;
 }
 
-/* 4 Clickable Stats Columns */
+/* 4 Clickable Stats */
 .stats-grid-tt {
   display: flex; align-items: center; justify-content: space-around;
   width: 100%; max-width: 480px; margin-bottom: 16px;
@@ -100,11 +98,11 @@ body { padding-top: 60px; padding-bottom: 75px; }
   cursor: pointer; padding: 6px 12px; border-radius: 10px;
   transition: all 0.15s;
 }
-.stat-box:hover { background: rgba(255,255,255,0.05); }
+.stat-box:hover { background: rgba(255,255,255,0.06); }
 .stat-box .num { font-size: 18px; font-weight: 800; color: #fff; }
 .stat-box .lbl { font-size: 12px; color: var(--az-text-secondary); margin-top: 2px; }
 
-/* Action Buttons */
+/* Action Buttons Row */
 .actions-row-tt {
   display: flex; align-items: center; justify-content: center;
   gap: 8px; width: 100%; max-width: 480px; margin-bottom: 14px;
@@ -122,7 +120,7 @@ body { padding-top: 60px; padding-bottom: 75px; }
 }
 .btn-action-secondary:hover { background: rgba(255,255,255,0.14); }
 .btn-action-story {
-  background: linear-gradient(135deg, rgba(255,107,53,0.2), rgba(255,178,15,0.15));
+  background: linear-gradient(135deg, rgba(255,107,53,0.22), rgba(255,178,15,0.15));
   border: 1px solid rgba(255,107,53,0.45); color: var(--az-accent);
 }
 .btn-action-icon {
@@ -140,7 +138,7 @@ body { padding-top: 60px; padding-bottom: 75px; }
 }
 .profile-meta-tt span { display: inline-flex; align-items: center; gap: 4px; }
 
-/* Linktree Pills */
+/* Linktree Custom Pills */
 .profile-links-tt {
   display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
   margin-bottom: 14px;
@@ -153,9 +151,9 @@ body { padding-top: 60px; padding-bottom: 75px; }
 }
 .link-pill:hover { background: rgba(255,107,53,0.22); color: #fff; }
 
-/* Referral Banner */
+/* Referral / Invite & Earn */
 .referral-card {
-  width: 100%; max-width: 580px; margin: 0 auto 14px;
+  width: 100%; max-width: 580px; margin: 0 auto 12px;
   background: linear-gradient(135deg, rgba(255,178,15,.15), rgba(255,107,53,.1));
   border: 1px dashed rgba(255,178,15,.45);
   border-radius: 14px; padding: 12px 16px;
@@ -196,7 +194,7 @@ body { padding-top: 60px; padding-bottom: 75px; }
   text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
 }
 
-/* ==================== STORIES & TRIBES SECTIONS ==================== */
+/* ==================== STRIPS (Stories & Tribes) ==================== */
 .section-strip {
   max-width: 580px; width: 100%; margin: 0 auto 16px;
 }
@@ -477,7 +475,7 @@ body { padding-top: 60px; padding-bottom: 75px; }
 <div id="profileMain">
   <div class="profile-header-tt">
     
-    <!-- Avatar (Clicks trigger story if active, otherwise opens photo) -->
+    <!-- Avatar (Clicks trigger story if active, otherwise opens photo picker) -->
     <div class="profile-avatar-wrap" id="avatarWrap" onclick="handleAvatarClick()">
       <div class="profile-avatar" id="avatarDisplay">U</div>
       <div class="camera-badge" id="cameraBtn" style="display:none;" onclick="event.stopPropagation(); triggerAvatarUpload()" title="Change Avatar">
@@ -676,6 +674,7 @@ let profileId = null;
 let isOwner = false;
 let userPosts = [];
 let userStories = [];
+let userLikedPostIds = new Set();
 let storyIdx = 0;
 let storyTimer = null;
 let isFollowing = false;
@@ -723,6 +722,7 @@ async function init() {
 
   await loadProfile();
   await loadStories();
+  await loadLikedPosts();
   await loadPosts();
   if (isOwner) {
     await loadWallet();
@@ -775,7 +775,6 @@ async function loadProfile() {
   const code = p.referral_code || ('AZ-' + uname.toUpperCase().slice(0, 6));
   document.getElementById('refCode').textContent = code;
 
-  // Render linktree pills
   renderLinks(p.links);
 }
 
@@ -813,7 +812,6 @@ async function loadStories() {
     userStories = data || [];
     const wrap = document.getElementById('avatarWrap');
 
-    // If stories exist, light up the glowing story ring
     if (userStories.length > 0) {
       wrap.classList.add('has-story');
     } else {
@@ -826,7 +824,6 @@ async function loadStories() {
 
 function handleAvatarClick() {
   if (userStories.length > 0) {
-    // Open and play stories
     openStoryViewer(0);
   } else if (isOwner) {
     triggerAvatarUpload();
@@ -901,7 +898,6 @@ function playStoryItem(idx) {
   storyIdx = idx;
   const s = userStories[idx];
 
-  // Progress Bar
   const prog = document.getElementById('svProgress');
   prog.innerHTML = userStories.map((_, i) => `
     <div class="sv-segment"><div class="fill" style="width:${i < idx ? '100%' : (i === idx ? '0%' : '0%')};" id="seg-${i}"></div></div>
@@ -939,6 +935,14 @@ function closeStoryViewer() {
 }
 
 /* ==================== POSTS & 📱 VERTICAL SWIPE FEED ==================== */
+async function loadLikedPosts() {
+  if (!currentUser) return;
+  try {
+    const { data } = await supabaseClient.from('likes').select('post_id').eq('user_id', currentUser.id);
+    userLikedPostIds = new Set((data || []).map(r => r.post_id));
+  } catch(e) {}
+}
+
 async function loadPosts() {
   const grid = document.getElementById('postsGrid');
   grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;"><i class="fas fa-spinner fa-spin"></i></div>';
@@ -1008,6 +1012,7 @@ function openSwipeFeed(startIdx = 0) {
   container.innerHTML = list.map((p, i) => {
     const media = (p.media_urls && p.media_urls[0]) || '';
     const isVideo = /\.(mp4|webm|mov)$/i.test(media);
+    const isLiked = userLikedPostIds.has(p.id);
 
     const mediaTag = isVideo
       ? `<video id="feed-vid-${i}" src="${escapeHtml(media)}" loop playsinline onclick="toggleVideoPlay(this)"></video>`
@@ -1024,7 +1029,7 @@ function openSwipeFeed(startIdx = 0) {
         ${mediaTag}
         
         <div class="tiktok-side-actions">
-          <div class="side-btn-wrap" onclick="likePost('${p.id}', this)">
+          <div class="side-btn-wrap ${isLiked ? 'liked' : ''}" onclick="likePost('${p.id}', this)">
             <div class="icon-circle"><i class="fas fa-heart"></i></div>
             <span class="label">${p.likes_count || 0}</span>
           </div>
@@ -1100,20 +1105,45 @@ async function togglePin(postId, shouldPin) {
   } catch(e) { toast(e.message); }
 }
 
+/* ==================== SYNCHRONIZED LIKE/HEART ==================== */
 async function likePost(postId, btn) {
-  if (!currentUser) { toast('Please sign in'); return; }
+  if (!currentUser) { 
+    toast('Please sign in to like'); 
+    return; 
+  }
+
   try {
-    await supabaseClient.from('likes').insert({ user_id: currentUser.id, post_id: postId });
-    btn.classList.add('liked');
-    toast('Liked ❤️');
-  } catch(e) {
-    await supabaseClient.from('likes').delete().eq('user_id', currentUser.id).eq('post_id', postId);
-    btn.classList.remove('liked');
-    toast('Unliked');
+    const { data, error } = await supabaseClient.rpc('toggle_post_like', {
+      p_post_id: postId
+    });
+
+    if (error) throw error;
+
+    const isLiked = data.liked;
+    const newCount = data.likes_count;
+
+    if (isLiked) {
+      btn.classList.add('liked');
+      userLikedPostIds.add(postId);
+      toast('Liked ❤️');
+    } else {
+      btn.classList.remove('liked');
+      userLikedPostIds.delete(postId);
+      toast('Unliked');
+    }
+
+    const countLabel = btn.querySelector('.label');
+    if (countLabel) countLabel.textContent = newCount;
+
+    const p = userPosts.find(x => x.id === postId);
+    if (p) p.likes_count = newCount;
+
+  } catch(err) {
+    toast(err.message);
   }
 }
 
-/* ==================== 💬 WALL COMMENTS (RESILIENT) ==================== */
+/* ==================== 💬 WALL COMMENTS (RESILIENT FETCH) ==================== */
 async function loadWall() {
   const list = document.getElementById('wallList');
   list.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin"></i></div>';
@@ -1139,7 +1169,6 @@ async function loadWall() {
       return;
     }
 
-    // Load author profiles
     const userIds = [...new Set(comments.map(c => c.user_id).filter(Boolean))];
     let pMap = {};
     if (userIds.length > 0) {
