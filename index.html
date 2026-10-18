@@ -608,43 +608,53 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
 }
 .ig-bottom-nav .bnav-avatar img { width:100%; height:100%; object-fit:cover; }
 
-/* ==================== FULLSCREEN VIEWER ==================== */
-.fs-viewer {
+/* ==================== FULLSCREEN SWIPE FEED ==================== */
+.swipe-feed {
   display:none; position:fixed; inset:0;
-  background:rgba(0,0,0,.98); z-index:3000;
-  align-items:center; justify-content:center;
+  background:#000; z-index:3000;
+  overflow-y:scroll; scroll-snap-type:y mandatory;
+  -webkit-overflow-scrolling:touch;
 }
-.fs-viewer.active { display:flex; }
-.fs-viewer img, .fs-viewer video {
-  max-width:100vw; max-height:100vh;
-  object-fit:contain; animation:fsIn .25s ease;
+.swipe-feed.active { display:block; }
+.swipe-item {
+  height:100vh; width:100%; scroll-snap-align:start;
+  position:relative; display:flex; align-items:center; justify-content:center;
+  background:#000;
 }
-@keyframes fsIn { from { opacity:0; transform:scale(.92); } }
-.fs-viewer .close-btn {
-  position:absolute; top:20px; right:20px;
-  width:44px; height:44px; border-radius:50%;
-  background:rgba(255,255,255,.12); color:#fff;
-  border:none; font-size:22px; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  backdrop-filter:blur(8px); z-index:10;
+.swipe-item img, .swipe-item video {
+  max-width:100%; max-height:100%; object-fit:contain;
 }
-.fs-viewer .nav-btn {
-  position:absolute; top:50%; transform:translateY(-50%);
-  width:50px; height:50px; border-radius:50%;
-  background:rgba(255,255,255,.12); color:#fff;
-  border:none; font-size:22px; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  backdrop-filter:blur(8px); z-index:10;
+.swipe-overlay {
+  position:absolute; bottom:0; left:0; right:0;
+  padding:20px; padding-bottom:calc(20px + env(safe-area-inset-bottom));
+  background:linear-gradient(transparent, rgba(0,0,0,.8));
+  color:#fff;
 }
-.fs-viewer .nav-btn.prev { left:16px; }
-.fs-viewer .nav-btn.next { right:16px; }
-.fs-viewer .counter {
-  position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
-  color:#fff; font-size:13px; font-weight:600;
-  background:rgba(255,255,255,.12);
-  padding:6px 14px; border-radius:20px;
-  backdrop-filter:blur(8px); z-index:10;
+.swipe-overlay .s-actions {
+  display:flex; flex-direction:column; align-items:flex-end; gap:18px; margin-bottom:20px;
 }
+.swipe-overlay .s-actions button {
+  background:rgba(255,255,255,.15); border:none; color:#fff;
+  width:48px; height:48px; border-radius:50%; font-size:22px;
+  cursor:pointer; backdrop-filter:blur(10px);
+  display:flex; align-items:center; justify-content:center; flex-direction:column;
+}
+.swipe-overlay .s-actions button span { font-size:10px; margin-top:2px; }
+.swipe-overlay .s-actions button.liked { color: var(--az-primary); }
+.swipe-overlay .s-user { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.swipe-overlay .s-user .s-av { width:40px; height:40px; border-radius:50%; background:var(--az-gradient); display:flex; align-items:center; justify-content:center; font-weight:700; overflow:hidden; }
+.swipe-overlay .s-user .s-av img { width:100%; height:100%; object-fit:cover; }
+.swipe-overlay .s-user .s-name { font-weight:700; font-size:15px; }
+.swipe-overlay .s-caption { font-size:14px; line-height:1.4; margin-bottom:10px; }
+.close-swipe-btn { position:fixed; top:calc(20px + env(safe-area-inset-top)); left:20px; width:44px; height:44px; border-radius:50%; background:rgba(0,0,0,.5); color:#fff; border:none; font-size:20px; z-index:3010; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px); }
+
+/* ==================== SEARCH MODAL ==================== */
+.search-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.95); z-index:3500; flex-direction:column; }
+.search-modal.active { display:flex; }
+.search-header { padding:calc(16px + env(safe-area-inset-top)) 16px 16px; display:flex; gap:12px; align-items:center; background:#0a0a0a; border-bottom:1px solid rgba(255,255,255,.1); }
+.search-header input { flex:1; padding:12px 18px; background:#1a1a1a; border:1px solid #333; border-radius:24px; color:#fff; font-size:15px; outline:none; }
+.search-header button { background:none; border:none; color:#fff; font-size:20px; cursor:pointer; padding:8px; }
+.search-results { flex:1; overflow-y:auto; padding:16px; }
 
 /* ==================== STORY VIEWER ==================== */
 .story-viewer { display:none; position:fixed; inset:0; background:#000; z-index:3400; }
@@ -757,7 +767,7 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
 /* ==================== COMMENTS MODAL ==================== */
 .comments-modal {
   display:none; position:fixed; inset:0;
-  background:rgba(0,0,0,.85); z-index:2000;
+  background:rgba(0,0,0,.85); z-index:5000; /* Increased z-index to sit over Swipe Feed */
   align-items:flex-end; justify-content:center;
 }
 .comments-modal.active { display:flex; }
@@ -1228,7 +1238,7 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
 <!-- ==================== BOTTOM NAV ==================== -->
 <nav class="ig-bottom-nav">
   <a href="index.html" class="bnav-item active"><i class="fas fa-home"></i><span data-i18n="home">Home</span></a>
-  <a href="Friends.html" class="bnav-item"><i class="fas fa-search"></i><span data-i18n="search">Search</span></a>
+  <button class="bnav-item" onclick="openSearch()"><i class="fas fa-search"></i><span data-i18n="search">Search</span></button>
   <a href="Post.html" class="bnav-item create"><i class="fas fa-plus"></i></a>
   <a href="notifications.html" class="bnav-item"><i class="far fa-heart"></i><span data-i18n="activity">Activity</span></a>
   <a href="profile.html" class="bnav-item" id="profileNav">
@@ -1237,13 +1247,19 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
   </a>
 </nav>
 
-<!-- ==================== FULLSCREEN VIEWER ==================== -->
-<div class="fs-viewer" id="fsViewer">
-  <button class="close-btn" onclick="closeFs()"><i class="fas fa-times"></i></button>
-  <button class="nav-btn prev" id="fsPrev" onclick="fsNav(-1)"><i class="fas fa-chevron-left"></i></button>
-  <button class="nav-btn next" id="fsNext" onclick="fsNav(1)"><i class="fas fa-chevron-right"></i></button>
-  <div id="fsContent"></div>
-  <div class="counter" id="fsCounter">1 / 1</div>
+<!-- ==================== SEARCH MODAL ==================== -->
+<div class="search-modal" id="searchModal">
+  <div class="search-header">
+    <input type="text" id="searchInput" placeholder="Search users..." onkeydown="if(event.key==='Enter') performSearch()">
+    <button onclick="closeSearch()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="search-results" id="searchResults"></div>
+</div>
+
+<!-- ==================== FULLSCREEN SWIPE FEED ==================== -->
+<div class="swipe-feed" id="swipeFeed">
+  <button class="close-swipe-btn" onclick="closeSwipeFeed()"><i class="fas fa-times"></i></button>
+  <div id="swipeFeedContent"></div>
 </div>
 
 <!-- ==================== STORY VIEWER ==================== -->
@@ -1578,6 +1594,45 @@ function dismissDeepLink() {
   document.getElementById('deepLinkBanner').classList.remove('active');
   if (window.history.replaceState) window.history.replaceState(null, '', 'index.html');
   deepLinkPostId = null;
+}
+
+/* ============================================================
+   SEARCH
+   ============================================================ */
+function openSearch() {
+  document.getElementById('searchModal').classList.add('active');
+  document.getElementById('searchInput').focus();
+}
+function closeSearch() {
+  document.getElementById('searchModal').classList.remove('active');
+  document.getElementById('searchResults').innerHTML = '';
+}
+async function performSearch() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (!q) return;
+  const results = document.getElementById('searchResults');
+  results.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin"></i></div>';
+  
+  const { data, error } = await supabaseClient.from('profiles')
+    .select('id, username, display_name, avatar_url')
+    .ilike('username', `%${q}%`)
+    .limit(20);
+    
+  if (error || !data.length) {
+    results.innerHTML = '<div style="text-align:center;padding:20px;color:#888;">No users found</div>';
+    return;
+  }
+  
+  results.innerHTML = data.map(u => {
+    const name = u.display_name || u.username;
+    const av = u.avatar_url ? `<img src="${u.avatar_url}" style="width:100%;height:100%;object-fit:cover;">` : name.charAt(0).toUpperCase();
+    return `
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #222;" onclick="window.location.href='profile.html?user=${u.id}'">
+        <div style="width:44px;height:44px;border-radius:50%;background:var(--az-gradient);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;overflow:hidden;">${av}</div>
+        <div><div style="font-weight:700;color:#fff;">${name}</div><div style="font-size:12px;color:#888;">@${u.username}</div></div>
+      </div>
+    `;
+  }).join('');
 }
 
 /* ============================================================
@@ -1945,7 +2000,7 @@ function renderPost(post) {
     if (/\.(mp4|webm|ogg|mov)$/i.test(url)) {
       return `<video src="${escapeHtml(url)}" controls playsinline preload="metadata"></video>`;
     }
-    return `<img src="${escapeHtml(url)}" alt="Post image" loading="lazy" decoding="async" onclick="openFs('${post.id}', ${idx})" onerror="this.style.display='none'">`;
+    return `<img src="${escapeHtml(url)}" alt="Post image" loading="lazy" decoding="async" onclick="openSwipeFeed('${post.id}', ${idx})" onerror="this.style.display='none'">`;
   }).join('');
 
   const isLiked = likedPosts.has(post.id);
@@ -2032,6 +2087,64 @@ function renderPost(post) {
       <div class="ig-time">${timeAgo}</div>
     </article>
   `;
+}
+
+/* ============================================================
+   SWIPE FEED (TIKTOK STYLE)
+   ============================================================ */
+function openSwipeFeed(startPostId, startIdx) {
+  const feedContent = document.getElementById('swipeFeedContent');
+  feedContent.innerHTML = '';
+  
+  const postsWithMedia = currentFeedPosts.filter(p => Array.isArray(p.media_urls) && p.media_urls.length > 0);
+
+  postsWithMedia.forEach(post => {
+    const prof = post.profiles || {};
+    const name = prof.display_name || prof.username || 'user';
+    const isLiked = likedPosts.has(post.id);
+    const av = prof.avatar_url ? `<img src="${prof.avatar_url}">` : name.charAt(0).toUpperCase();
+
+    post.media_urls.forEach((url, idx) => {
+      const isVid = /\.(mp4|webm|ogg|mov)$/i.test(url);
+      const mediaHtml = isVid 
+        ? `<video src="${escapeHtml(url)}" loop playsinline onclick="this.paused?this.play():this.pause()"></video>` 
+        : `<img src="${escapeHtml(url)}" ondblclick="doubleTapLike('${post.id}')">`;
+
+      const el = document.createElement('div');
+      el.className = 'swipe-item';
+      el.innerHTML = `
+        ${mediaHtml}
+        <div class="swipe-overlay">
+          <div class="s-actions">
+            <button onclick="toggleLike('${post.id}', this)" class="swipe-like-btn ${isLiked ? 'liked' : ''}" style="color:${isLiked ? 'var(--az-primary)' : '#fff'};">
+              <i class="${isLiked ? 'fas' : 'far'} fa-heart"></i> <span id="swipe-likes-${post.id}">${post.likes_count || 0}</span>
+            </button>
+            <button onclick="openComments('${post.id}')">
+              <i class="far fa-comment"></i> <span>${post.comments_count || 0}</span>
+            </button>
+            <button onclick="sharePost('${post.id}')">
+              <i class="fas fa-share-alt"></i> <span>Share</span>
+            </button>
+          </div>
+          <div class="s-user">
+            <div class="s-av">${av}</div>
+            <div class="s-name">@${escapeHtml(prof.username || 'user')}</div>
+          </div>
+          <div class="s-caption">${escapeHtml(post.content || '')}</div>
+        </div>
+      `;
+      feedContent.appendChild(el);
+    });
+  });
+
+  document.getElementById('swipeFeed').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSwipeFeed() {
+  document.getElementById('swipeFeed').classList.remove('active');
+  document.getElementById('swipeFeedContent').innerHTML = '';
+  document.body.style.overflow = '';
 }
 
 /* ============================================================
@@ -2135,24 +2248,49 @@ async function toggleLike(postId, btn) {
   if (!currentUser) { showToast('Sign in to like'); return; }
   const icon = btn.querySelector('i');
   const isLiked = likedPosts.has(postId);
+  
+  // Visual update inside Swipe Feed
+  if (btn.classList.contains('swipe-like-btn')) {
+    if (isLiked) {
+      btn.classList.remove('liked');
+      btn.style.color = '#fff';
+      icon.className = 'far fa-heart';
+    } else {
+      btn.classList.add('liked');
+      btn.style.color = 'var(--az-primary)';
+      icon.className = 'fas fa-heart';
+    }
+  }
+
   try {
     if (isLiked) {
       await supabaseClient.from('likes').delete().eq('user_id', currentUser.id).eq('post_id', postId);
       likedPosts.delete(postId);
-      btn.classList.remove('liked');
-      icon.className = 'far fa-heart';
+      if (!btn.classList.contains('swipe-like-btn')) {
+        btn.classList.remove('liked');
+        icon.className = 'far fa-heart';
+      }
     } else {
       await supabaseClient.from('likes').insert({ user_id: currentUser.id, post_id: postId });
       likedPosts.add(postId);
-      btn.classList.add('liked');
-      btn.classList.add('like-anim');
-      icon.className = 'fas fa-heart';
-      setTimeout(() => btn.classList.remove('like-anim'), 400);
+      if (!btn.classList.contains('swipe-like-btn')) {
+        btn.classList.add('liked');
+        btn.classList.add('like-anim');
+        icon.className = 'fas fa-heart';
+        setTimeout(() => btn.classList.remove('like-anim'), 400);
+      }
       if (navigator.vibrate) navigator.vibrate(15);
     }
     await refreshPostCounters(postId);
+    
+    // Update the counter inside the Swipe Feed specifically
+    const swipeCounter = document.getElementById('swipe-likes-' + postId);
+    if (swipeCounter) {
+      const post = currentFeedPosts.find(p => p.id === postId);
+      if(post) swipeCounter.textContent = post.likes_count || 0;
+    }
+    
   } catch (err) {
-    // Rollback UI state if request fails
     if (isLiked) likedPosts.add(postId);
     else likedPosts.delete(postId);
     showToast(err.message);
@@ -2270,6 +2408,11 @@ async function refreshPostCounters(postId) {
     if (sharesEl)   sharesEl.innerHTML   = `<i class="far fa-paper-plane"></i> ${data.shares_count || 0}`;
     if (viewsEl)    viewsEl.innerHTML    = `<i class="far fa-eye"></i> ${data.views_count || 0}`;
     if (previewEl)  previewEl.textContent = t('view-comments').replace('{n}', data.comments_count || 0);
+    
+    // Also update the swipe counter if we're inside
+    const swipeCounter = document.getElementById('swipe-likes-' + postId);
+    if (swipeCounter) swipeCounter.textContent = data.likes_count || 0;
+
   } catch (e) {}
 }
 
@@ -2876,48 +3019,37 @@ function updateBoostSummary() {
 
 async function confirmBoost() {
   if (!currentUser || !boostingPostId) return;
+  
   const balance = Number(currentWallet?.balance ?? 0);
   if (balance < selectedBoost.price) { showToast('Insufficient balance'); return; }
+  
   const btn = document.getElementById('boostConfirmBtn');
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Boosting…';
+  
   try {
     const durationMs = { '24h': 864e5, '3d': 2592e5, '7d': 6048e5, '14d': 12096e5 }[selectedBoost.duration];
     const expiresAt = new Date(Date.now() + durationMs).toISOString();
 
-    await supabaseClient.from('posts').update({ is_boosted: true, boost_expires_at: expiresAt }).eq('id', boostingPostId);
+    const { error } = await supabaseClient.rpc('purchase_boost', {
+      p_post_id: boostingPostId,
+      p_duration: selectedBoost.duration,
+      p_price: selectedBoost.price,
+      p_expires_at: expiresAt
+    });
 
-    const newBal = balance - selectedBoost.price;
-    const newSpent = Number(currentWallet?.total_spent || 0) + selectedBoost.price;
-    await supabaseClient.from('wallets').update({ balance: newBal, total_spent: newSpent }).eq('user_id', currentUser.id);
+    if (error) throw error;
 
-    try {
-      await supabaseClient.from('wallet_transactions').insert({
-        user_id: currentUser.id, amount: -selectedBoost.price,
-        type: 'spend', source: 'boost',
-        note: `Boosted post for ${selectedBoost.duration}`
-      });
-    } catch (e) {}
-
-    try {
-      await supabaseClient.rpc('log_boost', {
-        p_post_id: boostingPostId,
-        p_user_id: currentUser.id,
-        p_duration: selectedBoost.duration,
-        p_price: selectedBoost.price,
-        p_expires_at: expiresAt
-      });
-    } catch (e) {}
-
-    currentWallet.balance = newBal;
-    currentWallet.total_spent = newSpent;
+    currentWallet.balance = balance - selectedBoost.price;
     renderUserSection();
     await loadBoostStats();
     closeBoost();
-    showToast('🚀 Post boosted!');
+    showToast('🚀 Post boosted successfully!');
     resetAndLoadFeed();
+    
   } catch (err) {
-    showToast(err.message);
+    console.error(err);
+    showToast(err.message || 'Boost failed');
   } finally {
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-rocket"></i> Boost Now';
@@ -2965,17 +3097,12 @@ function showToast(msg) {
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    if (document.getElementById('fsViewer').classList.contains('active')) closeFs();
+    if (document.getElementById('swipeFeed').classList.contains('active')) closeSwipeFeed();
     if (document.getElementById('storyViewer').classList.contains('active')) closeStoryViewer();
     if (document.getElementById('commentsModal').classList.contains('active')) closeComments();
     if (document.getElementById('viewersModal').classList.contains('active')) closeViewers();
     if (document.getElementById('boostModal').classList.contains('active')) closeBoost();
     if (document.getElementById('postOptionsModal').classList.contains('active')) closePostOptions();
-  }
-  const v = document.getElementById('fsViewer');
-  if (v && v.classList.contains('active')) {
-    if (e.key === 'ArrowLeft') fsNav(-1);
-    if (e.key === 'ArrowRight') fsNav(1);
   }
 });
 </script>
