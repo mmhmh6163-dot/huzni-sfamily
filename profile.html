@@ -568,7 +568,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 
     <!-- Bio & Meta -->
     <div class="profile-bio-tt" id="userBio">Arizona AI member 🏜️</div>
-    <div class="profile-meta-tt">
+    <div class="profile-meta-tt" id="profileMetaRow">
       <span><i class="fas fa-at"></i> <span id="metaUname">user</span></span>
       <span><i class="fas fa-map-marker-alt"></i> <span id="metaLocation">Not set</span></span>
       <span><i class="fas fa-calendar"></i> Joined <span id="metaJoined">Oct 2026</span></span>
@@ -744,13 +744,25 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 <div class="modal-sheet" id="editModal">
   <div class="modal-sheet-content">
     <h3 style="margin:0 0 16px; text-align:center;">Edit Profile</h3>
+
     <div class="field"><label>Display Name</label><input type="text" id="editDisplayName" maxlength="50"></div>
     <div class="field"><label>Username</label><input type="text" id="editUsername" maxlength="30"></div>
+    <div class="field"><label>Email</label><input type="email" id="editEmail" maxlength="120" placeholder="you@example.com"></div>
+    <div class="field"><label>Location</label><input type="text" id="editLocation" maxlength="80" placeholder="City, Country"></div>
+    <div class="field"><label>Job Title</label><input type="text" id="editJob" maxlength="80" placeholder="Designer, Developer..."></div>
     <div class="field"><label>Bio</label><textarea id="editBio" maxlength="250" rows="3"></textarea></div>
     <div class="field">
       <label>Custom Links (Format: Title|URL, one per line)</label>
       <textarea id="editLinks" rows="3" placeholder="YouTube|https://youtube.com/@me&#10;Store|https://mystore.com"></textarea>
     </div>
+    <div class="field">
+      <label>Profile Link (unique URL slug)</label>
+      <input type="text" id="editProfileLink" maxlength="40" placeholder="my-name-1234">
+      <div style="font-size:11px;color:var(--az-text-secondary);margin-top:4px;">
+        Your shareable link: <span style="color:var(--az-accent);">profile.html?u=</span><span id="linkPreview" style="color:var(--az-accent);">...</span>
+      </div>
+    </div>
+
     <div class="modal-actions">
       <button style="background:rgba(255,255,255,0.1); color:#fff;" onclick="closeEdit()">Cancel</button>
       <button style="background:var(--az-gradient); color:#fff;" id="saveProfileBtn" onclick="saveProfileChanges()">Save</button>
@@ -770,6 +782,8 @@ let storyIdx = 0;
 let storyTimer = null;
 let isFollowing = false;
 let currentTab = 'posts';
+let currentProfileData = null;   // cached full row
+let currentProfileLink = '';     // slug for share
 
 document.addEventListener('DOMContentLoaded', () => {
   const check = setInterval(() => {
@@ -780,16 +794,40 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 100);
 });
 
+/* ==================== INIT + PROFILE LINK RESOLUTION ==================== */
 async function init() {
   const params = new URLSearchParams(window.location.search);
-  const targetUser = params.get('user');
+  const targetUser = params.get('user');        // ?user=<uuid>
+  const targetLink = params.get('u');           // ?u=<profile_link>
 
-  if (!currentUser && !targetUser) {
+  if (!currentUser && !targetUser && !targetLink) {
     window.location.href = 'login.html';
     return;
   }
 
-  profileId = targetUser || currentUser.id;
+  // Resolve ?u= slug to a real user id
+  if (targetLink && !targetUser) {
+    const { data: p, error } = await supabaseClient
+      .from('profiles')
+      .select('id')
+      .eq('profile_link', targetLink)
+      .maybeSingle();
+
+    if (error || !p) {
+      document.getElementById('profileMain').innerHTML =
+        '<div style="text-align:center;padding:80px 20px;color:#fff;">' +
+        '<i class="fas fa-user-slash" style="font-size:42px;opacity:.5;margin-bottom:12px;"></i>' +
+        '<div style="font-size:16px;font-weight:700;">Profile not found</div>' +
+        '<div style="font-size:13px;color:var(--az-text-secondary);margin-top:6px;">The link you followed is invalid.</div>' +
+        '<a href="index.html" style="display:inline-block;margin-top:20px;padding:10px 20px;background:var(--az-gradient);color:#fff;border-radius:10px;text-decoration:none;font-weight:700;">Go Home</a>' +
+        '</div>';
+      return;
+    }
+    profileId = p.id;
+  } else {
+    profileId = targetUser || currentUser.id;
+  }
+
   isOwner = currentUser && profileId === currentUser.id;
 
   if (isOwner) {
@@ -830,8 +868,15 @@ async function logProfileView() {
 
 /* ==================== LOAD PROFILE ==================== */
 async function loadProfile() {
-  const { data: p } = await supabaseClient.from('profiles').select('*').eq('id', profileId).maybeSingle();
+  const { data: p } = await supabaseClient
+    .from('profiles')
+    .select('*')
+    .eq('id', profileId)
+    .maybeSingle();
+
   if (!p) return;
+  currentProfileData = p;
+  currentProfileLink = p.profile_link || '';
 
   const uname = p.username || 'user';
   document.getElementById('topbarTitle').textContent = isOwner ? 'Profile' : '@' + uname;
@@ -841,8 +886,24 @@ async function loadProfile() {
   document.getElementById('userBio').textContent = p.bio || 'Arizona AI member 🏜️';
   document.getElementById('metaLocation').textContent = p.location || 'Not set';
 
+  // Inline job title (in meta row)
+  let jobSpan = document.getElementById('metaJob');
+  if (p.job_title) {
+    if (!jobSpan) {
+      jobSpan = document.createElement('span');
+      jobSpan.id = 'metaJob';
+      jobSpan.innerHTML = '<i class="fas fa-briefcase"></i> <span id="metaJobText"></span>';
+      document.getElementById('profileMetaRow').appendChild(jobSpan);
+    }
+    document.getElementById('metaJobText').textContent = p.job_title;
+    jobSpan.style.display = 'inline-flex';
+  } else if (jobSpan) {
+    jobSpan.style.display = 'none';
+  }
+
   if (p.created_at) {
-    document.getElementById('metaJoined').textContent = new Date(p.created_at).toLocaleDateString('en-US', { month:'short', year:'numeric' });
+    document.getElementById('metaJoined').textContent =
+      new Date(p.created_at).toLocaleDateString('en-US', { month:'short', year:'numeric' });
   }
 
   document.getElementById('statFollowing').textContent = p.following_count ?? 0;
@@ -1234,7 +1295,7 @@ async function likePost(postId, btn) {
   }
 }
 
-/* ==================== 💬 WALL COMMENTS (RESILIENT FETCH) ==================== */
+/* ==================== 💬 WALL COMMENTS ==================== */
 async function loadWall() {
   const list = document.getElementById('wallList');
   list.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin"></i></div>';
@@ -1412,16 +1473,23 @@ async function openFollowersModal(type) {
       return;
     }
 
-    const { data: users } = await supabaseClient.from('profiles').select('id, username, display_name, avatar_url').in('id', ids);
-    list.innerHTML = (users || []).map(u => `
-      <div class="follow-row" onclick="window.location.href='profile.html?user=${u.id}'" style="cursor:pointer;">
-        <div class="fav">${u.avatar_url ? `<img src="${escapeHtml(u.avatar_url)}">` : (u.username||'U').charAt(0).toUpperCase()}</div>
-        <div class="finfo">
-          <div class="fname">${escapeHtml(u.display_name || u.username)}</div>
-          <div class="fhandle">@${escapeHtml(u.username||'user')}</div>
+    const { data: users } = await supabaseClient
+      .from('profiles')
+      .select('id, username, display_name, avatar_url, profile_link')
+      .in('id', ids);
+
+    list.innerHTML = (users || []).map(u => {
+      const href = u.profile_link ? `profile.html?u=${encodeURIComponent(u.profile_link)}` : `profile.html?user=${u.id}`;
+      return `
+        <div class="follow-row" onclick="window.location.href='${href}'" style="cursor:pointer;">
+          <div class="fav">${u.avatar_url ? `<img src="${escapeHtml(u.avatar_url)}">` : (u.username||'U').charAt(0).toUpperCase()}</div>
+          <div class="finfo">
+            <div class="fname">${escapeHtml(u.display_name || u.username)}</div>
+            <div class="fhandle">@${escapeHtml(u.username||'user')}</div>
+          </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   } catch(e) { list.innerHTML = `<div style="color:var(--az-primary);">${escapeHtml(e.message)}</div>`; }
 }
 
@@ -1436,12 +1504,27 @@ function scrollToPosts() {
 /* ==================== EDIT PROFILE ==================== */
 function openEdit() {
   if (!isOwner) return;
-  document.getElementById('editDisplayName').value = document.getElementById('dispName').textContent || '';
-  document.getElementById('editUsername').value = document.getElementById('metaUname').textContent || '';
-  document.getElementById('editBio').value = document.getElementById('userBio').textContent || '';
+  const p = currentProfileData || {};
+
+  document.getElementById('editDisplayName').value = p.display_name || document.getElementById('dispName').textContent || '';
+  document.getElementById('editUsername').value    = p.username || document.getElementById('metaUname').textContent || '';
+  document.getElementById('editBio').value         = p.bio || document.getElementById('userBio').textContent || '';
+  document.getElementById('editEmail').value       = p.email || '';
+  document.getElementById('editLocation').value    = p.location || '';
+  document.getElementById('editJob').value         = p.job_title || '';
+  document.getElementById('editProfileLink').value = p.profile_link || '';
+  document.getElementById('linkPreview').textContent = p.profile_link || '...';
 
   const pills = Array.from(document.querySelectorAll('.profile-links-tt a'));
-  document.getElementById('editLinks').value = pills.map(p => `${p.innerText.trim()}|${p.href}`).join('\n');
+  document.getElementById('editLinks').value = pills.map(pl => `${pl.innerText.trim()}|${pl.href}`).join('\n');
+
+  // Live preview for slug
+  const slugInput = document.getElementById('editProfileLink');
+  slugInput.oninput = (e) => {
+    const cleaned = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+    e.target.value = cleaned;
+    document.getElementById('linkPreview').textContent = cleaned || '...';
+  };
 
   document.getElementById('editModal').classList.add('active');
 }
@@ -1452,23 +1535,83 @@ async function saveProfileChanges() {
   btn.disabled = true;
 
   const display_name = document.getElementById('editDisplayName').value.trim();
-  const username = document.getElementById('editUsername').value.trim();
-  const bio = document.getElementById('editBio').value.trim();
+  const username     = document.getElementById('editUsername').value.trim();
+  const bio          = document.getElementById('editBio').value.trim();
+  const email        = document.getElementById('editEmail').value.trim();
+  const location     = document.getElementById('editLocation').value.trim();
+  const job_title    = document.getElementById('editJob').value.trim();
+  let   profile_link = document.getElementById('editProfileLink').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
 
   const rawLinks = document.getElementById('editLinks').value.trim();
   const links = rawLinks ? rawLinks.split('\n').map(l => {
-    const p = l.split('|');
-    return { title: (p[0]||'').trim(), url: (p[1]||'').trim() };
+    const parts = l.split('|');
+    return { title: (parts[0]||'').trim(), url: (parts[1]||'').trim() };
   }).filter(x => x.title && x.url) : [];
 
+  // Validate username
+  if (!username || username.length < 3) {
+    toast('Username must be at least 3 characters');
+    btn.disabled = false;
+    return;
+  }
+
+  // Validate profile_link format
+  if (profile_link && profile_link.length < 3) {
+    toast('Profile link must be at least 3 characters');
+    btn.disabled = false;
+    return;
+  }
+
+  // Check uniqueness of profile_link
+  if (profile_link) {
+    const { data: existing } = await supabaseClient
+      .from('profiles')
+      .select('id')
+      .eq('profile_link', profile_link)
+      .neq('id', currentUser.id)
+      .maybeSingle();
+    if (existing) {
+      toast('That profile link is already taken ❌');
+      btn.disabled = false;
+      return;
+    }
+  }
+
+  // Check uniqueness of username
+  const { data: existingUser } = await supabaseClient
+    .from('profiles')
+    .select('id')
+    .eq('username', username)
+    .neq('id', currentUser.id)
+    .maybeSingle();
+  if (existingUser) {
+    toast('That username is already taken ❌');
+    btn.disabled = false;
+    return;
+  }
+
   try {
-    const { error } = await supabaseClient.from('profiles').update({ display_name, username, bio, links }).eq('id', currentUser.id);
+    const { error } = await supabaseClient.from('profiles').update({
+      display_name,
+      username,
+      bio,
+      email,
+      location,
+      job_title,
+      profile_link: profile_link || null,
+      links
+    }).eq('id', currentUser.id);
+
     if (error) throw error;
+
     closeEdit();
     toast('Profile updated ✅');
     await loadProfile();
-  } catch(e) { toast(e.message); }
-  finally { btn.disabled = false; }
+  } catch(e) {
+    toast(e.message);
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 /* ==================== AVATAR UPLOAD ==================== */
@@ -1502,9 +1645,11 @@ function switchTab(tab, btn) {
 
   const grid = document.getElementById('postsGrid');
   const wall = document.getElementById('wallWrap');
+  const empty = document.getElementById('emptyNotice');
 
   if (tab === 'wall') {
     grid.style.display = 'none';
+    empty.style.display = 'none';
     wall.style.display = 'block';
     loadWall();
   } else {
@@ -1515,14 +1660,25 @@ function switchTab(tab, btn) {
 }
 
 function shareProfile() {
-  const url = window.location.href;
-  if (navigator.share) navigator.share({ title:'Profile', url }).catch(()=>{});
-  else navigator.clipboard.writeText(url).then(() => toast('Link copied! 📋'));
+  const slug = currentProfileLink;
+  const url = slug
+    ? `${window.location.origin}/profile.html?u=${encodeURIComponent(slug)}`
+    : `${window.location.origin}/profile.html?user=${profileId}`;
+
+  if (navigator.share) {
+    navigator.share({ title: 'Check out this profile', url }).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(url).then(() => toast('Profile link copied! 📋'));
+  }
 }
 
 function sharePost(id) {
-  const url = `${window.location.origin}/index.html?post=${id}`;
-  navigator.clipboard.writeText(url).then(() => toast('Post link copied! 📋'));
+  const url = `${window.location.origin}/post.html?id=${id}`;
+  if (navigator.share) {
+    navigator.share({ title: 'Check out this post', url }).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(url).then(() => toast('Post link copied! 📋'));
+  }
 }
 
 function copyRef() {
