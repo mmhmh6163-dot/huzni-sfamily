@@ -18,7 +18,6 @@ jobs:
           version: latest
 
       - name: Deploy ai-chat function
-        run: supabase functions deploy ai-chat --project-ref ${{ secrets.SUPABASE_PROJECT_ID }} --no-verify-jwt
+        run: supabase functions deploy ai-chat --project-ref ziwqlcheflkjnswnqxcr --no-verify-jwt
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_PROJECT_ID: YOUR_ACTUAL_PROJECT_ID_HERE
