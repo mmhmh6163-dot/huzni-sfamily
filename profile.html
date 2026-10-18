@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Profile — Arizona AI</title>
 
-<!-- Dynamic Open Graph Tags for Sharing (Updated by JS) -->
+<!-- Dynamic Open Graph Tags for unique profile sharing -->
 <meta property="og:type" content="profile">
 <meta property="og:title" id="ogTitle" content="Arizona AI Profile">
 <meta property="og:description" id="ogDesc" content="Check out this profile on Arizona AI">
@@ -22,11 +22,13 @@
 html, body { margin: 0; padding: 0; }
 body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); padding-bottom:calc(70px + env(safe-area-inset-bottom)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
 
+/* ==================== TOP BAR ==================== */
 .topbar { position:fixed; top:0; left:0; right:0; height:calc(60px + env(safe-area-inset-top)); padding-top:env(safe-area-inset-top); background:rgba(10,10,10,.97); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,107,53,.25); display:flex; align-items:center; justify-content:space-between; padding-left:16px; padding-right:16px; z-index:1000; max-width:640px; margin:0 auto; }
 .topbar .back, .topbar .icon-btn { color:var(--az-text); font-size:19px; width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:50%; text-decoration:none; cursor:pointer; background:none; border:none; }
 .topbar .icon-btn:hover { background:rgba(255,255,255,.06); }
 .topbar .title { font-size:16px; font-weight:700; color:var(--az-text); }
 
+/* ==================== PROFILE HEADER ==================== */
 .profile-header { max-width:640px; margin:0 auto; padding:24px 20px 16px; }
 .profile-top { display:flex; align-items:center; gap:24px; margin-bottom:16px; }
 .profile-avatar-wrap { position:relative; flex-shrink:0; cursor:pointer; }
@@ -34,8 +36,6 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
 .profile-avatar:active { transform:scale(.95); }
 .profile-avatar img { width:100%; height:100%; object-fit:cover; }
 .profile-avatar-wrap .camera { position:absolute; bottom:2px; right:2px; background:var(--az-primary); color:#fff; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; border:2px solid #0a0a0a; cursor:pointer; z-index:10; }
-.profile-avatar-wrap .verified-badge { position:absolute; top:2px; right:2px; background:#3b82f6; color:#fff; width:24px; height:24px; border-radius:50%; display:none; align-items:center; justify-content:center; font-size:12px; border:2px solid #0a0a0a; z-index:11; }
-.profile-avatar-wrap .verified-badge.show { display:flex; }
 
 .profile-stats { flex:1; display:flex; justify-content:space-around; text-align:center; }
 .profile-stats .stat { cursor:pointer; padding:4px 8px; border-radius:8px; }
@@ -50,16 +50,19 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
 .profile-name .meta { margin-top:8px; font-size:13px; color:var(--az-text-secondary); display:flex; flex-wrap:wrap; gap:12px; }
 .profile-name .meta span { display:flex; align-items:center; gap:5px; }
 
+/* NEW: Custom Links */
 .profile-links { margin-top:10px; display:flex; flex-wrap:wrap; gap:8px; }
 .profile-link-item { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); padding:6px 12px; border-radius:20px; font-size:12px; color:var(--az-accent); text-decoration:none; font-weight:700; display:flex; align-items:center; gap:5px; }
 .profile-link-item:hover { background:rgba(255,107,53,.1); }
 
+/* NEW: Instagram Actions */
 .insta-actions { display:flex; gap:8px; padding: 0 20px 16px; max-width:640px; margin: 0 auto; }
 .insta-actions button, .insta-actions a { flex:1; padding:10px; border-radius:10px; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; text-decoration:none; border:none; font-family:inherit; }
 .btn-follow { background:var(--az-gradient); color:#fff; }
 .btn-following { background:rgba(255,255,255,.1); color:#fff; border:1px solid rgba(255,255,255,.2) !important; }
 .btn-message { background:rgba(255,255,255,.1); color:#fff; border:1px solid rgba(255,255,255,.2) !important; }
 
+/* NEW: Referral Card */
 .referral-card { max-width:640px; margin:0 20px 20px; background:linear-gradient(135deg, rgba(255,107,53,.1), rgba(255,178,15,.05)); border:1px solid rgba(255,178,15,.3); border-radius:16px; padding:16px; display:flex; align-items:center; gap:12px; }
 .referral-card .icon { width:44px; height:44px; border-radius:12px; background:var(--az-gradient); color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px; }
 .referral-card .info { flex:1; }
@@ -69,6 +72,7 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
 
 .share-profile-btn { width:100%; padding:12px; border-radius:10px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); color:#fff; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
 
+/* ==================== TABS & GRID ==================== */
 .profile-tabs { max-width:640px; margin:0 auto; display:flex; border-top:1px solid rgba(255,255,255,.08); border-bottom:1px solid rgba(255,255,255,.08); }
 .profile-tabs .tab { flex:1; padding:14px 0; background:none; border:none; cursor:pointer; color:var(--az-text-secondary); display:flex; align-items:center; justify-content:center; font-size:20px; border-bottom:2px solid transparent; }
 .profile-tabs .tab.active { color:var(--az-text); border-bottom-color:var(--az-text); }
@@ -85,6 +89,7 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
 .grid-item .pin-icon { position: absolute; top: 6px; right: 6px; color: #fff; font-size: 14px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); z-index: 5;}
 .grid-item .boost-tag { position:absolute; top:6px; left:6px; background:linear-gradient(135deg,#7c3aed,#5eb8ff); color:#fff; padding:2px 8px; border-radius:10px; font-size:9px; font-weight:800; z-index:5; }
 
+/* NEW: Wall Container */
 .wall-container { max-width:640px; margin:0 auto; padding:16px; display:none; }
 .wall-container.active { display:block; }
 .wall-input-box { display:flex; gap:8px; margin-bottom:16px; }
@@ -96,6 +101,7 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
 .wall-comment .content { background:rgba(255,255,255,.05); padding:10px 14px; border-radius:12px; border-top-left-radius:2px; flex:1; font-size:14px; }
 .wall-comment .name { font-weight:700; font-size:12px; color:var(--az-accent); margin-bottom:4px;}
 
+/* ==================== MODALS ==================== */
 .modal-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:2000; align-items:flex-end; justify-content:center; }
 .modal-backdrop.active { display:flex; }
 .modal-content { background:#151515; width:100%; max-width:640px; border-top-left-radius:20px; border-top-right-radius:20px; padding:20px; padding-bottom:calc(20px + env(safe-area-inset-bottom)); max-height:90vh; overflow-y:auto; }
@@ -143,7 +149,6 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
       <div class="profile-avatar-wrap" id="avatarWrap">
         <div class="profile-avatar" id="avatar">U</div>
         <div class="camera" id="cameraBtn" onclick="triggerAvatarPick(event)" style="display:none;"><i class="fas fa-camera"></i></div>
-        <div class="verified-badge" id="verifiedBadge"><i class="fas fa-check"></i></div>
       </div>
       <div class="profile-stats">
         <div class="stat"><div class="num" id="statPosts">0</div><div class="lbl">Posts</div></div>
@@ -562,11 +567,6 @@ function openEdit() {
   if (!isOwnProfile) return;
   document.getElementById('editDisplayName').value = document.getElementById('displayName').textContent;
   document.getElementById('editBio').value = document.getElementById('bio').textContent;
-  
-  // Pre-fill links
-  const linksContainer = document.getElementById('profileLinks');
-  const links = [];
-  // ... simplified logic to pre-fill links if needed ...
   document.getElementById('editModal').classList.add('active');
 }
 
