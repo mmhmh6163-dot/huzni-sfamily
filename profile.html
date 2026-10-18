@@ -1682,8 +1682,9 @@ function shareProfile() {
   }
 }
 
+// ✅ FIX: This is the only changed function. Points to index.html?post= which works perfectly.
 function sharePost(id) {
-  const url = `${window.location.origin}/post.html?id=${id}`;
+  const url = `${window.location.origin}/index.html?post=${id}`;
   if (navigator.share) {
     navigator.share({ title: 'Check out this post', url }).catch(()=>{});
   } else {
