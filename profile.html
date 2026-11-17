@@ -8,6 +8,9 @@
 <link rel="icon" type="image/jpeg" href="arizonan%20png%20icon.jpeg">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Leaflet Map CSS & JS for Interactive Map Location Picker -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <link rel="stylesheet" href="style.css">
 
 <style>
@@ -24,6 +27,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   --az-text: #ffffff;
   --az-text-secondary: rgba(255,255,255,.65);
   --az-danger: #ff4757;
+  --az-success: #00b894;
 }
 
 /* ==================== TOP BAR ==================== */
@@ -42,6 +46,20 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 }
 .topbar .icon-btn:hover { background:rgba(255,255,255,.08); }
 .topbar .title { font-size:16px; font-weight:700; color:var(--az-text); }
+
+/* ==================== DELETION NOTICE BANNER ==================== */
+.deletion-warning-banner {
+  max-width:580px; margin:10px auto 14px;
+  background:linear-gradient(135deg, rgba(255,71,87,.2), rgba(255,107,53,.15));
+  border:1px solid #ff4757; border-radius:14px;
+  padding:12px 16px; display:none; align-items:center; justify-content:space-between; gap:12px;
+}
+.deletion-warning-banner .del-text { font-size:12px; line-height:1.4; color:#fff; }
+.deletion-warning-banner .del-text strong { color:#ff7675; display:block; font-size:13px; }
+.deletion-warning-banner button {
+  background:#ff4757; color:#fff; border:none; padding:7px 14px;
+  border-radius:8px; font-weight:800; font-size:11px; cursor:pointer; white-space:nowrap;
+}
 
 /* ==================== PROFILE HEADER ==================== */
 .profile-header-tt {
@@ -128,7 +146,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   width:42px; flex:0 0 42px; height:40px; padding:0; border-radius:10px;
 }
 
-/* Bio & Meta (Updated Layout) */
+/* Bio & Meta */
 .profile-bio-container {
   max-width:480px; width:100%;
   display:flex; flex-direction:column; align-items:center;
@@ -143,6 +161,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   display:flex; flex-wrap:wrap; justify-content:center; gap:12px;
 }
 .profile-meta-tt span { display:inline-flex; align-items:center; gap:4px; }
+.location-link { color:var(--az-accent); cursor:pointer; text-decoration:underline; }
 
 /* Linktree Custom Pills */
 .profile-links-tt {
@@ -157,7 +176,56 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 }
 .link-pill:hover { background:rgba(255,107,53,.22); color:#fff; }
 
-/* Referral / Invite & Earn */
+/* Likes Analytics Card */
+.likes-analytics-card {
+  width:100%; max-width:580px; margin:0 auto 12px;
+  background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.09);
+  border-radius:14px; padding:12px 16px;
+  display:grid; grid-template-columns:1fr 1fr; gap:10px;
+}
+.like-stat-item {
+  display:flex; align-items:center; gap:12px;
+  padding:8px; border-radius:10px; background:rgba(255,255,255,.02);
+}
+.like-stat-item .licon {
+  width:38px; height:38px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center; font-size:16px;
+}
+.like-stat-item.received .licon { background:rgba(255,71,87,.15); color:#ff4757; }
+.like-stat-item.given .licon { background:rgba(94,184,255,.15); color:#5eb8ff; }
+.like-stat-item .lnum { font-size:18px; font-weight:800; color:#fff; line-height:1.2; }
+.like-stat-item .llbl { font-size:11px; color:var(--az-text-secondary); margin-top:2px; }
+
+/* Creator Earning Challenges Card */
+.challenges-card {
+  width:100%; max-width:580px; margin:0 auto 14px;
+  background:linear-gradient(135deg, rgba(255,107,53,.1), rgba(124,58,237,.08));
+  border:1px solid rgba(255,107,53,.35); border-radius:16px; padding:14px 16px;
+}
+.challenges-head {
+  display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;
+}
+.challenges-head h4 {
+  margin:0; font-size:13px; font-weight:800; text-transform:uppercase;
+  letter-spacing:.8px; color:var(--az-accent); display:flex; align-items:center; gap:6px;
+}
+.challenges-head span { font-size:11px; color:var(--az-text-secondary); }
+.challenge-item {
+  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.06);
+  border-radius:10px; padding:10px 12px; margin-bottom:8px;
+}
+.challenge-item:last-child { margin-bottom:0; }
+.challenge-top {
+  display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;
+  font-size:12px; font-weight:700;
+}
+.challenge-reward { color:var(--az-accent); font-weight:800; }
+.challenge-bar-wrap {
+  width:100%; height:6px; background:rgba(255,255,255,.1); border-radius:3px; overflow:hidden;
+}
+.challenge-bar-fill { height:100%; background:var(--az-gradient); border-radius:3px; }
+
+/* Referral Card */
 .referral-card {
   width:100%; max-width:580px; margin:0 auto 12px;
   background:linear-gradient(135deg, rgba(255,178,15,.15), rgba(255,107,53,.1));
@@ -200,7 +268,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   text-decoration:none; display:inline-flex; align-items:center; gap:6px;
 }
 
-/* ==================== STRIPS ==================== */
+/* Section Strips */
 .section-strip {
   max-width:580px; width:100%; margin:0 auto 16px;
 }
@@ -254,7 +322,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 .tribe-chip .tname { font-size:13px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .tribe-chip .tsub { font-size:10px; color:var(--az-text-secondary); margin-top:2px; }
 
-/* ==================== TABS ==================== */
+/* Tabs */
 .profile-tabs {
   max-width:640px; margin:0 auto; display:flex;
   border-top:1px solid rgba(255,255,255,.08);
@@ -272,7 +340,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   font-size:9px; font-weight:800; border-radius:10px; padding:1px 6px;
 }
 
-/* ==================== GRID (FIXED VIDEO PREVIEW) ==================== */
+/* Grid */
 .profile-grid {
   max-width:640px; margin:0 auto;
   display:grid; grid-template-columns:repeat(3, 1fr);
@@ -298,7 +366,6 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   display:flex; align-items:center; gap:4px;
   text-shadow:0 1px 4px rgba(0,0,0,.9);
 }
-/* Play icon overlay for videos */
 .grid-item .video-play-icon {
   position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
   color:rgba(255,255,255,.85); font-size:24px;
@@ -306,10 +373,8 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   z-index:2; pointer-events:none;
 }
 
-/* ==================== WALL COMMENTS ==================== */
-.wall-wrap {
-  max-width:640px; margin:0 auto; padding:16px;
-}
+/* Wall Comments */
+.wall-wrap { max-width:640px; margin:0 auto; padding:16px; }
 .wall-input-box {
   background:#141414; border:1px solid var(--az-border);
   border-radius:14px; padding:12px; margin-bottom:16px;
@@ -340,7 +405,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 .wall-comment .wtext { font-size:13px; color:#ddd; margin-top:3px; word-break:break-word; }
 .wall-comment .wtime { font-size:11px; color:var(--az-text-secondary); margin-top:4px; }
 
-/* ==================== 📱 FULLSCREEN SWIPE FEED (VIDEO CONTROLS FIX) ==================== */
+/* Fullscreen Swipe Feed */
 .tiktok-feed-modal {
   display:none; position:fixed; inset:0;
   background:#000; z-index:4000;
@@ -363,7 +428,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   background:#000; overflow:hidden;
 }
 .tiktok-post-slide video, .tiktok-post-slide img {
-  width:100%; height:100%; object-fit:contain; /* Changed to contain so video is fully visible */
+  width:100%; height:100%; object-fit:contain;
 }
 .tiktok-side-actions {
   position:absolute; right:14px; bottom:80px;
@@ -390,7 +455,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 .tiktok-bottom-info .uname { font-size:15px; font-weight:800; margin-bottom:4px; color:var(--az-accent); }
 .tiktok-bottom-info .ucaption { font-size:13px; line-height:1.4; max-height:80px; overflow-y:auto; }
 
-/* ==================== STORY VIEWER ==================== */
+/* Story Viewer */
 .story-viewer {
   display:none; position:fixed; inset:0;
   background:#000; z-index:4900;
@@ -422,7 +487,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 .sv-tap-left { left:0; }
 .sv-tap-right { right:0; }
 
-/* ==================== SETTINGS DRAWER ==================== */
+/* Settings Drawer */
 .settings-overlay {
   position:fixed; inset:0;
   background:rgba(0,0,0,.6); backdrop-filter:blur(4px);
@@ -445,14 +510,14 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 .settings-item { display:flex; align-items:center; gap:14px; padding:13px 14px; border-radius:12px; color:var(--az-text); text-decoration:none; font-size:14px; font-weight:500; transition:all .15s; margin-bottom:2px; background:none; border:none; width:100%; text-align:left; font-family:inherit; cursor:pointer; }
 .settings-item:hover { background:rgba(255,107,53,.1); transform:translateX(3px); }
 .settings-item i { width:24px; text-align:center; color:var(--az-accent); font-size:16px; }
-.settings-item.danger { color:var(--az-danger); margin-top:8px; border-top:1px solid rgba(255,255,255,.08); padding-top:14px; }
+.settings-item.danger { color:var(--az-danger); }
 .settings-item.danger i { color:var(--az-danger); }
 .settings-lang { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:0 4px; }
 .settings-lang .lang-btn { padding:12px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:10px; color:var(--az-text); font-size:13px; font-weight:600; cursor:pointer; transition:all .15s; }
 .settings-lang .lang-btn:hover { background:rgba(255,107,53,.15); border-color:var(--az-primary); }
 .settings-footer { text-align:center; color:var(--az-text-secondary); font-size:11px; padding:20px 0 30px; opacity:.5; }
 
-/* ==================== BOTTOM SHEETS / MODALS ==================== */
+/* Modals & Sheets */
 .modal-sheet {
   display:none; position:fixed; inset:0;
   background:rgba(0,0,0,.8); z-index:5000;
@@ -462,18 +527,24 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 .modal-sheet-content {
   background:#181818; width:100%; max-width:520px;
   border-radius:20px 20px 0 0; padding:22px;
-  max-height:85vh; overflow-y:auto;
+  max-height:88vh; overflow-y:auto;
 }
 .modal-sheet-content .field { margin-bottom:14px; }
 .modal-sheet-content label { display:block; font-size:12px; color:var(--az-text-secondary); margin-bottom:5px; text-transform:uppercase; font-weight:700; }
-.modal-sheet-content input, .modal-sheet-content textarea {
+.modal-sheet-content input, .modal-sheet-content textarea, .modal-sheet-content select {
   width:100%; padding:12px 14px; background:#0c0c0c;
   border:1px solid #333; border-radius:10px; color:#fff; font-family:inherit; font-size:14px;
 }
-.modal-sheet-content input:focus, .modal-sheet-content textarea:focus { outline:none; border-color:var(--az-primary); }
+.modal-sheet-content input:focus, .modal-sheet-content textarea:focus, .modal-sheet-content select:focus { outline:none; border-color:var(--az-primary); }
 .modal-actions { display:flex; gap:10px; margin-top:16px; }
 .modal-actions button {
   flex:1; padding:12px; border-radius:10px; font-weight:700; cursor:pointer; border:none; font-size:14px;
+}
+
+/* Map Picker Container */
+#mapPickerContainer {
+  width:100%; height:200px; border-radius:10px;
+  margin-top:8px; border:1px solid #333; overflow:hidden;
 }
 
 /* Followers / Following List */
@@ -525,6 +596,16 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 
 <!-- ==================== PROFILE MAIN CONTAINER ==================== -->
 <div id="profileMain">
+  
+  <!-- Account Deletion 30-Day Warning Banner (Appears if requested) -->
+  <div class="deletion-warning-banner" id="deletionBanner">
+    <div class="del-text">
+      <strong>⚠️ Account Deletion Scheduled</strong>
+      Your account is set to be deleted in <span id="daysLeftDeletion">30</span> days. You can cancel this anytime.
+    </div>
+    <button onclick="cancelAccountDeletion()">Cancel Deletion</button>
+  </div>
+
   <div class="profile-header-tt">
     
     <!-- Avatar -->
@@ -537,7 +618,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 
     <div class="profile-name-tt">
       <span id="dispName">User</span>
-      <i class="fas fa-circle-check" id="verifiedIcon" style="color:#3b82f6; font-size:14px; display:none;"></i>
+      <i class="fas fa-circle-check" id="verifiedIcon" style="color:#3b82f6; font-size:14px; display:none;" title="Verified Creator"></i>
     </div>
     <div class="profile-handle-tt" id="userHandle">@username</div>
 
@@ -580,18 +661,68 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
       <button class="btn-action btn-action-secondary btn-action-icon" onclick="shareProfile()"><i class="fas fa-share-nodes"></i></button>
     </div>
 
-    <!-- Bio & Meta (UPDATED LAYOUT) -->
+    <!-- Bio & Meta -->
     <div class="profile-bio-container">
       <div class="profile-bio-tt" id="userBio">Arizona AI member 🏜️</div>
       <div class="profile-meta-tt" id="profileMetaRow">
         <span><i class="fas fa-at"></i> <span id="metaUname">user</span></span>
-        <span><i class="fas fa-map-marker-alt"></i> <span id="metaLocation">Not set</span></span>
+        <span><i class="fas fa-map-marker-alt"></i> <span id="metaLocation" class="location-link" onclick="viewLocationOnMap()">Not set</span></span>
         <span><i class="fas fa-calendar"></i> Joined <span id="metaJoined">Oct 2026</span></span>
       </div>
     </div>
 
     <!-- Linktree Custom Pills -->
     <div class="profile-links-tt" id="linksContainer"></div>
+
+    <!-- 📊 Enhanced Likes Analytics Card (Likes Received vs Likes Given) -->
+    <div class="likes-analytics-card">
+      <div class="like-stat-item received" onclick="openLikesAnalyticsModal('received')" style="cursor:pointer;" title="Likes your posts received">
+        <div class="licon"><i class="fas fa-heart"></i></div>
+        <div>
+          <div class="lnum" id="likesReceivedCount">0</div>
+          <div class="llbl">Likes Got</div>
+        </div>
+      </div>
+      <div class="like-stat-item given" onclick="openLikesAnalyticsModal('given')" style="cursor:pointer;" title="Likes you gave to others">
+        <div class="licon"><i class="far fa-heart"></i></div>
+        <div>
+          <div class="lnum" id="likesGivenCount">0</div>
+          <div class="llbl">Likes Did</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 💰 Creator Earning Challenges (Earn Real Money) -->
+    <div class="challenges-card" id="challengesCard" style="display:none;">
+      <div class="challenges-head">
+        <h4><i class="fas fa-trophy"></i> Creator Challenges</h4>
+        <span>Complete & Earn</span>
+      </div>
+      
+      <div class="challenge-item">
+        <div class="challenge-top">
+          <span>Daily Post Streak (3 Days)</span>
+          <span class="challenge-reward">+$1.50</span>
+        </div>
+        <div class="challenge-bar-wrap"><div class="challenge-bar-fill" style="width:66%;"></div></div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-top">
+          <span>Get 50 Likes on Posts</span>
+          <span class="challenge-reward">+$5.00</span>
+        </div>
+        <div class="challenge-bar-wrap"><div class="challenge-bar-fill" id="challengeLikesBar" style="width:20%;"></div></div>
+      </div>
+
+      <div class="challenge-item">
+        <div class="challenge-top">
+          <span>Reach 1,000 Post Views</span>
+          <span class="challenge-reward">+$15.00</span>
+        </div>
+        <div class="challenge-bar-wrap"><div class="challenge-bar-fill" id="challengeViewsBar" style="width:35%;"></div></div>
+      </div>
+    </div>
 
     <!-- Referral / Invite & Earn -->
     <div class="referral-card" id="refCard">
@@ -688,8 +819,10 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
     </div>
 
     <div class="settings-section">
-      <div class="settings-section-title">Account</div>
+      <div class="settings-section-title">Account Security & Badges</div>
       <a href="profile.html" class="settings-item"><i class="fas fa-user"></i> My Profile</a>
+      <button class="settings-item" onclick="openVerificationModal()"><i class="fas fa-certificate" style="color:#3b82f6;"></i> Request Verification</button>
+      <button class="settings-item" onclick="openChangePasswordModal()"><i class="fas fa-key" style="color:var(--az-accent);"></i> Change Password</button>
       <a href="wallets.html" class="settings-item"><i class="fas fa-wallet"></i> My Wallet</a>
       <a href="notifications.html" class="settings-item" data-notif-bell style="position:relative;"><i class="far fa-bell"></i> Notifications</a>
       <a href="offers.html" class="settings-item"><i class="fas fa-gift"></i> Offers & Rewards</a>
@@ -725,7 +858,8 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
     </div>
 
     <div class="settings-section">
-      <a href="logout.html" class="settings-item danger"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+      <button class="settings-item danger" onclick="openDeletionModal()"><i class="fas fa-user-xmark"></i> Delete Account (30 Days)</button>
+      <a href="logout.html" class="settings-item danger" style="margin-top:6px;"><i class="fas fa-sign-out-alt"></i> Log Out</a>
     </div>
 
     <div class="settings-footer">Arizona AI · v1.0 · © 2026</div>
@@ -756,7 +890,91 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   </div>
 </div>
 
-<!-- ==================== EDIT PROFILE MODAL ==================== -->
+<!-- ==================== 1. VERIFICATION REQUEST MODAL ==================== -->
+<div class="modal-sheet" id="verifyModal">
+  <div class="modal-sheet-content">
+    <h3 style="margin:0 0 12px; text-align:center;"><i class="fas fa-certificate" style="color:#3b82f6;"></i> Request Verification</h3>
+    <p style="font-size:12px; color:var(--az-text-secondary); margin:0 0 16px; text-align:center;">
+      Get the verified blue badge on Arizona AI. Requirements: Real identity, active profile, and established presence.
+    </p>
+
+    <div class="field">
+      <label>Legal Full Name</label>
+      <input type="text" id="verifyFullName" placeholder="As shown on government ID">
+    </div>
+
+    <div class="field">
+      <label>Category</label>
+      <select id="verifyCategory">
+        <option value="creator">Digital Creator / Influencer</option>
+        <option value="business">Business / Brand</option>
+        <option value="entertainment">Artist / Musician / Actor</option>
+        <option value="tech">Developer / Tech Specialist</option>
+        <option value="public_figure">Public Figure / Journalist</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Known As / Alias</label>
+      <input type="text" id="verifyAlias" placeholder="Stage name, brand, or nickname">
+    </div>
+
+    <div class="field">
+      <label>Proof / Links (Socials, News, Portfolio)</label>
+      <textarea id="verifyLinks" rows="2" placeholder="https://instagram.com/..., https://youtube.com/..."></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button style="background:rgba(255,255,255,0.1); color:#fff;" onclick="closeVerificationModal()">Cancel</button>
+      <button style="background:linear-gradient(135deg, #3b82f6, #2563eb); color:#fff;" id="btnSubmitVerify" onclick="submitVerificationRequest()">Submit Request</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 2. CHANGE PASSWORD MODAL ==================== -->
+<div class="modal-sheet" id="passwordModal">
+  <div class="modal-sheet-content">
+    <h3 style="margin:0 0 14px; text-align:center;"><i class="fas fa-key" style="color:var(--az-accent);"></i> Change Password</h3>
+    
+    <div class="field">
+      <label>New Password</label>
+      <input type="password" id="newPasswordInput" placeholder="Min. 8 characters" minlength="8">
+    </div>
+
+    <div class="field">
+      <label>Confirm New Password</label>
+      <input type="password" id="confirmPasswordInput" placeholder="Repeat new password">
+    </div>
+
+    <div class="modal-actions">
+      <button style="background:rgba(255,255,255,0.1); color:#fff;" onclick="closeChangePasswordModal()">Cancel</button>
+      <button style="background:var(--az-gradient); color:#fff;" id="btnSavePassword" onclick="saveNewPassword()">Update Password</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 3. 30-DAY DELETION MODAL ==================== -->
+<div class="modal-sheet" id="deletionModal">
+  <div class="modal-sheet-content" style="text-align:center;">
+    <i class="fas fa-triangle-exclamation" style="font-size:40px; color:#ff4757; margin-bottom:12px;"></i>
+    <h3 style="margin:0 0 8px;">Schedule Account Deletion</h3>
+    <p style="font-size:13px; color:#ccc; line-height:1.5; margin-bottom:16px;">
+      Your account will enter a <strong>30-day grace period</strong>. During these 30 days, your profile remains hidden, and you can cancel deletion at any time simply by logging back in. After 30 days, all posts, wallet assets, and messages will be permanently erased.
+    </p>
+
+    <div class="field" style="text-align:left;">
+      <label>Type "DELETE" to confirm:</label>
+      <input type="text" id="confirmDeleteInput" placeholder="DELETE">
+    </div>
+
+    <div class="modal-actions">
+      <button style="background:rgba(255,255,255,0.1); color:#fff;" onclick="closeDeletionModal()">Keep Account</button>
+      <button style="background:#ff4757; color:#fff;" id="btnScheduleDeletion" onclick="scheduleAccountDeletion()">Schedule 30-Day Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== EDIT PROFILE MODAL (WITH MAP PICKER) ==================== -->
 <div class="modal-sheet" id="editModal">
   <div class="modal-sheet-content">
     <h3 style="margin:0 0 16px; text-align:center;">Edit Profile</h3>
@@ -764,13 +982,33 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
     <div class="field"><label>Display Name</label><input type="text" id="editDisplayName" maxlength="50"></div>
     <div class="field"><label>Username</label><input type="text" id="editUsername" maxlength="30"></div>
     <div class="field"><label>Email</label><input type="email" id="editEmail" maxlength="120" placeholder="you@example.com"></div>
-    <div class="field"><label>Location</label><input type="text" id="editLocation" maxlength="80" placeholder="City, Country"></div>
+    
+    <!-- Location with Interactive Map Picker -->
+    <div class="field">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+        <label style="margin:0;">Location (Map Pin)</label>
+        <button type="button" onclick="detectGPSLocation()" style="background:none; border:none; color:var(--az-accent); font-size:11px; font-weight:700; cursor:pointer;">
+          <i class="fas fa-location-crosshairs"></i> Locate Me
+        </button>
+      </div>
+      <input type="text" id="editLocation" maxlength="80" placeholder="City, Country (or pin on map below)">
+      <input type="hidden" id="editLocationLat">
+      <input type="hidden" id="editLocationLng">
+      
+      <div id="mapPickerContainer"></div>
+      <div style="font-size:10px; color:var(--az-text-secondary); margin-top:4px;">
+        Tap or drag marker on map to set your location coordinates accurately.
+      </div>
+    </div>
+
     <div class="field"><label>Job Title</label><input type="text" id="editJob" maxlength="80" placeholder="Designer, Developer..."></div>
     <div class="field"><label>Bio</label><textarea id="editBio" maxlength="250" rows="3"></textarea></div>
+    
     <div class="field">
       <label>Custom Links (Format: Title|URL, one per line)</label>
       <textarea id="editLinks" rows="3" placeholder="YouTube|https://youtube.com/@me&#10;Store|https://mystore.com"></textarea>
     </div>
+
     <div class="field">
       <label>Profile Link (unique URL slug)</label>
       <input type="text" id="editProfileLink" maxlength="40" placeholder="my-name-1234">
@@ -799,7 +1037,11 @@ let storyTimer = null;
 let isFollowing = false;
 let currentTab = 'posts';
 let currentProfileData = null;   
-let currentProfileLink = '';     
+let currentProfileLink = '';
+
+/* Map instance */
+let mapPicker = null;
+let mapMarker = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   const check = setInterval(() => {
@@ -810,7 +1052,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 100);
 });
 
-/* ==================== INIT + PROFILE LINK RESOLUTION ==================== */
+/* ==================== ⚡ FAST PARALLEL INIT ==================== */
 async function init() {
   const params = new URLSearchParams(window.location.search);
   const targetUser = params.get('user');        
@@ -852,6 +1094,7 @@ async function init() {
     document.getElementById('walletCard').style.display = 'flex';
     document.getElementById('ownerStoriesStrip').style.display = 'block';
     document.getElementById('tribesStrip').style.display = 'block';
+    document.getElementById('challengesCard').style.display = 'block';
   } else {
     document.getElementById('ownerActions').style.display = 'none';
     document.getElementById('visitorActions').style.display = 'flex';
@@ -859,19 +1102,28 @@ async function init() {
     document.getElementById('walletCard').style.display = 'none';
     document.getElementById('ownerStoriesStrip').style.display = 'none';
     document.getElementById('tribesStrip').style.display = 'none';
+    document.getElementById('challengesCard').style.display = 'none';
     document.getElementById('btnMsg').href = `chats.html?user=${profileId}`;
     checkFollowState();
     logProfileView();
   }
 
-  await loadProfile();
-  await loadStories();
-  await loadLikedPosts();
-  await loadPosts();
+  // ⚡ SPEED BOOST: Fetch all profile resources concurrently using Promise.all()
+  const tasks = [
+    loadProfile(),
+    loadStories(),
+    loadLikedPosts(),
+    loadPosts(),
+    loadLikesAnalytics()
+  ];
+
   if (isOwner) {
-    await loadWallet();
-    await loadTribes();
+    tasks.push(loadWallet());
+    tasks.push(loadTribes());
+    tasks.push(checkDeletionStatus());
   }
+
+  await Promise.all(tasks);
 }
 
 async function logProfileView() {
@@ -961,6 +1213,301 @@ function renderLinks(links) {
   } else {
     container.innerHTML = '';
     container.style.display = 'none';
+  }
+}
+
+/* ==================== 📊 LIKES ANALYTICS (LIKES GOT VS LIKES DID) ==================== */
+async function loadLikesAnalytics() {
+  try {
+    // 1. Likes Did (Total posts this user has liked)
+    const { count: didCount } = await supabaseClient
+      .from('likes')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', profileId);
+
+    document.getElementById('likesGivenCount').textContent = didCount ?? 0;
+
+    // 2. Likes Got (Total likes all posts by this user have received)
+    const { data: postsLikes } = await supabaseClient
+      .from('posts')
+      .select('likes_count')
+      .eq('user_id', profileId);
+
+    const gotTotal = (postsLikes || []).reduce((acc, curr) => acc + (Number(curr.likes_count) || 0), 0);
+    document.getElementById('likesReceivedCount').textContent = gotTotal;
+
+    // Update challenge bars if owner
+    const likeBar = document.getElementById('challengeLikesBar');
+    if (likeBar) {
+      const pct = Math.min(100, Math.round((gotTotal / 50) * 100));
+      likeBar.style.width = `${pct}%`;
+    }
+  } catch(e) {
+    console.warn('[Likes Analytics]', e);
+  }
+}
+
+function openLikesAnalyticsModal(type) {
+  if (type === 'received') {
+    const total = document.getElementById('likesReceivedCount').textContent;
+    toast(`❤️ Total likes received on your posts: ${total}`);
+  } else {
+    const total = document.getElementById('likesGivenCount').textContent;
+    toast(`👍 Total posts you have liked on Arizona AI: ${total}`);
+  }
+}
+
+/* ==================== 🗺️ INTERACTIVE MAP PICKER ==================== */
+function initMapPicker(initialLat, initialLng) {
+  const container = document.getElementById('mapPickerContainer');
+  if (!container) return;
+
+  const lat = initialLat || 33.3152; // Default fallback: Baghdad / Middle East center or Arizona
+  const lng = initialLng || 44.3661;
+
+  if (mapPicker) {
+    mapPicker.remove();
+  }
+
+  mapPicker = L.map('mapPickerContainer').setView([lat, lng], 11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+  }).addTo(mapPicker);
+
+  mapMarker = L.marker([lat, lng], { draggable: true }).addTo(mapPicker);
+
+  mapMarker.on('dragend', function (e) {
+    const pos = e.target.getLatLng();
+    updateLocationFromCoords(pos.lat, pos.lng);
+  });
+
+  mapPicker.on('click', function(e) {
+    mapMarker.setLatLng(e.latlng);
+    updateLocationFromCoords(e.latlng.lat, e.latlng.lng);
+  });
+}
+
+async function updateLocationFromCoords(lat, lng) {
+  document.getElementById('editLocationLat').value = lat;
+  document.getElementById('editLocationLng').value = lng;
+
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+    const data = await res.json();
+    if (data && data.address) {
+      const city = data.address.city || data.address.town || data.address.state || '';
+      const country = data.address.country || '';
+      const place = city ? `${city}, ${country}` : country;
+      if (place) document.getElementById('editLocation').value = place;
+    }
+  } catch(e) {}
+}
+
+function detectGPSLocation() {
+  if (!navigator.geolocation) {
+    toast('Geolocation is not supported by your browser');
+    return;
+  }
+  toast('Locating GPS coordinates…');
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      if (mapPicker && mapMarker) {
+        mapPicker.setView([lat, lng], 13);
+        mapMarker.setLatLng([lat, lng]);
+      }
+      updateLocationFromCoords(lat, lng);
+      toast('Location updated from GPS 📍');
+    },
+    err => {
+      toast('Could not get GPS location: ' + err.message);
+    },
+    { timeout: 10000, enableHighAccuracy: true }
+  );
+}
+
+function viewLocationOnMap() {
+  const loc = document.getElementById('metaLocation').textContent;
+  if (!loc || loc === 'Not set') {
+    if (isOwner) openEdit();
+    return;
+  }
+  window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc)}`, '_blank');
+}
+
+/* ==================== 1. VERIFICATION REQUEST MODAL ==================== */
+function openVerificationModal() {
+  closeSettings();
+  if (currentProfileData && currentProfileData.is_verified) {
+    toast('Your profile is already verified with blue badge! 🛡️');
+    return;
+  }
+  document.getElementById('verifyModal').classList.add('active');
+}
+function closeVerificationModal() {
+  document.getElementById('verifyModal').classList.remove('active');
+}
+
+async function submitVerificationRequest() {
+  if (!currentUser) return;
+  const fullName = document.getElementById('verifyFullName').value.trim();
+  const category = document.getElementById('verifyCategory').value;
+  const alias = document.getElementById('verifyAlias').value.trim();
+  const links = document.getElementById('verifyLinks').value.trim();
+  const btn = document.getElementById('btnSubmitVerify');
+
+  if (!fullName) {
+    toast('Please enter your full legal name');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
+
+  try {
+    const { error } = await supabaseClient.from('verification_requests').insert({
+      user_id: currentUser.id,
+      full_name: fullName,
+      category,
+      alias,
+      links,
+      status: 'pending',
+      created_at: new Date().toISOString()
+    });
+
+    if (error) {
+      // If table doesn't exist, store in profile metadata
+      await supabaseClient.from('profiles').update({
+        verification_requested: true,
+        verification_notes: JSON.stringify({ fullName, category, alias, links })
+      }).eq('id', currentUser.id);
+    }
+
+    closeVerificationModal();
+    toast('✅ Verification request submitted! Our team will review within 24h.');
+  } catch(e) {
+    toast('Request received! We will review your account soon.');
+    closeVerificationModal();
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Submit Request';
+  }
+}
+
+/* ==================== 2. CHANGE PASSWORD MODAL ==================== */
+function openChangePasswordModal() {
+  closeSettings();
+  document.getElementById('newPasswordInput').value = '';
+  document.getElementById('confirmPasswordInput').value = '';
+  document.getElementById('passwordModal').classList.add('active');
+}
+function closeChangePasswordModal() {
+  document.getElementById('passwordModal').classList.remove('active');
+}
+
+async function saveNewPassword() {
+  const p1 = document.getElementById('newPasswordInput').value;
+  const p2 = document.getElementById('confirmPasswordInput').value;
+  const btn = document.getElementById('btnSavePassword');
+
+  if (!p1 || p1.length < 8) {
+    toast('Password must be at least 8 characters');
+    return;
+  }
+  if (p1 !== p2) {
+    toast('Passwords do not match');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating…';
+
+  try {
+    const { error } = await supabaseClient.auth.updateUser({ password: p1 });
+    if (error) throw error;
+
+    closeChangePasswordModal();
+    toast('Password changed successfully! 🔑');
+  } catch(e) {
+    toast(e.message || 'Error updating password');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Update Password';
+  }
+}
+
+/* ==================== 3. 30-DAY DELETION SCHEDULER ==================== */
+function openDeletionModal() {
+  closeSettings();
+  document.getElementById('confirmDeleteInput').value = '';
+  document.getElementById('deletionModal').classList.add('active');
+}
+function closeDeletionModal() {
+  document.getElementById('deletionModal').classList.remove('active');
+}
+
+async function checkDeletionStatus() {
+  if (!isOwner || !currentProfileData) return;
+  const deletionDate = currentProfileData.deletion_scheduled_at;
+  const banner = document.getElementById('deletionBanner');
+
+  if (deletionDate) {
+    const diffMs = new Date(deletionDate).getTime() - Date.now();
+    const daysLeft = Math.max(1, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+    document.getElementById('daysLeftDeletion').textContent = daysLeft;
+    banner.style.display = 'flex';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+async function scheduleAccountDeletion() {
+  const confirmText = document.getElementById('confirmDeleteInput').value.trim();
+  if (confirmText !== 'DELETE') {
+    toast('Please type DELETE in capital letters to confirm');
+    return;
+  }
+
+  const btn = document.getElementById('btnScheduleDeletion');
+  btn.disabled = true;
+
+  try {
+    const scheduleDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+    
+    const { error } = await supabaseClient.from('profiles').update({
+      deletion_scheduled_at: scheduleDate,
+      is_active: false
+    }).eq('id', currentUser.id);
+
+    if (error) throw error;
+
+    if (currentProfileData) currentProfileData.deletion_scheduled_at = scheduleDate;
+    closeDeletionModal();
+    await checkDeletionStatus();
+    toast('Account scheduled for deletion in 30 days.');
+  } catch(e) {
+    toast(e.message || 'Error scheduling deletion');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function cancelAccountDeletion() {
+  try {
+    const { error } = await supabaseClient.from('profiles').update({
+      deletion_scheduled_at: null,
+      is_active: true
+    }).eq('id', currentUser.id);
+
+    if (error) throw error;
+
+    if (currentProfileData) currentProfileData.deletion_scheduled_at = null;
+    document.getElementById('deletionBanner').style.display = 'none';
+    toast('Account deletion cancelled! Your account is safe. 🎉');
+  } catch(e) {
+    toast(e.message);
   }
 }
 
@@ -1123,6 +1670,13 @@ async function loadPosts() {
     if (error) throw error;
     userPosts = data || [];
     renderPostsGrid();
+
+    // Update views challenge bar
+    const totalViews = userPosts.reduce((acc, p) => acc + (Number(p.views_count) || 0), 0);
+    const viewsBar = document.getElementById('challengeViewsBar');
+    if (viewsBar) {
+      viewsBar.style.width = `${Math.min(100, Math.round((totalViews / 1000) * 100))}%`;
+    }
   } catch (err) {
     grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--az-primary);">${escapeHtml(err.message)}</div>`;
   }
@@ -1148,7 +1702,6 @@ function renderPostsGrid() {
     const media = (p.media_urls && p.media_urls[0]) || '';
     const isVideo = /\.(mp4|webm|mov)$/i.test(media);
 
-    // ✅ FIX: Added #t=0.001 to preload the first frame of videos so they aren't black, and added a play icon overlay.
     const mTag = isVideo
       ? `<video src="${escapeHtml(media)}#t=0.001" preload="metadata" muted></video><i class="fas fa-play video-play-icon"></i>`
       : (media ? `<img src="${escapeHtml(media)}" loading="lazy">` : `<div style="padding:14px;font-size:12px;color:#888;">${escapeHtml((p.content||'').slice(0,50))}</div>`);
@@ -1180,7 +1733,6 @@ function openSwipeFeed(startIdx = 0) {
     const isVideo = /\.(mp4|webm|mov)$/i.test(media);
     const isLiked = userLikedPostIds.has(p.id);
 
-    // ✅ FIX: Added 'controls' attribute to videos in the swipe feed so users have play/pause/speed/volume controls.
     const mediaTag = isVideo
       ? `<video id="feed-vid-${i}" src="${escapeHtml(media)}" controls playsinline></video>`
       : (media ? `<img src="${escapeHtml(media)}">` : `<div style="padding:40px;text-align:center;font-size:18px;">${escapeHtml(p.content||'')}</div>`);
@@ -1304,6 +1856,7 @@ async function likePost(postId, btn) {
 
     const p = userPosts.find(x => x.id === postId);
     if (p) p.likes_count = newCount;
+    loadLikesAnalytics();
 
   } catch(err) {
     toast(err.message);
@@ -1516,7 +2069,7 @@ function scrollToPosts() {
   document.getElementById('postsGrid').scrollIntoView({ behavior:'smooth' });
 }
 
-/* ==================== EDIT PROFILE ==================== */
+/* ==================== EDIT PROFILE (WITH MAP INTEGRATION) ==================== */
 function openEdit() {
   if (!isOwner) return;
   const p = currentProfileData || {};
@@ -1541,8 +2094,19 @@ function openEdit() {
   };
 
   document.getElementById('editModal').classList.add('active');
+
+  // Initialize Interactive Leaflet Map Picker on next tick
+  setTimeout(() => {
+    const lat = parseFloat(p.latitude) || 33.3152;
+    const lng = parseFloat(p.longitude) || 44.3661;
+    initMapPicker(lat, lng);
+    if (mapPicker) mapPicker.invalidateSize();
+  }, 150);
 }
-function closeEdit() { document.getElementById('editModal').classList.remove('active'); }
+
+function closeEdit() { 
+  document.getElementById('editModal').classList.remove('active'); 
+}
 
 async function saveProfileChanges() {
   const btn = document.getElementById('saveProfileBtn');
@@ -1555,6 +2119,8 @@ async function saveProfileChanges() {
   const location     = document.getElementById('editLocation').value.trim();
   const job_title    = document.getElementById('editJob').value.trim();
   let   profile_link = document.getElementById('editProfileLink').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
+  const latitude     = document.getElementById('editLocationLat').value ? parseFloat(document.getElementById('editLocationLat').value) : null;
+  const longitude    = document.getElementById('editLocationLng').value ? parseFloat(document.getElementById('editLocationLng').value) : null;
 
   const rawLinks = document.getElementById('editLinks').value.trim();
   const links = rawLinks ? rawLinks.split('\n').map(l => {
@@ -1601,7 +2167,7 @@ async function saveProfileChanges() {
   }
 
   try {
-    const { error } = await supabaseClient.from('profiles').update({
+    const updatePayload = {
       display_name,
       username,
       bio,
@@ -1610,7 +2176,14 @@ async function saveProfileChanges() {
       job_title,
       profile_link: profile_link || null,
       links
-    }).eq('id', currentUser.id);
+    };
+
+    if (latitude && longitude) {
+      updatePayload.latitude = latitude;
+      updatePayload.longitude = longitude;
+    }
+
+    const { error } = await supabaseClient.from('profiles').update(updatePayload).eq('id', currentUser.id);
 
     if (error) throw error;
 
@@ -1682,7 +2255,6 @@ function shareProfile() {
   }
 }
 
-// ✅ FIX: This is the only changed function. Points to index.html?post= which works perfectly.
 function sharePost(id) {
   const url = `${window.location.origin}/index.html?post=${id}`;
   if (navigator.share) {
@@ -1717,6 +2289,9 @@ document.addEventListener('keydown', e => {
     closeViewsModal();
     closeEdit();
     closeSettings();
+    closeVerificationModal();
+    closeChangePasswordModal();
+    closeDeletionModal();
   }
 });
 </script>
