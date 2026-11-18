@@ -13,7 +13,7 @@
 <style>
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; padding: 0; }
-body { background:#0a0a0a; padding-top:60px; padding-bottom:30px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+body { background:#0a0a0a; padding-top:60px; padding-bottom:30px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color:#fff; }
 
 /* ==================== TOP BAR ==================== */
 .create-topbar {
@@ -83,6 +83,36 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:30px; font-family: -
 }
 .earn-banner.capped i { color:#ff7675; }
 .earn-banner.capped .text strong { color:#ff7675; }
+
+/* ==================== VIOLENCE / SENSITIVE CONTENT BANNER ==================== */
+.moderation-banner {
+  max-width:640px; margin:12px auto 0;
+  padding:12px 16px;
+  background:linear-gradient(135deg, rgba(255,71,87,.2), rgba(255,107,53,.12));
+  border:1px solid #ff4757;
+  border-radius:14px;
+  display:none; align-items:flex-start; gap:12px;
+}
+.moderation-banner.show { display:flex; }
+.moderation-banner i { font-size:20px; color:#ff4757; flex-shrink:0; margin-top:2px; }
+.moderation-banner .mod-text { font-size:12px; line-height:1.45; color:#fff; }
+.moderation-banner .mod-text strong { display:block; color:#ff7675; font-size:13px; margin-bottom:2px; }
+
+/* ==================== DRAFT NOTICE BANNER ==================== */
+.draft-banner {
+  max-width:640px; margin:12px auto 0;
+  padding:10px 16px;
+  background:rgba(94,184,255,.1);
+  border:1px solid rgba(94,184,255,.3);
+  border-radius:12px;
+  display:none; align-items:center; justify-content:space-between;
+  font-size:12px; color:#5eb8ff;
+}
+.draft-banner.show { display:flex; }
+.draft-banner button {
+  background:none; border:none; color:#fff; font-size:11px;
+  text-decoration:underline; cursor:pointer; font-weight:700;
+}
 
 /* ==================== UPLOAD ZONE ==================== */
 .upload-zone { max-width:640px; margin:16px auto; padding:0 16px; }
@@ -228,7 +258,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:30px; font-family: -
 }
 .az-select:focus { outline:none; border-color:var(--az-primary); }
 
-/* ==================== TOGGLES (Post to Tribe, Add as Story, Boost) ==================== */
+/* ==================== TOGGLES ==================== */
 .toggle-row {
   display:flex; align-items:center; gap:12px;
   padding:14px 16px;
@@ -323,7 +353,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:30px; font-family: -
   background:var(--az-primary); border-color:var(--az-primary);
 }
 
-/* Boost options inside sub-panel */
+/* Boost options */
 .boost-grid {
   display:grid; grid-template-columns:repeat(2,1fr);
   gap:8px;
@@ -455,6 +485,30 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:30px; font-family: -
   border:1px solid var(--az-primary);
 }
 
+/* ==================== REPORT POST MODAL ==================== */
+.report-modal {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.85); z-index:5000;
+  align-items:flex-end; justify-content:center;
+}
+.report-modal.active { display:flex; }
+.report-panel {
+  background:#161616; width:100%; max-width:540px;
+  border-radius:20px 20px 0 0; padding:20px;
+  border:1px solid rgba(255,255,255,.1);
+}
+.report-panel h3 { margin:0 0 10px; font-size:17px; display:flex; align-items:center; gap:8px; }
+.report-panel select, .report-panel textarea {
+  width:100%; padding:12px; background:#0a0a0a;
+  border:1px solid #333; border-radius:10px; color:#fff;
+  font-family:inherit; font-size:13px; margin-bottom:12px;
+}
+.report-actions { display:flex; gap:10px; }
+.report-actions button {
+  flex:1; padding:12px; border-radius:10px;
+  font-weight:700; cursor:pointer; border:none;
+}
+
 /* ==================== AUTH WALL ==================== */
 .auth-wall {
   max-width:440px; margin:60px auto;
@@ -486,20 +540,14 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:30px; font-family: -
   box-shadow:0 10px 40px rgba(0,0,0,.5);
 }
 .toast-mini.show { opacity:1; transform:translateX(-50%) translateY(0); }
-
-.spinner {
-  display:inline-block; width:14px; height:14px;
-  border:2px solid rgba(255,255,255,.3);
-  border-radius:50%; border-top-color:#fff;
-  animation:spin .7s linear infinite;
-  margin-right:6px; vertical-align:middle;
-}
-@keyframes spin { 100% { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 
 <div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
+
+<!-- Hidden Canvas for Automatic Video Poster Extraction -->
+<canvas id="thumbCanvas" style="display:none;"></canvas>
 
 <!-- ==================== TOP BAR ==================== -->
 <header class="create-topbar" id="topbar" style="display:none;">
@@ -534,11 +582,26 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:30px; font-family: -
     </button>
   </div>
 
-  <!-- Earn banner (only shows for post mode) -->
+  <!-- Draft recovery banner -->
+  <div class="draft-banner" id="draftBanner">
+    <span><i class="fas fa-file-pen"></i> Draft restored from your last session</span>
+    <button onclick="discardDraft()">Discard Draft</button>
+  </div>
+
+  <!-- Earn banner -->
   <div class="earn-banner" id="earnBanner">
     <i class="fas fa-coins" id="earnIcon"></i>
     <div class="text" id="earnBannerText">
       <strong>Earn $0.001</strong> per post · Loading status…
+    </div>
+  </div>
+
+  <!-- Content Moderation Warning Banner -->
+  <div class="moderation-banner" id="modBanner">
+    <i class="fas fa-shield-halved"></i>
+    <div class="mod-text">
+      <strong>Content Sensitivity Alert</strong>
+      This post contains sensitive or violence-related triggers. To protect the community, it <strong>cannot be shared publicly</strong> and has been restricted to <strong>Private (Only Me)</strong>.
     </div>
   </div>
 
@@ -567,7 +630,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:30px; font-family: -
       <label>Caption</label>
       <textarea id="caption" maxlength="2200"
                 placeholder="Write a caption… #hashtags @mentions"
-                oninput="updateCounter()"></textarea>
+                oninput="onCaptionInput()"></textarea>
       <div class="counter"><span id="charCount">0</span> / 2200</div>
       <div class="caption-tools" id="captionTools">
         <button class="caption-tool ai" onclick="aiCaptionSuggest()">
@@ -604,10 +667,10 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:30px; font-family: -
       </div>
     </div>
 
-    <!-- Visibility -->
+    <!-- Visibility (Automatically Locked if Violence is Detected) -->
     <div class="field">
       <label>Visibility</label>
-      <select id="visibility" class="az-select">
+      <select id="visibility" class="az-select" onchange="onVisibilityChange(this)">
         <option value="public">🌍 Public — Everyone</option>
         <option value="followers">👥 Followers Only</option>
         <option value="private">🔒 Private — Only Me</option>
@@ -697,18 +760,21 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:30px; font-family: -
       </div>
     </div>
 
-    <!-- ============ SCHEDULE (optional) ============ -->
+    <!-- ============ SCHEDULE (EXACT TIME RELEASE) ============ -->
     <div class="toggle-row" id="scheduleToggle" onclick="toggleSchedulePanel()">
       <div class="t-icon green"><i class="fas fa-clock"></i></div>
       <div class="t-text">
         <div class="t-title">Schedule for later</div>
-        <div class="t-sub">Publish automatically at a future time</div>
+        <div class="t-sub">Will not be public until exact scheduled time</div>
       </div>
       <div class="switch"></div>
     </div>
     <div class="sub-panel" id="schedulePanel">
-      <label>Publish At</label>
+      <label>Publish At (Exact Time)</label>
       <input type="datetime-local" id="scheduleTime" class="az-select">
+      <div style="font-size:11px;color:var(--az-text-secondary);margin-top:6px;">
+        ⏰ Scheduled posts remain hidden from public feeds and are safely stored until the exact date arrives.
+      </div>
     </div>
 
   </div>
@@ -738,6 +804,33 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:30px; font-family: -
   </div>
 </div>
 
+<!-- ==================== REPORT POST MODAL ==================== -->
+<div class="report-modal" id="reportModal">
+  <div class="report-panel">
+    <h3><i class="fas fa-flag" style="color:#ff4757;"></i> Report Content</h3>
+    <p style="font-size:12px;color:var(--az-text-secondary);margin:0 0 14px;">
+      Help keep Arizona AI safe. Reports are reviewed by our moderation team within 24h.
+    </p>
+
+    <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:#888;">Violation Reason</label>
+    <select id="reportCategory" class="az-select">
+      <option value="violence">Violence, Blood or Physical Harm</option>
+      <option value="hate">Hate Speech or Harassment</option>
+      <option value="spam">Spam, Scam or Impersonation</option>
+      <option value="illegal">Illegal Goods or Weapons</option>
+      <option value="copyright">Intellectual Property Violation</option>
+    </select>
+
+    <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:#888;">Additional Details</label>
+    <textarea id="reportDetails" rows="3" placeholder="Provide extra context to help our reviewers..."></textarea>
+
+    <div class="report-actions">
+      <button style="background:rgba(255,255,255,.1);color:#fff;" onclick="closeReportModal()">Cancel</button>
+      <button style="background:#ff4757;color:#fff;" id="btnSubmitReport" onclick="submitPostReport()">Submit Report</button>
+    </div>
+  </div>
+</div>
+
 <!-- ==================== TOAST ==================== -->
 <div class="toast-mini" id="toastMini"></div>
 
@@ -749,7 +842,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:30px; font-family: -
 let selectedFiles = [];
 let selectedType  = 'post';
 let lastPostId    = null;
-let currentMode   = 'post'; // 'post' | 'story'
+let currentMode   = 'post';
 
 let earnStatus = { count:0, cap:100, remaining:100, reached:false };
 
@@ -768,8 +861,14 @@ let selectedBoost = { duration: '3d', price: 2.49 };
 // Schedule
 let scheduleEnabled = false;
 
-// AI caption
-let aiSuggesting = false;
+// Content Moderation Trigger
+let contentIsFlaggedViolent = false;
+
+// Reporting Target
+let reportingPostId = null;
+
+// Draft Autosave Timer
+let draftSaveTimer = null;
 
 /* ============================================================
    INIT
@@ -801,17 +900,183 @@ function init() {
   });
   document.getElementById('fileInput').addEventListener('change', e => handleFiles(e.target.files));
 
-  // Update boost wallet display
   const w = document.getElementById('boostWallet');
   if (w) w.textContent = '$' + Number(currentWallet?.balance ?? 0).toFixed(2);
 
   loadEarnStatus();
   loadMyTribes();
+  restoreDraft();
 
-  // Deep link: Post.html?mode=story
   const params = new URLSearchParams(window.location.search);
   if (params.get('mode') === 'story') {
     switchMode('story', document.querySelector('.mtab[data-mode="story"]'));
+  }
+  if (params.get('report')) {
+    openReportModal(params.get('report'));
+  }
+}
+
+/* ============================================================
+   VIOLENCE & SENSITIVITY DETECTION (ENGLISH & ARABIC)
+   ============================================================ */
+function checkViolenceFilter(text) {
+  if (!text) return false;
+  const t = text.toLowerCase();
+
+  // High-risk violence, gore, weapons, harm patterns
+  const violentLexicon = [
+    'kill', 'murder', 'behead', 'bloodshed', 'shoot up', 'bombing', 'terrorist',
+    'suicide', 'torture', 'slaughter', 'massacre', 'execute', 'execution',
+    'قتل', 'ذبح', 'تفجير', 'انتحار', 'ارهاب', 'مجزرة', 'تعذيب', 'إعدام', 'سفك دماء'
+  ];
+
+  return violentLexicon.some(word => t.includes(word));
+}
+
+function onCaptionInput() {
+  updateCounter();
+  const text = document.getElementById('caption').value;
+  contentIsFlaggedViolent = checkViolenceFilter(text);
+
+  const modBanner = document.getElementById('modBanner');
+  const visibilitySelect = document.getElementById('visibility');
+
+  if (contentIsFlaggedViolent) {
+    modBanner.classList.add('show');
+    visibilitySelect.value = 'private';
+    visibilitySelect.setAttribute('data-locked', 'true');
+  } else {
+    modBanner.classList.remove('show');
+    visibilitySelect.removeAttribute('data-locked');
+  }
+
+  // Trigger auto-save draft
+  clearTimeout(draftSaveTimer);
+  draftSaveTimer = setTimeout(saveDraft, 2500);
+}
+
+function onVisibilityChange(select) {
+  if (contentIsFlaggedViolent && select.value !== 'private') {
+    select.value = 'private';
+    showToast('⚠️ Flagged content must remain Private (Only Me).');
+  }
+}
+
+/* ============================================================
+   DRAFTS AUTOSAVE & RESTORE
+   ============================================================ */
+function saveDraft() {
+  if (!currentUser) return;
+  const caption = document.getElementById('caption').value;
+  if (!caption.trim() && selectedFiles.length === 0) return;
+
+  const draft = {
+    caption: caption,
+    type: selectedType,
+    visibility: document.getElementById('visibility').value,
+    timestamp: Date.now()
+  };
+  localStorage.setItem(`az_draft_${currentUser.id}`, JSON.stringify(draft));
+}
+
+function restoreDraft() {
+  if (!currentUser) return;
+  const saved = localStorage.getItem(`az_draft_${currentUser.id}`);
+  if (!saved) return;
+
+  try {
+    const draft = JSON.parse(saved);
+    if (draft && draft.caption) {
+      document.getElementById('caption').value = draft.caption;
+      updateCounter();
+      document.getElementById('draftBanner').classList.add('show');
+    }
+  } catch(e) {}
+}
+
+function discardDraft() {
+  if (!currentUser) return;
+  localStorage.removeItem(`az_draft_${currentUser.id}`);
+  document.getElementById('caption').value = '';
+  updateCounter();
+  document.getElementById('draftBanner').classList.remove('show');
+  showToast('Draft discarded 🗑️');
+}
+
+/* ============================================================
+   AUTOMATIC VIDEO THUMBNAIL EXTRACTOR
+   ============================================================ */
+async function captureVideoPoster(file) {
+  return new Promise((resolve) => {
+    try {
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+      video.muted = true;
+      video.playsInline = true;
+      video.src = URL.createObjectURL(file);
+
+      video.onloadedmetadata = () => {
+        video.currentTime = Math.min(0.5, video.duration / 2);
+      };
+
+      video.onseeked = () => {
+        const canvas = document.getElementById('thumbCanvas');
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 360;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob((blob) => {
+          resolve(blob);
+        }, 'image/jpeg', 0.85);
+      };
+
+      video.onerror = () => resolve(null);
+    } catch(e) {
+      resolve(null);
+    }
+  });
+}
+
+/* ============================================================
+   POST REPORTING MODAL
+   ============================================================ */
+function openReportModal(postId) {
+  reportingPostId = postId;
+  document.getElementById('reportModal').classList.add('active');
+}
+
+function closeReportModal() {
+  document.getElementById('reportModal').classList.remove('active');
+  reportingPostId = null;
+}
+
+async function submitPostReport() {
+  if (!currentUser) { showToast('Please sign in to report'); return; }
+  const category = document.getElementById('reportCategory').value;
+  const details = document.getElementById('reportDetails').value.trim();
+  const btn = document.getElementById('btnSubmitReport');
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Submitting…';
+
+  try {
+    const { error } = await supabaseClient.from('post_reports').insert({
+      reporter_id: currentUser.id,
+      post_id: reportingPostId,
+      category: category,
+      reason: details,
+      status: 'pending'
+    });
+
+    if (error) throw error;
+
+    closeReportModal();
+    showToast('✅ Report submitted. Thank you for keeping Arizona AI safe.');
+  } catch(e) {
+    showToast(e.message || 'Error submitting report');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Submit Report';
   }
 }
 
@@ -954,8 +1219,6 @@ function updateCounter() {
    AI CAPTION ASSIST
    ============================================================ */
 async function aiCaptionSuggest() {
-  if (aiSuggesting) return;
-  aiSuggesting = true;
   const btn = event?.target?.closest('.caption-tool');
   const old = btn?.innerHTML;
   if (btn) btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Thinking…';
@@ -973,37 +1236,30 @@ async function aiCaptionSuggest() {
     const caption = (data?.reply || '').trim().replace(/^["']|["']$/g, '');
     if (caption) {
       document.getElementById('caption').value = caption;
-      updateCounter();
+      onCaptionInput();
       showToast('✨ Caption suggested!');
-    } else {
-      throw new Error('Empty response');
     }
   } catch (err) {
-    console.warn(err);
-    // Fallback to local suggestions
     const fallbacks = [
       'Living my best life today ✨',
       'Just another day in paradise 🌵',
       'Making memories that last forever 💫',
-      'New post, who dis? 🔥',
       'Chasing dreams and sunsets 🌅'
     ];
-    const pick = fallbacks[Math.floor(Math.random() * fallbacks.length)];
-    document.getElementById('caption').value = pick;
-    updateCounter();
+    document.getElementById('caption').value = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    onCaptionInput();
     showToast('✨ Caption suggested!');
   } finally {
     if (btn) btn.innerHTML = old;
-    aiSuggesting = false;
   }
 }
 
 function aiHashtagSuggest() {
-  const tags = ['#ArizonaAI', '#desertlife', '#trending', '#vibes', '#explore', '#creator', '#earn', '#family'];
+  const tags = ['#ArizonaAI', '#desertlife', '#trending', '#vibes', '#explore', '#creator', '#earn'];
   const pick = tags.sort(() => 0.5 - Math.random()).slice(0, 5).join(' ');
   const ta = document.getElementById('caption');
   ta.value = (ta.value + ' ' + pick).trim();
-  updateCounter();
+  onCaptionInput();
   showToast('🏷️ Hashtags added');
 }
 
@@ -1012,27 +1268,23 @@ function aiEmojiSuggest() {
   const pick = emojis.sort(() => 0.5 - Math.random()).slice(0, 3).join(' ');
   const ta = document.getElementById('caption');
   ta.value = (ta.value + ' ' + pick).trim();
-  updateCounter();
+  onCaptionInput();
   showToast('😊 Emojis added');
 }
 
 function clearCaption() {
   document.getElementById('caption').value = '';
-  updateCounter();
+  onCaptionInput();
 }
 
-/* ============================================================
-   TRIBE TOGGLE
-   ============================================================ */
+/* ==================== TRIBE TOGGLE ==================== */
 function toggleTribePanel() {
   const row = document.getElementById('tribeToggle');
   const panel = document.getElementById('tribePanel');
   tribeEnabled = !tribeEnabled;
   row.classList.toggle('on', tribeEnabled);
   panel.classList.toggle('active', tribeEnabled);
-  if (tribeEnabled && myTribes.length === 0) {
-    renderTribePicker();
-  }
+  if (tribeEnabled && myTribes.length === 0) renderTribePicker();
 }
 
 async function loadMyTribes() {
@@ -1042,7 +1294,6 @@ async function loadMyTribes() {
     myTribes = data || [];
     renderTribePicker();
   } catch (err) {
-    console.warn('loadMyTribes', err);
     myTribes = [];
     renderTribePicker();
   }
@@ -1083,9 +1334,7 @@ function selectTribe(id) {
   renderTribePicker();
 }
 
-/* ============================================================
-   STORY TOGGLE
-   ============================================================ */
+/* ==================== STORY TOGGLE ==================== */
 function toggleStoryPanel() {
   const row = document.getElementById('storyToggle');
   const panel = document.getElementById('storyPanel');
@@ -1094,9 +1343,7 @@ function toggleStoryPanel() {
   panel.classList.toggle('active', storyEnabled);
 }
 
-/* ============================================================
-   BOOST TOGGLE
-   ============================================================ */
+/* ==================== BOOST TOGGLE ==================== */
 function toggleBoostPanel() {
   const row = document.getElementById('boostToggle');
   const panel = document.getElementById('boostPanel');
@@ -1113,9 +1360,7 @@ function selectBoostSm(el) {
   if (costEl) costEl.textContent = '$' + selectedBoost.price.toFixed(2);
 }
 
-/* ============================================================
-   SCHEDULE TOGGLE
-   ============================================================ */
+/* ==================== SCHEDULE TOGGLE ==================== */
 function toggleSchedulePanel() {
   const row = document.getElementById('scheduleToggle');
   const panel = document.getElementById('schedulePanel');
@@ -1131,24 +1376,29 @@ function toggleSchedulePanel() {
 }
 
 /* ============================================================
-   SUBMIT — POST MODE
+   SUBMIT POST (WITH AUTOMATIC MODERATION & TIMED SCHEDULING)
    ============================================================ */
 async function submitPost() {
   if (currentMode === 'story') return submitAsStory();
 
   const caption = document.getElementById('caption').value.trim();
-  const visibility = document.getElementById('visibility').value;
+  let visibility = document.getElementById('visibility').value;
 
   if (selectedFiles.length === 0 && !caption) {
     return showToast('Add media or write a caption');
   }
 
-  // Tribe check
+  // Violence enforcement: cannot be public
+  if (contentIsFlaggedViolent && visibility !== 'private') {
+    visibility = 'private';
+    document.getElementById('visibility').value = 'private';
+    showToast('Violence-flagged posts are restricted to Private (Only Me).');
+  }
+
   if (tribeEnabled && !selectedTribeId) {
     return showToast('Please select a tribe');
   }
 
-  // Boost balance check
   if (boostEnabled) {
     const bal = Number(currentWallet?.balance ?? 0);
     if (bal < selectedBoost.price) {
@@ -1166,9 +1416,9 @@ async function submitPost() {
   progress.classList.add('active');
 
   try {
-    // 1. Upload files
     const mediaUrls  = [];
     const mediaTypes = [];
+    let uploadedThumbUrl = null;
 
     for (let i = 0; i < selectedFiles.length; i++) {
       const file = selectedFiles[i];
@@ -1178,7 +1428,7 @@ async function submitPost() {
       const path = `${currentUser.id}/${Date.now()}-${i}.${ext}`;
 
       progressText.textContent = `Uploading ${i + 1} of ${selectedFiles.length}…`;
-      progressFill.style.width = `${(i / selectedFiles.length) * 100}%`;
+      progressFill.style.width = `${(i / selectedFiles.length) * 80}%`;
 
       const { data, error } = await supabaseClient.storage
         .from(bucket)
@@ -1188,29 +1438,50 @@ async function submitPost() {
       const { data: urlData } = supabaseClient.storage.from(bucket).getPublicUrl(data.path);
       mediaUrls.push(urlData.publicUrl);
       mediaTypes.push(isVideo ? 'video' : 'image');
+
+      // Auto-extract video poster if it's a video
+      if (isVideo && !uploadedThumbUrl) {
+        progressText.textContent = 'Generating video thumbnail…';
+        const posterBlob = await captureVideoPoster(file);
+        if (posterBlob) {
+          const thumbPath = `${currentUser.id}/thumb-${Date.now()}.jpg`;
+          const { data: tData } = await supabaseClient.storage
+            .from('posts')
+            .upload(thumbPath, posterBlob, { cacheControl: '3600' });
+          if (tData) {
+            uploadedThumbUrl = supabaseClient.storage.from('posts').getPublicUrl(tData.path).data.publicUrl;
+          }
+        }
+      }
     }
 
-    progressFill.style.width = '100%';
-    progressText.textContent = 'Saving post…';
+    progressFill.style.width = '90%';
+    progressText.textContent = 'Publishing…';
 
-    // 2. Insert post
+    // Build post record
     const postInsert = {
-      user_id:        currentUser.id,
-      content:        caption,
-      media_urls:     mediaUrls,
-      media_types:    mediaTypes,
-      post_type:      selectedType,
-      visibility:     visibility,
-      likes_count:    0,
-      comments_count: 0,
-      shares_count:   0,
-      views_count:    0
+      user_id:           currentUser.id,
+      content:           caption,
+      media_urls:        mediaUrls,
+      media_types:       mediaTypes,
+      post_type:         selectedType,
+      visibility:        visibility,
+      thumbnail_url:     uploadedThumbUrl,
+      is_sensitive:      contentIsFlaggedViolent,
+      moderation_status: contentIsFlaggedViolent ? 'restricted_private' : 'approved',
+      post_status:       scheduleEnabled ? 'scheduled' : 'published',
+      likes_count:       0,
+      comments_count:    0,
+      shares_count:      0,
+      views_count:       0
     };
 
-    // Schedule
+    // Schedule handling: strictly accurate future timestamp
     if (scheduleEnabled) {
       const when = document.getElementById('scheduleTime').value;
-      if (when) postInsert.scheduled_for = new Date(when).toISOString();
+      if (when) {
+        postInsert.scheduled_for = new Date(when).toISOString();
+      }
     }
 
     const { data: postData, error: dbError } = await supabaseClient
@@ -1222,7 +1493,7 @@ async function submitPost() {
     if (dbError) throw dbError;
     lastPostId = postData.id;
 
-    // 3. If post to Tribe → also insert into tribe_posts
+    // Tribe insert
     if (tribeEnabled && selectedTribeId) {
       try {
         await supabaseClient.from('tribe_posts').insert({
@@ -1232,29 +1503,25 @@ async function submitPost() {
           media_urls: mediaUrls,
           media_types: mediaTypes
         });
-      } catch (e) { console.warn('Tribe insert failed', e); }
+      } catch (e) {}
     }
 
-    // 4. If story → create a story
+    // Story insert
     if (storyEnabled && mediaUrls.length > 0) {
       try {
-        const firstUrl = mediaUrls[0];
-        const firstType = mediaTypes[0];
-        const expiresAt = new Date(Date.now() + 24 * 3600 * 1000).toISOString();
-
         await supabaseClient.from('stories').insert({
           user_id: currentUser.id,
-          media_url: firstUrl,
-          media_type: firstType,
+          media_url: mediaUrls[0],
+          media_type: mediaTypes[0],
           caption: (document.getElementById('storyCaption')?.value || '').trim() || caption || null,
           visibility: document.getElementById('storyVisibility')?.value || 'public',
           allow_replies: (document.getElementById('storyReplies')?.value || 'true') === 'true',
-          expires_at: expiresAt
+          expires_at: new Date(Date.now() + 24 * 3600 * 1000).toISOString()
         });
-      } catch (e) { console.warn('Story insert failed', e); }
+      } catch (e) {}
     }
 
-    // 5. If boost → update post + charge wallet
+    // Boost insert
     if (boostEnabled) {
       try {
         const durationMs = { '24h': 864e5, '3d': 2592e5, '7d': 6048e5, '14d': 12096e5 }[selectedBoost.duration];
@@ -1269,83 +1536,32 @@ async function submitPost() {
         const newBal = bal - selectedBoost.price;
         const newSpent = Number(currentWallet?.total_spent ?? 0) + selectedBoost.price;
 
-        await supabaseClient.from('wallets').update({
-          balance: newBal,
-          total_spent: newSpent
-        }).eq('user_id', currentUser.id);
-
-        try {
-          await supabaseClient.from('wallet_transactions').insert({
-            user_id: currentUser.id,
-            amount: -selectedBoost.price,
-            type: 'spend',
-            source: 'boost',
-            note: `Boosted post (${selectedBoost.duration}) on create`
-          });
-        } catch (e) {}
-
-        try {
-          await supabaseClient.rpc('log_boost', {
-            p_post_id: lastPostId,
-            p_user_id: currentUser.id,
-            p_duration: selectedBoost.duration,
-            p_price: selectedBoost.price,
-            p_expires_at: expiresAt
-          });
-        } catch (e) {}
+        await supabaseClient.from('wallets').update({ balance: newBal, total_spent: newSpent }).eq('user_id', currentUser.id);
+        await supabaseClient.from('wallet_transactions').insert({
+          user_id: currentUser.id, amount: -selectedBoost.price,
+          type: 'spend', source: 'boost', note: `Boosted post on create`
+        });
 
         currentWallet.balance = newBal;
-        currentWallet.total_spent = newSpent;
-      } catch (e) { console.warn('Boost failed', e); }
+      } catch (e) {}
     }
 
-    // 6. Award earning (post mode only)
-    progressText.textContent = 'Crediting your earnings…';
+    // Credit earnings only if NOT scheduled
+    let earnedResult = { awarded: false, reason: scheduleEnabled ? 'scheduled_pending' : 'awarded' };
 
-    let earnedResult = { awarded: false, reason: 'unknown' };
-
-    try {
-      const { data: rpcData, error: rpcErr } = await supabaseClient.rpc('award_post_earning', {
-        p_user_id: currentUser.id
-      });
-      if (rpcErr) throw rpcErr;
-      if (rpcData) earnedResult = rpcData;
-    } catch (rpcFail) {
-      console.warn('[Earn] RPC failed → fallback:', rpcFail);
+    if (!scheduleEnabled) {
       try {
-        const { data: wallet } = await supabaseClient
-          .from('wallets').select('balance, total_earned').eq('user_id', currentUser.id).single();
-        const oldBal = Number(wallet?.balance || 0);
-        const newBal = oldBal + 0.001;
-        const newEarn = Number(wallet?.total_earned || 0) + 0.001;
-        await supabaseClient.from('wallets').update({ balance: newBal, total_earned: newEarn }).eq('user_id', currentUser.id);
-        await supabaseClient.from('wallet_transactions').insert({
-          user_id: currentUser.id, amount: 0.001, type: 'earn',
-          source: 'post_created', note: 'Earned from creating a post', status: 'completed'
-        });
-        earnedResult = {
-          awarded: true, earned: 0.001,
-          old_balance: oldBal, new_balance: newBal,
-          count: (earnStatus.count || 0) + 1, cap: 100,
-          remaining: Math.max(0, 99 - (earnStatus.count || 0))
-        };
-      } catch (fbFail) {
-        console.error('[Earn] Both failed:', fbFail);
-        earnedResult = { awarded: false, reason: 'system_error' };
-      }
+        const { data: rpcData } = await supabaseClient.rpc('award_post_earning', { p_user_id: currentUser.id });
+        if (rpcData) earnedResult = rpcData;
+      } catch (e) {}
     }
+
+    // Clear saved draft on success
+    if (currentUser) localStorage.removeItem(`az_draft_${currentUser.id}`);
 
     showSuccessScreen(earnedResult);
 
-    if (typeof loadUserData === 'function') {
-      loadUserData().then(() => {
-        const w = document.getElementById('boostWallet');
-        if (w) w.textContent = '$' + Number(currentWallet?.balance ?? 0).toFixed(2);
-      });
-    }
-
   } catch (err) {
-    console.error(err);
     showToast(err.message || 'Failed to post');
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-share"></i> Share';
@@ -1354,7 +1570,7 @@ async function submitPost() {
 }
 
 /* ============================================================
-   SUBMIT — STORY MODE
+   SUBMIT STORY
    ============================================================ */
 async function submitAsStory() {
   if (selectedFiles.length === 0) return showToast('Pick a photo or video first');
@@ -1374,19 +1590,11 @@ async function submitAsStory() {
     const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
     const path = `${currentUser.id}/story-${Date.now()}.${ext}`;
 
-    progressText.textContent = 'Uploading story…';
-    progressFill.style.width = '40%';
-
     const { data: up, error: upErr } = await supabaseClient.storage
       .from('stories').upload(path, file, { cacheControl: '3600' });
     if (upErr) throw upErr;
 
     const { data: urlData } = supabaseClient.storage.from('stories').getPublicUrl(up.path);
-
-    progressFill.style.width = '80%';
-    progressText.textContent = 'Saving story…';
-
-    const expiresAt = new Date(Date.now() + 24 * 3600 * 1000).toISOString();
 
     await supabaseClient.from('stories').insert({
       user_id: currentUser.id,
@@ -1395,13 +1603,9 @@ async function submitAsStory() {
       caption: (document.getElementById('storyCaption')?.value || '').trim() || null,
       visibility: document.getElementById('storyVisibility')?.value || 'public',
       allow_replies: (document.getElementById('storyReplies')?.value || 'true') === 'true',
-      expires_at: expiresAt
+      expires_at: new Date(Date.now() + 24 * 3600 * 1000).toISOString()
     });
 
-    progressFill.style.width = '100%';
-    progressText.textContent = 'Published!';
-
-    // Show success (story variant)
     document.getElementById('createContent').style.display = 'none';
     document.getElementById('topbar').style.display = 'none';
     progress.classList.remove('active');
@@ -1416,7 +1620,6 @@ async function submitAsStory() {
     document.getElementById('successScreen').classList.add('active');
 
   } catch (err) {
-    console.error(err);
     showToast(err.message || 'Failed to publish story');
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-share"></i> Share';
@@ -1432,49 +1635,41 @@ function showSuccessScreen(earned) {
   document.getElementById('topbar').style.display = 'none';
   document.getElementById('uploadProgress').classList.remove('active');
   document.getElementById('earnedBox').style.display = 'block';
-  document.getElementById('successMsg').textContent = 'Your post is now live on Arizona AI.';
 
-  // Bonus badges
+  if (scheduleEnabled) {
+    document.getElementById('successMsg').textContent = '⏰ Your post is scheduled! It will go live at the exact chosen time.';
+  } else if (contentIsFlaggedViolent) {
+    document.getElementById('successMsg').textContent = '🔒 Post saved to your Private archive (Violent content restricted from public feeds).';
+  } else {
+    document.getElementById('successMsg').textContent = 'Your post is now live on Arizona AI.';
+  }
+
   const badges = [];
   if (earned.awarded) badges.push(`<div class="bonus-badge"><i class="fas fa-coins"></i> +$0.001 earned</div>`);
+  if (scheduleEnabled) badges.push(`<div class="bonus-badge"><i class="fas fa-clock"></i> Scheduled Release</div>`);
+  if (contentIsFlaggedViolent) badges.push(`<div class="bonus-badge" style="background:#ff4757;color:#fff;"><i class="fas fa-lock"></i> Private Only</div>`);
   if (storyEnabled) badges.push(`<div class="bonus-badge story"><i class="fas fa-circle-play"></i> Added to stories</div>`);
   if (tribeEnabled && selectedTribeId) badges.push(`<div class="bonus-badge tribe"><i class="fas fa-users"></i> Posted in Tribe</div>`);
   if (boostEnabled) badges.push(`<div class="bonus-badge boost"><i class="fas fa-rocket"></i> Boosted ${selectedBoost.duration}</div>`);
-  if (scheduleEnabled) badges.push(`<div class="bonus-badge"><i class="fas fa-clock"></i> Scheduled</div>`);
   document.getElementById('bonusBadges').innerHTML = badges.join('');
 
   const box        = document.getElementById('earnedBox');
   const amount     = document.getElementById('earnedAmount');
   const label      = document.getElementById('earnedLabel');
-  const newBalance = document.getElementById('newBalance');
   const rem        = document.getElementById('earnedRemaining');
 
-  if (earned.awarded) {
+  if (scheduleEnabled) {
+    box.style.borderColor = 'rgba(255,178,15,.4)';
+    amount.style.color = '#FFB20F';
+    amount.textContent = 'Reward on release';
+    label.textContent = 'Will credit when scheduled post goes live';
+    rem.textContent = 'Scheduled posts earn once published.';
+  } else if (earned.awarded) {
     box.style.borderColor = 'rgba(0,184,148,.4)';
     amount.style.color = '#00b894';
     amount.textContent = '+$0.001';
     label.textContent = '✅ Earned from this post';
-    if (earned.new_balance !== undefined) {
-      newBalance.style.display = 'block';
-      newBalance.textContent = 'New balance: $' + Number(earned.new_balance).toFixed(4);
-    }
-    if (earned.remaining !== undefined) {
-      rem.textContent = `${earned.remaining} of ${earned.cap || 100} earning posts remaining today`;
-    }
-  } else if (earned.reason === 'daily_cap_reached') {
-    box.style.borderColor = 'rgba(255,178,15,.4)';
-    amount.style.color = '#FFB20F';
-    amount.textContent = 'Daily cap reached';
-    label.textContent = 'Max $0.10 earned today';
-    newBalance.style.display = 'none';
-    rem.textContent = 'Resets at midnight UTC · Your post still counts!';
-  } else {
-    box.style.borderColor = 'rgba(255,118,117,.4)';
-    amount.style.color = '#ff7675';
-    amount.textContent = 'Earning pending';
-    label.textContent = 'Will be credited automatically';
-    newBalance.style.display = 'none';
-    rem.textContent = "Your post is saved. Contact support if balance doesn't update.";
+    rem.textContent = `${earned.remaining || 99} of ${earned.cap || 100} earning posts remaining today`;
   }
 
   if (lastPostId) {
@@ -1486,7 +1681,7 @@ function showSuccessScreen(earned) {
 }
 
 /* ============================================================
-   RESET
+   RESET / CANCEL / SHARE
    ============================================================ */
 function resetForm() {
   selectedFiles = [];
@@ -1497,12 +1692,14 @@ function resetForm() {
   storyEnabled = false;
   boostEnabled = false;
   scheduleEnabled = false;
+  contentIsFlaggedViolent = false;
 
   document.getElementById('previews').innerHTML = '';
   document.getElementById('caption').value = '';
   document.getElementById('charCount').textContent = '0';
+  document.getElementById('modBanner').classList.remove('show');
+  document.getElementById('draftBanner').classList.remove('show');
 
-  // Reset all toggles
   ['tribeToggle', 'storyToggle', 'boostToggle', 'scheduleToggle'].forEach(id => {
     const row = document.getElementById(id);
     if (row) row.classList.remove('on');
@@ -1512,69 +1709,39 @@ function resetForm() {
     if (panel) panel.classList.remove('active');
   });
 
-  // Reset mode tabs
-  document.querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
-  const postTab = document.querySelector('.mtab[data-mode="post"]');
-  if (postTab) postTab.classList.add('active');
-  switchMode('post', postTab);
-
-  // Reset type buttons
-  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
-  const first = document.querySelector('.type-btn[data-type="post"]');
-  if (first) first.classList.add('active');
-
   document.getElementById('successScreen').classList.remove('active');
   document.getElementById('createContent').style.display = 'block';
   document.getElementById('topbar').style.display = 'flex';
   document.getElementById('shareBtn').disabled = false;
   document.getElementById('shareBtn').innerHTML = '<i class="fas fa-share"></i> Share';
-  document.getElementById('newBalance').style.display = 'none';
-  document.getElementById('bonusBadges').innerHTML = '';
   lastPostId = null;
 }
 
-/* ============================================================
-   CANCEL
-   ============================================================ */
 function cancelPost() {
   const hasContent = selectedFiles.length > 0 || document.getElementById('caption').value.trim();
   if (hasContent && !confirm('Discard this post?')) return;
   window.location.href = 'index.html';
 }
 
-/* ============================================================
-   SHARE (AMENDED HERE)
-   ============================================================ */
 async function shareMyPost() {
   if (!lastPostId) return;
-  
-  // ✅ FIX: Pointing directly to the new post.html?id= link structure
   const basePath = window.location.pathname.replace(/\/[^\/]*$/, '');
-  const url = window.location.origin + basePath + '/post.html?id=' + lastPostId;
+  const url = window.location.origin + basePath + '/index.html?post=' + lastPostId;
 
   if (navigator.share) {
     try {
-      await navigator.share({
-        title: 'Arizona AI',
-        text: 'Check out my new post on Arizona AI!',
-        url: url
-      });
+      await navigator.share({ title: 'Arizona AI', text: 'Check out my new post!', url: url });
       return;
     } catch (e) {}
   }
-
   try {
     await navigator.clipboard.writeText(url);
     showToast('Post link copied! 📋');
   } catch { showToast('Link: ' + url); }
 }
 
-/* ============================================================
-   HELPERS
-   ============================================================ */
 function escapeHtml(s) {
-  return String(s ?? '').replace(/[&<>"']/g, c =>
-    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 function showToast(msg) {
@@ -1582,7 +1749,7 @@ function showToast(msg) {
   el.textContent = msg;
   el.classList.add('show');
   clearTimeout(window._toastT);
-  window._toastT = setTimeout(() => el.classList.remove('show'), 2200);
+  window._toastT = setTimeout(() => { el.classList.remove('show'); }, 2200);
 }
 
 document.addEventListener('keydown', e => {
