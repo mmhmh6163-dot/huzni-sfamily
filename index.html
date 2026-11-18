@@ -47,6 +47,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Leaflet Map CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <link rel="stylesheet" href="style.css">
 
 <style>
@@ -372,21 +375,8 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
   border:1px solid rgba(94,184,255,.4);
   box-shadow:0 0 20px rgba(94,184,255,.15);
 }
-.ig-post.boosted::before {
-  content:"⚡ Boosted";
-  display:block;
-  background:linear-gradient(135deg,#5eb8ff,#7c3aed);
-  color:#fff; font-size:11px; font-weight:700;
-  padding:5px 16px; letter-spacing:.5px;
-  text-transform:uppercase;
-}
 .ig-post.boost-expiring {
   border-color:rgba(255,178,15,.6);
-}
-.ig-post.boost-expiring::before {
-  content:"⚡ Boost expiring soon";
-  background:linear-gradient(135deg,#FFB20F,#FF6B35);
-  color:#1a1a1a;
 }
 .ig-post-head {
   display:flex; align-items:center; gap:12px;
@@ -410,10 +400,10 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
 .ig-post-head .meta { flex:1; min-width:0; }
 .ig-post-head .meta .name {
   font-weight:700; font-size:14px; color:var(--az-text);
-  display:flex; align-items:center; gap:5px; text-decoration:none;
+  display:flex; align-items:center; gap:5px; text-decoration:none; flex-wrap:wrap;
 }
 .ig-post-head .meta .name .verified { color:#3b82f6; font-size:12px; }
-.ig-post-head .meta .sub { font-size:11px; color:var(--az-text-secondary); }
+.ig-post-head .meta .sub { font-size:11px; color:var(--az-text-secondary); display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:2px; }
 .ig-post-head .post-menu {
   background:none; border:none; color:var(--az-text-secondary);
   font-size:18px; cursor:pointer; padding:4px 8px;
@@ -1341,6 +1331,67 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
   font-size:11px; padding:20px 0 30px; opacity:.5;
 }
 
+/* ==================== 10-MIN ROTATION BAR, POPULARITY & LOCATION ==================== */
+.rotation-status-bar {
+  max-width:640px; margin:0 auto; padding:8px 16px;
+  background:linear-gradient(90deg, rgba(94,184,255,.12), rgba(124,58,237,.12));
+  border-bottom:1px solid rgba(94,184,255,.25);
+  display:none; align-items:center; justify-content:space-between;
+  font-size:11.5px; color:#b8dcff;
+}
+.rotation-status-bar.show { display:flex; }
+.rotation-status-bar strong { color:#5eb8ff; font-variant-numeric:tabular-nums; }
+
+.sponsored-ribbon {
+  display:flex; align-items:center; justify-content:space-between;
+  background:linear-gradient(135deg, #5eb8ff, #7c3aed);
+  color:#fff; font-size:11px; font-weight:800;
+  padding:6px 16px; letter-spacing:.4px; text-transform:uppercase;
+}
+.ig-post.boost-expiring .sponsored-ribbon {
+  background:linear-gradient(135deg, #FFB20F, #FF6B35);
+  color:#111;
+}
+.sponsored-ribbon .plan-pill {
+  background:rgba(0,0,0,.28); padding:2px 8px; border-radius:10px; font-size:10px;
+}
+
+.pop-tier-badge {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:2px 8px; border-radius:10px; font-size:10px; font-weight:800;
+}
+.pop-tier-badge.viral { background:rgba(255,107,53,.2); color:#FF6B35; border:1px solid rgba(255,107,53,.4); }
+.pop-tier-badge.viewed { background:rgba(255,178,15,.16); color:#FFB20F; border:1px solid rgba(255,178,15,.35); }
+.pop-tier-badge.popular { background:rgba(255,71,87,.15); color:#ff6b81; border:1px solid rgba(255,71,87,.35); }
+.pop-tier-badge.fresh { background:rgba(0,184,148,.15); color:#00b894; border:1px solid rgba(0,184,148,.3); }
+
+.post-location-chip {
+  display:inline-flex; align-items:center; gap:4px;
+  background:rgba(255,178,15,.12); border:1px solid rgba(255,178,15,.3);
+  color:var(--az-accent); padding:2px 8px; border-radius:10px;
+  font-size:10.5px; font-weight:700; cursor:pointer;
+}
+.post-location-chip:hover { background:rgba(255,178,15,.24); }
+
+.report-modal, .map-modal {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:3800;
+  align-items:flex-end; justify-content:center;
+}
+.report-modal.active, .map-modal.active { display:flex; }
+.report-panel, .map-panel {
+  background:#161616; width:100%; max-width:640px; border-radius:20px 20px 0 0;
+  padding:20px; padding-bottom:calc(20px + env(safe-area-inset-bottom));
+  border-top:1px solid rgba(255,255,255,.1);
+}
+.report-panel h3, .map-panel h3 { margin:0 0 10px; font-size:17px; color:#fff; display:flex; align-items:center; gap:8px; }
+.report-panel select, .report-panel textarea {
+  width:100%; padding:12px; background:#0a0a0a; border:1px solid #333;
+  border-radius:10px; color:#fff; font-family:inherit; font-size:13px; margin-bottom:12px;
+}
+.report-actions { display:flex; gap:10px; }
+.report-actions button { flex:1; padding:12px; border-radius:10px; font-weight:700; cursor:pointer; border:none; font-family:inherit; }
+#feedMapContainer { width:100%; height:300px; border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,.15); margin-bottom:12px; }
+
 /* ==================== TOAST ==================== */
 .toast-mini {
   position:fixed; bottom:calc(100px + env(safe-area-inset-bottom)); left:50%;
@@ -1484,6 +1535,12 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
   <button class="ftab" data-feed="boosted" onclick="switchFeed('boosted', this)">
     <i class="fas fa-bolt"></i> Boosted
   </button>
+</div>
+
+<!-- 10-Min Boost Rotation Indicator -->
+<div class="rotation-status-bar" id="rotationBar">
+  <span><i class="fas fa-rotate"></i> Paid campaigns rotate by plan rate every 10m</span>
+  <strong id="rotationCountdown">10:00</strong>
 </div>
 
 <!-- ==================== STORIES ROW ==================== -->
@@ -1636,26 +1693,26 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
   <div class="boost-panel">
     <div class="handle"></div>
     <h3>🚀 Boost This Post</h3>
-    <p class="sub">Get more reach & engagement with paid promotion</p>
+    <p class="sub">Global plans · Higher tier increases 10-minute spotlight priority</p>
     <div class="boost-options" id="boostOptions">
       <div class="boost-option" data-boost="24h" data-price="0.99" onclick="selectBoost(this)">
         <div class="icon"><i class="fas fa-bolt"></i></div>
-        <div class="details"><div class="title">Quick Boost — 24 hours</div><div class="desc">~500 views · Perfect for testing</div></div>
+        <div class="details"><div class="title">Quick Boost — 24 hours</div><div class="desc">~500 views · 10x rotation weight</div></div>
         <div class="price">$0.99</div>
       </div>
       <div class="boost-option selected" data-boost="3d" data-price="2.49" onclick="selectBoost(this)">
         <div class="icon"><i class="fas fa-fire"></i></div>
-        <div class="details"><div class="title">Standard — 3 days ⭐</div><div class="desc">~3,000 views · Most popular</div></div>
+        <div class="details"><div class="title">Standard — 3 days ⭐</div><div class="desc">~3,000 views · 25x rotation weight</div></div>
         <div class="price">$2.49</div>
       </div>
       <div class="boost-option" data-boost="7d" data-price="4.99" onclick="selectBoost(this)">
         <div class="icon"><i class="fas fa-rocket"></i></div>
-        <div class="details"><div class="title">Premium — 7 days</div><div class="desc">~10,000 views · Best value</div></div>
+        <div class="details"><div class="title">Premium — 7 days</div><div class="desc">~10,000 views · 50x rotation weight</div></div>
         <div class="price">$4.99</div>
       </div>
       <div class="boost-option" data-boost="14d" data-price="8.99" onclick="selectBoost(this)">
         <div class="icon"><i class="fas fa-crown"></i></div>
-        <div class="details"><div class="title">Mega — 14 days</div><div class="desc">~25,000 views · Maximum reach</div></div>
+        <div class="details"><div class="title">Mega — 14 days</div><div class="desc">~25,000 views · 100x top spotlight</div></div>
         <div class="price">$8.99</div>
       </div>
     </div>
@@ -1669,6 +1726,43 @@ body { background:#0a0a0a; padding-top:calc(60px + env(safe-area-inset-top)); pa
       <button class="confirm" id="boostConfirmBtn" onclick="confirmBoost()">
         <i class="fas fa-rocket"></i> Boost Now
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== REPORT POST MODAL ==================== -->
+<div class="report-modal" id="reportModal" onclick="if(event.target.id==='reportModal') closeReportModal()">
+  <div class="report-panel" onclick="event.stopPropagation()">
+    <h3><i class="fas fa-flag" style="color:#ff4757;"></i> Report Content</h3>
+    <p style="font-size:12px;color:var(--az-text-secondary);margin:0 0 12px;">
+      Help keep Arizona AI safe. Reports are reviewed by our moderation team.
+    </p>
+    <select id="reportCategory">
+      <option value="violence">Violence, Blood or Physical Harm</option>
+      <option value="hate">Hate Speech or Harassment</option>
+      <option value="spam">Spam, Scam or Impersonation</option>
+      <option value="illegal">Illegal Goods or Weapons</option>
+      <option value="copyright">Intellectual Property Violation</option>
+    </select>
+    <textarea id="reportDetails" rows="3" placeholder="Provide extra context for reviewers..."></textarea>
+    <div class="report-actions">
+      <button style="background:rgba(255,255,255,.1);color:#fff;" onclick="closeReportModal()">Cancel</button>
+      <button style="background:#ff4757;color:#fff;" id="btnSubmitReport" onclick="submitPostReport()">Submit Report</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== IN-APP POST LOCATION MAP MODAL ==================== -->
+<div class="map-modal" id="viewMapModal" onclick="if(event.target.id==='viewMapModal') closePostMapModal()">
+  <div class="map-panel" onclick="event.stopPropagation()">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <h3><i class="fas fa-location-dot" style="color:var(--az-accent);"></i> <span id="feedMapTitle">Location</span></h3>
+      <button onclick="closePostMapModal()" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="feedMapContainer"></div>
+    <div class="report-actions">
+      <button style="background:rgba(255,255,255,.1);color:#fff;" onclick="closePostMapModal()">Close</button>
+      <button style="background:var(--az-gradient);color:#fff;" onclick="openFeedExternalMaps()">Open in Maps</button>
     </div>
   </div>
 </div>
@@ -1762,20 +1856,30 @@ let feedLoading = false;
 let feedExhausted = false;
 let currentFeedPosts = [];
 
+let boostRotationPool = [];
+let boostCursor = 0;
+let organicCountSinceLastBoost = 0;
+let currentRotationBucket = Math.floor(Date.now() / 600000);
+
 let pendingNewPosts = false;
 let realtimeFeedChannel = null;
+let realtimeWalletChannel = null;
 
 let viewObserver = null;
 let videoObserver = null;
 const viewedPosts = new Set();
 const shownBoostedIds = new Set();
+const loggedImpressions = new Set();
 
 let boostStats = null;
+let reportingPostId = null;
 
-/* TikTok Viewer State */
+/* TikTok Viewer & Map State */
 let ttObserver = null;
 let ttActiveIndex = 0;
 let ttIsMuted = false;
+let feedMapInstance = null;
+let feedMapTargetLoc = '';
 
 /* ============================================================
    TRANSLATIONS
@@ -1837,6 +1941,7 @@ async function init() {
   if (currentUser) {
     const { data: follows } = await supabaseClient.from('follows').select('following_id').eq('follower_id', currentUser.id);
     followingIds = new Set((follows || []).map(f => f.following_id));
+    setupRealtimeWallet();
   }
 
   await loadLikedPosts();
@@ -1851,6 +1956,8 @@ async function init() {
   setupPullToRefresh();
   setupViewObserver();
   setupVideoAutopause();
+  startAutoReleaseWatcher();
+  startRotationTimer();
 
   if (deepLinkPostId) {
     setTimeout(() => {
@@ -1880,7 +1987,68 @@ function switchFeed(mode, el) {
   currentFeedMode = mode;
   document.querySelectorAll('.feed-tabs .ftab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
+  const rotBar = document.getElementById('rotationBar');
+  if (rotBar) rotBar.classList.toggle('show', mode === 'boosted');
   resetAndLoadFeed();
+}
+
+function startRotationTimer() {
+  setInterval(async () => {
+    const nowSec = Math.floor(Date.now() / 1000);
+    const bucket = Math.floor(nowSec / 600);
+    const secLeft = 600 - (nowSec % 600);
+    const m = String(Math.floor(secLeft / 60)).padStart(2, '0');
+    const s = String(secLeft % 60).padStart(2, '0');
+    const el = document.getElementById('rotationCountdown');
+    if (el) el.textContent = `${m}:${s}`;
+
+    if (bucket !== currentRotationBucket) {
+      currentRotationBucket = bucket;
+      if (currentFeedMode === 'boosted') {
+        await resetAndLoadFeed();
+        showToast('⚡ Boosted campaigns rotated!');
+      } else {
+        boostRotationPool = await fetchRotatedBoostPool();
+        boostCursor = 0;
+      }
+    }
+  }, 1000);
+}
+
+function startAutoReleaseWatcher() {
+  setInterval(async () => {
+    try {
+      const { data } = await supabaseClient.rpc('publish_due_scheduled_posts');
+      if (data && data.published_posts > 0) {
+        pendingNewPosts = true;
+        showNewPostsBanner(`${data.published_posts} scheduled post(s) just went live — tap to refresh`);
+      }
+    } catch (e) {}
+  }, 15000);
+}
+
+function setupRealtimeWallet() {
+  if (!currentUser) return;
+  if (realtimeWalletChannel) supabaseClient.removeChannel(realtimeWalletChannel);
+  realtimeWalletChannel = supabaseClient
+    .channel('wallet-live-' + currentUser.id)
+    .on('postgres_changes', {
+      event: 'UPDATE', schema: 'public', table: 'wallets',
+      filter: `user_id=eq.${currentUser.id}`
+    }, payload => {
+      if (payload.new && payload.new.balance !== undefined) {
+        if (!currentWallet) currentWallet = {};
+        currentWallet.balance = payload.new.balance;
+        currentWallet.total_spent = payload.new.total_spent;
+        const balEl = document.getElementById('uBalance');
+        if (balEl) {
+          balEl.textContent = '$' + Number(payload.new.balance).toFixed(2);
+          balEl.style.color = '#00b894';
+          setTimeout(() => { balEl.style.color = ''; }, 1500);
+        }
+      }
+    })
+    .subscribe();
 }
 
 /* ============================================================
@@ -2015,8 +2183,12 @@ async function resetAndLoadFeed() {
   feedOffset = 0;
   feedExhausted = false;
   currentFeedPosts = [];
+  boostRotationPool = [];
+  boostCursor = 0;
+  organicCountSinceLastBoost = 0;
   viewedPosts.clear();
   shownBoostedIds.clear();
+  loggedImpressions.clear();
   await loadMoreFeed(true);
 }
 
@@ -2041,10 +2213,16 @@ async function loadMoreFeed(replace = false) {
     let posts = [];
 
     if (deepLinkPostId && replace) {
+      const nowIso = new Date().toISOString();
       const { data: targetPost } = await supabaseClient
         .from('posts')
-        .select(`*, profiles:user_id (username, display_name, avatar_url, is_verified)`)
+        .select(`*, profiles:user_id (username, display_name, avatar_url, is_verified, location, latitude, longitude)`)
         .eq('id', deepLinkPostId)
+        .eq('visibility', 'public')
+        .eq('is_sensitive', false)
+        .eq('moderation_status', 'approved')
+        .eq('post_status', 'published')
+        .or(`scheduled_for.is.null,scheduled_for.lte.${nowIso}`)
         .maybeSingle();
       if (targetPost) posts.push(targetPost);
     }
@@ -2092,65 +2270,89 @@ async function loadMoreFeed(replace = false) {
 /* ============================================================
    FETCH POSTS FOR MODE
    ============================================================ */
+async function fetchRotatedBoostPool() {
+  const nowIso = new Date().toISOString();
+  try {
+    const { data, error } = await supabaseClient.rpc('get_rotated_boosted_posts', { p_limit: 25 });
+    if (error) throw error;
+    return (data || []).map(row => ({ ...row, _isSponsoredSlot: true }));
+  } catch (e) {
+    const { data } = await supabaseClient
+      .from('posts')
+      .select(`*, profiles:user_id (username, display_name, avatar_url, is_verified, location, latitude, longitude)`)
+      .eq('visibility', 'public')
+      .eq('is_sensitive', false)
+      .eq('post_status', 'published')
+      .eq('is_boosted', true)
+      .gt('boost_expires_at', nowIso)
+      .or(`scheduled_for.is.null,scheduled_for.lte.${nowIso}`)
+      .order('boost_expires_at', { ascending: false })
+      .limit(25);
+    return (data || []).map(row => ({ ...row, _isSponsoredSlot: true }));
+  }
+}
+
 async function fetchPostsForMode() {
   const from = feedOffset;
   const to   = feedOffset + FEED_PAGE_SIZE - 1;
   const nowIso = new Date().toISOString();
-  const selectFields = `*, profiles:user_id (username, display_name, avatar_url, is_verified)`;
+  const selectFields = `*, profiles:user_id (username, display_name, avatar_url, is_verified, location, latitude, longitude)`;
 
   if (currentFeedMode === 'boosted') {
-    const { data, error } = await supabaseClient
-      .from('posts')
-      .select(selectFields)
-      .eq('visibility', 'public')
-      .eq('is_boosted', true)
-      .gt('boost_expires_at', nowIso)
-      .order('boost_expires_at', { ascending: false })
-      .range(from, to);
-    if (error) throw error;
-    if ((data || []).length < FEED_PAGE_SIZE) feedExhausted = true;
-    feedOffset += (data || []).length;
-    return data || [];
+    const pool = await fetchRotatedBoostPool();
+    feedExhausted = true;
+    return pool;
+  }
+
+  if (feedOffset === 0 || boostRotationPool.length === 0) {
+    boostRotationPool = await fetchRotatedBoostPool();
+    boostCursor = 0;
   }
 
   if (currentFeedMode === 'for-you') {
-    const { data: normals, error: nErr } = await supabaseClient
-      .from('posts')
-      .select(selectFields)
-      .eq('visibility', 'public')
-      .or(`is_boosted.is.null,is_boosted.eq.false,boost_expires_at.lt.${nowIso}`)
-      .order('created_at', { ascending: false })
-      .range(from, to);
-    if (nErr) throw nErr;
+    let normals = [];
+    try {
+      const { data, error } = await supabaseClient.rpc('get_for_you_feed', {
+        p_limit: FEED_PAGE_SIZE,
+        p_offset: from
+      });
+      if (error) throw error;
+      normals = data || [];
+    } catch (rpcErr) {
+      const { data, error } = await supabaseClient
+        .from('posts')
+        .select(selectFields)
+        .eq('visibility', 'public')
+        .eq('is_sensitive', false)
+        .eq('moderation_status', 'approved')
+        .eq('post_status', 'published')
+        .or(`scheduled_for.is.null,scheduled_for.lte.${nowIso}`)
+        .or(`is_boosted.is.null,is_boosted.eq.false,boost_expires_at.lt.${nowIso}`)
+        .order('views_count', { ascending: false })
+        .order('likes_count', { ascending: false })
+        .order('created_at', { ascending: false })
+        .range(from, to);
+      if (error) throw error;
+      normals = data || [];
+    }
 
-    const { data: boosts, error: bErr } = await supabaseClient
-      .from('posts')
-      .select(selectFields)
-      .eq('visibility', 'public')
-      .eq('is_boosted', true)
-      .gt('boost_expires_at', nowIso)
-      .order('boost_expires_at', { ascending: false })
-      .limit(50);
-    if (bErr) throw bErr;
-
-    const freshBoosts = (boosts || []).filter(b => !shownBoostedIds.has(b.id));
-    freshBoosts.forEach(b => shownBoostedIds.add(b.id));
-
-    if ((normals || []).length < FEED_PAGE_SIZE && freshBoosts.length === 0) feedExhausted = true;
-    feedOffset += (normals || []).length;
-
-    return mergeBoosted(normals || [], freshBoosts);
+    if (normals.length < FEED_PAGE_SIZE) feedExhausted = true;
+    feedOffset += normals.length;
+    return mergeBoosted(normals, boostRotationPool);
   }
 
   if (currentFeedMode === 'following') {
     const followIds = [...followingIds];
-
     let normals = [];
     if (followIds.length > 0) {
       const { data, error } = await supabaseClient
         .from('posts')
         .select(selectFields)
         .eq('visibility', 'public')
+        .eq('is_sensitive', false)
+        .eq('moderation_status', 'approved')
+        .eq('post_status', 'published')
+        .or(`scheduled_for.is.null,scheduled_for.lte.${nowIso}`)
         .in('user_id', followIds)
         .order('created_at', { ascending: false })
         .range(from, to);
@@ -2158,65 +2360,68 @@ async function fetchPostsForMode() {
       normals = data || [];
     }
 
-    const { data: boosts, error: bErr } = await supabaseClient
-      .from('posts')
-      .select(selectFields)
-      .eq('visibility', 'public')
-      .eq('is_boosted', true)
-      .gt('boost_expires_at', nowIso)
-      .order('boost_expires_at', { ascending: false })
-      .limit(50);
-    if (bErr) throw bErr;
-
-    const freshBoosts = (boosts || []).filter(b => !shownBoostedIds.has(b.id));
-    freshBoosts.forEach(b => shownBoostedIds.add(b.id));
-
-    if (normals.length < FEED_PAGE_SIZE && freshBoosts.length === 0) feedExhausted = true;
+    if (normals.length < FEED_PAGE_SIZE) feedExhausted = true;
     feedOffset += normals.length;
-
-    return mergeBoosted(normals, freshBoosts);
+    return mergeBoosted(normals, boostRotationPool);
   }
 
   return [];
 }
 
+/* Exact 4-Organic-to-1-Boosted Feed Placement */
 function mergeBoosted(normals, boosts) {
-  const boostIds = new Set(boosts.map(b => b.id));
-  const cleanNormals = normals.filter(n => !boostIds.has(n.id));
+  const pool = boosts || boostRotationPool || [];
+  if (pool.length === 0) return normals;
+  if (normals.length === 0) return feedOffset === 0 ? pool.slice(0, 1) : [];
 
-  if (boosts.length === 0) return cleanNormals;
-  if (cleanNormals.length === 0) return boosts;
-
-  const shuffled = [...boosts];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-
+  const existingNormalIds = new Set(normals.map(n => n.id));
   const result = [];
-  const remaining = [...shuffled];
-  let normalIdx = 0;
+  let injectedInBatch = false;
 
-  if (remaining.length > 0) result.push(remaining.shift());
-
-  while (normalIdx < cleanNormals.length || remaining.length > 0) {
-    const gap = 3 + Math.floor(Math.random() * 4);
-    for (let i = 0; i < gap && normalIdx < cleanNormals.length; i++) {
-      result.push(cleanNormals[normalIdx++]);
+  const pickNextBoost = () => {
+    for (let attempt = 0; attempt < pool.length; attempt++) {
+      const candidate = pool[(boostCursor + attempt) % pool.length];
+      if (!existingNormalIds.has(candidate.id)) {
+        boostCursor = (boostCursor + attempt + 1) % pool.length;
+        return { ...candidate, _isSponsoredSlot: true };
+      }
     }
-    if (remaining.length > 0) {
-      result.push(remaining.shift());
-    } else if (normalIdx >= cleanNormals.length) {
-      break;
+    return null;
+  };
+
+  for (const post of normals) {
+    result.push(post);
+    organicCountSinceLastBoost++;
+    if (organicCountSinceLastBoost % 4 === 0) {
+      const picked = pickNextBoost();
+      if (picked) { result.push(picked); injectedInBatch = true; }
     }
   }
-  while (remaining.length > 0) result.push(remaining.shift());
+
+  if (feedExhausted && !injectedInBatch && organicCountSinceLastBoost > 0 && organicCountSinceLastBoost < 4) {
+    const picked = pickNextBoost();
+    if (picked) result.push(picked);
+  }
+
   return result;
 }
 
 /* ============================================================
    RENDER POST
    ============================================================ */
+function getPopularityBadgeHtml(post) {
+  if (currentFeedMode !== 'for-you') return '';
+  const tier = post.popularity_tier || (
+    (post.views_count || 0) >= 1000 || (post.likes_count || 0) >= 100 ? 'Top Viral' :
+    (post.views_count || 0) >= 100  || (post.likes_count || 0) >= 20  ? 'Most Viewed' :
+    (post.likes_count || 0) >= 5    || (post.comments_count || 0) >= 3 ? 'Popular' : 'Fresh'
+  );
+  if (tier === 'Top Viral')   return `<span class="pop-tier-badge viral"><i class="fas fa-fire"></i> Top Viral</span>`;
+  if (tier === 'Most Viewed') return `<span class="pop-tier-badge viewed"><i class="fas fa-eye"></i> Most Viewed</span>`;
+  if (tier === 'Popular')     return `<span class="pop-tier-badge popular"><i class="fas fa-heart"></i> Popular</span>`;
+  return `<span class="pop-tier-badge fresh"><i class="fas fa-sparkles"></i> Fresh</span>`;
+}
+
 function renderPost(post) {
   const prof    = post.profiles || {};
   const name    = prof.display_name || prof.username || 'user';
@@ -2231,9 +2436,10 @@ function renderPost(post) {
     : initial;
 
   const mediaUrls = Array.isArray(post.media_urls) ? post.media_urls : [];
-  const mediaHtml = mediaUrls.map((url, idx) => {
+  const posterAttr = post.thumbnail_url ? `poster="${escapeHtml(post.thumbnail_url)}"` : '';
+  const mediaHtml = mediaUrls.map((url) => {
     if (/\.(mp4|webm|ogg|mov)$/i.test(url)) {
-      return `<video src="${escapeHtml(url)}" controls playsinline preload="metadata" onclick="event.stopPropagation(); openTtViewer('${post.id}')"></video>`;
+      return `<video id="feed-video-${post.id}" src="${escapeHtml(url)}" ${posterAttr} controls playsinline preload="metadata" onclick="event.stopPropagation(); openTtViewer('${post.id}')"></video>`;
     }
     return `<img src="${escapeHtml(url)}" alt="Post image" loading="lazy" decoding="async" onclick="openTtViewer('${post.id}')" onerror="this.style.display='none'">`;
   }).join('');
@@ -2247,37 +2453,55 @@ function renderPost(post) {
 
   const now = Date.now();
   const expiresAt = post.boost_expires_at ? new Date(post.boost_expires_at).getTime() : 0;
-  const isBoosted = post.is_boosted && expiresAt > now;
-  const hoursLeft = isBoosted ? Math.floor((expiresAt - now) / 3600000) : 0;
+  const isBoosted = (post.is_boosted && expiresAt > now) || post._isSponsoredSlot;
+  const hoursLeft = isBoosted ? Math.max(0, Math.floor((expiresAt - now) / 3600000)) : 0;
   const isExpiring = isBoosted && hoursLeft < 6;
 
+  let sponsoredRibbon = '';
   let boostBar = '';
   if (isBoosted) {
     const timeLabel = hoursLeft < 1 ? 'Less than 1h left'
                    : hoursLeft < 24 ? `${hoursLeft}h left`
                    : `${Math.floor(hoursLeft/24)}d left`;
+    const planLabel = post.plan_id ? `Plan: ${String(post.plan_id).toUpperCase()}` : 'Sponsored';
+    sponsoredRibbon = `
+      <div class="sponsored-ribbon">
+        <span><i class="fas fa-bolt"></i> ${isExpiring ? 'Sponsored · Expiring Soon' : 'Sponsored'}</span>
+        <span class="plan-pill">${escapeHtml(planLabel)}</span>
+      </div>`;
     boostBar = `
       <div class="post-boost-bar">
-        <i class="fas fa-bolt"></i>
-        <span>Boosted by ${isOwnPost ? 'you' : '@' + escapeHtml(uname)}</span>
-        <span class="growth"><i class="fas fa-arrow-up"></i> Reaching more people</span>
+        <i class="fas fa-chart-line"></i>
+        <span>Promoted by ${isOwnPost ? 'you' : '@' + escapeHtml(uname)}</span>
+        <span class="growth"><i class="fas fa-arrow-up"></i> ${(post.impressions_count ?? post.views_count ?? 0)} reach</span>
         <span class="time-left">${timeLabel}</span>
       </div>`;
   }
 
+  const locText = post.location_name || prof.location || '';
+  const locLat = post.latitude ?? prof.latitude ?? '';
+  const locLng = post.longitude ?? prof.longitude ?? '';
+  const locationChip = locText
+    ? `<span class="post-location-chip" onclick="event.stopPropagation(); openPostMapModal('${escapeHtml(locText)}', '${locLat}', '${locLng}')"><i class="fas fa-location-dot"></i> ${escapeHtml(locText)}</span>`
+    : '';
+
+  const popBadge = !isBoosted ? getPopularityBadgeHtml(post) : '';
+
   const classNames = ['ig-post'];
   if (isBoosted) classNames.push('boosted');
   if (isExpiring) classNames.push('boost-expiring');
+  const campaignAttr = post.campaign_id ? `data-campaign-id="${post.campaign_id}"` : '';
 
   return `
-    <article class="${classNames.join(' ')}" data-id="${post.id}" data-user-id="${post.user_id}">
+    <article class="${classNames.join(' ')}" data-id="${post.id}" data-user-id="${post.user_id}" ${campaignAttr} onclick="handlePostCardClick(event, '${post.campaign_id || ''}')">
+      ${sponsoredRibbon}
       <div class="ig-post-head">
         <a href="profile.html?user=${post.user_id}" class="p-avatar ${hasActiveStory ? 'has-story' : ''}">${avatarHtml}</a>
         <div class="meta">
-          <a href="profile.html?user=${post.user_id}" class="name">${escapeHtml(name)} ${verified}</a>
-          <div class="sub">@${escapeHtml(uname)} · ${timeAgo}</div>
+          <a href="profile.html?user=${post.user_id}" class="name">${escapeHtml(name)} ${verified} ${popBadge}</a>
+          <div class="sub"><span>@${escapeHtml(uname)} · ${timeAgo}</span>${locationChip}</div>
         </div>
-        <button class="post-menu" onclick="openPostOptions('${post.id}', ${isOwnPost})">
+        <button class="post-menu" onclick="event.stopPropagation(); openPostOptions('${post.id}', ${isOwnPost})">
           <i class="fas fa-ellipsis-v"></i>
         </button>
       </div>
@@ -2352,7 +2576,7 @@ function buildTtSlideHtml(post) {
     <div class="tt-slide" data-id="${post.id}" data-user-id="${post.user_id}">
       <div class="tt-media-wrap" onclick="toggleTtPlayPause(this)" ondblclick="doubleTapLike('${post.id}')">
         ${isVideo
-          ? `<video src="${escapeHtml(primaryMedia)}" playsinline loop preload="auto" ${ttIsMuted ? 'muted' : ''}></video>`
+          ? `<video src="${escapeHtml(primaryMedia)}" ${post.thumbnail_url ? `poster="${escapeHtml(post.thumbnail_url)}"` : ''} playsinline loop preload="metadata" ${ttIsMuted ? 'muted' : ''}></video>`
           : `<img src="${escapeHtml(primaryMedia)}" alt="Post image" decoding="async">`
         }
       </div>
@@ -2416,12 +2640,54 @@ function buildTtSlideHtml(post) {
   `;
 }
 
+function handlePostCardClick(e, campaignId) {
+  if (campaignId && !e.target.closest('button')) {
+    supabaseClient.rpc('log_boost_click', { p_campaign_id: campaignId }).catch(()=>{});
+  }
+}
+
+function openPostMapModal(locationName, lat, lng) {
+  feedMapTargetLoc = locationName;
+  document.getElementById('feedMapTitle').textContent = locationName;
+  document.getElementById('viewMapModal').classList.add('active');
+  const numLat = parseFloat(lat), numLng = parseFloat(lng);
+
+  setTimeout(async () => {
+    if (feedMapInstance) feedMapInstance.remove();
+    let finalLat = numLat, finalLng = numLng;
+    if (isNaN(finalLat) || isNaN(finalLng)) {
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(locationName)}`);
+        const geo = await res.json();
+        if (geo && geo[0]) { finalLat = parseFloat(geo[0].lat); finalLng = parseFloat(geo[0].lon); }
+      } catch (e) {}
+    }
+    if (isNaN(finalLat) || isNaN(finalLng)) { finalLat = 33.3152; finalLng = 44.3661; }
+    feedMapInstance = L.map('feedMapContainer').setView([finalLat, finalLng], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(feedMapInstance);
+    L.marker([finalLat, finalLng]).addTo(feedMapInstance).bindPopup(escapeHtml(locationName)).openPopup();
+  }, 120);
+}
+function closePostMapModal() { document.getElementById('viewMapModal').classList.remove('active'); }
+function openFeedExternalMaps() {
+  if (feedMapTargetLoc) window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(feedMapTargetLoc)}`, '_blank');
+}
+
 function openTtViewer(postId) {
   const viewer = document.getElementById('ttViewer');
   const slider = document.getElementById('ttSlider');
   const mediaPosts = currentFeedPosts.filter(p => Array.isArray(p.media_urls) && p.media_urls.length > 0);
-
   if (mediaPosts.length === 0) return;
+
+  let syncTime = 0;
+  const feedVid = document.getElementById('feed-video-' + postId);
+  if (feedVid) {
+    syncTime = feedVid.currentTime || 0;
+    ttIsMuted = feedVid.muted;
+    const icon = document.getElementById('ttSoundIcon');
+    if (icon) icon.className = ttIsMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+    feedVid.pause();
+  }
 
   slider.innerHTML = mediaPosts.map(p => buildTtSlideHtml(p)).join('');
   viewer.classList.add('active');
@@ -2429,13 +2695,16 @@ function openTtViewer(postId) {
 
   const targetIndex = mediaPosts.findIndex(p => p.id === postId);
   const initialIdx = targetIndex >= 0 ? targetIndex : 0;
-
   setupTtIntersectionObserver();
 
   setTimeout(() => {
     const slides = slider.querySelectorAll('.tt-slide');
     if (slides[initialIdx]) {
       slides[initialIdx].scrollIntoView({ behavior: 'auto' });
+      const ttVid = slides[initialIdx].querySelector('video');
+      if (ttVid && syncTime > 0) {
+        try { ttVid.currentTime = syncTime; } catch (e) {}
+      }
       handleTtSlideActive(slides[initialIdx]);
     }
   }, 60);
@@ -2455,14 +2724,17 @@ function appendTtSlides(newPosts) {
 function closeTtViewer() {
   const viewer = document.getElementById('ttViewer');
   const slider = document.getElementById('ttSlider');
-  if (ttObserver) {
-    ttObserver.disconnect();
-    ttObserver = null;
-  }
-  // Pause all videos
-  slider.querySelectorAll('video').forEach(v => {
-    v.pause();
-    v.currentTime = 0;
+  if (ttObserver) { ttObserver.disconnect(); ttObserver = null; }
+  slider.querySelectorAll('.tt-slide').forEach(slide => {
+    const v = slide.querySelector('video');
+    if (v) {
+      if (!v.paused) {
+        const feedVid = document.getElementById('feed-video-' + slide.dataset.id);
+        if (feedVid) { try { feedVid.currentTime = v.currentTime; feedVid.muted = ttIsMuted; } catch (e) {} }
+      }
+      v.pause();
+      v.currentTime = 0;
+    }
   });
   slider.innerHTML = '';
   viewer.classList.remove('active');
@@ -2505,7 +2777,6 @@ function handleTtSlideActive(slideEl) {
     const playPromise = video.play();
     if (playPromise !== undefined) {
       playPromise.catch(() => {
-        // Autoplay policy fallback: mute and retry
         video.muted = true;
         video.play().catch(() => {});
       });
@@ -2548,7 +2819,6 @@ function toggleTtSound() {
   showToast(ttIsMuted ? 'Muted 🔇' : 'Sound On 🔊');
 }
 
-// Backward compatibility alias for any existing openFs triggers
 function openFs(postId, idx) {
   openTtViewer(postId);
 }
@@ -2594,11 +2864,34 @@ async function postOptAction(action) {
   }
 }
 
-async function reportPost(postId) {
+function reportPost(postId) {
   if (!currentUser) { showToast('Sign in to report'); return; }
-  const reason = prompt('Why are you reporting this post? (spam, nudity, hate, other)', 'spam');
-  if (!reason) return;
-  showToast('✅ Report submitted. Thank you.');
+  reportingPostId = postId;
+  const det = document.getElementById('reportDetails');
+  if (det) det.value = '';
+  document.getElementById('reportModal').classList.add('active');
+}
+function closeReportModal() {
+  document.getElementById('reportModal').classList.remove('active');
+  reportingPostId = null;
+}
+async function submitPostReport() {
+  if (!currentUser || !reportingPostId) return;
+  const category = document.getElementById('reportCategory').value;
+  const details  = document.getElementById('reportDetails').value.trim();
+  const btn = document.getElementById('btnSubmitReport');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Submitting…';
+  try {
+    const { error } = await supabaseClient.from('post_reports').insert({
+      reporter_id: currentUser.id, post_id: reportingPostId,
+      category: category, reason: details, status: 'pending'
+    });
+    if (error) throw error;
+    closeReportModal();
+    showToast('✅ Report submitted. Thank you for keeping Arizona AI safe.');
+  } catch (e) { showToast(e.message || 'Error submitting report'); }
+  finally { btn.disabled = false; btn.innerHTML = 'Submit Report'; }
 }
 
 /* ============================================================
@@ -2658,31 +2951,45 @@ function closeViewers() {
 async function toggleLike(postId, btn) {
   if (!currentUser) { showToast('Sign in to like'); return; }
   const isLiked = likedPosts.has(postId);
-  
-  // UI optimistic update
-  updateLikeUi(postId, !isLiked);
+  const postObj = currentFeedPosts.find(p => p.id === postId);
+  const prevCount = postObj ? Number(postObj.likes_count || 0) : 0;
+  const optimisticCount = Math.max(0, prevCount + (isLiked ? -1 : 1));
+
+  updateLikeUi(postId, !isLiked, optimisticCount);
 
   try {
-    if (isLiked) {
-      await supabaseClient.from('likes').delete().eq('user_id', currentUser.id).eq('post_id', postId);
-      likedPosts.delete(postId);
-    } else {
-      await supabaseClient.from('likes').insert({ user_id: currentUser.id, post_id: postId });
+    const { data, error } = await supabaseClient.rpc('toggle_post_like_v2', { p_post_id: postId });
+    if (error) throw error;
+    if (data.liked) {
       likedPosts.add(postId);
       if (navigator.vibrate) navigator.vibrate(15);
+    } else {
+      likedPosts.delete(postId);
     }
-    await refreshPostCounters(postId);
+    if (postObj) postObj.likes_count = data.likes_count;
+    updateLikeUi(postId, data.liked, data.likes_count);
   } catch (err) {
-    // Rollback
-    updateLikeUi(postId, isLiked);
-    if (isLiked) likedPosts.add(postId);
-    else likedPosts.delete(postId);
-    showToast(err.message);
-    await refreshPostCounters(postId);
+    try {
+      if (isLiked) {
+        await supabaseClient.from('likes').delete().eq('user_id', currentUser.id).eq('post_id', postId);
+        likedPosts.delete(postId);
+      } else {
+        await supabaseClient.from('likes').insert({ user_id: currentUser.id, post_id: postId });
+        likedPosts.add(postId);
+        if (navigator.vibrate) navigator.vibrate(15);
+      }
+      await refreshPostCounters(postId);
+    } catch (err2) {
+      updateLikeUi(postId, isLiked, prevCount);
+      if (isLiked) likedPosts.add(postId);
+      else likedPosts.delete(postId);
+      showToast(err2.message);
+      await refreshPostCounters(postId);
+    }
   }
 }
 
-function updateLikeUi(postId, liked) {
+function updateLikeUi(postId, liked, count) {
   const feedBtn = document.getElementById('likebtn-' + postId);
   if (feedBtn) {
     const icon = feedBtn.querySelector('i');
@@ -2707,38 +3014,24 @@ function updateLikeUi(postId, liked) {
       if (icon) icon.className = 'far fa-heart';
     }
   }
+
+  if (count !== undefined) {
+    const likesEl = document.getElementById('likes-' + postId);
+    if (likesEl) likesEl.textContent = `${count} likes`;
+    const ttLikes = document.getElementById('tt-likes-' + postId);
+    if (ttLikes) ttLikes.textContent = count;
+  }
 }
 
 async function doubleTapLike(postId) {
-  // Pop animation in standard feed
   const heart = document.getElementById('dblheart-' + postId);
-  if (heart) {
-    heart.classList.remove('pop');
-    void heart.offsetWidth;
-    heart.classList.add('pop');
-  }
-
-  // Pop animation in TikTok viewer
+  if (heart) { heart.classList.remove('pop'); void heart.offsetWidth; heart.classList.add('pop'); }
   const ttHeart = document.getElementById('tt-dblheart-' + postId);
-  if (ttHeart) {
-    ttHeart.classList.remove('pop');
-    void ttHeart.offsetWidth;
-    ttHeart.classList.add('pop');
-  }
+  if (ttHeart) { ttHeart.classList.remove('pop'); void ttHeart.offsetWidth; ttHeart.classList.add('pop'); }
 
   if (!currentUser) { showToast('Sign in to like'); return; }
   if (likedPosts.has(postId)) return;
-
-  updateLikeUi(postId, true);
-  try {
-    await supabaseClient.from('likes').insert({ user_id: currentUser.id, post_id: postId });
-    likedPosts.add(postId);
-    if (navigator.vibrate) navigator.vibrate(20);
-    await refreshPostCounters(postId);
-  } catch (err) {
-    updateLikeUi(postId, false);
-    likedPosts.delete(postId);
-  }
+  await toggleLike(postId);
 }
 
 /* ============================================================
@@ -2747,7 +3040,6 @@ async function doubleTapLike(postId) {
 async function toggleSave(postId, btn) {
   if (!currentUser) { showToast('Sign in to save'); return; }
   const isSaved = savedPosts.has(postId);
-  
   updateSaveUi(postId, !isSaved);
 
   try {
@@ -2842,7 +3134,6 @@ async function refreshPostCounters(postId) {
       .eq('id', postId).single();
     if (!data) return;
 
-    // Normal feed sync
     const likesEl    = document.getElementById('likes-' + postId);
     const commentsEl = document.getElementById('comments-count-' + postId);
     const sharesEl   = document.getElementById('shares-count-' + postId);
@@ -2855,7 +3146,6 @@ async function refreshPostCounters(postId) {
     if (viewsEl)    viewsEl.innerHTML    = `<i class="far fa-eye"></i> ${data.views_count || 0}`;
     if (previewEl)  previewEl.textContent = t('view-comments').replace('{n}', data.comments_count || 0);
 
-    // TikTok Viewer rail sync
     const ttLikes    = document.getElementById('tt-likes-' + postId);
     const ttComments = document.getElementById('tt-comments-' + postId);
     const ttShares   = document.getElementById('tt-shares-' + postId);
@@ -2876,6 +3166,11 @@ function setupViewObserver() {
       if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
         const postId = entry.target.dataset.id;
         const userId = entry.target.dataset.userId;
+        const campaignId = entry.target.dataset.campaignId;
+        if (campaignId && !loggedImpressions.has(campaignId)) {
+          loggedImpressions.add(campaignId);
+          supabaseClient.rpc('log_boost_impression', { p_campaign_id: campaignId }).catch(()=>{});
+        }
         if (postId && !viewedPosts.has(postId)) {
           viewedPosts.add(postId);
           logPostView(postId, userId);
@@ -2999,6 +3294,7 @@ function setupPullToRefresh() {
 
   window.addEventListener('beforeunload', () => {
     if (realtimeFeedChannel) supabaseClient.removeChannel(realtimeFeedChannel);
+    if (realtimeWalletChannel) supabaseClient.removeChannel(realtimeWalletChannel);
     if (viewObserver) viewObserver.disconnect();
     if (videoObserver) videoObserver.disconnect();
     if (ttObserver) ttObserver.disconnect();
@@ -3008,6 +3304,16 @@ function setupPullToRefresh() {
 /* ============================================================
    REALTIME
    ============================================================ */
+function isPostPublicAndDue(p) {
+  if (!p) return false;
+  if (p.visibility !== 'public') return false;
+  if (p.is_sensitive === true) return false;
+  if (p.moderation_status && p.moderation_status !== 'approved') return false;
+  if (p.post_status && p.post_status !== 'published') return false;
+  if (p.scheduled_for && new Date(p.scheduled_for).getTime() > Date.now()) return false;
+  return true;
+}
+
 function setupRealtimeFeed() {
   if (realtimeFeedChannel) supabaseClient.removeChannel(realtimeFeedChannel);
   realtimeFeedChannel = supabaseClient
@@ -3016,16 +3322,26 @@ function setupRealtimeFeed() {
       { event: 'INSERT', schema: 'public', table: 'posts' },
       payload => {
         if (currentUser && payload.new.user_id === currentUser.id) return;
+        if (!isPostPublicAndDue(payload.new)) return;
         pendingNewPosts = true;
         showNewPostsBanner();
+      }
+    )
+    .on('postgres_changes',
+      { event: 'UPDATE', schema: 'public', table: 'posts' },
+      payload => {
+        if (payload.old?.post_status === 'scheduled' && payload.new?.post_status === 'published' && isPostPublicAndDue(payload.new)) {
+          pendingNewPosts = true;
+          showNewPostsBanner('A scheduled post just went live — tap to refresh');
+        }
       }
     )
     .subscribe();
 }
 
-function showNewPostsBanner() {
+function showNewPostsBanner(customText) {
   const banner = document.getElementById('newPostsBanner');
-  document.getElementById('newPostsText').textContent = 'New posts available — tap to refresh';
+  document.getElementById('newPostsText').textContent = customText || 'New posts available — tap to refresh';
   banner.classList.add('show');
   clearTimeout(window._newPostTimer);
   window._newPostTimer = setTimeout(() => {
@@ -3433,35 +3749,34 @@ async function confirmBoost() {
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Boosting…';
   try {
-    const durationMs = { '24h': 864e5, '3d': 2592e5, '7d': 6048e5, '14d': 12096e5 }[selectedBoost.duration];
-    const expiresAt = new Date(Date.now() + durationMs).toISOString();
+    const idempKey = `boost_${currentUser.id}_${boostingPostId}_${selectedBoost.duration}_${Math.floor(Date.now() / 10000)}`;
+    const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc('purchase_post_boost', {
+      p_post_id: boostingPostId,
+      p_plan_id: selectedBoost.duration,
+      p_idempotency_key: idempKey
+    });
 
-    await supabaseClient.from('posts').update({ is_boosted: true, boost_expires_at: expiresAt }).eq('id', boostingPostId);
+    if (!rpcErr && rpcRes) {
+      if (currentWallet && rpcRes.new_balance !== undefined) {
+        currentWallet.balance = rpcRes.new_balance;
+      }
+    } else {
+      if (rpcErr && !String(rpcErr.message || '').includes('function') && !String(rpcErr.code || '').includes('42883')) {
+        throw rpcErr;
+      }
+      const durationMs = { '24h': 864e5, '3d': 2592e5, '7d': 6048e5, '14d': 12096e5 }[selectedBoost.duration];
+      const expiresAt = new Date(Date.now() + durationMs).toISOString();
+      await supabaseClient.from('posts').update({ is_boosted: true, boost_expires_at: expiresAt }).eq('id', boostingPostId);
 
-    const newBal = balance - selectedBoost.price;
-    const newSpent = Number(currentWallet?.total_spent || 0) + selectedBoost.price;
-    await supabaseClient.from('wallets').update({ balance: newBal, total_spent: newSpent }).eq('user_id', currentUser.id);
+      const newBal = balance - selectedBoost.price;
+      const newSpent = Number(currentWallet?.total_spent || 0) + selectedBoost.price;
+      await supabaseClient.from('wallets').update({ balance: newBal, total_spent: newSpent }).eq('user_id', currentUser.id);
+      try { await supabaseClient.from('wallet_transactions').insert({ user_id: currentUser.id, amount: -selectedBoost.price, type: 'spend', source: 'boost', note: `Boosted post for ${selectedBoost.duration}` }); } catch (e) {}
+      try { await supabaseClient.rpc('log_boost', { p_post_id: boostingPostId, p_user_id: currentUser.id, p_duration: selectedBoost.duration, p_price: selectedBoost.price, p_expires_at: expiresAt }); } catch (e) {}
+      currentWallet.balance = newBal;
+      currentWallet.total_spent = newSpent;
+    }
 
-    try {
-      await supabaseClient.from('wallet_transactions').insert({
-        user_id: currentUser.id, amount: -selectedBoost.price,
-        type: 'spend', source: 'boost',
-        note: `Boosted post for ${selectedBoost.duration}`
-      });
-    } catch (e) {}
-
-    try {
-      await supabaseClient.rpc('log_boost', {
-        p_post_id: boostingPostId,
-        p_user_id: currentUser.id,
-        p_duration: selectedBoost.duration,
-        p_price: selectedBoost.price,
-        p_expires_at: expiresAt
-      });
-    } catch (e) {}
-
-    currentWallet.balance = newBal;
-    currentWallet.total_spent = newSpent;
     renderUserSection();
     await loadBoostStats();
     closeBoost();
@@ -3522,6 +3837,8 @@ document.addEventListener('keydown', e => {
     if (document.getElementById('viewersModal').classList.contains('active')) closeViewers();
     if (document.getElementById('boostModal').classList.contains('active')) closeBoost();
     if (document.getElementById('postOptionsModal').classList.contains('active')) closePostOptions();
+    if (document.getElementById('reportModal').classList.contains('active')) closeReportModal();
+    if (document.getElementById('viewMapModal').classList.contains('active')) closePostMapModal();
   }
 });
 </script>
