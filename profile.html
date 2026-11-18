@@ -8,7 +8,7 @@
 <link rel="icon" type="image/jpeg" href="arizonan%20png%20icon.jpeg">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<!-- Leaflet Map CSS & JS for Interactive Map Location Picker -->
+<!-- Leaflet Map CSS & JS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <link rel="stylesheet" href="style.css">
@@ -222,8 +222,14 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 .challenge-reward { color:var(--az-accent); font-weight:800; }
 .challenge-bar-wrap {
   width:100%; height:6px; background:rgba(255,255,255,.1); border-radius:3px; overflow:hidden;
+  margin-bottom:6px;
 }
 .challenge-bar-fill { height:100%; background:var(--az-gradient); border-radius:3px; }
+.challenge-claim-btn {
+  background:var(--az-gradient); color:#fff; border:none;
+  padding:4px 12px; border-radius:8px; font-size:11px; font-weight:800;
+  cursor:pointer; display:none; margin-left:auto;
+}
 
 /* Referral Card */
 .referral-card {
@@ -357,6 +363,18 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 .grid-item .badge-pinned {
   position:absolute; top:6px; left:6px;
   background:var(--az-accent); color:#000;
+  padding:2px 6px; border-radius:4px;
+  font-size:9px; font-weight:800; display:flex; align-items:center; gap:3px; z-index:2;
+}
+.grid-item .badge-scheduled {
+  position:absolute; top:6px; right:6px;
+  background:#FFB20F; color:#000;
+  padding:2px 6px; border-radius:4px;
+  font-size:9px; font-weight:800; display:flex; align-items:center; gap:3px; z-index:2;
+}
+.grid-item .badge-private {
+  position:absolute; top:6px; left:6px;
+  background:#ff4757; color:#fff;
   padding:2px 6px; border-radius:4px;
   font-size:9px; font-weight:800; display:flex; align-items:center; gap:3px; z-index:2;
 }
@@ -547,6 +565,31 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   margin-top:8px; border:1px solid #333; overflow:hidden;
 }
 
+/* In-App Map Modal */
+#viewMapModal .modal-sheet-content {
+  height:65vh; display:flex; flex-direction:column;
+}
+#profileMapView {
+  flex:1; width:100%; border-radius:12px; overflow:hidden;
+  border:1px solid rgba(255,255,255,.1);
+}
+
+/* Avatar Zoom Lightbox */
+.avatar-lightbox {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.92); z-index:6000;
+  align-items:center; justify-content:center; padding:20px;
+}
+.avatar-lightbox.active { display:flex; }
+.avatar-lightbox img {
+  max-width:90vw; max-height:80vh; border-radius:16px;
+  object-fit:cover; border:2px solid var(--az-primary);
+}
+.avatar-lightbox .close-lb {
+  position:absolute; top:20px; right:20px;
+  color:#fff; font-size:24px; background:none; border:none; cursor:pointer;
+}
+
 /* Followers / Following List */
 .follow-row {
   display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,.06);
@@ -597,7 +640,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
 <!-- ==================== PROFILE MAIN CONTAINER ==================== -->
 <div id="profileMain">
   
-  <!-- Account Deletion 30-Day Warning Banner (Appears if requested) -->
+  <!-- Account Deletion 30-Day Warning Banner -->
   <div class="deletion-warning-banner" id="deletionBanner">
     <div class="del-text">
       <strong>⚠️ Account Deletion Scheduled</strong>
@@ -674,7 +717,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
     <!-- Linktree Custom Pills -->
     <div class="profile-links-tt" id="linksContainer"></div>
 
-    <!-- 📊 Enhanced Likes Analytics Card (Likes Received vs Likes Given) -->
+    <!-- 📊 Enhanced Likes Analytics Card -->
     <div class="likes-analytics-card">
       <div class="like-stat-item received" onclick="openLikesAnalyticsModal('received')" style="cursor:pointer;" title="Likes your posts received">
         <div class="licon"><i class="fas fa-heart"></i></div>
@@ -692,11 +735,11 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
       </div>
     </div>
 
-    <!-- 💰 Creator Earning Challenges (Earn Real Money) -->
+    <!-- 💰 Creator Earning Challenges (Earn Real Money with Claim Buttons) -->
     <div class="challenges-card" id="challengesCard" style="display:none;">
       <div class="challenges-head">
         <h4><i class="fas fa-trophy"></i> Creator Challenges</h4>
-        <span>Complete & Earn</span>
+        <span>Complete & Claim Cash</span>
       </div>
       
       <div class="challenge-item">
@@ -704,7 +747,8 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
           <span>Daily Post Streak (3 Days)</span>
           <span class="challenge-reward">+$1.50</span>
         </div>
-        <div class="challenge-bar-wrap"><div class="challenge-bar-fill" style="width:66%;"></div></div>
+        <div class="challenge-bar-wrap"><div class="challenge-bar-fill" style="width:100%;"></div></div>
+        <button class="challenge-claim-btn" id="claimStreakBtn" style="display:block;" onclick="claimReward('streak', 1.50, this)">Claim +$1.50</button>
       </div>
 
       <div class="challenge-item">
@@ -712,7 +756,8 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
           <span>Get 50 Likes on Posts</span>
           <span class="challenge-reward">+$5.00</span>
         </div>
-        <div class="challenge-bar-wrap"><div class="challenge-bar-fill" id="challengeLikesBar" style="width:20%;"></div></div>
+        <div class="challenge-bar-wrap"><div class="challenge-bar-fill" id="challengeLikesBar" style="width:0%;"></div></div>
+        <button class="challenge-claim-btn" id="claimLikesBtn" onclick="claimReward('likes', 5.00, this)">Claim +$5.00</button>
       </div>
 
       <div class="challenge-item">
@@ -720,7 +765,8 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
           <span>Reach 1,000 Post Views</span>
           <span class="challenge-reward">+$15.00</span>
         </div>
-        <div class="challenge-bar-wrap"><div class="challenge-bar-fill" id="challengeViewsBar" style="width:35%;"></div></div>
+        <div class="challenge-bar-wrap"><div class="challenge-bar-fill" id="challengeViewsBar" style="width:0%;"></div></div>
+        <button class="challenge-claim-btn" id="claimViewsBtn" onclick="claimReward('views', 15.00, this)">Claim +$15.00</button>
       </div>
     </div>
 
@@ -772,7 +818,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
     </button>
   </div>
 
-  <!-- Posts 3x3 Grid -->
+  <!-- Posts 3x3 Grid (With Scheduled & Thumbnail Support) -->
   <div class="profile-grid" id="postsGrid"></div>
   <div id="emptyNotice" style="text-align:center; padding:60px 20px; color:var(--az-text-secondary); display:none;">
     <i class="fas fa-film" style="font-size:36px; opacity:.4; margin-bottom:10px;"></i>
@@ -807,6 +853,26 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
     <div class="sv-body" id="svBody"></div>
     <div class="sv-tap-left" onclick="storyNav(-1)"></div>
     <div class="sv-tap-right" onclick="storyNav(1)"></div>
+  </div>
+</div>
+
+<!-- ==================== AVATAR LIGHTBOX ==================== -->
+<div class="avatar-lightbox" id="avatarLightbox" onclick="closeAvatarLightbox()">
+  <button class="close-lb"><i class="fas fa-times"></i></button>
+  <img id="avatarLightboxImg" src="" alt="Avatar">
+</div>
+
+<!-- ==================== IN-APP MAP MODAL ==================== -->
+<div class="modal-sheet" id="viewMapModal">
+  <div class="modal-sheet-content">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3 style="margin:0; font-size:15px;"><i class="fas fa-location-dot" style="color:var(--az-accent);"></i> <span id="mapModalTitle">Location</span></h3>
+      <button onclick="closeMapModal()" style="background:none; border:none; color:#fff; font-size:18px; cursor:pointer;"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="profileMapView"></div>
+    <div class="modal-actions" style="margin-top:10px;">
+      <button style="background:var(--az-gradient); color:#fff;" onclick="openExternalDirections()">Open External Navigation</button>
+    </div>
   </div>
 </div>
 
@@ -890,7 +956,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   </div>
 </div>
 
-<!-- ==================== 1. VERIFICATION REQUEST MODAL ==================== -->
+<!-- ==================== VERIFICATION REQUEST MODAL ==================== -->
 <div class="modal-sheet" id="verifyModal">
   <div class="modal-sheet-content">
     <h3 style="margin:0 0 12px; text-align:center;"><i class="fas fa-certificate" style="color:#3b82f6;"></i> Request Verification</h3>
@@ -931,7 +997,7 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   </div>
 </div>
 
-<!-- ==================== 2. CHANGE PASSWORD MODAL ==================== -->
+<!-- ==================== CHANGE PASSWORD MODAL ==================== -->
 <div class="modal-sheet" id="passwordModal">
   <div class="modal-sheet-content">
     <h3 style="margin:0 0 14px; text-align:center;"><i class="fas fa-key" style="color:var(--az-accent);"></i> Change Password</h3>
@@ -953,13 +1019,13 @@ body { background:#0a0a0a; padding-top:60px; padding-bottom:70px; font-family: -
   </div>
 </div>
 
-<!-- ==================== 3. 30-DAY DELETION MODAL ==================== -->
+<!-- ==================== 30-DAY DELETION MODAL ==================== -->
 <div class="modal-sheet" id="deletionModal">
   <div class="modal-sheet-content" style="text-align:center;">
     <i class="fas fa-triangle-exclamation" style="font-size:40px; color:#ff4757; margin-bottom:12px;"></i>
     <h3 style="margin:0 0 8px;">Schedule Account Deletion</h3>
     <p style="font-size:13px; color:#ccc; line-height:1.5; margin-bottom:16px;">
-      Your account will enter a <strong>30-day grace period</strong>. During these 30 days, your profile remains hidden, and you can cancel deletion at any time simply by logging back in. After 30 days, all posts, wallet assets, and messages will be permanently erased.
+      Your account will enter a <strong>30-day grace period</strong>. You can cancel deletion anytime simply by logging back in.
     </p>
 
     <div class="field" style="text-align:left;">
@@ -1039,9 +1105,10 @@ let currentTab = 'posts';
 let currentProfileData = null;   
 let currentProfileLink = '';
 
-/* Map instance */
+/* Map instances */
 let mapPicker = null;
 let mapMarker = null;
+let viewMapInstance = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   const check = setInterval(() => {
@@ -1108,7 +1175,7 @@ async function init() {
     logProfileView();
   }
 
-  // ⚡ SPEED BOOST: Fetch all profile resources concurrently using Promise.all()
+  // Concurrent data fetching
   const tasks = [
     loadProfile(),
     loadStories(),
@@ -1216,10 +1283,9 @@ function renderLinks(links) {
   }
 }
 
-/* ==================== 📊 LIKES ANALYTICS (LIKES GOT VS LIKES DID) ==================== */
+/* ==================== 📊 LIKES ANALYTICS & CLAIMABLE BOUNTIES ==================== */
 async function loadLikesAnalytics() {
   try {
-    // 1. Likes Did (Total posts this user has liked)
     const { count: didCount } = await supabaseClient
       .from('likes')
       .select('id', { count: 'exact', head: true })
@@ -1227,7 +1293,6 @@ async function loadLikesAnalytics() {
 
     document.getElementById('likesGivenCount').textContent = didCount ?? 0;
 
-    // 2. Likes Got (Total likes all posts by this user have received)
     const { data: postsLikes } = await supabaseClient
       .from('posts')
       .select('likes_count')
@@ -1236,14 +1301,49 @@ async function loadLikesAnalytics() {
     const gotTotal = (postsLikes || []).reduce((acc, curr) => acc + (Number(curr.likes_count) || 0), 0);
     document.getElementById('likesReceivedCount').textContent = gotTotal;
 
-    // Update challenge bars if owner
+    // Challenge check
     const likeBar = document.getElementById('challengeLikesBar');
+    const claimLikesBtn = document.getElementById('claimLikesBtn');
     if (likeBar) {
       const pct = Math.min(100, Math.round((gotTotal / 50) * 100));
       likeBar.style.width = `${pct}%`;
+      if (pct >= 100 && isOwner) {
+        claimLikesBtn.style.display = 'block';
+      }
     }
   } catch(e) {
     console.warn('[Likes Analytics]', e);
+  }
+}
+
+async function claimReward(type, amount, btn) {
+  if (!isOwner || !currentUser) return;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+  try {
+    const { data: w } = await supabaseClient.from('wallets').select('balance, total_earned').eq('user_id', currentUser.id).single();
+    const oldBal = Number(w?.balance || 0);
+    const newBal = oldBal + amount;
+    const newEarn = Number(w?.total_earned || 0) + amount;
+
+    await supabaseClient.from('wallets').update({ balance: newBal, total_earned: newEarn }).eq('user_id', currentUser.id);
+    await supabaseClient.from('wallet_transactions').insert({
+      user_id: currentUser.id,
+      amount: amount,
+      type: 'earn',
+      source: 'creator_challenge',
+      note: `Claimed ${type} milestone reward`,
+      status: 'completed'
+    });
+
+    document.getElementById('walletBalanceVal').textContent = '$' + newBal.toFixed(2);
+    btn.innerHTML = '<i class="fas fa-check"></i> Claimed';
+    btn.style.background = '#00b894';
+    toast(`🎉 Claimed +$${amount.toFixed(2)} to your wallet!`);
+  } catch(e) {
+    toast('Reward claimed or error updating balance.');
+    btn.style.display = 'none';
   }
 }
 
@@ -1257,12 +1357,12 @@ function openLikesAnalyticsModal(type) {
   }
 }
 
-/* ==================== 🗺️ INTERACTIVE MAP PICKER ==================== */
+/* ==================== 🗺️ INTERACTIVE MAP PICKER & VIEW ==================== */
 function initMapPicker(initialLat, initialLng) {
   const container = document.getElementById('mapPickerContainer');
   if (!container) return;
 
-  const lat = initialLat || 33.3152; // Default fallback: Baghdad / Middle East center or Arizona
+  const lat = initialLat || 33.3152;
   const lng = initialLng || 44.3661;
 
   if (mapPicker) {
@@ -1306,7 +1406,7 @@ async function updateLocationFromCoords(lat, lng) {
 
 function detectGPSLocation() {
   if (!navigator.geolocation) {
-    toast('Geolocation is not supported by your browser');
+    toast('Geolocation not supported by your browser');
     return;
   }
   toast('Locating GPS coordinates…');
@@ -1334,10 +1434,38 @@ function viewLocationOnMap() {
     if (isOwner) openEdit();
     return;
   }
+
+  const p = currentProfileData || {};
+  const lat = parseFloat(p.latitude);
+  const lng = parseFloat(p.longitude);
+
+  if (lat && lng) {
+    document.getElementById('mapModalTitle').textContent = loc;
+    document.getElementById('viewMapModal').classList.add('active');
+
+    setTimeout(() => {
+      if (viewMapInstance) viewMapInstance.remove();
+      viewMapInstance = L.map('profileMapView').setView([lat, lng], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19
+      }).addTo(viewMapInstance);
+      L.marker([lat, lng]).addTo(viewMapInstance).bindPopup(escapeHtml(loc)).openPopup();
+    }, 100);
+  } else {
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc)}`, '_blank');
+  }
+}
+
+function closeMapModal() {
+  document.getElementById('viewMapModal').classList.remove('active');
+}
+
+function openExternalDirections() {
+  const loc = document.getElementById('metaLocation').textContent;
   window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc)}`, '_blank');
 }
 
-/* ==================== 1. VERIFICATION REQUEST MODAL ==================== */
+/* ==================== VERIFICATION REQUEST MODAL ==================== */
 function openVerificationModal() {
   closeSettings();
   if (currentProfileData && currentProfileData.is_verified) {
@@ -1378,7 +1506,6 @@ async function submitVerificationRequest() {
     });
 
     if (error) {
-      // If table doesn't exist, store in profile metadata
       await supabaseClient.from('profiles').update({
         verification_requested: true,
         verification_notes: JSON.stringify({ fullName, category, alias, links })
@@ -1396,7 +1523,7 @@ async function submitVerificationRequest() {
   }
 }
 
-/* ==================== 2. CHANGE PASSWORD MODAL ==================== */
+/* ==================== CHANGE PASSWORD MODAL ==================== */
 function openChangePasswordModal() {
   closeSettings();
   document.getElementById('newPasswordInput').value = '';
@@ -1438,7 +1565,7 @@ async function saveNewPassword() {
   }
 }
 
-/* ==================== 3. 30-DAY DELETION SCHEDULER ==================== */
+/* ==================== 30-DAY DELETION SCHEDULER ==================== */
 function openDeletionModal() {
   closeSettings();
   document.getElementById('confirmDeleteInput').value = '';
@@ -1537,9 +1664,20 @@ async function loadStories() {
 function handleAvatarClick() {
   if (userStories.length > 0) {
     openStoryViewer(0);
-  } else if (isOwner) {
-    triggerAvatarUpload();
+  } else {
+    // Open full resolution Avatar Zoom Lightbox if photo exists
+    const p = currentProfileData || {};
+    if (p.avatar_url) {
+      document.getElementById('avatarLightboxImg').src = p.avatar_url;
+      document.getElementById('avatarLightbox').classList.add('active');
+    } else if (isOwner) {
+      triggerAvatarUpload();
+    }
   }
+}
+
+function closeAvatarLightbox() {
+  document.getElementById('avatarLightbox').classList.remove('active');
 }
 
 function renderOwnerStories() {
@@ -1660,22 +1798,36 @@ async function loadPosts() {
   grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;"><i class="fas fa-spinner fa-spin"></i></div>';
 
   try {
-    const { data, error } = await supabaseClient
+    let query = supabaseClient
       .from('posts')
       .select('*')
       .eq('user_id', profileId)
       .order('is_pinned', { ascending: false, nullsFirst: false })
       .order('created_at', { ascending: false });
 
+    // Visitors ONLY see published non-scheduled and non-private posts
+    if (!isOwner) {
+      const nowIso = new Date().toISOString();
+      query = query
+        .eq('visibility', 'public')
+        .or(`scheduled_for.is.null,scheduled_for.lte.${nowIso}`);
+    }
+
+    const { data, error } = await query;
     if (error) throw error;
     userPosts = data || [];
     renderPostsGrid();
 
-    // Update views challenge bar
+    // Challenge Views Progress
     const totalViews = userPosts.reduce((acc, p) => acc + (Number(p.views_count) || 0), 0);
     const viewsBar = document.getElementById('challengeViewsBar');
+    const claimViewsBtn = document.getElementById('claimViewsBtn');
     if (viewsBar) {
-      viewsBar.style.width = `${Math.min(100, Math.round((totalViews / 1000) * 100))}%`;
+      const pct = Math.min(100, Math.round((totalViews / 1000) * 100));
+      viewsBar.style.width = `${pct}%`;
+      if (pct >= 100 && isOwner) {
+        claimViewsBtn.style.display = 'block';
+      }
     }
   } catch (err) {
     grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--az-primary);">${escapeHtml(err.message)}</div>`;
@@ -1698,20 +1850,33 @@ function renderPostsGrid() {
   }
 
   empty.style.display = 'none';
+  const now = Date.now();
+
   grid.innerHTML = list.map((p, idx) => {
     const media = (p.media_urls && p.media_urls[0]) || '';
     const isVideo = /\.(mp4|webm|mov)$/i.test(media);
+    const thumb = p.thumbnail_url || media;
 
+    // Fast poster preview using thumbnail_url
     const mTag = isVideo
-      ? `<video src="${escapeHtml(media)}#t=0.001" preload="metadata" muted></video><i class="fas fa-play video-play-icon"></i>`
+      ? (p.thumbnail_url 
+          ? `<img src="${escapeHtml(p.thumbnail_url)}" loading="lazy"><i class="fas fa-play video-play-icon"></i>` 
+          : `<video src="${escapeHtml(media)}#t=0.001" preload="metadata" muted></video><i class="fas fa-play video-play-icon"></i>`)
       : (media ? `<img src="${escapeHtml(media)}" loading="lazy">` : `<div style="padding:14px;font-size:12px;color:#888;">${escapeHtml((p.content||'').slice(0,50))}</div>`);
 
+    const isScheduledFuture = p.scheduled_for && new Date(p.scheduled_for).getTime() > now;
+    const isPrivate = p.visibility === 'private' || p.is_sensitive;
+
     const pinBadge = p.is_pinned ? `<div class="badge-pinned">📌 Pinned</div>` : '';
+    const schedBadge = (isScheduledFuture && isOwner) ? `<div class="badge-scheduled">⏰ Scheduled</div>` : '';
+    const privBadge = (isPrivate && isOwner) ? `<div class="badge-private"><i class="fas fa-lock"></i> Private</div>` : '';
 
     return `
       <div class="grid-item" onclick="openSwipeFeed(${idx})">
         ${mTag}
         ${pinBadge}
+        ${schedBadge}
+        ${privBadge}
         <div class="views-counter"><i class="fas fa-play"></i> ${p.views_count || 0}</div>
       </div>
     `;
@@ -1734,7 +1899,7 @@ function openSwipeFeed(startIdx = 0) {
     const isLiked = userLikedPostIds.has(p.id);
 
     const mediaTag = isVideo
-      ? `<video id="feed-vid-${i}" src="${escapeHtml(media)}" controls playsinline></video>`
+      ? `<video id="feed-vid-${i}" src="${escapeHtml(media)}" ${p.thumbnail_url ? `poster="${escapeHtml(p.thumbnail_url)}"` : ''} controls playsinline></video>`
       : (media ? `<img src="${escapeHtml(media)}">` : `<div style="padding:40px;text-align:center;font-size:18px;">${escapeHtml(p.content||'')}</div>`);
 
     const pinBtn = isOwner ? `
@@ -1787,11 +1952,6 @@ function closeSwipeFeed() {
   document.getElementById('tiktokFeedModal').classList.remove('active');
   document.body.style.overflow = '';
   document.querySelectorAll('.tiktok-post-slide video').forEach(v => v.pause());
-}
-
-function toggleVideoPlay(video) {
-  if (video.paused) video.play();
-  else video.pause();
 }
 
 function playSlide(idx) {
@@ -2095,7 +2255,6 @@ function openEdit() {
 
   document.getElementById('editModal').classList.add('active');
 
-  // Initialize Interactive Leaflet Map Picker on next tick
   setTimeout(() => {
     const lat = parseFloat(p.latitude) || 33.3152;
     const lng = parseFloat(p.longitude) || 44.3661;
@@ -2292,6 +2451,8 @@ document.addEventListener('keydown', e => {
     closeVerificationModal();
     closeChangePasswordModal();
     closeDeletionModal();
+    closeMapModal();
+    closeAvatarLightbox();
   }
 });
 </script>
